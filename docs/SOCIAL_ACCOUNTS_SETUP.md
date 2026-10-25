@@ -69,3 +69,13 @@ Reports default to **All reports**, so reviewed/dismissed entries remain visible
 Signup has an availability check on the username field; login continues to use email/password, and no public username-to-email lookup is exposed. Account → **Change username** allows choosing a new permanent username. Case-insensitive uniqueness, filtering, reserved-prefix checks and a rolling **24-hour cooldown** are enforced in PostgreSQL under a row lock. Initial existing/generated usernames can be changed immediately. Selecting the same username does not consume another change. The next allowed time is shown locally, and a self-service name change is recorded in private moderation history.
 
 Tests cover native chooser/change/cancel lifecycle, no fullscreen re-entry, portrait prompt suppression and paused GPU work while choosing; a submitted report appearing in the developer feed; lean heartbeat responses; duplicate/case-insensitive name denial; same-name no-op; server cooldown rejection; and successful change after 24 hours. Real Android file-picker behavior and mobile FPS still require a device check.
+
+## v67: photo edit badge and robust native selection
+
+The photo edit control is a small pencil badge over the profile image's upper-right corner. Its transparent native file input remains directly clickable/tappable. Selecting a photo is observed through both input/change events and again on chooser return; a selection token deduplicates those events into one upload. Opening the chooser resets the native value so the same file can be selected again. The selected File remains available until the return handler has run.
+
+Image preparation now prefers FileReader/data URLs for Android content-provider files. Bitmap and object-URL image decoding remain bounded fallbacks, with progress text and timeouts so a stalled decoder cannot leave an indefinite silent operation. The upload must echo the exact saved image before success is shown; otherwise the UI shows an error/retry action. No database change is needed for this frontend update.
+
+After a selected photo's native chooser closes, the client automatically requests landscape/fullscreen using the existing game callback. Browsers that require another user gesture may reject that attempt; the Landscape button stays visible as a fallback. The chooser remains protected from orientation/fullscreen re-entry while it is open.
+
+Tests simulate native input/change/return, verify exactly one upload, support choosing the same File again, automatic landscape callback after return, and the FileReader path with an Android-style MIME type. Real phone selection remains a device verification step.

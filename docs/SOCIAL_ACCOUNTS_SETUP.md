@@ -299,3 +299,11 @@ text/image/voice/group-delete audit retention; UI fixtures cover shared badge/pr
 notification sound/badge, edit payloads, voice preview/cancel/track cleanup and aurora
 night/day behavior. Actual mobile mic, picker, playback and GPU visuals remain to
 be verified on physical devices.
+
+## v78 — conversation layout and message controls
+
+Friend and group conversations now share the Chats inbox. Room details and group owner controls open from Details, leaving space for a flexible message log. Own messages align right; other players' messages align left. Deleted notices use 65% opacity in global and private chats.
+
+Own message actions live in a collapsed “…” menu. Editing opens in the conversation composer with the complete text and existing photo; text-only messages hide image-replacement controls. Delete and report confirmations use in-game panels. Chat, social, profile and account overlays are hidden during startup and rotate-device warnings.
+
+No additional SQL is required beyond migration 010. This update preserves the existing server authorization and original-message moderation audit.

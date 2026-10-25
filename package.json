@@ -21,7 +21,7 @@
     "test:ship": "node tests/player-ship.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --ship-cockpit-only && node --experimental-vm-modules tests/ui-smoke.mjs --landing-warp-only && node tests/cockpit-labels.mjs",
     "test:accounts": "node tests/cloud-save.mjs && node tests/player-account.mjs && node tests/debug-accounts.mjs",
     "test:debug": "node tests/debug-service.mjs && node tests/debug-menu.mjs && node tests/supabase-debug.mjs && node tests/debug-menu-supabase.mjs",
-    "test:social": "node tests/file-picker.mjs && node tests/photo-library.mjs && node tests/avatar-crop.mjs && node tests/social-ui.mjs && node tests/live-chat.mjs && node tests/friends-ui.mjs && node tests/social-v77.mjs",
+    "test:social": "node tests/file-picker.mjs && node tests/photo-library.mjs && node tests/avatar-crop.mjs && node tests/social-ui.mjs && node tests/live-chat.mjs && node tests/friends-ui.mjs && node tests/social-v77.mjs && node tests/social-v78.mjs",
     "test:social:sql": "node tests/social-postgres.mjs"
   },
   "dependencies": {

@@ -50,3 +50,60 @@ body.referenceHUD :is(#chatPanel,#chatPlayerProfile,#friendsPanel){background:li
 body.referenceHUD #chatPanel{background:linear-gradient(140deg,rgba(50,151,206,var(--chat-bg-opacity,.8)),rgba(23,110,159,var(--chat-bg-opacity,.8)))}body.referenceHUD :is(#friendsPanel,#chatPlayerProfile){background:linear-gradient(140deg,#3297ce,#176e9f)}body.referenceHUD #friendsPanel{inset:auto 16px 16px auto;width:min(410px,calc(100vw - 32px));max-height:min(630px,calc(100dvh - 84px));padding:0;border-radius:14px;box-shadow:0 12px 40px #0c3d6980;overflow:hidden}#friendsPanel>.dialogHead{padding:14px 16px;background:#216e9c;margin:0;border-bottom:1px solid #d5f3ff77}#friendsPanel>#friendsTabs{padding:10px 12px;gap:8px;margin:0;background:#277fa9}#friendsPanel>#friendSearch{margin:0;padding:10px 12px;gap:10px}#friendsPanel>#friendsStatus{padding:0 14px}#friendsBody{padding:0 14px 14px;max-height:calc(100dvh - 260px);overflow:auto;overscroll-behavior:contain}#friendsPanel .friendCard{padding:12px 0;gap:10px}#friendsPanel .friendCard>button{margin:3px 0}#friendsPanel .friendCard>strong{font-size:14px}#friendsPanel .friendCard>small{padding-left:48px;flex-basis:100%;margin-top:-7px}#friendsPanel .friendMessages{height:235px;max-height:35dvh;padding:8px;background:#17658f;border:1px solid #c5eeff66;border-radius:10px}#friendsPanel .friendMessage{gap:10px;padding:11px 0;border-bottom:1px solid #bceaff33}#friendsPanel .friendCompose{gap:10px;margin:12px 0 0;padding:10px}#friendsPanel .friendCompose input{flex-basis:140px}#friendsPanel .friendRoomHead{padding:10px 0}#friendsPanel details{margin:8px 0}#friendsPanel .groupOwnerTools button{margin:5px 7px 5px 0}body.referenceHUD #chatPlayerProfile.sharedPlayerProfile{position:fixed;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(320px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;margin:0;padding:16px;z-index:310;border:2px solid #d5f3ff;border-radius:14px;color:white;box-shadow:0 15px 60px #05385e99;font:12px Fredoka,sans-serif}#chatPlayerProfile .profileActions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}#chatPlayerProfile .chatHead{gap:16px;margin-bottom:12px}.verifiedBadge{display:inline-grid!important;place-items:center;background:#1765e8!important;color:white!important;border:1px solid #d5f3ff;border-radius:50%;font:bold 9px/1 sans-serif!important;width:13px;height:13px;min-width:13px;vertical-align:middle;margin-left:3px;letter-spacing:0}#friendsUnread{position:absolute;right:-7px;top:-7px;min-width:18px;height:18px;padding:1px 4px;border:1px solid white;border-radius:10px;background:#dc4d65;color:white;font-size:10px;line-height:14px}#friendsBtn{position:relative}#friendsUnread[hidden]{display:none}#messageEditor{position:fixed;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(340px,calc(100vw - 32px));padding:16px;box-sizing:border-box;max-height:calc(100dvh - 32px);overflow:auto;z-index:320;background:linear-gradient(140deg,#3297ce,#176e9f);border:2px solid #d5f3ff;border-radius:14px;color:white}#messageEditor[hidden]{display:none!important}#messageEditor textarea{width:100%;box-sizing:border-box;font:inherit;padding:9px;background:#237ead;border:1px solid #d5f3ff;border-radius:7px;color:white}#messageEditor img{display:block;max-width:100%;max-height:170px;margin:12px 0;object-fit:contain}.messageEditorActions,.messageActions{display:flex;flex-wrap:wrap;gap:9px;margin-top:10px}#messageEditor button,.messageActions button{font:inherit;min-height:28px;padding:5px 8px;background:#267eaa;border:1px solid #d5f3ff;border-radius:6px;color:white}audio{max-width:100%;height:35px}.friendMessage audio{width:100%}.voiceDraft{width:100%}@media(max-height:550px){body.referenceHUD #friendsPanel{bottom:10px;right:10px;max-height:calc(100dvh - 62px);width:370px}#friendsBody{max-height:calc(100dvh - 200px)}#friendsPanel .friendMessages{height:135px}#friendsPanel>#friendSearch{padding:6px 12px}}
 
 #friendsPanel:has(.friendCompose)>#friendSearch{display:none}#friendsPanel:has(.friendCompose) #friendsBody{max-height:calc(100dvh - 200px)}#friendsPanel .friendCard>button{min-width:58px}
+
+/* Compact, keyboard-accessible options beside the sender's message. */
+.messageActions{display:inline-block;position:relative;margin:0 0 0 8px;vertical-align:middle;flex:none}
+.messageActions>summary{display:inline-grid;place-items:center;list-style:none;cursor:pointer;min-width:28px;min-height:28px;padding:0 4px;border:1px solid #d5f3ff80;border-radius:6px;background:#267eaa;color:white;font:bold 18px/1 sans-serif;box-sizing:border-box}
+.messageActions>summary::-webkit-details-marker{display:none}
+.messageActions>summary:focus-visible{outline:2px solid white;outline-offset:2px}
+.messageActions .messageActionMenu{display:flex;flex-wrap:wrap;gap:8px;padding:8px 0 4px}
+.messageActions:not([open])>.messageActionMenu{display:none}
+.messageActions[open]{display:inline-block;max-width:100%}
+
+/* Conversation layout: one inbox, flexible log, compact room header and composer. */
+body.referenceHUD #friendsPanel{height:min(560px,calc(100dvh - 84px));display:flex;flex-direction:column;font-size:12px}
+#friendsPanel>.dialogHead{padding:10px 12px;flex:none}#friendsPanel h2{font-size:17px}
+#friendsPanel>#friendsTabs{padding:8px 12px;flex:none}#friendsPanel>#friendSearch{padding:8px 12px;flex:none}
+#friendsPanel>#friendsStatus{margin:0;flex:none}#friendsStatus:empty{display:none}
+#friendsBody{flex:1;min-height:0;max-height:none;padding:10px 12px;position:relative}
+#friendsPanel.inConversation>#friendsTabs,#friendsPanel.inConversation>#friendSearch{display:none}
+#friendsPanel.inConversation #friendsBody{display:flex;flex-direction:column;overflow:hidden;gap:8px}
+#friendsPanel .friendRoomHead{display:flex;align-items:center;gap:10px;padding:0;flex:none;min-width:0}
+#friendsPanel .friendRoomHead h3{font-size:14px;margin:0;overflow-wrap:anywhere;flex:1}
+#friendsPanel .friendRoomHead p:empty{display:none}#friendsPanel .friendRoomHead>p{display:none}
+#friendsPanel .friendRoomHead>img{width:30px;height:30px;flex:none}
+#friendsPanel .roomDetails{margin:0;padding:0;border:0;flex:none}#friendsPanel .roomDetails>summary{padding:6px 0}
+#friendsPanel .roomDetails[open]{position:absolute;inset:54px 12px 12px;z-index:4;background:#227ca8;border:1px solid #d5f3ff;border-radius:8px;padding:12px;overflow:auto}
+#friendsPanel .friendMessages{height:auto;max-height:none;min-height:60px;flex:1;display:flex;flex-direction:column;gap:10px;padding:10px;box-sizing:border-box;overflow-x:hidden}
+#friendsPanel .friendMessage{width:fit-content;max-width:86%;min-width:50px;flex:none;align-self:flex-start;display:flex;flex-wrap:wrap;gap:6px;padding:9px;border:1px solid #bceaff44;border-radius:10px;background:#237da9;box-sizing:border-box}
+#friendsPanel .friendMessage.ownMessage{align-self:flex-end;background:#399ac2}
+#friendsPanel .friendMessage .messageSender{flex-basis:100%;text-align:left;background:none;border:0;padding:0;min-height:18px;font-size:10px}
+#friendsPanel .friendMessage .messageBody{min-width:0;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font-size:12px;line-height:1.5;user-select:text}
+#friendsPanel .friendMessage .messageActions{margin:0;padding:0;border:0;flex:none;align-self:flex-start}
+#friendsPanel .friendMessage .friendScreenshot{width:100%;height:auto;min-width:0;max-height:150px}
+.deletedMessage{opacity:.65}.deletedMessage .messageBody{font-style:italic}
+#friendsPanel .friendMessage.deletedMessage{background:none;border:0;gap:4px;display:block;padding:4px}
+#friendsPanel .friendMessage.deletedMessage .messageSender{display:inline;margin-right:4px;font:inherit;min-height:0}
+#friendsPanel .friendCompose{position:static;flex:none;gap:8px;margin:0;padding:8px;display:flex;flex-wrap:wrap;align-items:center}
+#friendsPanel .friendCompose textarea{flex:1 1 160px;min-width:0;max-height:100px;resize:vertical;box-sizing:border-box;min-height:36px;background:#237ead;border:1px solid #d5f3ff;border-radius:7px;color:white;font:inherit;padding:7px;user-select:text}
+#friendsPanel .friendCompose textarea::placeholder{color:#d0f0ff}#friendsPanel .friendCompose button{font-size:11px;min-height:28px;padding:4px 7px}
+.conversationCard{border-bottom:1px solid #bceaff55;padding:4px 0}
+#friendsPanel .conversationCard>button{display:flex;align-items:center;gap:12px;width:100%;padding:10px 0;background:none;border:0;text-align:left}
+.conversationCard img{width:38px;height:38px;object-fit:cover;border-radius:50%;flex:none}
+.conversationCard span{display:grid;gap:4px;flex:1;min-width:0;overflow-wrap:anywhere}.conversationCard small{opacity:.75;font-size:10px}
+.conversationTools{display:flex;justify-content:flex-end;padding-bottom:8px}
+#friendsPanel .friendStarters{margin:12px 0 0}.friendStarters summary{padding:8px 0}
+#messageEditor.inlineMessageEditor{position:static;inset:auto;transform:none;width:100%;max-height:42dvh;padding:8px;border-radius:8px;box-shadow:none;flex:none;margin:0;overflow:auto}
+#messageEditor.inlineMessageEditor h2{font-size:13px;margin:0 0 6px}#messageEditor textarea{min-height:70px;max-height:180px;resize:vertical;white-space:pre-wrap;overflow-wrap:anywhere;user-select:text}
+#messageEditor img{max-height:100px;margin:6px 0}#messageEditor .messageEditorActions{gap:6px;margin-top:6px}#messageEditor p{font-size:10px;margin:5px 0 0}
+.chatActionBackdrop{position:fixed;inset:0;z-index:500;background:#07253c99;display:grid;place-items:center;padding:16px;box-sizing:border-box}
+.chatActionDialog{width:min(320px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:16px;box-sizing:border-box;background:linear-gradient(140deg,#3297ce,#176e9f);color:white;border:2px solid #d5f3ff;border-radius:12px;font:12px Fredoka,sans-serif}
+.chatActionDialog h2{font-size:18px;margin:0 0 12px}.chatActionDialog p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
+.chatActionDialog textarea{display:block;width:100%;box-sizing:border-box;min-height:72px;padding:8px;background:#237ead;border:1px solid #d5f3ff;border-radius:7px;color:white;font:inherit;resize:vertical;user-select:text}
+.chatActionDialog button{font:inherit;min-height:30px;padding:6px 10px;background:#267eaa;border:1px solid #d5f3ff;border-radius:6px;color:white}
+/* These UI layers must never cover startup or the rotate-device warning. */
+body:has(#boot:not(.hidden)) :is(#globalChat,#friendsPanel,#accountDialog,#chatPlayerProfile,#messageEditor,.chatActionBackdrop,#photoLibrary,#chatPhotoLibrary,#friendsPhotoLibrary,#messagePhotoLibrary,#avatarCropPanel),
+body:has(#rotatePrompt.visible) :is(#globalChat,#friendsPanel,#accountDialog,#chatPlayerProfile,#messageEditor,.chatActionBackdrop,#photoLibrary,#chatPhotoLibrary,#friendsPhotoLibrary,#messagePhotoLibrary,#avatarCropPanel){display:none!important}
+@media(max-height:550px){body.referenceHUD #friendsPanel{height:calc(100dvh - 70px);max-height:calc(100dvh - 70px);width:min(390px,calc(100vw - 32px));bottom:10px}#friendsPanel>.dialogHead{padding:7px 10px}#friendsBody{padding:8px 10px}#friendsPanel .friendCompose{padding:6px}#friendsPanel .friendMessages{padding:8px}#friendsPanel .friendCompose textarea{min-height:30px;height:34px}}
+
+#messageEditor [hidden]{display:none!important}

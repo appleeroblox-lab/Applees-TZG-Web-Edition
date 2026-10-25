@@ -79,7 +79,7 @@ if(process.argv.includes('--review-v57-only')){
 if(process.argv.includes('--multi-touch-only')){multiTouchRegression();process.exit(0)}
 if(process.argv.includes('--context-menu-only')){contextMenuRegression();process.exit(0)}
 
-$('jumpSize').value='104';$('jumpSize').oninput({target:$('jumpSize')});$('stickSize').value='125';$('stickSize').oninput({target:$('stickSize')});assert.equal(document.body.style.getPropertyValue('--jump-size'),'104px');assert.equal(document.body.style.getPropertyValue('--stick-size'),'125px');assert.deepEqual(JSON.parse(storage.get('zero-gravity-controls')),{jump:104,stick:125});
+$('jumpSize').value='104';$('jumpSize').oninput({target:$('jumpSize')});$('stickSize').value='125';$('stickSize').oninput({target:$('stickSize')});assert.equal(document.body.style.getPropertyValue('--jump-size'),'104px');assert.equal(document.body.style.getPropertyValue('--stick-size'),'125px');$('shipLeftSize').value='130';$('shipLeftSize').oninput({target:$('shipLeftSize')});$('shipRightSize').value='80';$('shipRightSize').oninput({target:$('shipRightSize')});assert.equal(document.body.style.getPropertyValue('--ship-left-scale'),'1.3');assert.equal(document.body.style.getPropertyValue('--ship-right-scale'),'0.8');assert.deepEqual(JSON.parse(storage.get('zero-gravity-controls')),{jump:104,stick:125,shipLeft:130,shipRight:80});
 
 for(let i=0;i<8;i++){$('brand').onclick();assert($('settingsDialog').hasAttribute('open'),'settings opens');queued();assert.equal(draws,rendered,'no 3D redraw behind settings');$('settingsDialog').close()}
 $('brand').onclick();$('quality').value='High';$('quality').onchange({target:$('quality')});queued();$('settingsDialog').close();queued();assert(draws>rendered,'drawing resumes');

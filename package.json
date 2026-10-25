@@ -19,7 +19,7 @@
     "test:v54": "node tests/review-v54.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --review-v54-only",
     "test:touch": "node tests/touch-buttons.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --multi-touch-only",
     "test:ship": "node tests/player-ship.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --ship-cockpit-only && node --experimental-vm-modules tests/ui-smoke.mjs --landing-warp-only && node tests/cockpit-labels.mjs",
-    "test:debug": "node tests/debug-service.mjs && node tests/debug-menu.mjs"
+    "test:debug": "node tests/debug-service.mjs && node tests/debug-menu.mjs && node tests/supabase-debug.mjs && node tests/debug-menu-supabase.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

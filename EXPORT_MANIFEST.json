@@ -1,0 +1,2094 @@
+{
+  "site_version": 61,
+  "game_version": 59,
+  "source_commit": "cd1f7937a6267d0b07a36396c36d459da3c0f01d",
+  "export_date": "2026-10-25",
+  "original_file_count": 417,
+  "files": [
+    {
+      "path": ".gitignore",
+      "size": 614,
+      "sha256": "5ca3c39bdc1288c108a1931b3f6bc5795464b6253e9457390617774259deed0c"
+    },
+    {
+      "path": ".npmrc",
+      "size": 45,
+      "sha256": "a3909ac0447c469fda12c57374993be70f47ce73e49fd3124678c7c047f2214d"
+    },
+    {
+      "path": ".openai/hosting.json",
+      "size": 77,
+      "sha256": "d147950eccc081baa1bf0e528913a2682018ea1bfbb5c130d5e4a94e4e6e4c1b"
+    },
+    {
+      "path": "README.md",
+      "size": 61242,
+      "sha256": "7def0396d62d3a51b9a721125edc2236c214e85f9a7891f3aae58b144c61277e"
+    },
+    {
+      "path": "app/api/debug/[action]/route.ts",
+      "size": 304,
+      "sha256": "5908a11b49ff2c72fbcc5110c5899f043be42b51c430fadbff384ff4590c3f73"
+    },
+    {
+      "path": "app/chatgpt-auth.ts",
+      "size": 2550,
+      "sha256": "4265a2e7c2dcb3a6f4b7026f762bf5b6e4caec76cc13c0a45987ee9a9f2e42cc"
+    },
+    {
+      "path": "app/layout.tsx",
+      "size": 279,
+      "sha256": "c5ecc785f31a99a44e1480a7bbd8e6f31890c5d5ce22607b7cd72d779dec226e"
+    },
+    {
+      "path": "app/page.tsx",
+      "size": 100,
+      "sha256": "05cf9f4995d3e5f534c79036b49a7858669fff52c6f0c66ef2297b3a3c5ac665"
+    },
+    {
+      "path": "assets/blender/TZG_Player_Ship.blend",
+      "size": 2488652,
+      "sha256": "1e3e43d00f4634b360751435c307f27bcbac879f882e3e750d36f5d4d10fb3e6"
+    },
+    {
+      "path": "assets/blender/build_models.py",
+      "size": 7374,
+      "sha256": "9ebe059cec08032fc02f550b56c6d4f8ab95798079cc0a1a278c62debcea74e0"
+    },
+    {
+      "path": "assets/blender/export_player_ship.py",
+      "size": 3666,
+      "sha256": "4317532fb012f39e08ef2a3a46e961bf16add35a23a21736cb697c1b9025fea8"
+    },
+    {
+      "path": "assets/blender/zero_gravity_models.blend",
+      "size": 682811,
+      "sha256": "6440303317de2c454e085678251dda0470c4d10275334b706f0c7665029ccbe5"
+    },
+    {
+      "path": "assets/roblox/download-textures.py",
+      "size": 2188,
+      "sha256": "29748b2b725add99ef63c22573aaf8f4e431eccb1f85d647fb3c640527515d19"
+    },
+    {
+      "path": "assets/roblox/planet-asset-ids.json",
+      "size": 1204,
+      "sha256": "79dbc0d2a22667ddfab555f8326f489104dd3495c2522b8bf1b9dee65c7f4ae6"
+    },
+    {
+      "path": "assets/roblox/texture-download-report.json",
+      "size": 13138,
+      "sha256": "dc9428b5a6781c9c03563ff520c1c0ed76bac39fb3fc3cacac3efd1b57fbb847"
+    },
+    {
+      "path": "assets/roblox/thumbnail-response.json",
+      "size": 9478,
+      "sha256": "d2312e08c08fb8175d2333440ecd8f624bbd6bc2e0bc5064aa8a657e37ba5bdf"
+    },
+    {
+      "path": "cloudflare-env.d.ts",
+      "size": 99,
+      "sha256": "8b0eca84aa3364cc7ccc43cc3af6beb88dd34ebd410de08690bf094ce39fbcb0"
+    },
+    {
+      "path": "db/index.ts",
+      "size": 423,
+      "sha256": "dc7610b00b918e0ffff1360a63626f16655ced3064b2eaf96095a4101fb14bcd"
+    },
+    {
+      "path": "db/schema.ts",
+      "size": 739,
+      "sha256": "73ad2f93440bfa6a90fbfe1ab2f1b9e527f278babcfcb5482a9def37c0c6602f"
+    },
+    {
+      "path": "docs/saw-crafting.jpg",
+      "size": 40365,
+      "sha256": "c6507958e6138303f449fabf7d70897ced5926731a292171ad83455b50b5aecc"
+    },
+    {
+      "path": "docs/screenshots/centered-jupiter-label.jpg",
+      "size": 269364,
+      "sha256": "da6138f543aa8125f1327b5a25ad6f0ca40549651411c36b4f474768ce09f19a"
+    },
+    {
+      "path": "docs/screenshots/io-parent-sky.jpg",
+      "size": 176539,
+      "sha256": "fbb705c897611f818b960f02033cc6b4951ef943d0e45a17fa5d07ce822e8b35"
+    },
+    {
+      "path": "docs/screenshots/v14-flight-hud.jpg",
+      "size": 279236,
+      "sha256": "085173f2f586133bcc952b79556367dc4ec24d587411fd6c7db5ddad2f36ffa2"
+    },
+    {
+      "path": "docs/screenshots/v14-inventory-hud.jpg",
+      "size": 76176,
+      "sha256": "d499b17f82cf9128b36b5b44f24cb276a2e62e24991352297a8a6f94d271e203"
+    },
+    {
+      "path": "docs/screenshots/v14-parked-hud.jpg",
+      "size": 63828,
+      "sha256": "a3411874995afac3fed1d48eff51ca7b1d2bf4e27631e3b479d29c3ad19da752"
+    },
+    {
+      "path": "docs/screenshots/v16-flight-controls.jpg",
+      "size": 40120,
+      "sha256": "a37c5d17c5349fe2c9854638169518ec003a988b6f6dc8bd8b0942ff79f06faf"
+    },
+    {
+      "path": "docs/screenshots/v17-loading.jpg",
+      "size": 57510,
+      "sha256": "d8b56b6b94746def0d87374d711cf91e324bad7533c55f4e32b9cf49377875f3"
+    },
+    {
+      "path": "docs/screenshots/v18-universe-map.jpg",
+      "size": 46579,
+      "sha256": "346b3a471c1469228db9c3535b789c181be843372bb59d6e47a791a1a68daf20"
+    },
+    {
+      "path": "docs/screenshots/v20-earth-weather.jpg",
+      "size": 69385,
+      "sha256": "857151eb3a209c29db6cd370f91047467a144f102f39c7aad50e65e3a14a5bce"
+    },
+    {
+      "path": "docs/screenshots/v21-flight-blackhole.jpg",
+      "size": 48526,
+      "sha256": "1aca59eb519f6bcd10f75dfc25be7caf89eebaeff26e9efb3a1768c5a14ba958"
+    },
+    {
+      "path": "docs/screenshots/v6-earth-pad.jpg",
+      "size": 84422,
+      "sha256": "250be407a432de83df1d8e7bc455bcb8dcaa461d96c278e439f1e00cb397ffcf"
+    },
+    {
+      "path": "docs/screenshots/v7-first-person.jpg",
+      "size": 52133,
+      "sha256": "4dee1f1b3bd29ce5e2ecd96edf6da07265303fcd83247453872c8edb31cc5a37"
+    },
+    {
+      "path": "docs/screenshots/v9-clean-hud.jpg",
+      "size": 58677,
+      "sha256": "2a17eee7d97c1830fe94e8bbd69b02709ac1cd80c987e84f6932ed24e33dca70"
+    },
+    {
+      "path": "docs/village-layout-v37.jpg",
+      "size": 34208,
+      "sha256": "181cfd3af64a1b0229dd5d4d74883ec109b504f9bbfc7df48f61eac8024ea094"
+    },
+    {
+      "path": "drizzle.config.ts",
+      "size": 148,
+      "sha256": "af081f7384aaeb0082cf422e29f139d137ca2f6a57c69b2c37b9fb1f8479867b"
+    },
+    {
+      "path": "drizzle/0000_round_shriek.sql",
+      "size": 603,
+      "sha256": "7759b3c5ecd011c06a9bfaea593c2cf5adf6eafc8cc5898c2e6cec7261e4ec42"
+    },
+    {
+      "path": "drizzle/meta/0000_snapshot.json",
+      "size": 3656,
+      "sha256": "2abd2f053df1a3e20c6867e80a8141e73b19e127107318bd505cbd99797e443e"
+    },
+    {
+      "path": "drizzle/meta/_journal.json",
+      "size": 202,
+      "sha256": "f2f0ff01e8260ab3a5382e17627844468a29e2ee804f2ae946777b6b5fc09e7b"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "size": 791,
+      "sha256": "eeda7faabe9560fa9fdb26675b0011fa78461ca7061989732f5da9245b87e315"
+    },
+    {
+      "path": "lib/connector-context.ts",
+      "size": 612,
+      "sha256": "bbddff68689cb0f6926fecd4b8b96f12f2054277c296e97b0df07d4ad5ece24e"
+    },
+    {
+      "path": "lib/connector-contract.mts",
+      "size": 5362,
+      "sha256": "e1a7b24a8793af34b595690d9b1300c897c7321c14f215cedf58ad95799d7c3e"
+    },
+    {
+      "path": "lib/connector-errors.mts",
+      "size": 2717,
+      "sha256": "a22edf13d6873ae832c4a2a0d579fc666c73ec996ef0722d39172649d38f0871"
+    },
+    {
+      "path": "lib/connector-preview.d.ts",
+      "size": 433,
+      "sha256": "abd69a94f7f61f1359063bb557574faae35e8ff5a028cc4c04b9ee248ef52642"
+    },
+    {
+      "path": "lib/connectors.ts",
+      "size": 416,
+      "sha256": "1c93d747e384c8e17e3e3dd5361b24412babf5eba2a11d2ae7a75f4e0924112c"
+    },
+    {
+      "path": "lib/utils.ts",
+      "size": 177,
+      "sha256": "53f3d3d070f0a9082934da25b875f9499855c2b0693868dd28be8c23d8730f68"
+    },
+    {
+      "path": "package.json",
+      "size": 4391,
+      "sha256": "b63ba742f70457ce5b250994e4f034058087cf4974da6790afdb79242fcc2985"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "size": 366494,
+      "sha256": "6d4ea54c600b2529f2810396ad56d4a68d6df2ba9e39dab9eafb6c234760f86b"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "size": 736,
+      "sha256": "4a69dc93a75ff4a33f54c2853d5317c8e7374faab592f3472b5164257bff8066"
+    },
+    {
+      "path": "public/atlas-3d.js",
+      "size": 10050,
+      "sha256": "aa1d2ecff5eaefc96287cdabfb96bd15ed33d6d03c82787c87e1235914ae0209"
+    },
+    {
+      "path": "public/atmosphere-effects.js",
+      "size": 1813,
+      "sha256": "033fc3c579ffd50ec68e8a0b6be803c70097bd57869d38362715b927f2804820"
+    },
+    {
+      "path": "public/black-hole-effects.js",
+      "size": 4189,
+      "sha256": "8c00f290261fd193ab9ccab3e80791b186aee791f29b1cee8fd5a9708c3dc833"
+    },
+    {
+      "path": "public/block-models.js",
+      "size": 5893,
+      "sha256": "d1926654ee97cb190abcc10a0b891d679a5aa74fdd4d47a474b738b160a8b925"
+    },
+    {
+      "path": "public/body-labels.js",
+      "size": 1719,
+      "sha256": "5d44b57334f14a8d4d75ad564be1f2869dcb5d52d2e29bb0078b472fd62ca708"
+    },
+    {
+      "path": "public/body-transition.js",
+      "size": 436,
+      "sha256": "a5269c45a23bfedf81cd7eb39f3975f3f994b70f319282df08d1245cc440f2cc"
+    },
+    {
+      "path": "public/boost.js",
+      "size": 861,
+      "sha256": "7c520c43e7a6ab54d4d30ee86dc009773b6c8ccf24bfa36f57064bc323338d5b"
+    },
+    {
+      "path": "public/boot-loader.js",
+      "size": 2256,
+      "sha256": "6d4764a6de63df54d1577297c9ff8a812eb0063c9e03e66d4ccc6951e40ab158"
+    },
+    {
+      "path": "public/building.js",
+      "size": 17396,
+      "sha256": "bddd17edf3422e3c755f23e9127fbd83e1019074968e0d636d23adac62997e55"
+    },
+    {
+      "path": "public/camera-horizon.js",
+      "size": 969,
+      "sha256": "fdc5ba8c43ade0fc25917c7c9b88beab12161954848607bc4ea09a8bb2e48a25"
+    },
+    {
+      "path": "public/catalog.js",
+      "size": 14745,
+      "sha256": "a089c8a385abee3f7bc505567a0b8f74a18a99a16affcda2c44a70b2aaf618a8"
+    },
+    {
+      "path": "public/cockpit-labels.js",
+      "size": 1477,
+      "sha256": "4167ffd83589a23f644a09d15cfca46f197a4bd641b5409de09ec4bc2991f851"
+    },
+    {
+      "path": "public/compatibility.js",
+      "size": 21499,
+      "sha256": "da3282e99ed71a28840a3d52ef5e913c0b5c880427bb434e19ad1200d4286be7"
+    },
+    {
+      "path": "public/connected-glass.js",
+      "size": 1104,
+      "sha256": "8479669591df84c1d65e81ba123c3f52fc07da1d3b74629bdf2c9a90d51ca580"
+    },
+    {
+      "path": "public/credits.html",
+      "size": 8078,
+      "sha256": "10241eb3fdb61af9408e297d68c661159f895c348fd825edaaddc1821166736e"
+    },
+    {
+      "path": "public/crew.js",
+      "size": 5561,
+      "sha256": "8fa3b888ec09cdd328721de0ee3a2e2a9bfaba09cddb5ca4f934be2c693bc5c3"
+    },
+    {
+      "path": "public/debug-menu.css",
+      "size": 3139,
+      "sha256": "2b0104589983d3a937372be6e45708357d9855276e62d756ed56c3bc67d0adac"
+    },
+    {
+      "path": "public/debug-menu.js",
+      "size": 12185,
+      "sha256": "b12d60493bebc8f4e059934f28fde4da31116203d14559cf3b5e62681adf60e3"
+    },
+    {
+      "path": "public/door-rules.js",
+      "size": 1423,
+      "sha256": "7c15ee396920153678c451df4f4006947d8aa2d46251fa96ef95eaacfd9a872d"
+    },
+    {
+      "path": "public/earth-biomes.js",
+      "size": 2741,
+      "sha256": "fd3e4d758d971489ab131a2f31e6f547e5d8a21fa69763956f13ad149d20fe4f"
+    },
+    {
+      "path": "public/earth-environment.js",
+      "size": 3615,
+      "sha256": "f574a119f45c2bc6feb978e4cbeb3a867d0bc5b21e0e2c081b8e93c017170526"
+    },
+    {
+      "path": "public/economy.js",
+      "size": 20602,
+      "sha256": "625d12cb3614453eff986c4b026c825b5c5a521c6927dbd32f402a5956967356"
+    },
+    {
+      "path": "public/explorer.js",
+      "size": 2957,
+      "sha256": "4368f28050562404c3d2b7e9591b460790e306a39731a1ca9e0e5bacbf26c0a4"
+    },
+    {
+      "path": "public/flight.js",
+      "size": 8853,
+      "sha256": "95f726013ea146776c04b2ea083a1ac6635ea8d3d89e5b174f654a10dc4775db"
+    },
+    {
+      "path": "public/fonts/Fredoka-0.ttf",
+      "size": 48856,
+      "sha256": "7fe52d17e4c5c80ec74c9b26cb635d593e72cfc30cc189dab7a0babece57e153"
+    },
+    {
+      "path": "public/fonts/Fredoka-1.ttf",
+      "size": 48792,
+      "sha256": "69dd373c3a195748b359f4dedd3152bae62807e6815e993fbf5df7938b696b40"
+    },
+    {
+      "path": "public/fonts/Fredoka-2.ttf",
+      "size": 48768,
+      "sha256": "594cd6463e8eccef94423fba8e0114c137492f6415af4b414b21b73abcb644a8"
+    },
+    {
+      "path": "public/fonts/OFL.txt",
+      "size": 4388,
+      "sha256": "5c9e7eee5c6b25f4b05b8d53b2e470ea4962f9ced742d044a98f7d95d1375bab"
+    },
+    {
+      "path": "public/forestry.js",
+      "size": 2213,
+      "sha256": "2ebf0de8879c18b45877f5b7d562cfe734c3578f600f201423acbe8100153e04"
+    },
+    {
+      "path": "public/game.js",
+      "size": 92909,
+      "sha256": "842adaac1c2f8871858f23b90176998598af32c3416ab1a57f5e01a99c4c8c44"
+    },
+    {
+      "path": "public/gas-interior.js",
+      "size": 1921,
+      "sha256": "3767be5f776567968116dbec509f5749e72851a2731b220baa90b0ff2783db3f"
+    },
+    {
+      "path": "public/global-shadows.js",
+      "size": 2330,
+      "sha256": "f079ff3d01a42760bf526c03b79a022a9a0e66b123fb493e4398b2310c8d46bc"
+    },
+    {
+      "path": "public/graphics-policy.js",
+      "size": 491,
+      "sha256": "a48e719935d91bf19460d9e729aff55333c09c4ead2235d3ada7996a9b580f23"
+    },
+    {
+      "path": "public/ground-weather.js",
+      "size": 13865,
+      "sha256": "c929bd27b65bf9271c126d6e62f880b99eee7a0b1c2865aca391bcb6ef27c2c3"
+    },
+    {
+      "path": "public/held-items.js",
+      "size": 1563,
+      "sha256": "59d7dd7330447f6ec5f5400a0714d0e0238b7a9821870382e713d4df11d0de2f"
+    },
+    {
+      "path": "public/hud-policy.js",
+      "size": 334,
+      "sha256": "e619ae657b1b2d0c683e0e653c73bbb09d60a4f37a1d46e38ee4f7bd9d8d3b38"
+    },
+    {
+      "path": "public/icons.js",
+      "size": 2462,
+      "sha256": "c188e46713a936e8ed9ce763a8af5f86d417dccc103a0ea28766f61b82f2eaad"
+    },
+    {
+      "path": "public/icons/LICENSE",
+      "size": 11357,
+      "sha256": "58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd"
+    },
+    {
+      "path": "public/icons/add.svg",
+      "size": 185,
+      "sha256": "4ee3d007e50561b12a595e511381145ce0c1b1aa50c3592401300690e0bffe3c"
+    },
+    {
+      "path": "public/icons/arrow_downward.svg",
+      "size": 214,
+      "sha256": "014eeaf22b9ed5000091a9d366bc6bf414b225cfa9840d0bce8567df29b12ee6"
+    },
+    {
+      "path": "public/icons/arrow_forward.svg",
+      "size": 207,
+      "sha256": "9c3b0d6201e18c1066cb1f2c7df03ea79ba0a6bc88e6fd22b42445cc5365ba6b"
+    },
+    {
+      "path": "public/icons/arrow_upward.svg",
+      "size": 211,
+      "sha256": "4f1968798024e345b79923c948882694a9902c5fe42fb35cc2db8b576562cfa6"
+    },
+    {
+      "path": "public/icons/bookmark_border.svg",
+      "size": 236,
+      "sha256": "22be768f04e8a3b63d5c0786c0e1e6ba19e52e748667c576601310bb66d66624"
+    },
+    {
+      "path": "public/icons/check.svg",
+      "size": 199,
+      "sha256": "31463c04a496a34f882975c167401461185ad7023faf60be41fc1a802847829c"
+    },
+    {
+      "path": "public/icons/close.svg",
+      "size": 251,
+      "sha256": "c24ac7426e28dd26efffed2a30e750fd5f5cf3746fa3923a1617597776e42e56"
+    },
+    {
+      "path": "public/icons/dashboard.svg",
+      "size": 211,
+      "sha256": "0d5aa47c76556203dcd7bf288b6347c156235eaaf4ce66aab9516c50c3f4b9f4"
+    },
+    {
+      "path": "public/icons/directions_walk.svg",
+      "size": 360,
+      "sha256": "65afab6776f92ce94b7a49ce8dbcf04ae7276e732f9f261ec1da9ff1df8c9388"
+    },
+    {
+      "path": "public/icons/drag_indicator.svg",
+      "size": 443,
+      "sha256": "2ddea00de6dcae8428bba00bf8c383fb3f784f46075a57313a1d6ac89c67ed81"
+    },
+    {
+      "path": "public/icons/explore.svg",
+      "size": 345,
+      "sha256": "8f25b53fe187a646553cb3bf4b8679568ae3d4113160fbf84bb1342d55e21099"
+    },
+    {
+      "path": "public/icons/flight.svg",
+      "size": 268,
+      "sha256": "2c5f58628f501117d4f824cff556a88b7b490aa016a8c267a2f9e047ff5fba03"
+    },
+    {
+      "path": "public/icons/fullscreen.svg",
+      "size": 228,
+      "sha256": "a4a8988ad32133709100a217a9dea23b9d67b4ec13fbdfa0b4475bf3e4da245c"
+    },
+    {
+      "path": "public/icons/gps_fixed.svg",
+      "size": 433,
+      "sha256": "babfa75d117bf0a5409e304bedb5259088bc4a4ac4ddc960140ccf5e115ebbde"
+    },
+    {
+      "path": "public/icons/help.svg",
+      "size": 393,
+      "sha256": "e9051f4d3917b6cca4d114939114502c180374a077f04aa9fc8b70279343011f"
+    },
+    {
+      "path": "public/icons/home.svg",
+      "size": 185,
+      "sha256": "1261459f84bb541e4495b7d368146d4b4b0991773f4ce66f7ae16ebe45919703"
+    },
+    {
+      "path": "public/icons/login.svg",
+      "size": 317,
+      "sha256": "5c2134e28f7098320274cb0ea63b82e9850917fa313e20bce6644b90910acb61"
+    },
+    {
+      "path": "public/icons/more_horiz.svg",
+      "size": 297,
+      "sha256": "3524484bee250c3360ed4af0413abad16dc1284d885f6cf6b225e9b75c24bde6"
+    },
+    {
+      "path": "public/icons/my_location.svg",
+      "size": 433,
+      "sha256": "babfa75d117bf0a5409e304bedb5259088bc4a4ac4ddc960140ccf5e115ebbde"
+    },
+    {
+      "path": "public/icons/open_in_new.svg",
+      "size": 280,
+      "sha256": "e5b1312b7cbd8d5a0c5f0ad4c0867f394dcf9c54b472f4a95349e2da507bbdb8"
+    },
+    {
+      "path": "public/icons/pan_tool.svg",
+      "size": 572,
+      "sha256": "7ec8a45775cb1ec94ce7fb68d7da5386e5fc8b1d973221632dc1b6fca79fe044"
+    },
+    {
+      "path": "public/icons/pause.svg",
+      "size": 181,
+      "sha256": "ab437a54de64350fa00a760d57f71db3482d3b573acfe28937f1c074e1bcf14b"
+    },
+    {
+      "path": "public/icons/photo_camera.svg",
+      "size": 336,
+      "sha256": "4d24a45eaa478ede3f71f491b1c5032e5adb904b2537cc6cb24bb473ea9f2711"
+    },
+    {
+      "path": "public/icons/play_arrow.svg",
+      "size": 163,
+      "sha256": "eb348b5618a56fda845f55673fb7f4d74454818c165b4f63d6857e4be99e602b"
+    },
+    {
+      "path": "public/icons/public.svg",
+      "size": 450,
+      "sha256": "fbf4da84eac1acdab88811b39c4cce33cf1769315c38cd538fedec1ca4425b22"
+    },
+    {
+      "path": "public/icons/remove.svg",
+      "size": 167,
+      "sha256": "f36191fc802e272052102f5b79b9ba59056738f70e2f7ab4078cf14395c76227"
+    },
+    {
+      "path": "public/icons/rocket_launch.svg",
+      "size": 744,
+      "sha256": "f0bb26d5e976a886a1c3ae26d63f612760a5303838b1302cf9ee3a62031d52e7"
+    },
+    {
+      "path": "public/icons/rotate_right.svg",
+      "size": 509,
+      "sha256": "4bda75c8fb035ac2a69b7b45bf252af7b3d0023ac7a24affaa4f98860e76c296"
+    },
+    {
+      "path": "public/icons/route.svg",
+      "size": 506,
+      "sha256": "6e61c6f1ef51615602191ec7549a09a905db4006dc60f92cf981a558ee0ad056"
+    },
+    {
+      "path": "public/icons/search.svg",
+      "size": 384,
+      "sha256": "dfacbc0564f18ff05fcdc8a25224705fb13761d82ad6ac2c0c51bbe0e85762f7"
+    },
+    {
+      "path": "public/icons/settings.svg",
+      "size": 1051,
+      "sha256": "458324b698ac7539252354f3aec2c196c52a0feb3442afab0495a6cefd1a09eb"
+    },
+    {
+      "path": "public/images/loading-preview.jpg",
+      "size": 63828,
+      "sha256": "a3411874995afac3fed1d48eff51ca7b1d2bf4e27631e3b479d29c3ad19da752"
+    },
+    {
+      "path": "public/index.html",
+      "size": 28192,
+      "sha256": "95dc12acedcc939f9328f66b0c7332c2c0a018262f78fece0f8238096a96a4d4"
+    },
+    {
+      "path": "public/inventory-ui.js",
+      "size": 2995,
+      "sha256": "d7225d556a5e3ce74fc06486d202d7b5df49796412dca908c3eca20bfe25a23e"
+    },
+    {
+      "path": "public/item-images.js",
+      "size": 634,
+      "sha256": "1a97ace163a0198ff95c63c43d4d34aff2ded4785bc5619f2d1a64285aba6b96"
+    },
+    {
+      "path": "public/items/concrete-black.png",
+      "size": 8560,
+      "sha256": "de5c42078023c141bd602ae5f6a16b328ad73e2d595c0775e4624ba4c1fb10b3"
+    },
+    {
+      "path": "public/items/concrete-blue.png",
+      "size": 9556,
+      "sha256": "29b606656cffdd65ea7cfc77ed2d0553511fd978b66b9ec177bc597b25805e57"
+    },
+    {
+      "path": "public/items/concrete-brown.png",
+      "size": 9342,
+      "sha256": "8978fdd5552d68beea7c61ef68ecb0f6b0bd6bfd05a3d24010391a54fb6ab6b4"
+    },
+    {
+      "path": "public/items/concrete-charcoal.png",
+      "size": 8933,
+      "sha256": "e58eeb34ab10d07a403c2139b9b1d6a0bc8591e078a4acc6d5c58cb75493ee04"
+    },
+    {
+      "path": "public/items/concrete-cyan.png",
+      "size": 9719,
+      "sha256": "1d8192a5d72ef2da6335171f0c6c75bec313e47020560de3fb4d48d1dad151dd"
+    },
+    {
+      "path": "public/items/concrete-gray.png",
+      "size": 8893,
+      "sha256": "444e96128805687ac022af996da6dc1b61270c9c3a21997a217abf7b725c3f80"
+    },
+    {
+      "path": "public/items/concrete-green.png",
+      "size": 9436,
+      "sha256": "b9b1415dadc4c295a8d7062b12dcd1be615b30003e8c431791902d4e2984d2b9"
+    },
+    {
+      "path": "public/items/concrete-indigo.png",
+      "size": 9467,
+      "sha256": "8aab10ad6a1669068322f900a855ce6af3c446e10fa75fc748efc708f2d4a673"
+    },
+    {
+      "path": "public/items/concrete-lime.png",
+      "size": 9635,
+      "sha256": "72a3ce73a3a26dac16a9bde26078a76660c87c918389e7f4c46009ab2dbc7808"
+    },
+    {
+      "path": "public/items/concrete-orange.png",
+      "size": 9610,
+      "sha256": "ad3d84a57e1125ee79d9af94b32d031852f5ec5bb26527c16e831ed4c8042686"
+    },
+    {
+      "path": "public/items/concrete-pink.png",
+      "size": 9669,
+      "sha256": "3b1a7839f4ae0198fbc9b7459177a89070b7c127cbe780b2debbec7a3ffa16ed"
+    },
+    {
+      "path": "public/items/concrete-purple.png",
+      "size": 9531,
+      "sha256": "8597cb15e694dd49f84ff4377f22d051cf47fe21c0f3d4b8af508ddd88afe6ab"
+    },
+    {
+      "path": "public/items/concrete-red.png",
+      "size": 9295,
+      "sha256": "39a76edd4db6025f22c98d10639399b38993c7fcb888495f045a0f1f03b57752"
+    },
+    {
+      "path": "public/items/concrete-sand.png",
+      "size": 9535,
+      "sha256": "c30bc7d11e643586c74d1be0d7fae11059ab68e251d61acbb84fdcd659a0cdf4"
+    },
+    {
+      "path": "public/items/concrete-white.png",
+      "size": 9192,
+      "sha256": "4ee41a5d049ea53888abcd32a974dcfad4cf9cc983de4e27f0731ef3def4522c"
+    },
+    {
+      "path": "public/items/concrete-yellow.png",
+      "size": 9648,
+      "sha256": "96bf2158ed068f1bcc43cad8cc28aa7d11c793b917390271645af3a07d19f8b2"
+    },
+    {
+      "path": "public/items/copper-pickaxe.png",
+      "size": 5030,
+      "sha256": "a4463dad3bfe9f8790f32b7a5495a40ab11e7a5253834087bcfd0524d49f4906"
+    },
+    {
+      "path": "public/items/diamond-pickaxe.png",
+      "size": 5132,
+      "sha256": "0ee76a052b09e9efb97d4f6b4198dd9bc08fd9157557631331c3c04db502d956"
+    },
+    {
+      "path": "public/items/diamond-saw.svg",
+      "size": 444,
+      "sha256": "5968e7982da5cedc62f216fdabfc0999c324fc9ddbfa97a225ac07ec6e6e43db"
+    },
+    {
+      "path": "public/items/door.png",
+      "size": 1222,
+      "sha256": "4d22b70a073c3721ddc0b2c500f880916f79312c13bb9a7074887796de9af7a7"
+    },
+    {
+      "path": "public/items/glass.png",
+      "size": 2144,
+      "sha256": "be0484a9d177a4188f5bfcd2e7468d65b2932141c1d02fbd21c7e2d2c44cd93b"
+    },
+    {
+      "path": "public/items/iron-saw.svg",
+      "size": 444,
+      "sha256": "567efb0076f06ee538c949f8fc60dad09cb6875387259c8bed282f1d5168194d"
+    },
+    {
+      "path": "public/items/ladder.png",
+      "size": 5224,
+      "sha256": "687a6f91185ffbf87abe2c572bad389e007e640870f3b6bf95e36846a706e22b"
+    },
+    {
+      "path": "public/items/log-block.svg",
+      "size": 495,
+      "sha256": "ee619b8e63daad6c2db065aa4bd584f1b055661fd2f08f788cd434547fe6caa1"
+    },
+    {
+      "path": "public/items/shovel.png",
+      "size": 3560,
+      "sha256": "d5dc54088329ef26ff530863b47666993e5f221de97acbc2d670959bb79f8c3a"
+    },
+    {
+      "path": "public/items/snow-ball.svg",
+      "size": 274,
+      "sha256": "79cb28d5a18115ddcd6ea204ecbee63dee74b894e247eca734f0a7cc4c3e7b81"
+    },
+    {
+      "path": "public/items/snow-block.svg",
+      "size": 312,
+      "sha256": "5777e803943e2d709cf21165b58cb9536b7057ab2d18133e8b4355e92d652e39"
+    },
+    {
+      "path": "public/items/steel-pickaxe.png",
+      "size": 5221,
+      "sha256": "3ef348abab8f7c19ddaf5d216c8fc800eebecd30f37cb7d7b6a8986036af2b9c"
+    },
+    {
+      "path": "public/items/steel-saw.svg",
+      "size": 444,
+      "sha256": "78e87aa228c06527e5b5badb857c090727ddb1e02409712e7c74b33a31e4e53d"
+    },
+    {
+      "path": "public/items/tnt.png",
+      "size": 1969,
+      "sha256": "3bc2d340da51e2e23d8bfd50d4f67e4129e0ccd60f6e890e6ed9c6fcec620cb2"
+    },
+    {
+      "path": "public/items/torch.png",
+      "size": 2971,
+      "sha256": "3095bd2082a3c9e23edd70eaf663398a3b11b1e5a458a30bc88546947b98d18e"
+    },
+    {
+      "path": "public/items/tree-log.svg",
+      "size": 497,
+      "sha256": "779c314169e6d886d7cff1b7f4dc03c12312e851cfa975f765e9a85741f41c9f"
+    },
+    {
+      "path": "public/items/wood-planks.svg",
+      "size": 485,
+      "sha256": "0d1a7e3ef7a9e35d82b5dd5d4ffa5501de32d7361325f9b5dfdd4950767d64a8"
+    },
+    {
+      "path": "public/keyboard-input.js",
+      "size": 562,
+      "sha256": "75f3fc6da1f62d487c51ffecbfbcc9451eef447b041666866904dd6b6bb8bc49"
+    },
+    {
+      "path": "public/lighting.js",
+      "size": 1794,
+      "sha256": "4a66e28606d5c1952960a48e5bfed2dc11d4fc84c5ba158e84c35f6b8758b685"
+    },
+    {
+      "path": "public/mobile-input.js",
+      "size": 1995,
+      "sha256": "d6be17741e817e72bcad7fb6806447a61cacf422120b4e5e295786d77e3ddd39"
+    },
+    {
+      "path": "public/models.js",
+      "size": 1868,
+      "sha256": "90d102e75d44571450682387453e029da9dce2d736a09a34bc75add4635920d3"
+    },
+    {
+      "path": "public/models/mineral.json",
+      "size": 9785,
+      "sha256": "512e127afc28703c2da7875eb33c6b8c671f046cc6a6caf782d633ef675bcd9b"
+    },
+    {
+      "path": "public/models/pickaxe-icon.png",
+      "size": 35500,
+      "sha256": "1a04f4272a7ec0d87c66be9b3c87a9772d4ac7c3937b57230e962ffdeda062a2"
+    },
+    {
+      "path": "public/models/pickaxe.json",
+      "size": 90899,
+      "sha256": "ec34da59cb2f1fadb66069861eab6739a8fa8fdedc5ad2bd8662cf5301f80a6b"
+    },
+    {
+      "path": "public/models/player-ship-textures/Dark.png",
+      "size": 162730,
+      "sha256": "ad2f0ca47cb9ecebde579b7aff36b85d3513cc5395ccde1b4992fd2173231c01"
+    },
+    {
+      "path": "public/models/player-ship-textures/Display_0.png",
+      "size": 15377,
+      "sha256": "fff42ba413b103b792445d16cb7d28db25631f18a8f7cbfde5089ce1112d3cc0"
+    },
+    {
+      "path": "public/models/player-ship-textures/Display_1.png",
+      "size": 8611,
+      "sha256": "a101501bd9260f47f62b9ee8491577c1bc029c5bd02098d5f9e4490002cea8d2"
+    },
+    {
+      "path": "public/models/player-ship-textures/Display_2.png",
+      "size": 7558,
+      "sha256": "e6249eea7be262a2ffd3bafaf48025497ecfcd795991de1fa1d68e7af16d48d0"
+    },
+    {
+      "path": "public/models/player-ship-textures/Red.png",
+      "size": 162682,
+      "sha256": "6d2cf1e2c882933e9d48f96341ca98138ee18f15a8b15fa782b32c0b886ae1bb"
+    },
+    {
+      "path": "public/models/player-ship-textures/White.png",
+      "size": 162492,
+      "sha256": "94d66ad6276367d5cc6cd023725bf4416dd6067ecdaeefdd5f20f716c6936d01"
+    },
+    {
+      "path": "public/models/player-ship.json",
+      "size": 703090,
+      "sha256": "a0be19580776753e4fa0194d8961f27a3f027e4a52d4920e66ad3380535e1da1"
+    },
+    {
+      "path": "public/models/rocket.json",
+      "size": 257011,
+      "sha256": "a94d6277940334962e5718377dc2b4162289b27764d4d7feb119a287325a6668"
+    },
+    {
+      "path": "public/models/trading-hall.json",
+      "size": 159317,
+      "sha256": "8037e4421a1ebaa53717ebb646c4cc7b1c5573426d0c4eaddb8f1173a1883e2a"
+    },
+    {
+      "path": "public/performance.js",
+      "size": 464,
+      "sha256": "878efaa731b2982627d23a7edef81b3354818f80ab5afc1716f9342d6d58b2a8"
+    },
+    {
+      "path": "public/placement-rules.js",
+      "size": 1177,
+      "sha256": "5795e236aab7448898312c3554a8577a18d86d27601c20e5ab25099d607e0756"
+    },
+    {
+      "path": "public/pool-shape.js",
+      "size": 1212,
+      "sha256": "da3252cb43a3a8b30fc0426f7c347546056a4b929e92e28914263b31fb7575d5"
+    },
+    {
+      "path": "public/pool-splashes.js",
+      "size": 1847,
+      "sha256": "6ad1920388cf99e16ffc680a48162848a2ccbbe1e42869b936357a62c50091c9"
+    },
+    {
+      "path": "public/post-effects.js",
+      "size": 2941,
+      "sha256": "881b47df9c094a7b5b501e0591b40ce2d452b7a8f62212704b9f2ef054f4af57"
+    },
+    {
+      "path": "public/prospecting.js",
+      "size": 6645,
+      "sha256": "a47bde7b946fa616cf84be65ba36a19539437ae78ba0e6e204c3bdde6ce178f3"
+    },
+    {
+      "path": "public/proxima-atmospheres.js",
+      "size": 354,
+      "sha256": "6dc62a21c845422567876e9124cb7f9906488e048d0e5d24fb159fc715161479"
+    },
+    {
+      "path": "public/rain-shelter.js",
+      "size": 1400,
+      "sha256": "94b49a6985a22144fef7d9718850603c285100951bef24f5d6e5f83e6fcafe89"
+    },
+    {
+      "path": "public/reference-hud.js",
+      "size": 4271,
+      "sha256": "e59d041d63039ffabc9214b12e72415a4bf420bd782fedf97fc24a1221460983"
+    },
+    {
+      "path": "public/reference-ui.css",
+      "size": 56654,
+      "sha256": "9791843796e47bc312a8a206fcd611b90f5c594d0cbc78af5a710a4b4e201f1d"
+    },
+    {
+      "path": "public/roblox-texture-assets.js",
+      "size": 13271,
+      "sha256": "c6975455e1c0e63414e3e21b8fe1e55b33066830fbc3adb05e326397f08a9951"
+    },
+    {
+      "path": "public/settlements.js",
+      "size": 3164,
+      "sha256": "b7201c2698980952038263eeb4f4acbde337be3f1aa5a1379c5a8eba06d50d3b"
+    },
+    {
+      "path": "public/ship-rotation.js",
+      "size": 707,
+      "sha256": "48ce9c7353854b02f41e8145c7d7f7e8f33fe4361dd1b7e798681f0adeeaa9ab"
+    },
+    {
+      "path": "public/ship-weather-mask.js",
+      "size": 2000,
+      "sha256": "43bcd0829ef2400041996119532ec86e631eb4a3753d9005aa4f3a47b5a218e0"
+    },
+    {
+      "path": "public/sky-profiles.js",
+      "size": 1265,
+      "sha256": "4ffdbb521553f043bfa4bbc6072bd409cffcf690c266ee163ede1488f67faae8"
+    },
+    {
+      "path": "public/sound.js",
+      "size": 4814,
+      "sha256": "3c2a76f4745abe9ef2e36b7c64016d3ba3b48870d3e08f85cf6a5e8bf363263f"
+    },
+    {
+      "path": "public/sounds/SOURCES.json",
+      "size": 3120,
+      "sha256": "64f3bb82ee115513f30dee4dd1951b081837880a6fccda7924051fd50738b622"
+    },
+    {
+      "path": "public/sounds/break.ogg",
+      "size": 7403,
+      "sha256": "b44b39a940e8948e74b9bd3776bff980df43cf220abdaf0d467dc4c43c0244a5"
+    },
+    {
+      "path": "public/sounds/countdown.ogg",
+      "size": 4497,
+      "sha256": "9d057b918024c787bbe6c00beed13a7ef72a3fa0c259add3cef36582792f4230"
+    },
+    {
+      "path": "public/sounds/delete.wav",
+      "size": 9746,
+      "sha256": "b8d882b7436877381c8ae7976bebccbea5823cff6c30018c562b214e7c43d4b2"
+    },
+    {
+      "path": "public/sounds/discover.ogg",
+      "size": 12111,
+      "sha256": "fd3e75e1de2f2fda90aceeacaeb0427ac8bddd3b07a6ce2a8f9ba923df3771f9"
+    },
+    {
+      "path": "public/sounds/equip.ogg",
+      "size": 5468,
+      "sha256": "aec0c31ea934a35936ae0d2ab8fac8123c93aa5647f935853a58dbaf90278b7a"
+    },
+    {
+      "path": "public/sounds/error.ogg",
+      "size": 7373,
+      "sha256": "46e67425d16339772e8d328fb36a49426c9467418686e11beeb71ff84b0f6433"
+    },
+    {
+      "path": "public/sounds/footstep.ogg",
+      "size": 6353,
+      "sha256": "b9524658b52a99a20590f8feefc103088637fd13ea8ec35811aee785e1f2f330"
+    },
+    {
+      "path": "public/sounds/hit.ogg",
+      "size": 7651,
+      "sha256": "33b5e6e37c6e9d54e07bf5a89b12c76e879f40c1ea83cdd82714df1d6f9fec6d"
+    },
+    {
+      "path": "public/sounds/impact-sounds-license.txt",
+      "size": 608,
+      "sha256": "b49aa9c56b04528b95913de13e506a0f7c5e807b9925db9bfef86af1f91120db"
+    },
+    {
+      "path": "public/sounds/interface-sounds-license.txt",
+      "size": 574,
+      "sha256": "f7966c773bbed0eca6a9c75081c44a178b38eae112724dbb5fdfbd4192d118a9"
+    },
+    {
+      "path": "public/sounds/jump-grass.wav",
+      "size": 5776,
+      "sha256": "9a0d04fa1d5e2cf7bc6ff5156fc9b84f43ab489f48d793ea4489ed6bdc76bebd"
+    },
+    {
+      "path": "public/sounds/jump-sand.wav",
+      "size": 5776,
+      "sha256": "d1c356c0a1741ac977a8c33f4ed9541a4f5c3b1fdc56b7a1e12fc81c52c89b5a"
+    },
+    {
+      "path": "public/sounds/jump-snow.wav",
+      "size": 10186,
+      "sha256": "3455c69ef5a3cfb9c306378a177c09f054d543f9dd1901c4982a48119e56657c"
+    },
+    {
+      "path": "public/sounds/jump-stone.wav",
+      "size": 5776,
+      "sha256": "eafdd155da3b8b838b0737b49b0e4572af2a906636b24779b081043d77af0966"
+    },
+    {
+      "path": "public/sounds/jump-water.wav",
+      "size": 11510,
+      "sha256": "ce38216b60d2bedb2a0c85ecf438ee50ba22132a80e9022bbfa360121e502b65"
+    },
+    {
+      "path": "public/sounds/jump-wood.wav",
+      "size": 5776,
+      "sha256": "7e9ce6772d91c673010fc2f7a8e5755692d75304408736f2e0856312ee238e04"
+    },
+    {
+      "path": "public/sounds/land-grass.wav",
+      "size": 12392,
+      "sha256": "3318220947a470cd5bdfa55b4d8f60e4b5a337f66e6099b89199bdeb6eabcba4"
+    },
+    {
+      "path": "public/sounds/land-sand.wav",
+      "size": 12392,
+      "sha256": "878dcd23d4136f0128ef366574850400cf6c8cc9ddb7fa2b04a7f2ac81388ee4"
+    },
+    {
+      "path": "public/sounds/land-snow.wav",
+      "size": 21212,
+      "sha256": "77d1521ff2d044c3be0146a1803182d63ed498fe7961f2dbecdf14e7e4d14bc6"
+    },
+    {
+      "path": "public/sounds/land-stone.wav",
+      "size": 12392,
+      "sha256": "20ba93eb7bb6cf46ac56b9fb5c91e2b73db101dec25db9dede098004641101b8"
+    },
+    {
+      "path": "public/sounds/land-water.wav",
+      "size": 27386,
+      "sha256": "73ae1d8f502c1a8134e2368eadd448ef43e95578b902f3c5ba02f7d3256440ac"
+    },
+    {
+      "path": "public/sounds/land-wood.wav",
+      "size": 12392,
+      "sha256": "9ecebc0fd2f5015b6c0e5ff14e03691eae856154151e8e93de1e62141bee9088"
+    },
+    {
+      "path": "public/sounds/land.ogg",
+      "size": 6570,
+      "sha256": "49e7ca88743fca974bb8676ea138b751cfd8f9033b5e7af8736c2a215d6edbc1"
+    },
+    {
+      "path": "public/sounds/launch.ogg",
+      "size": 201216,
+      "sha256": "0fdc474d93f209debf1fc4ea77765a669dcb7676db31b4d8a0a509685bccf374"
+    },
+    {
+      "path": "public/sounds/pickup.ogg",
+      "size": 8968,
+      "sha256": "063564703b6094d70718a3e787a55cc9141611e4ecd6b6637f8828f79b4a8c3a"
+    },
+    {
+      "path": "public/sounds/place.wav",
+      "size": 7100,
+      "sha256": "feb172bec823570ce10d8d8f4e93c75e0e9015af98b833d0191d2c87427f6295"
+    },
+    {
+      "path": "public/sounds/rain.ogg",
+      "size": 47997,
+      "sha256": "4a2d083924fcb14ceeb2d74952f1a11db838abbadc698130eafbc95221a8ced4"
+    },
+    {
+      "path": "public/sounds/sci-fi-sounds-license.txt",
+      "size": 571,
+      "sha256": "a9767b25c3533f69d03af136480efad08efba19a9f0d89616992b34c79fd6186"
+    },
+    {
+      "path": "public/sounds/sell.ogg",
+      "size": 9535,
+      "sha256": "3091bf0be0497f825769ee0733ca7bdc3bcd59bd6c6e8f2ba8f93d580ff38022"
+    },
+    {
+      "path": "public/sounds/step-grass.wav",
+      "size": 8422,
+      "sha256": "274d83fcd478436bc7f4a5550d8ee25151839ed76f2722efafc1ca2ce16727bf"
+    },
+    {
+      "path": "public/sounds/step-sand.wav",
+      "size": 8422,
+      "sha256": "f3e35fdbe2eab1eb5974262873f0cdb760128a061d2ae3e424eba0caf46ee790"
+    },
+    {
+      "path": "public/sounds/step-snow.wav",
+      "size": 14156,
+      "sha256": "ec4b88ee6a15bb04f8faa4d7ba3beb00dd1c5e95f4fa04d59d2f99e44ab02e27"
+    },
+    {
+      "path": "public/sounds/step-stone.wav",
+      "size": 8422,
+      "sha256": "1e6ea4015baa8f9433236b14a3473f8d511190e6e378bcd94e2fde0e5be7962d"
+    },
+    {
+      "path": "public/sounds/step-water.wav",
+      "size": 17684,
+      "sha256": "7515f248751210a8eb16d6c8253a278c0e230f37841e0ba3ae358bc313304910"
+    },
+    {
+      "path": "public/sounds/step-wood.wav",
+      "size": 8422,
+      "sha256": "501fe039b56c4a37d12a9263aae9826e19a06a077108bbe583b9d53ba1446c7a"
+    },
+    {
+      "path": "public/sounds/swing.ogg",
+      "size": 6570,
+      "sha256": "49e7ca88743fca974bb8676ea138b751cfd8f9033b5e7af8736c2a215d6edbc1"
+    },
+    {
+      "path": "public/sounds/thunder.ogg",
+      "size": 25929,
+      "sha256": "94d05c4079abbb03d16ff707da3303d608142be39a6d2a7a6970901e508ecdb0"
+    },
+    {
+      "path": "public/sounds/tnt-explosion.wav",
+      "size": 57374,
+      "sha256": "144f498f48dba9d592cd8f907f01859f8075cb359b2f10b8d8f5b7a654c68ea0"
+    },
+    {
+      "path": "public/sounds/tnt-fuse.wav",
+      "size": 176444,
+      "sha256": "2d63da7db5bd821938b1bc0f67bff848db9df2c06fbad5a33feeda1b16d47337"
+    },
+    {
+      "path": "public/sounds/tree-cut.ogg",
+      "size": 7112,
+      "sha256": "abb1442e60564b8a979ef2be4fc6b05ded1a3ffc9d8e44907698a4487df2a031"
+    },
+    {
+      "path": "public/sounds/tree-fall.ogg",
+      "size": 8142,
+      "sha256": "1a79c5a97acd9ca278617ebf0169380a5842a9382e66d851595415ca1d91a8ea"
+    },
+    {
+      "path": "public/sounds/ui.ogg",
+      "size": 4876,
+      "sha256": "ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9"
+    },
+    {
+      "path": "public/sounds/warp.ogg",
+      "size": 25672,
+      "sha256": "c2916f2a062c8ddd1aca2826d134fe90847037db31342726ffb0f9097afe339c"
+    },
+    {
+      "path": "public/source-manifest.json",
+      "size": 8711,
+      "sha256": "2af71d032de8bbfab2b78c9a2c32d31b89b59cf747d37619053ac4c4d91b0805"
+    },
+    {
+      "path": "public/speed-control.js",
+      "size": 1714,
+      "sha256": "26e7c36d0eaeaba28c67e0f46d1bbcd26b93a3b5e6d3db783d5d4f20f9d9f1c1"
+    },
+    {
+      "path": "public/star-colors.js",
+      "size": 1021,
+      "sha256": "6730b47223b28845415b4f9fa7852def2eae4096b5e8e4afe1c41dbf8a952693"
+    },
+    {
+      "path": "public/stellar-glare.js",
+      "size": 6269,
+      "sha256": "440179aa5a0884671bd67ae9f0e571428803557194ee5c3b21c5480ccea4e448"
+    },
+    {
+      "path": "public/style.css",
+      "size": 61657,
+      "sha256": "c07601efedded04191e34fb052e723a5a02f78adfd6cebed0b7d6525f421ad48"
+    },
+    {
+      "path": "public/subject-camera.js",
+      "size": 1210,
+      "sha256": "121801855018296ef7bf2e39fe99f08a45d25892eb1f5eebb22e85d70f096c2d"
+    },
+    {
+      "path": "public/surface-frame.js",
+      "size": 520,
+      "sha256": "94cf5dabafe3b0b4cd0d21a9a3ea649b457d0fbf73286713c321dfa9ad1127a7"
+    },
+    {
+      "path": "public/surface-layout.js",
+      "size": 781,
+      "sha256": "060d6d6d48ec93a9a1e0bac78ab2e5f2ba3785bde4aa2a205cb8cef5734e3ab1"
+    },
+    {
+      "path": "public/surface-palette.js",
+      "size": 1470,
+      "sha256": "4ae8aec63ff41049c9bcf199a4af66f5312803254b1012664f25a6a425eb4ebf"
+    },
+    {
+      "path": "public/surface-roads.js",
+      "size": 2609,
+      "sha256": "870ae1fb02d0bf97b7b72e3015805a61eec5ce47bebc6b0d3f07cf4d64181495"
+    },
+    {
+      "path": "public/surface-sky.js",
+      "size": 3459,
+      "sha256": "d596dd0462f075e6fe9e25b95de3626d56effaa1e40099f4e54ad25676c3e120"
+    },
+    {
+      "path": "public/surface-streaming.js",
+      "size": 8263,
+      "sha256": "e695176cbdd4d08c8aae170eb3e3bf63d2f6ce9bfed502b7adddc21f227fb63a"
+    },
+    {
+      "path": "public/surface-view.js",
+      "size": 11681,
+      "sha256": "eed7014cad948e6bd48d8e5d7851513fcb5b78399b548a1700eda028718e9666"
+    },
+    {
+      "path": "public/surface.js",
+      "size": 9436,
+      "sha256": "c973f88a5c028a57be7c3ad9774fb8173f97edb53e43851206a9d77a59e9f205"
+    },
+    {
+      "path": "public/terrain.js",
+      "size": 6367,
+      "sha256": "f13358c2927efcdc9161af07ef54406095d17a1e9ecaa8ef2029f4dee39256e0"
+    },
+    {
+      "path": "public/texture-geometry.js",
+      "size": 1662,
+      "sha256": "13756bbd03f0d5004917da0f15b8a29c5ba0238142677beae77c3735a9169897"
+    },
+    {
+      "path": "public/textures.js",
+      "size": 1699,
+      "sha256": "247d607262b9f77bc31ba10a3928bf40367aeba8677948053d6b9bfa31f95bb4"
+    },
+    {
+      "path": "public/textures/EXTENDED_SOURCES.json",
+      "size": 1176,
+      "sha256": "89c28024739f6a61bf17c671db004625ec16cf59a1625fc521964df2f4ffc229"
+    },
+    {
+      "path": "public/textures/MOON_SOURCES.json",
+      "size": 4364,
+      "sha256": "c63855dd6aa8b80abd2bd7706f96caa996d9d25529ef74af14087ad9377bfd10"
+    },
+    {
+      "path": "public/textures/SBS_LICENSE.txt",
+      "size": 561,
+      "sha256": "dd5c5fe1e6bfe56fe0824ad22a21dc8a09e1771605867f9c94e7bc34c29aef94"
+    },
+    {
+      "path": "public/textures/ariel.jpg",
+      "size": 51290,
+      "sha256": "88e21bc6094ddd3821a58dd9552d5d8496ca7b3e69925ad5085cd561e8500c16"
+    },
+    {
+      "path": "public/textures/callisto.jpg",
+      "size": 216624,
+      "sha256": "9659f85b76d5cb90cb709b32f3282f3ca94199be4d8b3b159d7d373a1887551c"
+    },
+    {
+      "path": "public/textures/ceres.jpg",
+      "size": 225984,
+      "sha256": "9987d958b22867f2ad5dd4896b6f6a07e2b951fbbae90a890e077045cc1f0bf6"
+    },
+    {
+      "path": "public/textures/charon.jpg",
+      "size": 59441,
+      "sha256": "0a1e915d0cb8fc01d1e85ae6b71e10d8c62d72d286ce4e6589b223c6b65d083f"
+    },
+    {
+      "path": "public/textures/deimos.jpg",
+      "size": 71976,
+      "sha256": "e8902c5b34e634c5146e5d8d2bf352bb5f45181c715ed15644edb5f009826ed6"
+    },
+    {
+      "path": "public/textures/dione.jpg",
+      "size": 120516,
+      "sha256": "42984a39ab5839ea20351d8ec9d7f9d00091c0c8f9f24683644cea5db434ef43"
+    },
+    {
+      "path": "public/textures/earth.jpg",
+      "size": 149296,
+      "sha256": "d053ecfedfe8c1ce97dc7ee8e08cde219127a1966ad66f781c45685a8bd197a9"
+    },
+    {
+      "path": "public/textures/enceladus.jpg",
+      "size": 101190,
+      "sha256": "224b4510a75dc6554cfb0802507f9f1bb959c52848b8ec9286d4253d417d6dd2"
+    },
+    {
+      "path": "public/textures/europa.jpg",
+      "size": 135970,
+      "sha256": "03164d293c46b3eff16678c20dfb73337db8a404e2d83f057bc320b95484b54f"
+    },
+    {
+      "path": "public/textures/exo5.png",
+      "size": 1156137,
+      "sha256": "187b6aa9cff295b5717427a0cafbdda3bc6a3090863f45b11f52a510ceee4881"
+    },
+    {
+      "path": "public/textures/exo6.png",
+      "size": 1374795,
+      "sha256": "c87db368929dd268be5fd4e9bc4b638c1c7e8eb2fb14befb1479890d98048baa"
+    },
+    {
+      "path": "public/textures/exo7.png",
+      "size": 1163697,
+      "sha256": "51b72a7576c1474161678c26c54c6c492a9608d13b8afc04b9a07d9bb2121cf7"
+    },
+    {
+      "path": "public/textures/ganymede.jpg",
+      "size": 183557,
+      "sha256": "626302a877528d7eab74f4229f6c7249fffc91be8e28e8edc040433aca98cc6d"
+    },
+    {
+      "path": "public/textures/iapetus.jpg",
+      "size": 64670,
+      "sha256": "3b5054f41e9cec5d220655260930c9d31a1ec44fa43b82f2d105f3ee4daac26b"
+    },
+    {
+      "path": "public/textures/io.jpg",
+      "size": 113001,
+      "sha256": "71c574f74555552fa4bec70931e954c6139d3489df825c9edf40213d49cba132"
+    },
+    {
+      "path": "public/textures/jupiter.jpg",
+      "size": 498976,
+      "sha256": "b0f04d005350252636b0e3396fc592548cbd9e9126b269d32d5c6abd4b0e4f2b"
+    },
+    {
+      "path": "public/textures/mars.jpg",
+      "size": 750547,
+      "sha256": "2d187f3e77a98eaa8cea5f4cc722f633c122ef170b9e94ace6b5fb6cbc3f8e01"
+    },
+    {
+      "path": "public/textures/mercury.jpg",
+      "size": 872555,
+      "sha256": "5a5c80607f643496bac9a631e71957def35ed788895f18b678ac849c2b38e48a"
+    },
+    {
+      "path": "public/textures/milky_way.jpg",
+      "size": 2552801,
+      "sha256": "5eaf41d300e11d606e6b74c8d6e29a7c31b1bd510b04f4629a0d854c1209e34a"
+    },
+    {
+      "path": "public/textures/milky_way_mobile.jpg",
+      "size": 503966,
+      "sha256": "4d39dc6d051f30023472d49b56bb1d3b87874e0cd7c545bf4a56e115c5d3b7fd"
+    },
+    {
+      "path": "public/textures/mimas.jpg",
+      "size": 111227,
+      "sha256": "c854a36beffc806bf1b86700f427c37d19f20f74e8e6275be2b4568e6c175a39"
+    },
+    {
+      "path": "public/textures/miranda.jpg",
+      "size": 73419,
+      "sha256": "de6fab3acb9a68bcbe59b3ac0c5b985b63c5b5bf6b75b142f4749cb6eadfca36"
+    },
+    {
+      "path": "public/textures/moon.jpg",
+      "size": 265744,
+      "sha256": "3cd2c00e03f592c1e91952401c60a702272560d5807d007fcaeab9b30df677b0"
+    },
+    {
+      "path": "public/textures/neptune.jpg",
+      "size": 241580,
+      "sha256": "cb42ea82709741d28b0af44d8b283cbc6dbd0c521a7f0e1e1e010ade00977df6"
+    },
+    {
+      "path": "public/textures/oberon.jpg",
+      "size": 51214,
+      "sha256": "ed29842e1b1fb96ee9626a62d4ee7bbf53756997ef33b1edda2dbead43383460"
+    },
+    {
+      "path": "public/textures/phobos.jpg",
+      "size": 138689,
+      "sha256": "84eb21c08626a0558d1e88ccb666bd1e914606146423f9ebcf6c09953d7543af"
+    },
+    {
+      "path": "public/textures/pluto.jpg",
+      "size": 100144,
+      "sha256": "efb1de554d7c5a984dec5ff96b9346e6f81c0e7324f4a48a57b58c9c87a4dcc7"
+    },
+    {
+      "path": "public/textures/rhea.jpg",
+      "size": 99961,
+      "sha256": "8dd523b908012edfcb52f03e37d54bc1358f75bd1e1c04cf6223a71f2c82624c"
+    },
+    {
+      "path": "public/textures/roblox/actaea.png",
+      "size": 59016,
+      "sha256": "3c8b70ad0d91f0e1f7a9363bbaabad1a1fb9f7058c22afdf01cd3a687bfe60a4"
+    },
+    {
+      "path": "public/textures/roblox/ariel.png",
+      "size": 44051,
+      "sha256": "e8fb0ca608aa23b3818a6df485018ff4193294d4fbc07eea17a3e8a2619376d9"
+    },
+    {
+      "path": "public/textures/roblox/callisto.png",
+      "size": 168281,
+      "sha256": "97a71af1bd691d2a7b385be756579a393f9a0665b6f5bca7a8150d6fc832f9b9"
+    },
+    {
+      "path": "public/textures/roblox/ceres.png",
+      "size": 177097,
+      "sha256": "ff19c174aaf1a512f2ce64eebc354d5f62b162062eae2fd4992fd9ef472efd65"
+    },
+    {
+      "path": "public/textures/roblox/charon.png",
+      "size": 110365,
+      "sha256": "289774b62a748b498b585bb0936b07f028acabebec2920dd04bc36699c4722a4"
+    },
+    {
+      "path": "public/textures/roblox/dione.png",
+      "size": 61573,
+      "sha256": "13b92010dd16363dac9894b66368b275d942e0ec1f2543a9aa2bc6e013e111ef"
+    },
+    {
+      "path": "public/textures/roblox/dysnomia.png",
+      "size": 60767,
+      "sha256": "702b57fd3fad7a3b672ab534d40fa4dd766defdd79c400bb6edb60d716c36a92"
+    },
+    {
+      "path": "public/textures/roblox/earth.png",
+      "size": 175654,
+      "sha256": "d0ff621f68695f161635c5479d35debbf041b2ecbd871e3c16207d04f642ba0a"
+    },
+    {
+      "path": "public/textures/roblox/enceladus.png",
+      "size": 103693,
+      "sha256": "14cf7b026d8dae8fa0b71d56777250530a885199bb3daee72fd411d2282a7961"
+    },
+    {
+      "path": "public/textures/roblox/eris.png",
+      "size": 169832,
+      "sha256": "fbaac88f18aa9f8911fc0813a0c45e5e429f7dd06a2f9700060a78e161966ea7"
+    },
+    {
+      "path": "public/textures/roblox/europa.png",
+      "size": 138505,
+      "sha256": "dbc4e858502e2e6815b152b4197b7bc9dfd5b0c290814b475ae9d9afd0b83161"
+    },
+    {
+      "path": "public/textures/roblox/ganymede.png",
+      "size": 152541,
+      "sha256": "98430f43a377b1c3498057907e6d270743f70ca99035d06df49ead19a4338bdc"
+    },
+    {
+      "path": "public/textures/roblox/gonggong.png",
+      "size": 153701,
+      "sha256": "65b5a82703dbb851bdef52634ed55a9d23738b903e280cf6af685d0cfb61c360"
+    },
+    {
+      "path": "public/textures/roblox/iapetus.png",
+      "size": 136602,
+      "sha256": "7b0f97d6c9e7e4f36180b955815fd80431308e7c6bb380cbe99c4c81a0e45ebe"
+    },
+    {
+      "path": "public/textures/roblox/ilmarë.png",
+      "size": 154213,
+      "sha256": "e13b026f026a9aaab1e4e5ac7b601fcb9eea649f82a8b3f5cb85e7bd6d33c577"
+    },
+    {
+      "path": "public/textures/roblox/io.png",
+      "size": 155919,
+      "sha256": "690f9505563c56aa7a86560a45db0956e93ac562d7ec4eafd28c49dcdf735faa"
+    },
+    {
+      "path": "public/textures/roblox/jupiter.png",
+      "size": 128634,
+      "sha256": "c76ff543bdced9c9d14e443f7ca850e87a21271b7e913b423176fd783eee2972"
+    },
+    {
+      "path": "public/textures/roblox/makemake.png",
+      "size": 181205,
+      "sha256": "1a6e4b34e65f5063120d050bbd6328ca39b16e0a9ce1f4bfd0ba9ee8ca8ab00c"
+    },
+    {
+      "path": "public/textures/roblox/mars.png",
+      "size": 140014,
+      "sha256": "f4b10d51c1aba06f859add97c57a7af5c41b76e50979f56d8b434561bece07dc"
+    },
+    {
+      "path": "public/textures/roblox/mercury.png",
+      "size": 122641,
+      "sha256": "4906aeb5c5cf30e6d558f004d6219286c8fd5ca8e4a19c1079ba14ba3c827dfa"
+    },
+    {
+      "path": "public/textures/roblox/mimas.png",
+      "size": 223660,
+      "sha256": "47cd59e8e738f5ccf519bf6680823a200fcc729287fd8723cd0292803140e1a3"
+    },
+    {
+      "path": "public/textures/roblox/miranda.png",
+      "size": 97267,
+      "sha256": "d9699d14e6677a06c27b6addc51c783a390b79a4892f14483ba06f527bc58664"
+    },
+    {
+      "path": "public/textures/roblox/moon.png",
+      "size": 127495,
+      "sha256": "73f150355124264e5dd568cc552ff32916a3bc60d204c02fb20d5bd4640b824b"
+    },
+    {
+      "path": "public/textures/roblox/neptune.png",
+      "size": 59933,
+      "sha256": "746f87b9eb4a6e409560dfe0c58046ae97c829f5fd83608cd0bc97f511c5eae3"
+    },
+    {
+      "path": "public/textures/roblox/oberon.png",
+      "size": 67838,
+      "sha256": "cb43dd4c027d5470f99731eecad76ebefbe0a2c5a26d3b40c4ef356b4fb44b18"
+    },
+    {
+      "path": "public/textures/roblox/orcus.png",
+      "size": 98170,
+      "sha256": "00ca9482df27a29677cac5bf2cc652e8a79f164183979cba50897585568bfb0d"
+    },
+    {
+      "path": "public/textures/roblox/planet-x.png",
+      "size": 71893,
+      "sha256": "bb1912d070793bd4bc1b95a6d19ba93b483d26f274a8ff62c45ce821f7579d7c"
+    },
+    {
+      "path": "public/textures/roblox/pluto.png",
+      "size": 162943,
+      "sha256": "ebe19d117604e8c0b7069fd94bf4f22c44df0891c478dd111c3a318dcc689fbf"
+    },
+    {
+      "path": "public/textures/roblox/proxima-b.png",
+      "size": 159380,
+      "sha256": "46d39d96dfc44034b7966239771c16a4a72a972b4ed32907db97d9127d4b4bed"
+    },
+    {
+      "path": "public/textures/roblox/proxima-c.png",
+      "size": 66120,
+      "sha256": "16bfe4395e5931a7dc84d0c5198f9910b38adf918b20fd360800c8a1fdb6bfab"
+    },
+    {
+      "path": "public/textures/roblox/proxima-d.png",
+      "size": 116127,
+      "sha256": "ce73aefe6792ec8d43032a63d01ee4a66b253d9baf17bc206c0ebd8f2057172d"
+    },
+    {
+      "path": "public/textures/roblox/quaoar.png",
+      "size": 95331,
+      "sha256": "8facbcd9bbb113f27b37232100cf140af32b09914376a5374de8076fe481f6b9"
+    },
+    {
+      "path": "public/textures/roblox/rhea.png",
+      "size": 128541,
+      "sha256": "7c92684c4aede9e88bf7a0ed7c66f970c96b57a68f3426bff48011a0ef5f6eed"
+    },
+    {
+      "path": "public/textures/roblox/salacia.png",
+      "size": 30067,
+      "sha256": "52978ec428d8a5990916ca84ae4d77a56141d492b739ccc262fe864c025dae0b"
+    },
+    {
+      "path": "public/textures/roblox/saturn.png",
+      "size": 73422,
+      "sha256": "decf1eff5baa627dcfcc9c7a1f3bc16317a75682efe0bd5cae76f2d16e446c8f"
+    },
+    {
+      "path": "public/textures/roblox/sedna.png",
+      "size": 112250,
+      "sha256": "075edb353928c1ef98d7a51192d9107c4ad29554136eba523cfa8b6c6c5ea724"
+    },
+    {
+      "path": "public/textures/roblox/tethys.png",
+      "size": 61575,
+      "sha256": "345dcab69ad85f29e2a76efb994aadc0563c27da7283201f011d943db6777565"
+    },
+    {
+      "path": "public/textures/roblox/titan.png",
+      "size": 127475,
+      "sha256": "374aaa8c6023f106a3e63939dc0a1d409c0b7a8cbb0728d41076c4230c21947d"
+    },
+    {
+      "path": "public/textures/roblox/titania.png",
+      "size": 149423,
+      "sha256": "4b728edebda8d1fc1e685cace064737e213fc4fcb19441fcb592caf493bf5665"
+    },
+    {
+      "path": "public/textures/roblox/triton.png",
+      "size": 143190,
+      "sha256": "820d308974d59169412e8f348f16bc93c3fa46392b9b8f5132d5bfc0873ba3f9"
+    },
+    {
+      "path": "public/textures/roblox/umbriel.png",
+      "size": 35853,
+      "sha256": "8bbde54ab079083b402437ece8ba7843ecb5bca80bb8aeed5c2d0c770d738ffb"
+    },
+    {
+      "path": "public/textures/roblox/uranus.png",
+      "size": 65497,
+      "sha256": "da4393411da25cd6f43a0a29cede53cf76cd87633c3c8d1bc950bbf36a968134"
+    },
+    {
+      "path": "public/textures/roblox/vanth.png",
+      "size": 106569,
+      "sha256": "b8aac28c07a45a1abb86a5a90234393a9e50481307453f9fa8f27bf498b862eb"
+    },
+    {
+      "path": "public/textures/roblox/varda.png",
+      "size": 182694,
+      "sha256": "799891551e2ba9fa876309902d5155f6d0572287ab723e4e4da893eb99303f02"
+    },
+    {
+      "path": "public/textures/roblox/venus.png",
+      "size": 156119,
+      "sha256": "62c6cda4c3891a2667b4f81cf42379240e157883ed1d3e298e6f09bbb7f3ce5a"
+    },
+    {
+      "path": "public/textures/roblox/xiangliu.png",
+      "size": 117944,
+      "sha256": "c23d7429fad3d916288998873d3775ae09fbba69ba58aa31e08ebc2e0d88ad1c"
+    },
+    {
+      "path": "public/textures/saturn.jpg",
+      "size": 199916,
+      "sha256": "54a900ca9bf7ab62e70f862852759abdf342e6d6436a95a2fe9ebdb6bcd3bbac"
+    },
+    {
+      "path": "public/textures/stars_milky_way.jpg",
+      "size": 65420,
+      "sha256": "9c9877e74d7ac454e3425b88339e09374b4321eddb615863df12b59dafcc499f"
+    },
+    {
+      "path": "public/textures/sun.jpg",
+      "size": 144982,
+      "sha256": "ca3c9b639c97505ff9cd081e94608a75768211959821546c309527c2cb5827cd"
+    },
+    {
+      "path": "public/textures/tethys.jpg",
+      "size": 150474,
+      "sha256": "6510470c66bc47f3f50c4dad924c0546acaedfeefe380c101af171e78f37e5b8"
+    },
+    {
+      "path": "public/textures/titan.jpg",
+      "size": 104728,
+      "sha256": "cc01986df10ec0a15295c748221b7591909dbb54d1cc224f689842acf5cfd3ef"
+    },
+    {
+      "path": "public/textures/titania.jpg",
+      "size": 64502,
+      "sha256": "cde4432380f44d2cda56c0059ae8ad44b7029bc930aefadf2cbac91379dd41e7"
+    },
+    {
+      "path": "public/textures/triton.jpg",
+      "size": 58050,
+      "sha256": "45f107996448c2236ede95624bfb672b56f0db843f084ed61a197454050b3214"
+    },
+    {
+      "path": "public/textures/umbriel.jpg",
+      "size": 37653,
+      "sha256": "fbca608955c27872c6276aa17c35b9ac7c81040614b1849b864e9ffd08e943f1"
+    },
+    {
+      "path": "public/textures/uranus.jpg",
+      "size": 77751,
+      "sha256": "d15239d46f82d3ea13d2b260b5b29b2a382f42f2916dae0694d0387b1204a09d"
+    },
+    {
+      "path": "public/textures/venus.jpg",
+      "size": 885075,
+      "sha256": "dbe5db1c794a8ab4cbf7dd6bf193540c400fc833ce1e6cc399318aa68026278b"
+    },
+    {
+      "path": "public/tool-models.js",
+      "size": 1558,
+      "sha256": "105bd651cbdea7f152b23769b98f905ff52f054944c926c976bec42ae326e278"
+    },
+    {
+      "path": "public/touch-buttons.js",
+      "size": 2337,
+      "sha256": "7eda2b4df7c65d44884dfbd0e47b2e1540cd0029d3cf299ca929d3fbad5eab84"
+    },
+    {
+      "path": "public/trade-ui.js",
+      "size": 2479,
+      "sha256": "c9952df567e343f23dd27378e946b589cc25c2c78964e6609f3504ad035f0fc5"
+    },
+    {
+      "path": "public/tree-data.js",
+      "size": 1571,
+      "sha256": "94a013f68cff59b7b8b695713549420bfb6209383741543f6566b6a9a9357f08"
+    },
+    {
+      "path": "public/vendor/three.module.js",
+      "size": 1314681,
+      "sha256": "ce1fa418de16a19495a9f72495580e3015d7745c296d3ce0485897f902ddedfb"
+    },
+    {
+      "path": "public/visuals.js",
+      "size": 10623,
+      "sha256": "7330dd729d1beffa512ec272d6ae987c3b41224e24c4d416289edc084c9fe5ec"
+    },
+    {
+      "path": "public/warp-hud.js",
+      "size": 726,
+      "sha256": "20b67f004f84ae68e0ffb0600cea71612179f2696b0331cc895fc1e7bd221e52"
+    },
+    {
+      "path": "public/warp-pricing.js",
+      "size": 1290,
+      "sha256": "761b6a6fcc54884ad3982c1aae68b6b78b738f330bf2280613300b256258d71a"
+    },
+    {
+      "path": "public/water-reflection.js",
+      "size": 2763,
+      "sha256": "e3d072c059295bdc8e6a68102decc60ad56d886692c083c5b53517781b074acc"
+    },
+    {
+      "path": "public/weather-patch-clip.js",
+      "size": 1032,
+      "sha256": "9ab81b2a430c5b8c6beafa4dcedb422a3ef26ca76593af5b955346db467cb76e"
+    },
+    {
+      "path": "public/weather-precipitation.js",
+      "size": 6980,
+      "sha256": "49f715d855675f317c30bbd6586399d112146998db83ab789f6afe74f9aa70b6"
+    },
+    {
+      "path": "public/weather-state.js",
+      "size": 2307,
+      "sha256": "6fcb24b173078a87db53acc96ea47de5737567e5e1c9645328fed30e8887a4b7"
+    },
+    {
+      "path": "public/wood-models.js",
+      "size": 2264,
+      "sha256": "92a8aeccd3fe52f6ef9d8ba7d012ada25fbd32d26fcb9bde07a8327f302c2a16"
+    },
+    {
+      "path": "public/world-precipitation.js",
+      "size": 3245,
+      "sha256": "a9b546799c30e715d32762c00686fcb341d6eef5c54f28c38e9befdc21262d4c"
+    },
+    {
+      "path": "scripts/build-verified.sh",
+      "size": 661,
+      "sha256": "2ae5329ac860076070c9217a43106a15cb5ecf907a0f7baeb9ef903f76b53c68"
+    },
+    {
+      "path": "scripts/connector-preview/connector-preview-session.mjs",
+      "size": 6855,
+      "sha256": "57224ad185a25115a14fccc68d3217e55b199260c3dd98a2c807beffec1a0a9b"
+    },
+    {
+      "path": "scripts/connector-preview/host-binding.mjs",
+      "size": 7793,
+      "sha256": "9e44ab6864133a5c82f834a5904ebb7d6104cb783c24efba3c0fe1a161182cea"
+    },
+    {
+      "path": "scripts/connector-preview/protocol.mjs",
+      "size": 1781,
+      "sha256": "111e062ebf08d3f180130f5bc3dcb3c1414c1d7be3c032c9d675a61c0c7513a8"
+    },
+    {
+      "path": "scripts/connector-preview/worker.mjs",
+      "size": 618,
+      "sha256": "bd9c98fc68f29d975fe10508dfc9029bb681dc5789a62861d5c938bdea2064bb"
+    },
+    {
+      "path": "scripts/execution-profile.mjs",
+      "size": 624,
+      "sha256": "2e71116f4d2b70cff8bb70436f8dd5c709ec7ff62893424530f404e0193d3630"
+    },
+    {
+      "path": "scripts/generate-gameplay-sounds.py",
+      "size": 3082,
+      "sha256": "94efbf265700d4e3546a68289f3c000eb722ca38c0e3e2a08c0e66fadb3678da"
+    },
+    {
+      "path": "scripts/generate-wood-sounds.py",
+      "size": 1277,
+      "sha256": "0653f5c28c4f5b5273d179b7a9e73e7c2ca6a5a7433084e46e95fcafc004ba05"
+    },
+    {
+      "path": "scripts/install-ci.mjs",
+      "size": 1685,
+      "sha256": "4a5a92d60a08d0ba54effd8373da2da06284312c55b767287c68a0bec7200da7"
+    },
+    {
+      "path": "scripts/install-ci.sh",
+      "size": 6783,
+      "sha256": "10d8764a61be50351dc3496e13588270de7956f0aa5f1189c49cabb2d89fe5c0"
+    },
+    {
+      "path": "scripts/install-pnpm.sh",
+      "size": 9015,
+      "sha256": "a684c02c2b493dfbf262a66252a5cd36f81ca995a4024761728662ae63aa40c0"
+    },
+    {
+      "path": "scripts/npm-install.mjs",
+      "size": 7025,
+      "sha256": "9715c6a32d1d4a0289ef6376a0e819c3b6a6416b8a9877733d9fb4339ce626b6"
+    },
+    {
+      "path": "scripts/pnpm-install.mjs",
+      "size": 10633,
+      "sha256": "a83164e344c1947053def83b546be8115deaa827314bbaead7afe6b6451c5cdf"
+    },
+    {
+      "path": "scripts/run-framework.mjs",
+      "size": 993,
+      "sha256": "9bf9f41a29314cabe0238b8e9c540ec3f7b5a6adafc7c8fb6c3940722d061dca"
+    },
+    {
+      "path": "scripts/sites-env.mjs",
+      "size": 522,
+      "sha256": "21d7bde6acb9f716287e652c1b0e43ae4803d79be367ca2192fcba14740b5338"
+    },
+    {
+      "path": "scripts/sites-env.sh",
+      "size": 1600,
+      "sha256": "d18af7b222db748c9de257d5955b9d7f77ec350dab6321f114f0bc44c20388ac"
+    },
+    {
+      "path": "scripts/tool-environment.mjs",
+      "size": 791,
+      "sha256": "6da99286e0eb7905595ca851e68983bedf94a0f93814819d61f2b1f3a0342ba2"
+    },
+    {
+      "path": "scripts/vite/connector-preview-plugin.mjs",
+      "size": 7211,
+      "sha256": "a6a9fe2086e302f94a3f91e3c1a68a45bb3aa07d4a79faf01b14732191eb4e80"
+    },
+    {
+      "path": "scripts/vite/sites-vite-plugin.LICENSE",
+      "size": 1063,
+      "sha256": "7de1e115d165f176e68f962acdb809b5ab8d8ae78d3981e0701392b2ac50c713"
+    },
+    {
+      "path": "scripts/vite/sites-vite-plugin.ts",
+      "size": 7185,
+      "sha256": "07af20e7097d9ed1d76f7c446d02997550b8fc5ca89668b249e25eabd62c6834"
+    },
+    {
+      "path": "server/debug-service.mjs",
+      "size": 8069,
+      "sha256": "e82e35d390182d94e3e74f3d7e44a232cd08542328a712372c1c10c2d3760fd2"
+    },
+    {
+      "path": "tests/audio-fakes.mjs",
+      "size": 1115,
+      "sha256": "343f8ffeb36bd50911a22618dc5da278edcca91b425fe0509ff0e25c754a21af"
+    },
+    {
+      "path": "tests/block-jump.mjs",
+      "size": 1928,
+      "sha256": "1082d666bddc4dc247cc4edd30bcb6686b58c0cb745fc7ce69aaaa3706f6d975"
+    },
+    {
+      "path": "tests/body-labels.mjs",
+      "size": 2072,
+      "sha256": "f6022c06359f80d65d13b5529cc4d87d669b29a270b83ea6b1dd0a3997c85460"
+    },
+    {
+      "path": "tests/building-expansion.mjs",
+      "size": 4051,
+      "sha256": "74d84f2d1b69ea00b63fa781f04ff1f8fb7c239c58ab69fad832a9dbb1f83e91"
+    },
+    {
+      "path": "tests/building-performance.mjs",
+      "size": 4243,
+      "sha256": "a5567d5a2ae879db63c75a780b4666866f0bcff2a5be5572c6e2df6f82adc513"
+    },
+    {
+      "path": "tests/cockpit-labels.mjs",
+      "size": 1896,
+      "sha256": "748dbdcc816b37b482e515fdae0d78ca996f4bf36688a3660d36d82f1f18cb8e"
+    },
+    {
+      "path": "tests/concrete-update.mjs",
+      "size": 2139,
+      "sha256": "68f5d3c31c61e6c680cb6955f1a2cdc2c3e9bcb1cceec2391f014ff346a35183"
+    },
+    {
+      "path": "tests/crafting-streaming.mjs",
+      "size": 3432,
+      "sha256": "d8226b2f99e20e33a2082a70564ab78d8204c6bb6ce29e6593b558cf7089f359"
+    },
+    {
+      "path": "tests/crew.mjs",
+      "size": 1482,
+      "sha256": "b8e3ed3c4da7b41cd40e9fe6a137d840e7d5628f047b3625df4bd8bb4ce32f67"
+    },
+    {
+      "path": "tests/debug-menu.mjs",
+      "size": 4666,
+      "sha256": "c69ba323ffdb6cda94cc8e17c090c29ea44a633c806dd1daedf11c93df8f4bab"
+    },
+    {
+      "path": "tests/debug-service.mjs",
+      "size": 4025,
+      "sha256": "73567b20d5bb6073d322552106bf56fc5f746470811300c008e7c72ba10917f9"
+    },
+    {
+      "path": "tests/doors-settings.mjs",
+      "size": 3705,
+      "sha256": "59138e580c22f5fdc9867e1e5903d4cec4ba600f6736dccdf46cde9dc1ff2704"
+    },
+    {
+      "path": "tests/earth-environment.mjs",
+      "size": 2955,
+      "sha256": "e193e94609fba355c503e9f0d632819c9b5419b583b03f93c3eb2d2ce4bcbc2e"
+    },
+    {
+      "path": "tests/economy.mjs",
+      "size": 5269,
+      "sha256": "df5416e2ee4895bbf2295c94eeacf946497fa08799074e1eabc94898eecbc2c2"
+    },
+    {
+      "path": "tests/flight-menu-update.mjs",
+      "size": 4169,
+      "sha256": "903a0176ba1c6e7bd750de4435ed3e88f8a6b93219612f7643a16346f7e63616"
+    },
+    {
+      "path": "tests/flight-upgrade.mjs",
+      "size": 2709,
+      "sha256": "473fbd6161e85d0583e1336c6dfdb632caac46ad8a0179caf89ffeb43c6e863c"
+    },
+    {
+      "path": "tests/flight.mjs",
+      "size": 5167,
+      "sha256": "74e4d35eb88d635b9c99bd1505c0743ea11f2ed845d466ae415a6c590cb1646a"
+    },
+    {
+      "path": "tests/forestry.mjs",
+      "size": 4074,
+      "sha256": "bb8c4b7749a1c4d9c452357cb5120b268f8eb2c60e9f9ff89c3cc6875c45d4c5"
+    },
+    {
+      "path": "tests/gas-interior.mjs",
+      "size": 3035,
+      "sha256": "2dfb741c64f35e1b936fed891bbed59f7b0f4ac00d7c2fdd2af846d9485fe20b"
+    },
+    {
+      "path": "tests/high-atmosphere.mjs",
+      "size": 3251,
+      "sha256": "a5113bd6c66f3d37d048b7b6c5e2ea438340e55ce524f450e3cb319d25c73361"
+    },
+    {
+      "path": "tests/hud-policy.mjs",
+      "size": 642,
+      "sha256": "7c88fba36994cede1d5c98a7c2cef96167ee1cc10049bf401821f09f4d6bee42"
+    },
+    {
+      "path": "tests/mounts-atmospheres.mjs",
+      "size": 3463,
+      "sha256": "76f585f786de866435685a6a815820af924f80421029de59ee606ce69ba563f8"
+    },
+    {
+      "path": "tests/pc-input-rotation.mjs",
+      "size": 3392,
+      "sha256": "d9330305f1fd84a17b920deb71d37d4530e2445a5262863399ed523e497062c4"
+    },
+    {
+      "path": "tests/player-ship.mjs",
+      "size": 3169,
+      "sha256": "38c2805fadfc7fcc053ff57c140a17f6bb6d2a09c1e13ad841c225c21130f574"
+    },
+    {
+      "path": "tests/reference-rework.mjs",
+      "size": 2146,
+      "sha256": "c532d9f6f057de137389a61a8962c4575d06441fafb3c06c4991001699d3d2e7"
+    },
+    {
+      "path": "tests/review-v54.mjs",
+      "size": 8584,
+      "sha256": "f50380ef118665eb28ed152d798c83a278d287eae7763b4cd51a14443ea3289c"
+    },
+    {
+      "path": "tests/review-v55.mjs",
+      "size": 9048,
+      "sha256": "1155ceb76b70c784716b493f95b5eeceaab35b86f2664ff7e62c10261c486b8e"
+    },
+    {
+      "path": "tests/review-v57.mjs",
+      "size": 5896,
+      "sha256": "3972c8087a288b39fb008742f6162d0b002a0e60376f3712b9446ff0691a95a2"
+    },
+    {
+      "path": "tests/review-v58.mjs",
+      "size": 6707,
+      "sha256": "88f8d7298a99699caf089800a3a1021a1da3d1b32f8a5c0c31ef17b6b2a17196"
+    },
+    {
+      "path": "tests/review-v59.mjs",
+      "size": 4604,
+      "sha256": "ac6d38c1ad1c305946f7fa9f0b376c13e1abe849740cfb651e18416572bef289"
+    },
+    {
+      "path": "tests/roblox-textures.mjs",
+      "size": 3571,
+      "sha256": "8fe90020a1058bb0b2992ee1c19f8108b34bbf88ab3a5d48b7618feaf9912b68"
+    },
+    {
+      "path": "tests/scenery-performance.mjs",
+      "size": 1807,
+      "sha256": "d48cf0e10acd3be3d5068e41cf19314b7f3b43ae0e8ea0b652a181492113885b"
+    },
+    {
+      "path": "tests/ship-visual-upgrade.mjs",
+      "size": 3395,
+      "sha256": "c3b1b7ecec41cc0bfd3538cf31206b331a562ade8ecbed600cc662f08874f762"
+    },
+    {
+      "path": "tests/subject-camera.mjs",
+      "size": 3263,
+      "sha256": "7ebf44e69ef3937a37886ad1ca4dbf7fa56de68ccdfbf59932f4587426e63b06"
+    },
+    {
+      "path": "tests/surface-sky.mjs",
+      "size": 1924,
+      "sha256": "b1345a39b98687782e1f640bd3696dc9c843a2885ce6df3d36d3ffe23527d9d0"
+    },
+    {
+      "path": "tests/surface.mjs",
+      "size": 3846,
+      "sha256": "d8bb4e164f611b38df6b8573f1ba32f504c09869805e9732573dacabf0ec21ff"
+    },
+    {
+      "path": "tests/terrain.mjs",
+      "size": 1857,
+      "sha256": "c3ef56f484e0e84a9918ddb22cd05ba0b2bb16293a43e8f8432e461cab6c626a"
+    },
+    {
+      "path": "tests/tnt-held-items.mjs",
+      "size": 4698,
+      "sha256": "f109f57393c65d36cb18220c28f3d4185f57e3ff5c06941e7231b4b799db3475"
+    },
+    {
+      "path": "tests/touch-buttons.mjs",
+      "size": 3970,
+      "sha256": "ae8cf78fda109d2957ec949511079bbb8f1c52d3c7c12cd0eaa545866a4281ec"
+    },
+    {
+      "path": "tests/ui-smoke.mjs",
+      "size": 62251,
+      "sha256": "7623e8946acf307a62c47036c9d898dafb679324cffc98080d6e610f9245e320"
+    },
+    {
+      "path": "tests/visual-fixes.mjs",
+      "size": 3838,
+      "sha256": "8dca2135cd4bfc3efe2e0cb7caae774c85a8416e4b18fd7e5027ebe3dddecfdc"
+    },
+    {
+      "path": "tests/warp-update.mjs",
+      "size": 2299,
+      "sha256": "5e7961d7d073657d1ebae706501377e3725e6a3e41288caf6920b6d168bd171f"
+    },
+    {
+      "path": "tests/weather-upgrade.mjs",
+      "size": 6746,
+      "sha256": "1b1cc46c2ddcad09524d67332029ebe8ad788f895931f5212a9e44e2986ab968"
+    },
+    {
+      "path": "tests/wood-blocks.mjs",
+      "size": 3042,
+      "sha256": "49249ce3b9fd62014e98dc04b250edc6e1e647fbf44b67c617bcd4afe139732d"
+    },
+    {
+      "path": "tests/world-upgrade.mjs",
+      "size": 5355,
+      "sha256": "f067e75d6e690eadc6151a6a325eb60ffebbb20c040dc58b3fc3214b241e09aa"
+    },
+    {
+      "path": "tsconfig.json",
+      "size": 893,
+      "sha256": "a4c1cc83b63ef9d39641d3babaefffa063dccbbc93338e18017b5013d713163e"
+    },
+    {
+      "path": "vite.config.ts",
+      "size": 2673,
+      "sha256": "22ff558b1636d251e076f74c1697c7166079861667af10922d6bc505cb8f8290"
+    },
+    {
+      "path": "worker/index.ts",
+      "size": 1303,
+      "sha256": "a0a10229cdda6f5fdb32234e3539007412233bb4938a671866c9295a44a3bdb6"
+    }
+  ]
+}

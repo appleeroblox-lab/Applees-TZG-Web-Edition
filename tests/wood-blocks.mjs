@@ -1,0 +1,15 @@
+import {audioFixture} from './audio-fakes.mjs';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import * as T from '../public/vendor/three.module.js';
+import {Economy} from '../public/economy.js';
+import {createBlockModel} from '../public/block-models.js';
+import {createTreeLog} from '../public/wood-models.js';
+import {HeldItemView} from '../public/held-items.js';
+import {itemImage} from '../public/item-images.js';
+import {sources,GameSound} from '../public/sound.js';
+const earth={id:'Earth',name:'Earth',solid:true},bodies=[earth];
+for(const [type,quantity] of [['log-block',1],['wood-planks',4]]){const e=new Economy(bodies);assert(!e.craft(type));e.add('tree-log',1);assert(e.craft(type));assert.equal(e.count(type),quantity);assert.equal(e.count('tree-log'),0);e.equipped='Earth|'+type;assert(!e.place(earth,new T.Vector3(30,.5,30),false));assert(e.place(earth,new T.Vector3(30,.5,30),true));assert.equal(e.count(type),quantity-1);const saved=new Economy(bodies,e.serialize());assert.equal(saved.placements[0].type,type);saved.add('shovel',1);saved.equipped='Earth|shovel';assert(saved.reclaim(saved.placements[0].id,true));assert.equal(saved.count(type),quantity);assert(!saved.reclaim('gone',true));const model=createBlockModel(e.definition(type));assert.equal(model.geometry.parameters.width,1);assert(model.material.map.isDataTexture);assert.equal(model.material.map.image.data.length,128*256*4);assert(fs.existsSync('public/'+itemImage(e.definition(type))));e.fp=1000;assert(e.craft(type,true));assert.equal(e.fp,0);assert.equal(e.count(type),quantity-1+64);}
+const log=createTreeLog();assert.equal(log.geometry.parameters.openEnded,false,'solid capped log');assert(log.geometry.groups.length===3,'bark and both cut ends');assert(log.material.map.isDataTexture);const e=new Economy(bodies);e.add('tree-log',1);e.equipped='Earth|tree-log';const held=new HeldItemView(new T.Scene()),camera=new T.PerspectiveCamera();held.update(e,{onFoot:true,moving:false},camera,1);assert(held.group.visible);assert.equal(held.mesh.geometry.type,'CylinderGeometry','TreeLog uses log geometry, not a mineral');assert(held.group.position.x>0);held.update(e,{onFoot:false},camera,1);assert(!held.group.visible);
+const fake=audioFixture(),s=new GameSound();s.unlock();await s.play('treeCut');await s.play('treeFall');assert(fake.fetched.includes('./sounds/tree-cut.ogg'));assert(fake.fetched.includes('./sounds/tree-fall.ogg'));assert(!fake.fetched.includes('./sounds/hit.ogg'));assert.notEqual(sources.treeCut,sources.hit);for(const name of ['tree-cut','tree-fall']){const bytes=fs.readFileSync('public/sounds/'+name+'.ogg');assert.equal(bytes.subarray(0,4).toString(),'OggS');assert(bytes.length>2000)}assert(!fs.readFileSync('public/sounds/tree-cut.ogg').equals(fs.readFileSync('public/sounds/hit.ogg')));s.stop();fake.restore();
+console.log('PASS: log/plank crafting and bundle purchases, placement debit, saved types, shovel recovery, textured unit blocks, solid first-person TreeLog and separate saw/felling audio files.');

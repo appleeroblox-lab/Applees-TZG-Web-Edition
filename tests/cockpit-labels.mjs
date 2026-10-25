@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import * as T from '../public/vendor/three.module.js';
+import {CockpitLabelMask} from '../public/cockpit-labels.js';
+import {modelFromData} from '../public/models.js';
+const camera=new T.PerspectiveCamera(60,1,.025,100);camera.updateMatrixWorld();
+const root=new T.Group(),glass=new T.Mesh(new T.PlaneGeometry(4,4),new T.MeshStandardMaterial({transparent:true,opacity:.32}));glass.position.z=-1;root.add(glass);
+const wall=new T.Mesh(new T.PlaneGeometry(1,1),new T.MeshStandardMaterial({side:T.FrontSide}));wall.position.z=-2;wall.rotation.y=Math.PI;root.add(wall);
+const mask=new CockpitLabelMask();mask.update(root);assert(mask.blocked({x:500,y:500},camera,1000,1000,0,0),'solid back faces hide labels from inside cabin');assert(!mask.blocked({x:850,y:500},camera,1000,1000,0,0),'glass remains see-through');assert.equal(wall.material.side,T.FrontSide,'render material stays unchanged');
+wall.position.x=.7;mask.update(root);assert(!mask.blocked({x:500,y:500},camera,1000,1000,0,0));assert(mask.blocked({x:500,y:500},camera,1000,1000,500,32),'label edges cannot overlap a solid frame even if its anchor is clear');
+root.visible=false;mask.update(root);assert(!mask.blocked({x:500,y:500},camera,1000,1000));
+const data=JSON.parse(fs.readFileSync(new URL('../public/models/player-ship.json',import.meta.url))),ship=modelFromData(data);camera.position.fromArray(data.cockpit);camera.updateMatrixWorld();mask.update(ship);let hidden=0,visible=0;for(let x=200;x<=800;x+=100)for(let y=200;y<=800;y+=100){if(mask.blocked({x,y},camera,1000,1000,0,0))hidden++;else visible++}assert(hidden>0&&visible>0,'uploaded cockpit has both solid and clear sightlines');
+console.log('PASS: solid/back-facing cockpit occlusion, transparent windows, label footprint edges, unchanged materials, hidden models, and real uploaded-cockpit sightlines.');

@@ -315,3 +315,13 @@ The conversation uses three grid rows: compact header, flexible scrolling messag
 Chats shows friend and group conversations with latest-message previews instead of type labels. Authorized message reads run with at most three concurrent requests; previews are cached briefly and invalidated by notification cursors. Newest visible conversations sort first. Friends has its own page/button, separate from Chats, Requests and Blocked. No new SQL is required.
 
 Checked the rendered layout at 1536×690 and 844×390, including composer position, scrolling, details toggle and rotation-warning overlay behavior. These browser checks use fixture account data and do not exercise real-device media or the live database.
+
+## v80 — separate info pages, floating actions and unread conversations
+
+Group/chat info replaces the message log and composer in the social panel. Back to chat restores the draft. Member cards and Leave group have explicit spacing. The Friends heading starts directly below the search area.
+
+Own-message “…” buttons open a separate positioned menu in the document overlay layer for both global and private chats. The popup closes on outside click, Escape, scrolling, resizing, navigation and logout; opening it does not expand the message bubble.
+
+Conversation rows show unread message counts. Chats and the party button count conversations with unread messages, rather than summing messages: two conversations with 2 and 5 messages show 2 and 5 on their rows and 2 on the outer badges. Friend requests have a separate Requests badge. Opening messages clears that conversation's unread count; viewing info does not. The existing notification tone plays on increases/new requests after audio is unlocked by a player gesture, without repeating on unchanged polls.
+
+No new SQL is required. Interaction tests cover counts, notification deduplication, read clearing, draft preservation and portal menus. Rendered checks at 1536×690 and 844×390 cover the bottom composer, info-page replacement, menu position, Friends heading spacing and Leave group padding.

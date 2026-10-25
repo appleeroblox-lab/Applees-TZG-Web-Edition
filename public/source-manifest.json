@@ -1,5 +1,5 @@
 {
-  "version": 79,
+  "version": 80,
   "files": [
     "account.css",
     "atlas-3d.js",
@@ -295,7 +295,8 @@
     "voice-message.js",
     "night-aurora.js",
     "debug-message-logs.js",
-    "chat-dialog.js"
+    "chat-dialog.js",
+    "message-options.js"
   ],
   "versionedFiles": [
     "account.css",
@@ -374,6 +375,7 @@
     "voice-message.js",
     "profile-view.js",
     "identity-ui.js",
-    "chat-dialog.js"
+    "chat-dialog.js",
+    "message-options.js"
   ]
 }

@@ -101,3 +101,18 @@ Signed-in players with an active moderation decision receive a private blue Acco
 A previously hard-deleted Auth identity cannot authenticate from a fresh login. If that user still has a valid, signed token, the own-notice RPC can return the historical deletion reason; it never offers an unauthenticated email/username lookup. New deletions use the retained-identity design described above.
 
 Tests cover the explicit pencil/native input interaction, `image/*`, crop modal promotion without losing the photo, a real avatar value returned/rendered in public profiles, owner-only ban/deletion notice content, server denial while removed, and restoration with zero inventory/currencies. The SQL integration test applies 006 directly after 003 and repeats it, validating the combined upgrade path.
+
+### v73: Files browser and in-game photo library
+
+The pencil now opens a dedicated game photo library with a visible native file
+control. The input is unfiltered and supports multiple selection, allowing Android
+to offer its document browser instead of forcing the image-only Photos picker.
+The game cannot enumerate private device photos without a user selection. Up to
+eight selected images appear as thumbnails; one selected image opens Crop directly.
+Non-images and files over 20 MB show feedback. Browser-supported image codecs are
+still required. Only Save photo uploads the cropped JPEG to the existing avatar RPC.
+Returning from selection promotes the crop dialog without requesting fullscreen or
+landscape. Landscape remains a separate explicit action. No new SQL is required.
+Tests cover duplicate input/change/focus events, thumbnail selection, error feedback,
+resource cleanup, crop/save and account behavior; actual Android picker behavior
+still requires device verification.

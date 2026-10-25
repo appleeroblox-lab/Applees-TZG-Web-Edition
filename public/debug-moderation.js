@@ -1,4 +1,4 @@
-import {setAvatar} from './social-ui.js?v=72';
+import {setAvatar} from './social-ui.js?v=73';
 const $=id=>document.getElementById(id);
 const text=(tag,value)=>{const node=document.createElement(tag);node.textContent=value;return node};
 export class DebugModeration{

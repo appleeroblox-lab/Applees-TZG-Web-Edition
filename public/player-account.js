@@ -1,5 +1,5 @@
-import {FilePickerGuard} from './file-picker.js?v=67';
-import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=67';
+import {FilePickerGuard} from './file-picker.js?v=68';
+import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=68';
 import {CloudSave} from './cloud-save.js?v=62';
 const $=id=>document.getElementById(id);
 const escapeError=e=>String(e?.message||'Account service unavailable. Please retry.');

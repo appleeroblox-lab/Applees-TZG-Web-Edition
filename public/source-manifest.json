@@ -1,5 +1,5 @@
 {
-  "version": 68,
+  "version": 69,
   "files": [
     "account.css",
     "atlas-3d.js",
@@ -283,7 +283,8 @@
     "social-ui.js",
     "debug-moderation.js",
     "icons/default-profile.svg",
-    "file-picker.js"
+    "file-picker.js",
+    "avatar-crop.js"
   ],
   "versionedFiles": [
     "account.css",
@@ -342,6 +343,7 @@
     "world-precipitation.js",
     "social-ui.js",
     "debug-moderation.js",
-    "file-picker.js"
+    "file-picker.js",
+    "avatar-crop.js"
   ]
 }

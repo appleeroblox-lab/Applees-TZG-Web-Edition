@@ -79,3 +79,11 @@ Image preparation now prefers FileReader/data URLs for Android content-provider 
 After a selected photo's native chooser closes, the client automatically requests landscape/fullscreen using the existing game callback. Browsers that require another user gesture may reject that attempt; the Landscape button stays visible as a fallback. The chooser remains protected from orientation/fullscreen re-entry while it is open.
 
 Tests simulate native input/change/return, verify exactly one upload, support choosing the same File again, automatic landscape callback after return, and the FileReader path with an Android-style MIME type. Real phone selection remains a device verification step.
+
+## v69: visible signup validation and an actual crop editor
+
+Supabase's public Auth settings were checked read-only: signup is enabled, email auth is enabled, and email confirmation is required. The client signup form now bypasses silent native constraint blocking and explicitly validates email, username, display name, password length (12–128) and confirmation. Status/progress is above the fields and sticky while scrolling. An unavailable SDK or in-flight request produces a visible message; signup has a bounded SDK timeout and displays confirmation/email instructions or the backend error. No test accounts were created in the live project.
+
+The photo pencil badge is reduced to 18 px. Selection opens a separate visible crop panel, with a circular preview, drag-to-position, zoom, 90-degree rotation, Cancel and Save photo. It performs no server write until Save photo. Network failures keep the editor/source open for retry; cancellation releases the selected image and preserves the saved profile. The output is still a bounded 128×128 JPEG. The old automatic center crop remains only as a reusable helper, not the player-facing upload flow.
+
+Tests validate the crop geometry, zoom/rotate, explicit save-only upload, cancellation and retry; native selection/reselection still opens the editor once; signup tests verify explicit invalid-email/password handling, SDK readiness feedback, and a valid request reaching the mocked Auth service. Real Android layout/file selection and live signup remain device checks.

@@ -1,0 +1,5 @@
+import {isSolidBlock} from './surface-layout.js';
+export function validFace(face){return Array.isArray(face)&&face.length===3&&face.every(n=>n===0||n===1||n===-1)&&face.reduce((n,v)=>n+Math.abs(v),0)===1}
+export function validMount(type,pos,mount,placements,body){if(!mount||!validFace(mount.face)||typeof mount.support!=='string')return false;const f=mount.face;if(type==='ladder'&&f[1]!==0||type==='torch'&&f[1]<0)return false;const support=placements.find(p=>p.id===mount.support&&p.body===body&&isSolidBlock(p)&&p.type!=='door');return !!support&&Math.hypot(pos.x-support.x-f[0],pos.y-support.y-f[1],pos.z-support.z-f[2])<.03}
+export function inferMount(type,pos,placements){for(const face of type==='ladder'?[[1,0,0],[-1,0,0],[0,0,1],[0,0,-1]]:[[0,1,0],[1,0,0],[-1,0,0],[0,0,1],[0,0,-1]]){const support=placements.find(p=>p!==pos&&p.body===pos.body&&isSolidBlock(p)&&p.type!=='door'&&Math.hypot(pos.x-p.x-face[0],pos.y-p.y-face[1],pos.z-p.z-face[2])<.03);if(support&&typeof support.id==='string')return {support:support.id,face}}return null}
+export function mountYaw(mount){return mount&&validFace(mount.face)&&mount.face[1]===0?Math.atan2(mount.face[0],mount.face[2]):0}

@@ -1,0 +1,8 @@
+import * as T from './vendor/three.module.js';
+export const C_UNITS=299792.458/100,DEFAULT_MAX_C=150,BOOST_MAX_C=250,BOOST_MULTIPLIER=1.5;
+export const SURFACE_MIN_SPEED=5;
+export function minimumSpeed(f,surface=false){return surface&&['flying','gas','ascent'].includes(f.surface?.phase)?SURFACE_MIN_SPEED:0}
+export function speedLimit(f,surface=false,boost=false){return surface?450:C_UNITS*(boost?BOOST_MAX_C:Math.min(f.maxSpeedC||DEFAULT_MAX_C,DEFAULT_MAX_C))}
+// Release coasts; airborne body flight retains at least 5 m/s.
+export function setSpeedCommand(f,value,surface=false){f.cruiseSpeed=T.MathUtils.clamp(value,minimumSpeed(f,surface),speedLimit(f,surface,!!f.boostWindow));return f.cruiseSpeed}
+export function holdVelocity(f,dt,input,forward,surface=false,velocity=f.vel){const command=T.MathUtils.clamp((input.z||0)+(f.throttle||0),-1,1),boost=!surface&&!!input.boost&&command>0,cap=speedLimit(f,surface,boost||!!f.boostWindow);const min=minimumSpeed(f,surface);let speed=Math.max(min,f.cruiseSpeed||0);if(boost&&!f.boostHeld)speed*=BOOST_MULTIPLIER;f.boostHeld=boost;const rate=surface?45:Math.max(30,speed*.75);speed=T.MathUtils.clamp(speed+command*rate*dt*(boost?BOOST_MULTIPLIER:1),min,cap);f.cruiseSpeed=speed;if(input.brake&&!surface){f.cruiseSpeed=0;f.boostHeld=false;f.throttle=0;velocity.set(0,0,0);return}const desired=forward.clone().multiplyScalar(speed);if(surface){desired.y+=(input.y||0)*120;desired.add(new T.Vector3((input.x||0)*18,0,0).applyQuaternion(f.q))}else desired.add(new T.Vector3((input.x||0)*4,(input.y||0)*4,0).applyQuaternion(f.q));if(desired.length()<min)desired.copy(forward).multiplyScalar(min);velocity.copy(desired);if(velocity.length()>cap)velocity.setLength(cap)}

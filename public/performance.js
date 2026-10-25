@@ -1,0 +1,2 @@
+export function resolutionRatio(width,height,dpr,quality,touch){const requested={Low:.7,Medium:touch?.9:1.25,High:touch?1.1:1.7}[quality]||.8;const pixels=touch?1100000:3500000;return Math.max(.35,Math.min(dpr||1,requested,Math.sqrt(pixels/Math.max(1,width*height))))}
+export function clampPanel(x,y,w,h,vw,vh){const width=Math.min(w,Math.max(32,vw-16));return {x:Math.min(Math.max(8,x),Math.max(8,vw-width-8)),y:Math.min(Math.max(8,y),Math.max(8,vh-h-8)),width}}

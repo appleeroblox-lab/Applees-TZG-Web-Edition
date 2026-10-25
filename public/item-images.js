@@ -1,0 +1,3 @@
+export function itemImage(d){return d.id.endsWith('-saw')||['tree-log','log-block','wood-planks','snow-ball','snow-block'].includes(d.id)?'items/'+d.id+'.svg':d.id==='pickaxe'?'models/pickaxe-icon.png':d.kind?'items/'+d.id+'.png':null}
+export function itemVisual(d){const src=itemImage(d);if(src){const img=document.createElement('img');img.src=src;img.className='itemThumb';img.alt='';img.draggable=false;return img}const gem=document.createElement('span');gem.className='mineralIcon';gem.style.setProperty('--ore-color',d.color);return gem}
+export const STARTER_PICKAXE={id:'pickaxe',name:'Pickaxe',kind:'pickaxe',color:'#a7bccb'};

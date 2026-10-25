@@ -1,0 +1,26 @@
+{
+  "Pluto": {
+    "file": "pluto.jpg",
+    "source": "https://science.nasa.gov/resource/pluto-global-color-map/",
+    "credit": "NASA/JHUAPL/SwRI",
+    "note": "New Horizons MVIC color mosaic; unobserved southern regions remain black."
+  },
+  "Charon": {
+    "file": "charon.jpg",
+    "source": "https://www.jpl.nasa.gov/images/pia19866-global-map-of-plutos-moon-charon/",
+    "credit": "NASA/Johns Hopkins University Applied Physics Laboratory/Southwest Research Institute",
+    "note": "New Horizons LORRI global mosaic; coverage gaps are unobserved."
+  },
+  "Titan": {
+    "file": "titan.jpg",
+    "source": "https://science.nasa.gov/resource/titan-global-map-june-2015/",
+    "credit": "NASA/JPL-Caltech/Space Science Institute",
+    "note": "Cassini ISS near-infrared surface mosaic, not visible light through the atmosphere. Map title and axes cropped."
+  },
+  "Ceres": {
+    "file": "ceres.jpg",
+    "source": "https://science.nasa.gov/photojournal/colorized-map-of-ceres-mercator-projection/",
+    "credit": "NASA/JPL-Caltech/UCLA/MPS/DLR/IDA",
+    "note": "Dawn clear-filter mosaic with spectral color; green/yellow polar regions indicate incomplete coverage."
+  }
+}

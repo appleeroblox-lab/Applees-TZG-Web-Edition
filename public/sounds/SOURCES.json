@@ -1,0 +1,104 @@
+{
+  "author": "Kenney",
+  "license": "CC0",
+  "sources": {
+    "ui": {
+      "pack": "interface-sounds",
+      "file": "click_001.ogg",
+      "url": "https://kenney.nl/assets/interface-sounds"
+    },
+    "equip": {
+      "pack": "interface-sounds",
+      "file": "select_001.ogg",
+      "url": "https://kenney.nl/assets/interface-sounds"
+    },
+    "swing": {
+      "pack": "impact-sounds",
+      "file": "impactSoft_heavy_000.ogg",
+      "url": "https://kenney.nl/assets/impact-sounds"
+    },
+    "hit": {
+      "pack": "impact-sounds",
+      "file": "impactMetal_light_000.ogg",
+      "url": "https://kenney.nl/assets/impact-sounds"
+    },
+    "break": {
+      "pack": "impact-sounds",
+      "file": "impactGlass_heavy_000.ogg",
+      "url": "https://kenney.nl/assets/impact-sounds"
+    },
+    "pickup": {
+      "pack": "interface-sounds",
+      "file": "confirmation_001.ogg",
+      "url": "https://kenney.nl/assets/interface-sounds"
+    },
+    "sell": {
+      "pack": "interface-sounds",
+      "file": "confirmation_003.ogg",
+      "url": "https://kenney.nl/assets/interface-sounds"
+    },
+    "discover": {
+      "pack": "interface-sounds",
+      "file": "maximize_001.ogg",
+      "url": "https://kenney.nl/assets/interface-sounds"
+    },
+    "warp": {
+      "pack": "sci-fi-sounds",
+      "file": "forceField_000.ogg",
+      "url": "https://kenney.nl/assets/sci-fi-sounds"
+    },
+    "countdown": {
+      "pack": "interface-sounds",
+      "file": "tick_001.ogg",
+      "url": "https://kenney.nl/assets/interface-sounds"
+    },
+    "launch": {
+      "pack": "sci-fi-sounds",
+      "file": "thrusterFire_000.ogg",
+      "url": "https://kenney.nl/assets/sci-fi-sounds"
+    },
+    "land": {
+      "pack": "impact-sounds",
+      "file": "impactSoft_heavy_000.ogg",
+      "url": "https://kenney.nl/assets/impact-sounds"
+    },
+    "footstep": {
+      "pack": "impact-sounds",
+      "file": "footstep_carpet_000.ogg",
+      "url": "https://kenney.nl/assets/impact-sounds"
+    },
+    "error": {
+      "pack": "interface-sounds",
+      "file": "error_001.ogg",
+      "url": "https://kenney.nl/assets/interface-sounds"
+    },
+    "rain": {
+      "author": "Original procedural synthesis",
+      "license": "CC0",
+      "description": "Seeded broadband rain ambience generated for this game"
+    },
+    "thunder": {
+      "author": "Original procedural synthesis",
+      "license": "CC0",
+      "description": "Filtered noise and low-frequency rumble generated for this game"
+    }
+  },
+  "original_effects": {
+    "tree-cut": {
+      "author": "The Zero Gravity - Web",
+      "method": "Original procedural saw rasp",
+      "generator": "scripts/generate-wood-sounds.py"
+    },
+    "tree-fall": {
+      "author": "The Zero Gravity - Web",
+      "method": "Original procedural wood cracks",
+      "generator": "scripts/generate-wood-sounds.py"
+    }
+  },
+  "generated_gameplay": {
+    "author": "Applee game project",
+    "generator": "scripts/generate-gameplay-sounds.py",
+    "license": "Original project audio",
+    "description": "Foley-style noise textures, fuse hiss and bass explosion; no Minecraft recordings."
+  }
+}

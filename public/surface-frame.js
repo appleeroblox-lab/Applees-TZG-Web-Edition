@@ -1,0 +1,2 @@
+import * as T from './vendor/three.module.js';
+export function surfaceFrame(body,normal,bodies=[]){const parent=bodies.find(b=>b.name===body.parent),up=normal.clone().normalize();let forward=parent?parent.pos.clone().sub(body.pos):new T.Vector3(0,0,-1);forward.addScaledVector(up,-forward.dot(up));if(forward.lengthSq()<.001)forward.set(1,0,0).addScaledVector(up,-up.x);forward.normalize();const back=forward.negate(),right=up.clone().cross(back).normalize();return new T.Matrix4().makeBasis(right,up,back).transpose()}

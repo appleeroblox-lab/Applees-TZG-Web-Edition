@@ -39,3 +39,19 @@ Report a message with a category and optional details. The database copies the a
 - `npm run test:social:sql`: optional PostgreSQL integration tests using PGlite. Install `@electric-sql/pglite` separately, or set `TZG_PGLITE_MODULE` to its installed ESM entry point. The test creates its own isolated database and never contacts the live Supabase project.
 - SQL tests cover repeatable migration, username races/uniqueness, owner isolation, server text filtering, rate limits, JPEG restrictions, reports/evidence, permission denial, admin data validation/revisions, temporary/permanent ban checks, unban, developer protection, account deletion, revoked access and retained reports.
 - Browser UI tests use a mocked DOM/WebGL; real Android layout, real image selection, email signup and live cross-account chat still need device checks after migration.
+
+## v65: compact panels and private public profiles
+
+Apply `202610250004_compact_private_profiles.sql` after 003, then reload with `index.html?v=65`. It preserves saves and adds a filtered bio plus atomic display-name/bio edits.
+
+The public chat response now includes only message ID, display name, avatar, body, timestamp and whether the message belongs to the current player. It omits player UUIDs, emails and usernames. Clicking a display name resolves a profile through the message ID; the profile RPC returns only display name, username, bio, joined date and avatar. Identity resolution for reports remains on the server; authorized developer pages still expose the private account identifiers required for management.
+
+The compact chat toggle sits beside the title/settings button. Chat has stable DOM rows, touch/scrollbar history browsing, auto-scroll only when near the bottom, and a New messages button while reading older messages. The top-right report action opens a message picker, then a reason/evidence page. Reports show an explicit Chat Message heading in the developer page.
+
+Account is a nonmodal floating window with a bounded height and scrolling. It does not pause simulation, block ship/foot controls, enable the screen shield, or inert the game. Focused text fields consume keyboard input while typing. Login/recovery still requires authentication before gameplay. Account, chat and login share the Settings blue gradient/borders.
+
+The current player's UPID starts masked with Show/Hide, re-masks on close and is copyable only through an explicit action. Public profile/chat payloads contain no player UPID or email. Change password uses the authenticated Supabase Auth `updateUser` endpoint with the current password and new password; inputs clear before the network call. No password enters the game's database or developer console.
+
+Photo selection auto-uploads and also has a manual upload/retry action, visible progress/error text outside the disclosure, and a local preview. It supports empty/Android MIME values when the extension is a supported image and falls back to an Image/blob decoder if createImageBitmap is unavailable or rejects the photo. Stale heartbeat responses cannot overwrite a newly saved local profile. Missing/failed images use the bundled default-profile SVG, including chat, public profiles, personal profiles and developer account rows.
+
+Additional tests exercise the decoder fallback, upload/preview/removal, masked UPID toggles, cleared current/new password payloads, report message selection/evidence, history scroll preservation, public response allowlists and absent peer UUID/email keys. The game smoke test opens Account and verifies keyboard steering and rendering continue. Real phone file selection and the actual password provider still need device testing after the SQL migration.

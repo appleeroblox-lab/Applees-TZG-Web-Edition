@@ -1,5 +1,5 @@
 {
-  "version": 64,
+  "version": 65,
   "files": [
     "account.css",
     "atlas-3d.js",
@@ -281,7 +281,8 @@
     "wood-models.js",
     "world-precipitation.js",
     "social-ui.js",
-    "debug-moderation.js"
+    "debug-moderation.js",
+    "icons/default-profile.svg"
   ],
   "versionedFiles": [
     "account.css",

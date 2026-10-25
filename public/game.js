@@ -1,6 +1,6 @@
-import {PlayerAccount} from './player-account.js?v=71';
+import {PlayerAccount} from './player-account.js?v=72';
 import {cloudInventory} from './cloud-save.js?v=62';
-import {SupabaseDebugService} from './supabase-debug.js?v=71';
+import {SupabaseDebugService} from './supabase-debug.js?v=72';
 import {supabaseConfig} from './supabase-config.js?v=61';
 import {installControlSizes} from './control-sizes.js?v=60';
 import {GlobalShadows} from './global-shadows.js';
@@ -8,7 +8,7 @@ import {biomeWeather,earthBiome,biomeDestination} from './earth-biomes.js?v=59';
 import {installMobileInput} from './mobile-input.js';
 import {GroundWeather} from './ground-weather.js?v=59';
 import {underWeatherClouds} from './weather-state.js';
-import {DebugMenu} from './debug-menu.js?v=71';
+import {DebugMenu} from './debug-menu.js?v=72';
 import {rotateSubjectOrbit,shipCameraSubject,placeSubjectOrbit,ORBIT_MIN,ORBIT_MAX} from './subject-camera.js';
 import {padHeightAt} from './surface-layout.js';
 import {CockpitLabelMask} from './cockpit-labels.js';

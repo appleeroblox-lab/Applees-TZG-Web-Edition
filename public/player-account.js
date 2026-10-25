@@ -1,6 +1,6 @@
-import {AvatarCropEditor} from './avatar-crop.js?v=71';
-import {FilePickerGuard} from './file-picker.js?v=71';
-import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=71';
+import {AvatarCropEditor} from './avatar-crop.js?v=72';
+import {FilePickerGuard} from './file-picker.js?v=72';
+import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=72';
 import {CloudSave} from './cloud-save.js?v=62';
 const $=id=>document.getElementById(id);
 const escapeError=e=>String(e?.message||'Account service unavailable. Please retry.');

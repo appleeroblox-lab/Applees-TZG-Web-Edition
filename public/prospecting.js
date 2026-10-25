@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {loadBlenderModel} from './models.js';
+import {loadBlenderModel} from './models.js?v=74';
 import {focusedMineral} from './hud-policy.js';
 import {V} from './flight.js';
 import {TRADER,ground,REACH} from './economy.js?v=59';

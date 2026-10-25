@@ -1,5 +1,5 @@
 {
-  "version": 73,
+  "version": 74,
   "files": [
     "account.css",
     "atlas-3d.js",
@@ -346,6 +346,7 @@
     "debug-moderation.js",
     "file-picker.js",
     "avatar-crop.js",
-    "photo-library.js"
+    "photo-library.js",
+    "models.js"
   ]
 }

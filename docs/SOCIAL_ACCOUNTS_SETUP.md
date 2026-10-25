@@ -116,3 +116,41 @@ landscape. Landscape remains a separate explicit action. No new SQL is required.
 Tests cover duplicate input/change/focus events, thumbnail selection, error feedback,
 resource cleanup, crop/save and account behavior; actual Android picker behavior
 still requires device verification.
+
+### v74: session ownership, bio confirmation and desktop lighting
+
+Run `supabase/migrations/202610250007_game_sessions_profile.sql` in
+https://supabase.com/dashboard/project/zwtcytzaozysxiqixihk/sql/new .
+This includes 006 (and its 004/005 prerequisites), so users with 003 installed
+only need this latest file. It is repeatable.
+
+The most recent authenticated device connection claims the account's game session.
+Ownership is bound to the signed Supabase session ID and checked inside each player
+RPC. The previous device cannot save, edit profiles or read game/chat data after
+replacement. The foreground client detects this on its next heartbeat (normally
+6–8 seconds), stops cloud saves/chat, signs out with `scope: local` and displays
+“Duplicate Game Session.” Returning from a background tab triggers a check.
+No global sign-out is used, so the winning device stays signed in. Tabs sharing
+the same browser Auth session count as the same device session. Local world state
+remains local; only the already-supported inventory/currency data is cloud saved.
+The row lock protects in-flight save/claim ordering. Apply SQL before testing the
+two-device behavior. The client tolerates the missing start RPC for rollout, but
+server session enforcement requires this migration.
+
+Bio edits return the persisted bio and display name; the client confirms both
+before announcing success. The latest migration installs the bio-enabled profile
+RPC for users who skipped earlier profile SQL. Reloaded profile/peer responses
+still expose no private IDs or email addresses.
+
+All normals in the uploaded ship JSON were zero. The shared model loader now
+reconstructs missing/invalid normals from triangles, preserving the supplied
+materials, texture coordinates, geometry and model. This repairs GPU lighting
+without changing world brightness. Auth fields use 30px heights, matching opaque
+blue backgrounds and explicit spacing; portrait HUD currencies get a separate
+row; desktop scroll areas use thin rounded blue scrollbars.
+
+Validation: account/social/debug suites; PGlite integration including repeat
+migration, second-device takeover, rejected old-device writes, private-table
+permissions and saved bio reload; nondegenerate ship faces have unit normals;
+mobile and desktop mocked-render startup/control/resume tests. Real GPU/device
+visual verification remains outstanding.

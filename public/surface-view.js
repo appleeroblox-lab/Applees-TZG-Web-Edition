@@ -1,14 +1,14 @@
-import {createSurfaceRoads} from './surface-roads.js?v=75';
+import {createSurfaceRoads} from './surface-roads.js?v=76';
 import {buildGasInterior,gasCloudPosition} from './gas-interior.js';
 import {graphicsPolicy} from './graphics-policy.js';
 import {cloudProfile,cloudPosition,applyAtmosphericFog,upperSkyState,setAtmosphereStars} from './atmosphere-effects.js';
 import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 import * as T from './vendor/three.module.js';
-import {glow} from './visuals.js?v=75';
-import {surfaceHeight,atmosphere} from './surface.js?v=75';
+import {glow} from './visuals.js?v=76';
+import {surfaceHeight,atmosphere} from './surface.js?v=76';
 import {SurfaceSky} from './surface-sky.js?v=47';
 import {terrainColor} from './surface-palette.js';
-import {EarthEnvironment} from './earth-environment.js?v=75';
+import {EarthEnvironment} from './earth-environment.js?v=76';
 import {applySurfaceLighting} from './lighting.js';
 export class SurfaceView{
  constructor(session,bodies=[]){this.session=session;this.scene=new T.Scene();this.scene.userData.surface=session;this.celestial=new SurfaceSky(session,bodies);this.scene.add(this.celestial.group);this.environment=new EarthEnvironment();try{this.environment.restore(JSON.parse(localStorage.getItem('zero-gravity-earth-environment')))}catch{}this.body=null;this.cloudTime=0;this.minerals=new T.Group();this.scene.add(this.minerals);this.spaceMap=null;this.fill=new T.HemisphereLight(0xc5dfff,0x3c4030,1.35);this.scene.add(this.fill);this.sun=new T.DirectionalLight(0xffedce,3);this.sun.position.set(-400,700,-300);this.scene.add(this.sun)}

@@ -191,3 +191,51 @@ colors, new defaults/exempt bodies, desktop model/pad centering, integration SQL
 repeatability, image validation/report retention, online/logout and existing
 account/chat/moderation/control regression checks. Actual mobile picker, sound and
 GPU visual appearance still require device verification.
+
+### v76: friends, private chats, owner-managed groups and privacy controls
+
+Run `supabase/migrations/202610250009_friends_groups.sql` in
+https://supabase.com/dashboard/project/zwtcytzaozysxiqixihk/sql/new . It includes
+004–008, so it can be applied after the existing 003 setup even if intermediate
+updates were skipped. Re-running the migration preserves friend/group records.
+
+The personal email is now a readonly masked field with Show/Hide; it remasks when
+the account menu closes or reopens. Settings contains a 0–100% chat background
+transparency slider, stored locally. Text and controls remain opaque. Public
+profiles return Online/Offline using the same recent-heartbeat/session rules as
+the developer directory. Email addresses and player UUIDs are never returned by
+the new friend/group/profile RPCs. Room UUIDs identify conversations, not players.
+
+Friends appears beside Account, with Friend chats, Group chats, Requests and
+Blocked tabs. Find players by exact public username; send/cancel requests,
+accept/decline incoming requests, unfriend, block and unblock. Blocking removes
+friendship, disables direct chats in both directions and hides blocked senders'
+global/group messages. Unblocking does not automatically restore friendship.
+Friend chats require an accepted friendship and retain conversation history.
+Global chat retains its current-gameplay-session display behavior.
+
+A group has at most ten members including its owner. The owner can add accepted
+friends, edit the name/bio/photo, remove a photo, kick, ban/unban, transfer ownership
+to an existing member, or delete the group. Other members can leave. Owners must
+transfer ownership or delete before leaving. Ownership transfer immediately
+removes the old owner's privileges. All membership and ownership checks are server
+side; row locks serialize changes and enforce the member cap. Invited friends are
+added directly and may leave. Group bans block re-addition until explicitly lifted.
+Deleted game-account members remain removable via the owner's roster.
+
+Private/group messages support text, screenshot gallery selection and reporting
+into the existing developer Reports page, including retained screenshot evidence.
+Only members can read messages/images; kicked/banned/nonmembers are rejected.
+Text filtering, bounded JPEGs, idempotent sends and per-sender rate limits apply.
+Recent history is capped at 500 messages per room; clients show the most recent
+50. Screenshots are cached across visible-menu refreshes; typing and open owner
+controls preserve their forms. Lists/messages refresh every eight seconds while
+the menu is visible. This is polling, not push delivery or end-to-end encryption.
+
+Validation: real PostgreSQL-compatible integration tests cover private access,
+request/accept/block/unblock/unfriend, reports/images, owner-only editing,
+kick/ban/unban, ten-member rejection, ownership transfer/leave/delete and anonymous
+access denial. UI fixtures cover email remasking, transparency, owner-control
+removal after transfer, image caching and logout cleanup. Existing account,
+social, debug and mocked desktop/startup checks pass. Actual mobile/GPU visual
+checks remain device-dependent.

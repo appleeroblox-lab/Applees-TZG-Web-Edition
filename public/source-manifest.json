@@ -1,5 +1,5 @@
 {
-  "version": 75,
+  "version": 76,
   "files": [
     "account.css",
     "atlas-3d.js",
@@ -286,7 +286,9 @@
     "file-picker.js",
     "avatar-crop.js",
     "photo-library.js",
-    "icons/person.svg"
+    "icons/person.svg",
+    "friends-ui.js",
+    "icons/group.svg"
   ],
   "versionedFiles": [
     "account.css",
@@ -357,6 +359,7 @@
     "visuals.js",
     "reference-hud.js",
     "flight.js",
-    "surface.js"
+    "surface.js",
+    "friends-ui.js"
   ]
 }

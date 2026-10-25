@@ -1,5 +1,5 @@
 {
-  "version": 76,
+  "version": 77,
   "files": [
     "account.css",
     "atlas-3d.js",
@@ -288,7 +288,13 @@
     "photo-library.js",
     "icons/person.svg",
     "friends-ui.js",
-    "icons/group.svg"
+    "icons/group.svg",
+    "identity-ui.js",
+    "profile-view.js",
+    "message-editor.js",
+    "voice-message.js",
+    "night-aurora.js",
+    "debug-message-logs.js"
   ],
   "versionedFiles": [
     "account.css",
@@ -360,6 +366,12 @@
     "reference-hud.js",
     "flight.js",
     "surface.js",
-    "friends-ui.js"
+    "friends-ui.js",
+    "night-aurora.js",
+    "message-editor.js",
+    "debug-message-logs.js",
+    "voice-message.js",
+    "profile-view.js",
+    "identity-ui.js"
   ]
 }

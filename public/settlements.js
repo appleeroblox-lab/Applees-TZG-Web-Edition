@@ -1,4 +1,4 @@
-import {surfaceHeight} from './surface.js?v=76';
+import {surfaceHeight} from './surface.js?v=77';
 const cache=new Map();
 function hash(s){let h=2166136261;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0}
 export function settlementSites(body){if(!body?.solid)return [];const key=body.id+'|'+body.name;if(cache.has(key))return cache.get(key);const choices=[];for(let cz=-9;cz<=9;cz++)for(let cx=-9;cx<=9;cx++){const score=hash(body.id+':village:'+cx+','+cz),x=cx*96+(score%17)-8,z=cz*96+(score%19)-9,r=Math.hypot(x,z);if(r<300||r>860)continue;choices.push({id:body.id+'@village:'+cx+':'+cz,body:body.id,cx,cz,x,z,score,bounds:{minX:x-17,maxX:x+17,minZ:z-15,maxZ:z+15}})}choices.sort((a,b)=>a.score-b.score);const sites=[];for(const site of choices){if(sites.every(s=>Math.hypot(s.x-site.x,s.z-site.z)>240))sites.push(site);if(sites.length===2)break}cache.set(key,sites);return sites}

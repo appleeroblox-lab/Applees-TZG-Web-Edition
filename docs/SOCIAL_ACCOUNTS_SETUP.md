@@ -239,3 +239,63 @@ access denial. UI fixtures cover email remasking, transparency, owner-control
 removal after transfer, image caching and logout cleanup. Existing account,
 social, debug and mocked desktop/startup checks pass. Actual mobile/GPU visual
 checks remain device-dependent.
+
+### v77: party UI, shared profiles, verification, voice and message history
+
+Run `supabase/migrations/202610260010_social_updates.sql` in
+https://supabase.com/dashboard/project/zwtcytzaozysxiqixihk/sql/new . It includes
+004–009 and is tested both from 003 and when repeated. Existing social data remains.
+
+The transparency slider now affects only Global Chat. Friends uses an opaque,
+bottom-right Party & Friends layout with more space between controls. Player
+profiles from global chat, friends and group members share the same centered panel
+and friend-action controls. The account editing panel remains separate.
+
+A server-owned `verified` flag defaults false. Only the existing authorized Debug
+Manage Accounts actions Grant verified badge / Remove verified badge can change
+it, with a required reason and moderation history. Signup metadata and normal
+profile editing cannot grant it. Public profile snapshots, chat names, friend/member
+cards, own account headings and developer account rows/details render the badge
+from that flag. Player UUIDs and emails remain private.
+
+Earth has two lightweight animated aurora curtains after dark. Strength fades with
+daylight, cloud cover and altitude. They use world-space geometry, additive colors
+and the renderer's logarithmic-depth chunks, without adding scene render passes.
+Actual GPU appearance must be checked on a real device.
+
+Private friend/group chats support optional voice messages when MediaRecorder,
+a microphone and an allowed recording format are available. Record is an explicit
+user action; maximum client recording time is 20 seconds. Stop produces a local
+preview; Send voice explicitly uploads it. Cancel, closing/changing chat, logout
+and backgrounding stop microphone tracks and discard unfinished recordings.
+Supported data payloads are bounded WebM/MP4/Ogg audio (350000 data-URL characters).
+Only current authorized chat members can fetch them. Recording and playback are
+browser/device dependent; no automatic voice transcription/filter is claimed.
+
+Friend/group unread messages and incoming requests poll every eight seconds while
+the game is visible, including when the Party panel is closed. Initial history is
+used as a baseline to avoid old-message notification sounds. A badge and a short
+sound indicate new events after browser audio has been enabled by a gesture.
+
+Players may edit/delete their own messages in global, friend and group chats.
+The editor can replace/remove the screenshot and edit the caption. Deleting leaves
+a named `deleted a message` notice and removes public media. Global polling also
+synchronizes edits/deletions of already displayed messages. Private message access
+still requires current membership/friendship. Repeating a deletion or an unchanged
+edit is a no-op; changes are limited to 60 per account per hour.
+
+Every actual edit/delete stores the original text and full sent screenshot/voice
+in a private append-only application audit table. Deleting a group also archives
+its remaining nondeleted messages before cascading removal. Authorized developers
+can inspect all versions under Debug Message Logs, including image/audio previews;
+ordinary players and anonymous clients cannot fetch the audit records. These are
+the sent, prepared media bytes, not the unprocessed original device files. Existing
+reports keep their own evidence snapshots independently.
+
+Validation: account/social/debug suites and mocked desktop/startup checks; PostgreSQL
+integration tests cover developer-only verification, member-only voice/idempotency,
+notifications, cross-user edit/delete rejection, tombstone synchronization and full
+text/image/voice/group-delete audit retention; UI fixtures cover shared badge/profile,
+notification sound/badge, edit payloads, voice preview/cancel/track cleanup and aurora
+night/day behavior. Actual mobile mic, picker, playback and GPU visuals remain to
+be verified on physical devices.

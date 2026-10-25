@@ -1,7 +1,7 @@
 import * as T from './vendor/three.module.js';
-import {surfaceHeight} from './surface.js?v=76';
+import {surfaceHeight} from './surface.js?v=77';
 import {PAD_RADIUS,CRAFT_LAYOUT,TRADE_LAYOUT,padHeightAt} from './surface-layout.js';
-import {settlementSites} from './settlements.js?v=76';
+import {settlementSites} from './settlements.js?v=77';
 // Every route meets the same junction; shop approaches end at the entrance.
 const routeCache=new Map();
 export function roadRoutes(body){if(!body?.solid)return [];if(routeCache.has(body.id))return routeCache.get(body.id);const junction={x:0,z:-20},routes=[];if(body.name==='Earth'){routes.push([{x:0,z:-PAD_RADIUS+.4},junction,{x:0,z:TRADE_LAYOUT.z+4}]);routes.push([junction,{x:CRAFT_LAYOUT.frontX+4,z:-20},{x:CRAFT_LAYOUT.frontX+4,z:CRAFT_LAYOUT.frontZ},{x:CRAFT_LAYOUT.frontX,z:CRAFT_LAYOUT.frontZ}])}else routes.push([{x:0,z:-PAD_RADIUS+.4},junction]);for(const site of settlementSites(body))routes.push([junction,{x:site.x,z:-20},{x:site.x,z:site.z}]);routeCache.set(body.id,routes);return routes}

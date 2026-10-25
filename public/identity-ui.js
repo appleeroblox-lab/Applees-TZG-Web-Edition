@@ -1,0 +1,1 @@
+export function setVerifiedName(node,name,verified=false){node.textContent=name||'Explorer';if(verified===true){const badge=document.createElement('span');badge.className='verifiedBadge';badge.textContent='✓';badge.title='Verified user';badge.setAttribute('aria-label','Verified user');node.append(document.createTextNode(' '),badge)}}

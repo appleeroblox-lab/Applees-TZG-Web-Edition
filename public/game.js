@@ -1,9 +1,10 @@
+import {installControlSizes} from './control-sizes.js?v=60';
 import {GlobalShadows} from './global-shadows.js';
 import {biomeWeather,earthBiome,biomeDestination} from './earth-biomes.js?v=59';
 import {installMobileInput} from './mobile-input.js';
 import {GroundWeather} from './ground-weather.js?v=59';
 import {underWeatherClouds} from './weather-state.js';
-import {DebugMenu} from './debug-menu.js?v=57';
+import {DebugMenu} from './debug-menu.js?v=60';
 import {rotateSubjectOrbit,shipCameraSubject,placeSubjectOrbit,ORBIT_MIN,ORBIT_MAX} from './subject-camera.js';
 import {padHeightAt} from './surface-layout.js';
 import {CockpitLabelMask} from './cockpit-labels.js';
@@ -273,9 +274,7 @@ const launchIcon=$('surfaceLaunchBtn').querySelector('.uiIcon');if(launchIcon)la
 
 if(document.fonts?.ready)document.fonts.ready.then(()=>{if(surface.active)surfaceView.build()});
 
-const controlSizes={jump:76,stick:91};try{const saved=JSON.parse(localStorage.getItem('zero-gravity-controls'));for(const key of ['jump','stick'])if(Number.isFinite(saved?.[key]))controlSizes[key]=clamp(saved[key],key==='jump'?48:60,key==='jump'?112:140)}catch{}
-function applyControlSizes(){document.body.style.setProperty('--jump-size',controlSizes.jump+'px');document.body.style.setProperty('--stick-size',controlSizes.stick+'px');for(const key of ['jump','stick']){$(key+'Size').value=controlSizes[key];$(key+'SizeValue').textContent=controlSizes[key]+' px'}}
-for(const key of ['jump','stick'])$(key+'Size').oninput=e=>{controlSizes[key]=clamp(+e.target.value,key==='jump'?48:60,key==='jump'?112:140);applyControlSizes();try{localStorage.setItem('zero-gravity-controls',JSON.stringify(controlSizes))}catch{}};applyControlSizes();
+installControlSizes(document);
 
 function updateSky(){const p=skyProfile(flight.system);if(activeSkyKey===p.key&&sky?.material.map)return;activeSkyKey=p.key;const old=alternateSky;alternateSky=p.kind==='photo'?null:illustratedGalaxySky(p);const map=alternateSky||milkyMap;if(map){if(sky){sky.material.map=map;sky.material.needsUpdate=true}surfaceView.setSky(map);renderer.skyImage=map.image}if(old)old.dispose()}
 for(const system of [...new Set(bodies.map(b=>b.system))])if(![...$('systemFilter').children].some(o=>o.value===system)){const option=document.createElement('option');option.value=system;option.textContent=system.replace('Galaxy:','Galaxy · ');$('systemFilter').append(option)}

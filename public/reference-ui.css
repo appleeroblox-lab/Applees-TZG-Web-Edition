@@ -262,3 +262,7 @@ body.referenceHUD #settingsDialog #refreshGame{grid-column:1/-1}
 #boostBtn[hidden],#boostTimerTrack[hidden],#brakePad[hidden]{display:none!important}
 
 body.referenceHUD #boostTimerTrack{width:140px;max-width:50vw;height:14px;margin:5px auto 0}#boostTimerText{font-size:8px;line-height:12px}
+
+/* Scale each control group independently; retain its bottom/side anchor and drag position. */
+body.referenceHUD #flightPad{transform-origin:bottom left;scale:var(--ship-left-scale,1)}
+body.referenceHUD #flightRight{transform-origin:bottom right;scale:var(--ship-right-scale,1)}

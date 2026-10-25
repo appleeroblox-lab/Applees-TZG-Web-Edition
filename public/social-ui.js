@@ -1,6 +1,6 @@
-import {chatDialog,closeChatDialogs} from './chat-dialog.js?v=78';
-import {setVerifiedName} from './identity-ui.js?v=78';
-import {PhotoLibrary} from './photo-library.js?v=78';
+import {chatDialog,closeChatDialogs} from './chat-dialog.js?v=79';
+import {setVerifiedName} from './identity-ui.js?v=79';
+import {PhotoLibrary} from './photo-library.js?v=79';
 const $=id=>document.getElementById(id);
 export const APPEAL_URL='https://discord.gg/rPdRRHSkmw';
 export const DEFAULT_AVATAR='icons/default-profile.svg';

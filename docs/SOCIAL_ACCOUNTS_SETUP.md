@@ -307,3 +307,11 @@ Friend and group conversations now share the Chats inbox. Room details and group
 Own message actions live in a collapsed “…” menu. Editing opens in the conversation composer with the complete text and existing photo; text-only messages hide image-replacement controls. Delete and report confirmations use in-game panels. Chat, social, profile and account overlays are hidden during startup and rotate-device warnings.
 
 No additional SQL is required beyond migration 010. This update preserves the existing server authorization and original-message moderation audit.
+
+## v79 — pinned composer, header details and conversation previews
+
+The conversation uses three grid rows: compact header, flexible scrolling messages, and a composer anchored to the bottom. The stale height limit on the conversation body is removed. A “…” menu beside the conversation title opens member details and group controls without occupying a permanent row.
+
+Chats shows friend and group conversations with latest-message previews instead of type labels. Authorized message reads run with at most three concurrent requests; previews are cached briefly and invalidated by notification cursors. Newest visible conversations sort first. Friends has its own page/button, separate from Chats, Requests and Blocked. No new SQL is required.
+
+Checked the rendered layout at 1536×690 and 844×390, including composer position, scrolling, details toggle and rotation-warning overlay behavior. These browser checks use fixture account data and do not exercise real-device media or the live database.

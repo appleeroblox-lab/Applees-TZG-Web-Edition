@@ -1,5 +1,5 @@
 {
-  "version": 63,
+  "version": 64,
   "files": [
     "account.css",
     "atlas-3d.js",
@@ -279,7 +279,9 @@
     "weather-precipitation.js",
     "weather-state.js",
     "wood-models.js",
-    "world-precipitation.js"
+    "world-precipitation.js",
+    "social-ui.js",
+    "debug-moderation.js"
   ],
   "versionedFiles": [
     "account.css",
@@ -335,6 +337,8 @@
     "vendor/supabase.js",
     "water-reflection.js",
     "weather-precipitation.js",
-    "world-precipitation.js"
+    "world-precipitation.js",
+    "social-ui.js",
+    "debug-moderation.js"
   ]
 }

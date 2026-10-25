@@ -27,6 +27,10 @@ export class SupabaseDebugService{
    catch(e){await this.send('/auth/v1/logout?scope=local',{},session.access_token).catch(()=>{});throw e}
    this.token=session.access_token;this.expires=Date.now()+Number(session.expires_in)*1000;return {ok:true};
   }
+  if(action==='accounts'){
+   if(!this.token||Date.now()>=this.expires)throw Object.assign(Error('Developer session expired. Please sign in again.'),{status:401});
+   try{return await this.send('/rest/v1/rpc/tzg_debug_accounts',{p_offset:data.offset||0,p_search:String(data.search||'').slice(0,100)},this.token)}catch(e){if(e.status===401||e.status===403){this.token=null;this.expires=0;e.status=401}throw e}
+  }
   if(action==='command'){
    if(!this.token||Date.now()>=this.expires){this.token=null;throw Object.assign(Error('Developer session expired. Please sign in again.'),{status:401})}
    const command=parseDebugCommand(data.command);

@@ -1,6 +1,7 @@
 {
-  "version": 61,
+  "version": 62,
   "files": [
+    "account.css",
     "atlas-3d.js",
     "atmosphere-effects.js",
     "black-hole-effects.js",
@@ -11,6 +12,7 @@
     "building.js",
     "camera-horizon.js",
     "catalog.js",
+    "cloud-save.js",
     "cockpit-labels.js",
     "compatibility.js",
     "connected-glass.js",
@@ -122,6 +124,7 @@
     "models/trading-hall.json",
     "performance.js",
     "placement-rules.js",
+    "player-account.js",
     "pool-shape.js",
     "pool-splashes.js",
     "post-effects.js",
@@ -266,6 +269,7 @@
     "touch-buttons.js",
     "trade-ui.js",
     "tree-data.js",
+    "vendor/supabase.js",
     "vendor/three.module.js",
     "visuals.js",
     "warp-hud.js",
@@ -278,8 +282,10 @@
     "world-precipitation.js"
   ],
   "versionedFiles": [
+    "account.css",
     "boot-loader.js",
     "building.js",
+    "cloud-save.js",
     "compatibility.js",
     "control-sizes.js",
     "crew.js",
@@ -292,6 +298,7 @@
     "forestry.js",
     "game.js",
     "ground-weather.js",
+    "player-account.js",
     "pool-shape.js",
     "pool-splashes.js",
     "prospecting.js",
@@ -325,6 +332,7 @@
     "surface-streaming.js",
     "surface-view.js",
     "tree-data.js",
+    "vendor/supabase.js",
     "water-reflection.js",
     "weather-precipitation.js",
     "world-precipitation.js"

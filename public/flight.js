@@ -25,7 +25,7 @@ export function safeArrival(b,from,bodies,margin){
  return end;
 }
 export class Flight {
- constructor(bodies){this.bodies=bodies;this.pos=V(30,18,165);this.vel=V();this.q=attitude(this.pos,V());this.system='Sol';this.assist=true;this.gear=false;this.landed=null;this.nav=null;this.event=null;this.throttle=0;this.sensitivity=1;this.rotationSpeed=1;this.input={x:0,y:0,z:0,pitch:0,yaw:0,roll:0,boost:false,brake:false}}
+ constructor(bodies){this.bodies=bodies;this.pos=V(30,18,165);this.vel=V();this.q=attitude(this.pos,V());this.system='Sol';this.assist=true;this.gear=false;this.landed=null;this.nav=null;this.event=null;this.throttle=0;this.sensitivity=5;this.rotationSpeed=2;this.input={x:0,y:0,z:0,pitch:0,yaw:0,roll:0,boost:false,brake:false}}
  get active(){return this.bodies.filter(b=>b.system===this.system)}
  nearest(){return this.active.reduce((a,b)=>this.pos.distanceTo(a.pos)-a.r<this.pos.distanceTo(b.pos)-b.r?a:b)}
  cancel(){if(this.surface?.active){this.surface.abort();this.nav=null;this.throttle=0;return}this.nav=null;this.vel.set(0,0,0);this.throttle=0;this.cruiseSpeed=0;this.speedCapHeld=0;for(const b of this.active){if(['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type))continue;const normal=this.pos.clone().sub(b.pos);if(normal.length()<b.r+clearance){if(normal.lengthSq()<.01)normal.set(0,1,0);this.pos.copy(b.pos).addScaledVector(normal.normalize(),b.r+clearance+.01)}}}

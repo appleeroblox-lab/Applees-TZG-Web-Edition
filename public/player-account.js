@@ -1,6 +1,6 @@
-import {AvatarCropEditor} from './avatar-crop.js?v=74';
-import {PhotoLibrary} from './photo-library.js?v=74';
-import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=74';
+import {AvatarCropEditor} from './avatar-crop.js?v=75';
+import {PhotoLibrary} from './photo-library.js?v=75';
+import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=75';
 import {CloudSave} from './cloud-save.js?v=62';
 const $=id=>document.getElementById(id);
 const escapeError=e=>String(e?.message||'Account service unavailable. Please retry.');
@@ -61,5 +61,5 @@ export class PlayerAccount{
  changed(){this.cloud?.changed()}
  async retry(){if(this.busy)return;this.busy=true;try{if(this.cloud?.ready){await this.rpc('tzg_player_heartbeat');await this.cloud.flush();this.ready=true;this.block(!this.gate.hidden);$('accountStatus').textContent='Server save confirmed. You can continue.';this.renderConnected()}else if(this.client)await this.connect();else await this.init()}catch(e){this.error(e)}finally{this.busy=false}}
  accountChanged(){this.ready=false;this.needsReload=true;this.cloud?.dispose();this.chat.stop();this.loadedId=null;this.error(Error('Account changed in another tab. Reload to load the correct account.'))}
- async logout(){if(this.busy)return;this.busy=true;try{if(this.cloud?.ready&&!this.needsReload)await this.cloud.flush();await this.onLogout?.();this.loadedId=null;const {error}=await this.client.auth.signOut({scope:'local'});if(error)throw error;this.cloud?.dispose();this.chat.stop();this.ready=false;location.reload()}catch(e){this.error(e)}finally{this.busy=false}}
+ async logout(){if(this.busy)return;this.busy=true;try{if(this.cloud?.ready&&!this.needsReload)await this.cloud.flush();await this.onLogout?.();try{await this.rpc('tzg_player_session_end')}catch{}this.loadedId=null;const {error}=await this.client.auth.signOut({scope:'local'});if(error)throw error;this.cloud?.dispose();this.chat.stop();this.ready=false;location.reload()}catch(e){this.error(e)}finally{this.busy=false}}
 }

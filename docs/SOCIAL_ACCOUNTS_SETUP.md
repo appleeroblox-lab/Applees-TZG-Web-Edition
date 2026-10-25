@@ -154,3 +154,40 @@ migration, second-device takeover, rejected old-device writes, private-table
 permissions and saved bio reload; nondegenerate ship faces have unit normals;
 mobile and desktop mocked-render startup/control/resume tests. Real GPU/device
 visual verification remains outstanding.
+
+### v75: current-play chat, screenshots and presence
+
+Run `202610250008_chat_images_presence.sql` in
+https://supabase.com/dashboard/project/zwtcytzaozysxiqixihk/sql/new . It includes
+004–007 and can be applied after 003 even if those updates were skipped.
+
+Chat takes a server cursor when gameplay connects and displays only messages
+sent after that cursor. Opening/closing the chat does not reset the cursor.
+Authenticated players can select screenshots through the game gallery, preview
+and remove an attachment, then explicitly send it. Images are rasterized to JPEG,
+kept at their original aspect ratio (up to 768px, 160000 data-URL characters),
+and retrieved separately from message polling. Existing text filter and rate limits
+also apply to screenshot captions. Image pixels are not automatically moderated.
+Reports preserve screenshot evidence even after the original chat message expires.
+Developer-only Reports renders that evidence; public chat returns no IDs/emails
+or usernames. Server-generated name colors depend on usernames without exposing
+them. Closed chat accumulates an unread badge and plays a short notification tone
+once browser audio has been enabled by a player gesture.
+
+Developer account rows/details show recently active Online/Offline state. A valid
+current game/Auth session plus a heartbeat within 30 seconds is required. Explicit
+logout clears presence; abruptly closed/offline devices age out. Gameplay heartbeats
+run every 6–8 seconds while visible. The account menu now uses a person icon.
+
+New preferences default to look sensitivity 5, rotation speed 2, left ship controls
+125%, right 100%, Jump 100px and Thumbstick 118px. Existing explicitly saved
+preferences remain adjustable and retained. Debug UI uses the main blue palette.
+The standing ship model bounds are centered over the launch pad. Landable rocky
+planet categories use game radius 32, just below Mars (33.9); Mars, moons, asteroids,
+stars and gas/ice giants keep their radii. This is a gameplay scale, not physical size.
+
+Validation includes fresh-session cursor, image preview/send/render, unread reset,
+colors, new defaults/exempt bodies, desktop model/pad centering, integration SQL
+repeatability, image validation/report retention, online/logout and existing
+account/chat/moderation/control regression checks. Actual mobile picker, sound and
+GPU visual appearance still require device verification.

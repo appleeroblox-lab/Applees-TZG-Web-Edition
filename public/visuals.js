@@ -3,7 +3,7 @@ import {bodySphereGeometry} from './texture-geometry.js';
 import {createBlackHole} from './black-hole-effects.js';
 import {starShineColor} from './star-colors.js';
 import * as T from './vendor/three.module.js';
-import {loadBlenderModel} from './models.js?v=74';
+import {loadBlenderModel} from './models.js?v=75';
 export function random(seed=1){return()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}}
 function planetTexture(b){
  const rand=random([...b.name].reduce((s,c)=>s+c.charCodeAt(0)*97,99)),c=document.createElement('canvas');c.width=1024;c.height=512;const ctx=c.getContext('2d');ctx.fillStyle=b.color;ctx.fillRect(0,0,1024,512);
@@ -43,14 +43,14 @@ export function makeShip(){
  const ship=new T.Group(),model=new T.Group(),gear=new T.Group(),exhaust=new T.Group();ship.add(model,gear,exhaust);
  const hull=new T.Mesh(new T.BoxGeometry(2.3,1.2,7.4),new T.MeshStandardMaterial({color:0xe9f1f7,roughness:.45}));hull.position.set(0,-.7,-.8);model.add(hull);
  const wing=new T.Mesh(new T.BoxGeometry(7.4,.2,2.5),new T.MeshStandardMaterial({color:0xcd2541}));wing.position.set(0,-.76,.9);model.add(wing);
- const ready=loadBlenderModel(model,'player-ship');
+ const padOffset=new T.Vector3();const ready=loadBlenderModel(model,'player-ship').then(ok=>{const box=new T.Box3().setFromObject(model),center=box.getCenter(new T.Vector3());padOffset.set(-center.x,0,-center.y);return ok});
  const flames=[],engines=[],verticalFlames=[];
  for(const x of [-.7,.7]){
   const flame=new T.Mesh(new T.ConeGeometry(.29,2.8,20).rotateX(Math.PI/2).translate(0,0,1.4),new T.MeshBasicMaterial({color:0x9feaff,transparent:true,opacity:.65,blending:T.AdditiveBlending,depthWrite:false}));flame.position.set(x,-.58,4.17);flame.visible=false;exhaust.add(flame);flames.push(flame);
   const halo=new T.Sprite(new T.SpriteMaterial({map:glow,color:0x9ee7ff,transparent:true,blending:T.AdditiveBlending,depthWrite:false}));halo.position.copy(flame.position);halo.scale.setScalar(1.1);halo.visible=false;exhaust.add(halo);engines.push(halo);
  }
  ship.userData.model='TZG Player Ship · uploaded Blender model';
- return {ship,model,gear,flames,engines,verticalFlames,exhaust,ready,subjectCenter:new T.Vector3(0,.2775,-.176),contactHeight:4.23,cockpitPosition:new T.Vector3(0,.29,-.12),collision:{halfHull:1.4,nose:-4.5,tail:4.2,halfWing:3.7,wingFront:-.72,wingBack:2.35}};
+ return {ship,model,gear,flames,engines,verticalFlames,exhaust,ready,padOffset,subjectCenter:new T.Vector3(0,.2775,-.176),contactHeight:4.23,cockpitPosition:new T.Vector3(0,.29,-.12),collision:{halfHull:1.4,nose:-4.5,tail:4.2,halfWing:3.7,wingFront:-.72,wingBack:2.35}};
 }
 export function makeStars(){const rand=random(317),g=new T.BufferGeometry(),p=[],colors=[];for(let i=0;i<220;i++){const v=new T.Vector3(rand()-.5,rand()-.5,rand()-.5).normalize().multiplyScalar(18000);p.push(...v.toArray());const c=new T.Color().setHSL(.58+rand()*.08,.12,.7+rand()*.3);colors.push(c.r,c.g,c.b)}g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setAttribute('color',new T.Float32BufferAttribute(colors,3));return new T.Points(g,new T.PointsMaterial({map:glow,size:7,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:.8,blending:T.AdditiveBlending,depthWrite:false}))}
 

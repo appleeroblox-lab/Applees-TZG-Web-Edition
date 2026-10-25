@@ -1,6 +1,6 @@
 // Keep existing jump/stick preferences when adding independently sized ship controls.
 export function installControlSizes(doc,storage){
- const specs={jump:{value:76,min:48,max:112,css:'--jump-size'},stick:{value:91,min:60,max:140,css:'--stick-size'},shipLeft:{value:100,min:60,max:140,css:'--ship-left-scale'},shipRight:{value:100,min:60,max:140,css:'--ship-right-scale'}};
+ const specs={jump:{value:100,min:48,max:112,css:'--jump-size'},stick:{value:118,min:60,max:140,css:'--stick-size'},shipLeft:{value:125,min:60,max:140,css:'--ship-left-scale'},shipRight:{value:100,min:60,max:140,css:'--ship-right-scale'}};
  const clamp=(value,spec)=>Math.max(spec.min,Math.min(spec.max,value));
  if(!storage)try{storage=globalThis.localStorage}catch{}
  let saved;try{saved=JSON.parse(storage.getItem('zero-gravity-controls'))}catch{}

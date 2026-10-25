@@ -31,7 +31,7 @@ export class SupabaseDebugService{
    if(!this.token||Date.now()>=this.expires)throw Object.assign(Error('Developer session expired. Please sign in again.'),{status:401});
    try{return await this.send('/rest/v1/rpc/tzg_debug_accounts',{p_offset:data.offset||0,p_search:String(data.search||'').slice(0,100)},this.token)}catch(e){if(e.status===401||e.status===403){this.token=null;this.expires=0;e.status=401}throw e}
   }
-  const routes={account:['tzg_debug_account',{p_target:data.target}], 'account-action':['tzg_debug_account_action',{p_target:data.target,p_action:data.action,p_reason:data.reason,p_data:data.data||{}}], reports:['tzg_debug_reports',{p_offset:data.offset||0,p_status:data.status||'open'}], 'review-report':['tzg_debug_report_review',{p_report:data.report,p_status:data.status}]};
+  const routes={'reports-status':['tzg_debug_reports_status',{p_after:data.after||'0'}],account:['tzg_debug_account',{p_target:data.target}], 'account-action':['tzg_debug_account_action',{p_target:data.target,p_action:data.action,p_reason:data.reason,p_data:data.data||{}}], reports:['tzg_debug_reports',{p_offset:data.offset||0,p_status:data.status||'open'}], 'review-report':['tzg_debug_report_review',{p_report:data.report,p_status:data.status}]};
   if(routes[action]){if(!this.token||Date.now()>=this.expires)throw Object.assign(Error('Developer session expired. Please sign in again.'),{status:401});try{return await this.send('/rest/v1/rpc/'+routes[action][0],routes[action][1],this.token)}catch(e){if(e.status===401||e.status===403){this.token=null;this.expires=0;e.status=401}throw e}}
   if(action==='command'){
    if(!this.token||Date.now()>=this.expires){this.token=null;throw Object.assign(Error('Developer session expired. Please sign in again.'),{status:401})}

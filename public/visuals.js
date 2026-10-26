@@ -3,7 +3,7 @@ import {bodySphereGeometry} from './texture-geometry.js';
 import {createBlackHole} from './black-hole-effects.js';
 import {starShineColor} from './star-colors.js';
 import * as T from './vendor/three.module.js';
-import {loadBlenderModel} from './models.js?v=80';
+import {loadBlenderModel} from './models.js?v=81';
 export function random(seed=1){return()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}}
 function planetTexture(b){
  const rand=random([...b.name].reduce((s,c)=>s+c.charCodeAt(0)*97,99)),c=document.createElement('canvas');c.width=1024;c.height=512;const ctx=c.getContext('2d');ctx.fillStyle=b.color;ctx.fillRect(0,0,1024,512);

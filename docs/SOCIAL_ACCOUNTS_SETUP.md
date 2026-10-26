@@ -325,3 +325,16 @@ Own-message “…” buttons open a separate positioned menu in the document ov
 Conversation rows show unread message counts. Chats and the party button count conversations with unread messages, rather than summing messages: two conversations with 2 and 5 messages show 2 and 5 on their rows and 2 on the outer badges. Friend requests have a separate Requests badge. Opening messages clears that conversation's unread count; viewing info does not. The existing notification tone plays on increases/new requests after audio is unlocked by a player gesture, without repeating on unchanged polls.
 
 No new SQL is required. Interaction tests cover counts, notification deduplication, read clearing, draft preservation and portal menus. Rendered checks at 1536×690 and 844×390 cover the bottom composer, info-page replacement, menu position, Friends heading spacing and Leave group padding.
+
+## v81 — profile photos, GIFs, emoji and public discovery
+
+Run the complete [011 migration](../supabase/migrations/202610260011_discovery_gifs.sql) in the [Supabase SQL Editor](https://supabase.com/dashboard/project/zwtcytzaozysxiqixihk/sql/new), then refresh the v81 game. It includes migration 010 and can be repeated. New RPCs and GIF acceptance need this server update; no service-role credential belongs in the browser.
+
+- Profile photos appear beside private/group messages and in DM conversation rows. Global messages retain their sender photos.
+- Image attachment menus also accept animated GIF files, preserving bytes and animation instead of rasterizing the first frame. Limit: 1 MB and 1024×1024. GIF images remain in moderator report evidence and original-message audit history. SVG/HTML media are rejected.
+- All composers and the message editor have a built-in emoji picker with categories and search. Emoji are inserted at the text selection/caret. No third-party API key is required.
+- Party & Friends is centered on desktop and mobile. The account button toggles its own panel closed.
+- Player search matches literal case-insensitive username substrings from two characters onward, with pages of 20 results. Public identities contain no player UUID or email. Blocked/deleted/banned accounts are excluded.
+- Use the search selector or Find public groups to discover public groups. Groups remain private unless their owner chooses Group info → Owner controls → Make group public. Members can join public groups up to the existing ten-player cap. Server row locks, group bans and owner blocks protect joining; nonmembers cannot read messages until joining. Public search only exposes the group's name, bio, image and member count. Owners can make groups private again; existing memberships remain.
+
+Validation: real PostgreSQL-compatible PGlite tests cover substring search, privacy/authorization, visibility, public joining and cap, GIF send/edit/report/delete preservation, plus repeatable upgrades from migration 003. Browser fixtures at 1536×690 and 844×390 cover centering, composer geometry, avatars, emoji insertion and typed discovery. Real-device image picking remains browser controlled.

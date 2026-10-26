@@ -1,4 +1,4 @@
-import {surfaceHeight} from './surface.js?v=90';
+import {surfaceHeight} from './surface.js?v=91';
 const cache=new Map();
 function hash(s){let h=2166136261;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0}
 export function settlementSites(body){if(!body?.solid)return [];const key=body.id+'|'+body.name;if(cache.has(key))return cache.get(key);const choices=[];for(let cz=-15;cz<=15;cz++)for(let cx=-15;cx<=15;cx++){const score=hash(body.id+':village:'+cx+','+cz),x=cx*96+(score%17)-8,z=cz*96+(score%19)-9,r=Math.hypot(x,z);if(r<300||r>1400)continue;choices.push({id:body.id+'@village:'+cx+':'+cz,body:body.id,cx,cz,x,z,score,bounds:{minX:x-32,maxX:x+32,minZ:z-25,maxZ:z+25}})}choices.sort((a,b)=>a.score-b.score);const sites=[];for(const site of choices.filter(s=>Math.hypot(s.x,s.z)<=860)){if(sites.every(s=>Math.hypot(s.x-site.x,s.z-site.z)>240))sites.push(site);if(sites.length===2)break}for(const site of choices){if(sites.some(s=>s.id===site.id))continue;if(sites.every(s=>Math.hypot(s.x-site.x,s.z-site.z)>340))sites.push(site);if(sites.length===8)break}cache.set(key,sites);return sites}

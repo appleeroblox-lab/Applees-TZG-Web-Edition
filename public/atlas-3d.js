@@ -1,4 +1,4 @@
-import {drawMapSky} from './atlas-sky.js?v=90';
+import {drawMapSky} from './atlas-sky.js?v=91';
 import {starShineColor} from './star-colors.js';
 import {drawBodyMap} from './texture-geometry.js';
 import * as T from './vendor/three.module.js';

@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {surfaceHeight} from './surface.js?v=83';
+import {surfaceHeight} from './surface.js?v=84';
 import {padHeightAt} from './surface-layout.js';
 import {rainRoof} from './rain-shelter.js';
 import {precipitationCeiling} from './weather-state.js';

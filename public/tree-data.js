@@ -1,8 +1,8 @@
-import {onSurfaceRoad} from './surface-roads.js?v=83';
+import {onSurfaceRoad} from './surface-roads.js?v=84';
 import {earthBiome} from './earth-biomes.js?v=59';
 import * as T from './vendor/three.module.js';
-import {settlementContains} from './settlements.js?v=83';
-import {surfaceHeight} from './surface.js?v=83';
+import {settlementContains} from './settlements.js?v=84';
+import {surfaceHeight} from './surface.js?v=84';
 import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 export const TREE_HP=100,TREE_REACH=6;
 export function sceneryPoints(body,cx,cz,count){const seed=Math.sin(cx*127.1+cz*311.7+body.id.length*43)*43758.5453,random=i=>{const n=Math.sin(seed+i*78.233)*43758.5453;return n-Math.floor(n)},out=[];for(let i=0;i<count;i++){const x=cx*96+(random(i*3)-.5)*90,z=cz*96+(random(i*3+1)-.5)*90;if(onSurfaceRoad(body,x,z,3)||settlementContains(body,x,z,4)||Math.hypot(x,z)<PAD_RADIUS+8||Math.hypot(x-PAD_SIGN.x,z-PAD_SIGN.z)<6||body.name==='Earth'&&Math.abs(x)<40&&z<0&&z>-60)continue;out.push({id:body.id+'@tree:'+cx+':'+cz+':'+i,i,x,z,y:surfaceHeight(x,z),size:.5+random(i*3+2)*1.2,vegetation:body.name==='Earth'?earthBiome(x,z).tree:null,tree:body.name==='Earth'&&earthBiome(x,z).tree!=='cactus'&&i%3!==0})}return out}

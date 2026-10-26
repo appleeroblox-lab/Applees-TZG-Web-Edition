@@ -1,9 +1,9 @@
 import {biomeColor,biomeWeather} from './earth-biomes.js?v=59';
-import {sceneryPoints} from './tree-data.js?v=83';
+import {sceneryPoints} from './tree-data.js?v=84';
 import {graphicsPolicy} from './graphics-policy.js';
 import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 import * as T from './vendor/three.module.js';
-import {surfaceHeight} from './surface.js?v=83';
+import {surfaceHeight} from './surface.js?v=84';
 import {terrainColor} from './surface-palette.js';
 export const CHUNK_SIZE=96;
 export function chunkKey(x,z){return Math.floor((x+48)/96)+','+Math.floor((z+48)/96)}

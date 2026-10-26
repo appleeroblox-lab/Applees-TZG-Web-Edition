@@ -3,7 +3,7 @@ import {surfaceGravity as mapGravity} from './surface.js?v=91';
 import {installDeviceSettings} from './device-settings.js?v=91';
 import {installLocalization} from './localization.js?v=91';
 let devicePreferences=null,restoringDevicePreferences=false;
-import {PlayerAccount} from './player-account.js?v=91';
+import {PlayerAccount} from './player-account.js?v=92';
 import {cloudInventory} from './cloud-save.js?v=91';
 import {SupabaseDebugService} from './supabase-debug.js?v=91';
 import {supabaseConfig} from './supabase-config.js?v=61';

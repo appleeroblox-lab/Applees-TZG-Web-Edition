@@ -1,5 +1,5 @@
 {
-  "version": 85,
+  "version": 86,
   "files": [
     "account.css",
     "atlas-3d.js",
@@ -15,6 +15,7 @@
     "catalog.js",
     "chat-dialog.js",
     "chat-media.js",
+    "chat-phrase-templates.js",
     "chat-phrasebook.js",
     "chat-translation.js",
     "cloud-save.js",
@@ -87,7 +88,9 @@
     "icons/search.svg",
     "icons/settings.svg",
     "identity-ui.js",
+    "image-viewer.js",
     "images/loading-preview.jpg",
+    "interface-v86.css",
     "inventory-ui.js",
     "item-images.js",
     "items/concrete-black.png",
@@ -300,6 +303,7 @@
     "ui-offline-translations.js",
     "ui-strings.js",
     "ui-v85-translations.js",
+    "ui-v86-translations.js",
     "vendor/supabase.js",
     "vendor/three.module.js",
     "visuals.js",

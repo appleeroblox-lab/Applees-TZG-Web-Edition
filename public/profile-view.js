@@ -1,6 +1,6 @@
-import {chatDialog} from './chat-dialog.js?v=85';
-import {setAvatar} from './social-ui.js?v=85';
-import {setVerifiedName} from './identity-ui.js?v=85';
+import {chatDialog} from './chat-dialog.js?v=86';
+import {setAvatar} from './social-ui.js?v=86';
+import {setVerifiedName} from './identity-ui.js?v=86';
 const $=id=>document.getElementById(id);
 export class ProfileView{
  constructor(account){this.account=account;this.root=$('chatPlayerProfile');document.body.append(this.root);this.root.classList.add('sharedPlayerProfile');this.root.setAttribute('role','dialog');this.root.setAttribute('aria-label','Player profile');this.actions=document.createElement('div');this.actions.className='profileActions';this.root.append(this.actions);$('chatProfileFriend').hidden=true;$('chatProfileClose').onclick=()=>this.close();for(const type of ['keydown','keyup','pointerdown'])this.root.addEventListener(type,e=>{if(e.key==='Escape')this.close();e.stopPropagation()})}

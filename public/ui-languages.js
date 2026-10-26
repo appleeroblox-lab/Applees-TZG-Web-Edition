@@ -1,4 +1,4 @@
-import {MYANMAR_EXTRA} from './ui-myanmar-extra.js?v=85';
+import {MYANMAR_EXTRA} from './ui-myanmar-extra.js?v=86';
 // Built-in language choices; all translations are shipped with the game.
 export const LANGUAGE_CODES=['en','my','fr','ja','th'];
 export const MYANMAR_UI={

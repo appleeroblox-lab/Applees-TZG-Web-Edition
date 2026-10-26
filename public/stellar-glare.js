@@ -1,6 +1,6 @@
 import {starShineColor,glowRGBA} from './star-colors.js';
 import * as T from './vendor/three.module.js';
-import {surfaceHeight} from './surface.js?v=85';
+import {surfaceHeight} from './surface.js?v=86';
 // All tests use the same world frame as the rendered scene (including the ship).
 export function glareOccluded(origin,star,bodies,flight,surface,roots=[]){
  const delta=star.pos.clone().sub(origin),distance=delta.length();if(distance<.001)return false;

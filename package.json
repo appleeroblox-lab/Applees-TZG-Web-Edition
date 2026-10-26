@@ -22,7 +22,7 @@
     "test:accounts": "node tests/cloud-save.mjs && node tests/player-account.mjs && node tests/debug-accounts.mjs",
     "test:debug": "node tests/debug-service.mjs && node tests/debug-menu.mjs && node tests/supabase-debug.mjs && node tests/debug-menu-supabase.mjs",
     "test:device-settings": "node tests/device-language.mjs && node tests/language-chat-v84.mjs",
-    "test:social": "node tests/file-picker.mjs && node tests/photo-library.mjs && node tests/avatar-crop.mjs && node tests/social-ui.mjs && node tests/live-chat.mjs && node tests/friends-ui.mjs && node tests/social-v77.mjs && node tests/social-v78.mjs && node tests/social-v79.mjs && node tests/social-v80.mjs && node tests/social-v81.mjs",
+    "test:social": "node tests/file-picker.mjs && node tests/photo-library.mjs && node tests/avatar-crop.mjs && node tests/social-ui.mjs && node tests/live-chat.mjs && node tests/friends-ui.mjs && node tests/social-v77.mjs && node tests/social-v78.mjs && node tests/social-v79.mjs && node tests/social-v80.mjs && node tests/social-v81.mjs && node tests/social-v85.mjs",
     "test:social:sql": "node tests/social-postgres.mjs"
   },
   "dependencies": {

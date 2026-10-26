@@ -1,5 +1,6 @@
 // Exact, authored phrases only. Unknown messages are never guessed or rewritten.
 const rows=[
+['hello space explorers','မင်္ဂလာပါ အာကာသ စူးစမ်းသူတို့','bonjour les explorateurs de l’espace','宇宙探検家の皆さん、こんにちは','สวัสดีนักสำรวจอวกาศทุกคน'],
 ['bro','ဟျောင့်','mec','ブロ','เพื่อน'],
 ['hello','မင်္ဂလာပါ','bonjour','こんにちは','สวัสดี'],
 ['hi','ဟိုင်း','salut','やあ','หวัดดี'],
@@ -56,4 +57,4 @@ const rows=[
 ['please wait','ကျေးဇူးပြုပြီး စောင့်ပါ','attends, s’il te plaît','少し待ってください','กรุณารอสักครู่']
 ];
 const codes=['en','my','fr','ja','th'];const normalize=text=>String(text).normalize('NFKC').trim().toLocaleLowerCase('en').replace(/[’]/g,"'").replace(/[.!?。！？]+$/u,'').replace(/\s+/g,' ');const phrases=new Map();for(const row of rows)for(const phrase of row)if(!phrases.has(normalize(phrase)))phrases.set(normalize(phrase),row);
-export function offlineChatTranslation(text,target){const index=codes.indexOf(target);const row=phrases.get(normalize(text));return index<0||!row?null:row[index]}
+export function offlineChatTranslation(text,target){const index=codes.indexOf(target);if(index<0)return null;const original=String(text||'');const exact=phrases.get(normalize(original));if(exact)return exact[index];const parts=original.split(/(?<=[.!?。！？])\s+|\n+/u).filter(part=>part.trim());if(parts.length<2)return null;const translated=parts.map(part=>phrases.get(normalize(part))?.[index]);return translated.every(Boolean)?translated.join('\n'):null}

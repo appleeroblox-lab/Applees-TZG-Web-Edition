@@ -1,4 +1,4 @@
-import {safeVoice} from './voice-message.js?v=86';
+import {safeVoice} from './voice-message.js?v=87';
 const make=(tag,text)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;return node};
 const clock=value=>{const t=Number.isFinite(value)?Math.max(0,Math.floor(value)):0;return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')};
 export async function transcribeVoice(value,{language='en',signal,onStatus=()=>{}}={}){

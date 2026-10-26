@@ -1,17 +1,19 @@
-import {installDeviceSettings} from './device-settings.js?v=86';
-import {installLocalization} from './localization.js?v=86';
+import {iconButton} from './ui-icons.js?v=87';
+import {surfaceGravity as mapGravity} from './surface.js?v=87';
+import {installDeviceSettings} from './device-settings.js?v=87';
+import {installLocalization} from './localization.js?v=87';
 let devicePreferences=null,restoringDevicePreferences=false;
-import {PlayerAccount} from './player-account.js?v=86';
+import {PlayerAccount} from './player-account.js?v=87';
 import {cloudInventory} from './cloud-save.js?v=62';
-import {SupabaseDebugService} from './supabase-debug.js?v=86';
+import {SupabaseDebugService} from './supabase-debug.js?v=87';
 import {supabaseConfig} from './supabase-config.js?v=61';
-import {installControlSizes} from './control-sizes.js?v=86';
+import {installControlSizes} from './control-sizes.js?v=87';
 import {GlobalShadows} from './global-shadows.js';
 import {biomeWeather,earthBiome,biomeDestination} from './earth-biomes.js?v=59';
 import {installMobileInput} from './mobile-input.js';
-import {GroundWeather} from './ground-weather.js?v=86';
+import {GroundWeather} from './ground-weather.js?v=87';
 import {underWeatherClouds} from './weather-state.js';
-import {DebugMenu} from './debug-menu.js?v=86';
+import {DebugMenu} from './debug-menu.js?v=87';
 import {rotateSubjectOrbit,shipCameraSubject,placeSubjectOrbit,ORBIT_MIN,ORBIT_MAX} from './subject-camera.js';
 import {padHeightAt} from './surface-layout.js';
 import {CockpitLabelMask} from './cockpit-labels.js';
@@ -19,41 +21,41 @@ import {installTouchButtons} from './touch-buttons.js?v=57';
 import {keyboardCode,pressKeyboardKey,releaseKeyboardKey} from './keyboard-input.js';
 import {rotationSpeed} from './ship-rotation.js';
 import {BodyTransition} from './body-transition.js';
-import {Forestry} from './forestry.js?v=86';
+import {Forestry} from './forestry.js?v=87';
 import {nearbyPlanetUp} from './camera-horizon.js';
 import {updateWarpHUD} from './warp-hud.js';
 import {graphicsPolicy} from './graphics-policy.js';
 import {TradeUI} from './trade-ui.js';
-import {Building} from './building.js?v=86';
-import {SurfaceStream} from './surface-streaming.js?v=86';
+import {Building} from './building.js?v=87';
+import {SurfaceStream} from './surface-streaming.js?v=87';
 import * as T from './vendor/three.module.js';
-import {bodies,earth,AU} from './catalog.js?v=86';
-import {Flight,V,attitude,clearance} from './flight.js?v=86';
+import {bodies,earth,AU} from './catalog.js?v=87';
+import {Flight,V,attitude,clearance} from './flight.js?v=87';
 import {TerrainManager,surfacePadding,terrainHeight} from './terrain.js';
-import {CompatibilityRenderer} from './compatibility.js?v=86';
-import {Economy,TRADER} from './economy.js?v=86';
-import {Prospecting} from './prospecting.js?v=86';
+import {CompatibilityRenderer} from './compatibility.js?v=87';
+import {Economy,TRADER} from './economy.js?v=87';
+import {Prospecting} from './prospecting.js?v=87';
 import {InventoryUI} from './inventory-ui.js';
 import {GameSound} from './sound.js?v=59';
-import {Crew} from './crew.js?v=86';
+import {Crew} from './crew.js?v=87';
 import {setupIcons} from './icons.js';
-import {SurfaceSession,surfaceHeight} from './surface.js?v=86';
-import {SurfaceView} from './surface-view.js?v=86';
-import {Explorer,formatSpeed} from './explorer.js?v=86';
+import {SurfaceSession,surfaceHeight} from './surface.js?v=87';
+import {SurfaceView} from './surface-view.js?v=87';
+import {Explorer,formatSpeed} from './explorer.js?v=87';
 import {TextureCache} from './textures.js';
-import {updateReferenceHUD} from './reference-hud.js?v=86';
+import {updateReferenceHUD} from './reference-hud.js?v=87';
 import {SystemAtlas} from './atlas-3d.js?v=57';
 import {ShipBoost} from './boost.js';
 import {updateBlackHole} from './black-hole-effects.js';
 import {holdVelocity,setSpeedCommand} from './speed-control.js';
 import {skyProfile,illustratedGalaxySky} from './sky-profiles.js';
-import {StellarGlare} from './stellar-glare.js?v=86';
+import {StellarGlare} from './stellar-glare.js?v=87';
 import {PostEffects} from './post-effects.js';
-import {EarthWeatherFX} from './earth-environment.js?v=86';
+import {EarthWeatherFX} from './earth-environment.js?v=87';
 import {lightingProfile} from './lighting.js';
 import {resolutionRatio,clampPanel} from './performance.js';
 import {localMoonFamily,bodyLabelAllowed,labelProjection,labelOccluded} from './body-labels.js';
-import {makeWorld,makeShip,makeStars,glow,random} from './visuals.js?v=86';
+import {makeWorld,makeShip,makeStars,glow,random} from './visuals.js?v=87';
 const $=id=>document.getElementById(id),touch=matchMedia('(pointer:coarse)').matches,clamp=T.MathUtils.clamp;
 let wasWalkingAirborne=false,stepAt=0,lastFootMaterial='grass';
 const cloudAccounts=!!globalThis.location?.hostname;let playerAccount=null,accountLocked=cloudAccounts;
@@ -150,9 +152,9 @@ function restoreHUD(){for(const id of ['shipPanel','shipStatusPanel','targetPane
 $('hudBtn').onclick=()=>open('hudDialog');$('showHudBtn').onclick=$('restoreHudBtn').onclick=restoreHUD;
 $('layoutBtn').onclick=()=>{layoutMode=!layoutMode;clearInputs();document.body.classList.toggle('layoutMode',layoutMode);$('layoutBtn').classList.toggle('active',layoutMode);toast(layoutMode?'Drag dotted headers or outlined controls. Tap ⠿ when done.':'HUD positions saved');storeLayout()};$('editHudBtn').onclick=()=>{closeDialog($('hudDialog'));if(!layoutMode)$('layoutBtn').click()};$('resetLayoutBtn').onclick=()=>{layouts={};for(const id of draggable)$(id).removeAttribute('style');restoreHUD();storeLayout();toast('HUD layout and visibility reset')};
 
-let tab=target.system,selected=target;function filtered(){const q=$('search').value.trim().toLowerCase();const kind=$('objectFilter').value||'all';return bodies.filter(b=>(!!q||b.system===tab||(tab==='Blackholes'&&b.type==='BLACK HOLE'))&&(b.name.toLowerCase().includes(q)||b.aliases?.some(a=>a.toLowerCase().includes(q)))&&(kind==='all'||(kind==='PLANET'&&['TERRESTRIAL PLANET','GAS GIANT','ICE GIANT','DWARF PLANET','EXOPLANET','SIMULATED PLANET','DWARF PLANET CANDIDATE','EXOPLANET CANDIDATE'].includes(b.type))||b.type===kind)).sort((a,b)=>$('catalogSort').value==='name'?a.name.localeCompare(b.name):(a.system===flight.system?flight.pos.distanceTo(a.pos):Infinity)-(b.system===flight.system?flight.pos.distanceTo(b.pos):Infinity))}function selectInfo(){$('selection').querySelector('h2').textContent=selected.name;const distance=selected.system===flight.system?distanceText(flight.pos.distanceTo(selected.pos)-selected.r):'INTERSTELLAR';$('selection').querySelector('p').textContent=(selected.fictional?'SIMULATED / FICTIONAL · ':'')+selected.desc+' · '+distance}
+let tab=target.system,selected=target;function filtered(){const q=$('search').value.trim().toLowerCase();const kind=$('objectFilter').value||'all';return bodies.filter(b=>(!!q||b.system===tab||(tab==='Blackholes'&&b.type==='BLACK HOLE'))&&(b.name.toLowerCase().includes(q)||b.aliases?.some(a=>a.toLowerCase().includes(q)))&&(kind==='all'||(kind==='PLANET'&&['TERRESTRIAL PLANET','GAS GIANT','ICE GIANT','DWARF PLANET','EXOPLANET','SIMULATED PLANET','DWARF PLANET CANDIDATE','EXOPLANET CANDIDATE'].includes(b.type))||b.type===kind)).sort((a,b)=>$('catalogSort').value==='name'?a.name.localeCompare(b.name):(a.system===flight.system?flight.pos.distanceTo(a.pos):Infinity)-(b.system===flight.system?flight.pos.distanceTo(b.pos):Infinity))}function selectInfo(){$('selection').querySelector('h2').textContent=selected.name;$('mapSelectedType').textContent=selected.type;$('mapSelectedSystem').textContent=selected.system===flight.system?'Local System':selected.system;$('mapSelectedDistance').textContent=selected.system===flight.system?distanceText(Math.max(0,flight.pos.distanceTo(selected.pos)-selected.r)):'—';$('mapSelectedRadius').textContent=((selected.physicalRadius??selected.r)*100).toLocaleString(undefined,{maximumFractionDigits:1})+' km';$('mapSelectedGravity').textContent=selected.solid?(mapGravity(selected)/9.81).toFixed(2)+' g':'—';const distance=selected.system===flight.system?distanceText(flight.pos.distanceTo(selected.pos)-selected.r):'INTERSTELLAR';$('selection').querySelector('p').textContent=(selected.fictional?'SIMULATED / FICTIONAL · ':'')+selected.desc+' · '+distance}
 function select(b){selected=b;if(tab!==b.system){tab=b.system;$('systemFilter').value=tab;systemAtlas.setSystem(tab)}selectInfo();renderCatalog();drawAtlas()}function renderCatalog(){const rows=filtered(),signature=rows.map(b=>b.id).join('|');if(renderCatalog.signature===signature){[...$('catalog').children].forEach((button,i)=>button.className=rows[i]===selected?'active':'');return}renderCatalog.signature=signature;systemAtlas.thumbnails.clear();$('catalog').replaceChildren();for(const b of rows){const btn=document.createElement('button');btn.className=b===selected?'active':'';const orb=document.createElement('canvas');orb.className='orb';orb.setAttribute('aria-hidden','true');systemAtlas.thumbnail(b,orb);const text=document.createElement('span'),title=document.createElement('b'),sub=document.createElement('small');title.textContent=b.name;sub.textContent=(b.fictional?'SIMULATED · ':'')+b.type;text.append(title,sub);btn.append(orb,text);btn.onclick=()=>select(b);$('catalog').append(btn)}}$('systemFilter').onchange=e=>{tab=e.target.value;$('search').value='';selected=bodies.find(b=>b.system===tab)||selected;selectInfo();renderCatalog();drawAtlas()};$('search').oninput=()=>{renderCatalog();drawAtlas()};document.querySelectorAll('[data-tab]').forEach(btn=>btn.onclick=()=>{tab=btn.dataset.tab;$('systemFilter').value=tab;$('search').value='';document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b===btn));renderCatalog();drawAtlas()});$('selectTarget').onclick=()=>{setTarget(selected);$('mapDialog').close()};
-const systemAtlas=new SystemAtlas($('atlasCanvas'),bodies,b=>select(b));function drawAtlas(){systemAtlas.setSystem(tab);systemAtlas.selected=selected;systemAtlas.requestDraw()}
+const systemAtlas=new SystemAtlas($('atlasCanvas'),bodies,b=>select(b));function drawAtlas(){selectInfo();systemAtlas.thumbnail(selected,$('mapSelectedPreview'));systemAtlas.setSystem(tab);systemAtlas.selected=selected;systemAtlas.requestDraw()}
 let resizeQueued=false,lastViewportWidth=innerWidth,lastViewportHeight=innerHeight;function resizeViewport(){resizeQueued=false;if(window.__tzgFilePickerOpen)return;const width=innerWidth,height=innerHeight;if(width!==lastViewportWidth||height!==lastViewportHeight){lastViewportWidth=width;lastViewportHeight=height;camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height);applyGraphics();if($('mapDialog').open)drawAtlas()}updateRotate()}
 function queueViewportResize(){if(resizeQueued||window.__tzgFilePickerOpen)return;resizeQueued=true;requestAnimationFrame(resizeViewport)}
 addEventListener('resize',queueViewportResize);addEventListener('tzg-file-picker',()=>{clearInputs();updateRotate();if(!window.__tzgFilePickerOpen){clock.getDelta();queueViewportResize()}});screen.orientation?.addEventListener('change',updateRotate);canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();webglLost=true;graphics='Low';$('graphicsSlider').value='0';$('quality').value='Low';save();$('fatal').hidden=false;$('fatal').replaceChildren();const text=document.createElement('p');text.textContent='Graphics paused. Your flight is saved; Safe graphics will be used on restart.';const reload=document.createElement('button');reload.textContent='Restart in Safe graphics';reload.onclick=()=>location.reload();$('fatal').append(text,reload)});canvas.addEventListener('webglcontextrestored',()=>{webglLost=false;$('fatal').hidden=true;applyGraphics();clock.getDelta()});addEventListener('pagehide',()=>{sfx.setActive(false);audio?.suspend().catch(()=>{});save()});addEventListener('blur',()=>{sfx.setActive(false);audio?.suspend().catch(()=>{})});const resumeGameAudio=()=>{const active=!document.hidden;sfx.setActive(active);if(!active)audio?.suspend().catch(()=>{});else if($('audioCheck').checked)audio?.resume().catch(()=>{})};addEventListener('focus',resumeGameAudio);document.addEventListener('visibilitychange',resumeGameAudio);clampLayouts();updateJournal();$('bootStatus').textContent=surface.active?'Ready · '+surface.body.name+' / Pad 01':'Ready · '+flight.system+' system';if(!window.__loadingSources)$('launchBtn').disabled=false;$('launchBtn').textContent='PLAY';$('rendererNote').textContent=compatibility?'Compatibility renderer · simplified graphics': '3D renderer · adaptive terrain';
@@ -320,7 +322,7 @@ function saveVisualSettings(){try{localStorage.setItem('zero-gravity-visual-sett
 $('globalShadow').checked=globalShadow;$('globalShadow').onchange=e=>{globalShadow=e.target.checked;globalShadows.set(globalShadow,graphics);saveVisualSettings()};
 
 if(cloudAccounts){
- playerAccount=new PlayerAccount({config:supabaseConfig,clearControls:clearInputs,resumeLandscape:landscape,snapshot:()=>cloudInventory(economy),hydrate:(state,uid)=>{let world={};try{world=JSON.parse(localStorage.getItem('tzg-world-'+uid))||{}}catch{}const onChange=economy.onChange,onBlast=economy.onBlast;Object.assign(economy,new Economy(bodies,{...world,fp:state.fp,rc:state.rc,inventory:state.inventory}),{onChange,onBlast});inventoryUI?.render(true);updateEconomyHUD()},block:value=>{accountLocked=value;if(value)clearInputs()},onLogout:async()=>{debugMenu.active=false;await debugMenu.api('logout',{}).catch(()=>{})}});
+ playerAccount=new PlayerAccount({config:supabaseConfig,progressSnapshot:()=>[...economy.visited],clearControls:clearInputs,resumeLandscape:landscape,snapshot:()=>cloudInventory(economy),hydrate:(state,uid)=>{let world={};try{world=JSON.parse(localStorage.getItem('tzg-world-'+uid))||{}}catch{}const onChange=economy.onChange,onBlast=economy.onBlast;Object.assign(economy,new Economy(bodies,{...world,fp:state.fp,rc:state.rc,inventory:state.inventory}),{onChange,onBlast});inventoryUI?.render(true);updateEconomyHUD()},block:value=>{accountLocked=value;if(value)clearInputs()},onLogout:async()=>{debugMenu.active=false;await debugMenu.api('logout',{}).catch(()=>{})}});
  playerAccount.init();
 }
 
@@ -332,4 +334,5 @@ requestAnimationFrame(render);
 let deviceStorage;try{deviceStorage=localStorage}catch{deviceStorage={getItem(){return null},setItem(){throw Error('Device storage unavailable')}}}
 $('adaptiveSpeed').checked=explorer.adaptive;$('adaptiveGraphics').checked=adaptiveResolution;
 restoringDevicePreferences=true;try{devicePreferences=installDeviceSettings(document,deviceStorage)}finally{restoringDevicePreferences=false}
+for(const[id,icon]of [['chatToggle','chat'],['friendsBtn','friends'],['accountBtn','account'],['mapBtn','globe'],['menuBtn','more'],['railSearch','search'],['selectTarget','globe'],['addStop','add-friend']]){const node=$(id);if(['chatToggle','friendsBtn','accountBtn','mapBtn','menuBtn'].includes(id)){node.querySelectorAll('.uiIcon,svg').forEach(n=>n.remove());if(id==='mapBtn')node.firstChild?.nodeType===3&&(node.firstChild.nodeValue='')}iconButton(node,icon)}
 const localization=installLocalization(document,{storage:deviceStorage});

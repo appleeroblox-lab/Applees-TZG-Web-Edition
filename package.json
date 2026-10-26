@@ -23,7 +23,8 @@
     "test:debug": "node tests/debug-service.mjs && node tests/debug-menu.mjs && node tests/supabase-debug.mjs && node tests/debug-menu-supabase.mjs",
     "test:device-settings": "node tests/device-language.mjs && node tests/language-chat-v84.mjs",
     "test:social": "node tests/file-picker.mjs && node tests/photo-library.mjs && node tests/avatar-crop.mjs && node tests/social-ui.mjs && node tests/live-chat.mjs && node tests/friends-ui.mjs && node tests/social-v77.mjs && node tests/social-v78.mjs && node tests/social-v79.mjs && node tests/social-v80.mjs && node tests/social-v81.mjs && node tests/social-v85.mjs && node tests/interface-v86.mjs",
-    "test:social:sql": "node tests/social-postgres.mjs"
+    "test:social:sql": "node tests/social-postgres.mjs",
+    "test:account-pages:sql": "node tests/account-pages-postgres.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

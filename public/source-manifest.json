@@ -1,5 +1,5 @@
 {
-  "version": 82,
+  "version": 83,
   "files": [
     "account.css",
     "atlas-3d.js",
@@ -304,7 +304,11 @@
     "ui-languages.js",
     "ui-strings.js",
     "language-fonts.css",
-    "fonts/NotoSansMyanmar-OFL.txt"
+    "fonts/NotoSansMyanmar-OFL.txt",
+    "translation-provider.js",
+    "chat-translation.js",
+    "vendor/chat-language-detector.js",
+    "vendor/chat-language-detector-LICENSE.txt"
   ],
   "versionedFiles": [
     "account.css",
@@ -391,6 +395,9 @@
     "localization.js",
     "ui-languages.js",
     "ui-strings.js",
-    "language-fonts.css"
+    "language-fonts.css",
+    "translation-provider.js",
+    "chat-translation.js",
+    "vendor/chat-language-detector.js"
   ]
 }

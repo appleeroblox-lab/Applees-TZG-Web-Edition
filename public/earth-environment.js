@@ -1,5 +1,5 @@
 import {weatherPresets as presets,weatherSchedule as schedule,advanceGroundWeather,groundWeatherDefaults,normalizeWeather,stormActivity} from './weather-state.js';
-export {EarthWeatherFX} from './weather-precipitation.js?v=82';
+export {EarthWeatherFX} from './weather-precipitation.js?v=83';
 import * as T from './vendor/three.module.js';
 const clamp=T.MathUtils.clamp,lerp=T.MathUtils.lerp;
 export const EARTH_DAY_SECONDS=600;

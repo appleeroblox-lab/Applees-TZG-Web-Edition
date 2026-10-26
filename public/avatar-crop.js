@@ -1,4 +1,4 @@
-import {loadAvatarSource} from './social-ui.js?v=82';
+import {loadAvatarSource} from './social-ui.js?v=83';
 const $=id=>document.getElementById(id);
 export function cropLayout(width,height,size,{zoom=1,x=0,y=0,rotation=0}={}){const rotated=rotation%180!==0,w=rotated?height:width,h=rotated?width:height,scale=size/Math.min(w,h)*Math.max(1,Math.min(3,zoom));return {scale,offsetX:Math.max(0,(w*scale-size)/2),offsetY:Math.max(0,(h*scale-size)/2),x:Math.max(-1,Math.min(1,x)),y:Math.max(-1,Math.min(1,y)),rotation}}
 export function drawAvatarCrop(canvas,source,options){const ctx=canvas.getContext('2d');if(!ctx)throw Error('Photo preview is not supported by this browser.');const size=canvas.width,layout=cropLayout(source.width,source.height,size,options);ctx.clearRect(0,0,size,size);ctx.fillStyle='#237bb0';ctx.fillRect(0,0,size,size);ctx.save();ctx.translate(size/2+layout.x*layout.offsetX,size/2+layout.y*layout.offsetY);ctx.rotate(layout.rotation*Math.PI/180);ctx.scale(layout.scale,layout.scale);ctx.drawImage(source.image,-source.width/2,-source.height/2);ctx.restore();return layout}

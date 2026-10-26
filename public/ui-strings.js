@@ -2,3 +2,7 @@ export const UI_STRINGS=new Set(["0 items · 0 stacks", "0 m altitude · 0 m/s",
 for(const text of ['Apply language','Retry translation','Changes game UI only. Your language choice is saved on this device.'])UI_STRINGS.add(text);
 
 UI_STRINGS.add('In-game language');
+
+for(const text of ['deleted a message','Auto Translate Chats','When enabled, incoming message text is sent to MyMemory and translated to your game language. Originals remain available.'])UI_STRINGS.add(text);
+
+for(const text of ['Show original','Show translation'])UI_STRINGS.add(text);

@@ -1,4 +1,4 @@
-import{safeChatImage}from'./chat-media.js?v=89';
+import{safeChatImage}from'./chat-media.js?v=90';
 let active;
 export function closeImageViewer(){active?.()}
 export function openImageViewer(source,{doc=document}={}){

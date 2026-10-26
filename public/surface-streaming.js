@@ -1,13 +1,13 @@
-import {addTerrainDetail,terrainMaterial,setTerrainDetailEnabled} from './terrain-detail.js?v=89';
+import {addTerrainDetail,terrainMaterial,setTerrainDetailEnabled} from './terrain-detail.js?v=90';
 import {earthBiome} from './earth-biomes.js?v=59';
-import {onSurfaceRoad} from './surface-roads.js?v=89';
-import {settlementContains} from './settlements.js?v=89';
+import {onSurfaceRoad} from './surface-roads.js?v=90';
+import {settlementContains} from './settlements.js?v=90';
 import {biomeColor,biomeWeather} from './earth-biomes.js?v=59';
-import {sceneryPoints} from './tree-data.js?v=89';
+import {sceneryPoints} from './tree-data.js?v=90';
 import {graphicsPolicy} from './graphics-policy.js';
 import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 import * as T from './vendor/three.module.js';
-import {surfaceHeight} from './surface.js?v=89';
+import {surfaceHeight} from './surface.js?v=90';
 import {terrainColor} from './surface-palette.js';
 export const CHUNK_SIZE=96;
 export function chunkKey(x,z){return Math.floor((x+48)/96)+','+Math.floor((z+48)/96)}
@@ -17,11 +17,12 @@ export function sceneryBudget(quality='Medium',mobile=false,compatibility=false)
 const templates={trunk:new T.CylinderGeometry(.2,.3,4,5).toNonIndexed(),broad:new T.DodecahedronGeometry(2.3,0),leaves:new T.ConeGeometry(2,6,5).toNonIndexed(),rock:new T.DodecahedronGeometry(1,0),pole:new T.CylinderGeometry(.08,.08,3,5).toNonIndexed(),panel:new T.BoxGeometry(5,.12,3).toNonIndexed()};
 function disposeChunk(g){g.traverse(o=>{o.geometry?.dispose();o.material?.dispose()})}
 export class SurfaceStream{
- constructor(view){this.view=view;view.session.stream=this;this.group=new T.Group();view.scene.add(this.group);this.chunks=new Map();this.body=null;this.last='';this.policy='';this.visibilityAt=null;this.radius=null;this.treeRevision='';this.decorations=true;this.grassCount=64;try{const saved=Number(localStorage.getItem('zero-gravity-terrain-radius'));if(saved>=1&&saved<=4)this.radius=Math.round(saved)}catch{}}
+ constructor(view){this.view=view;view.session.stream=this;this.group=new T.Group();view.scene.add(this.group);this.chunks=new Map();this.body=null;this.last='';this.policy='';this.visibilityAt=null;this.radius=null;this.treeRevision='';this.decorations=true;this.grassCount=96;this.grassAmount=100;try{const saved=Number(localStorage.getItem('zero-gravity-terrain-radius'));if(saved>=1&&saved<=4)this.radius=Math.round(saved)}catch{}}
  setDecorations(value){this.decorations=!!value;setTerrainDetailEnabled(this.decorations);for(const group of this.chunks.values()){const mesh=group.userData.scenery;if(mesh){disposeChunk(mesh);group.remove(mesh);group.userData.scenery=null}}this.visibilityAt=null;this.treeCache=null;}
+ setGrassAmount(value){const amount=Number(value);this.grassAmount=Math.max(0,Math.min(200,Number.isFinite(amount)?amount:100));for(const group of this.chunks.values()){const mesh=group.userData.scenery;if(mesh){disposeChunk(mesh);group.remove(mesh);group.userData.scenery=null}}this.visibilityAt=null;this.treeCache=null;}
  setRadius(value){this.radius=T.MathUtils.clamp(Math.round(Number(value)||2),1,4);this.last='';this.visibilityAt=null;try{localStorage.setItem('zero-gravity-terrain-radius',String(this.radius))}catch{}}
  clear(){for(const g of this.chunks.values()){disposeChunk(g);this.group.remove(g)}this.chunks.clear();this.visibilityAt=null}
- update(pos,quality='Medium',{mobile=false,compatibility=false}={}){const body=this.view.session.body,budget=sceneryBudget(quality,mobile,compatibility),policy=budget.count+':'+budget.distance+':'+this.decorations;if(body!==this.body||policy!==this.policy){this.clear();this.body=body;this.policy=policy;this.last=''}if(!body?.solid)return;this.grassCount=mobile||compatibility?64:quality==='High'?160:quality==='Low'?48:120;const [cx,cz]=chunkKey(pos.x,pos.z).split(',').map(Number),radius=this.radius??(quality==='High'?3:2),key=body.id+cx+','+cz+radius;this.view.session.terrainFog=terrainFog(radius);this.view.session.terrainRadius=radius;this.view.session.prospecting?.economy.discoverVillages(body,pos,radius);if(key!==this.last){this.last=key;const needed=new Set();for(let z=cz-radius;z<=cz+radius;z++)for(let x=cx-radius;x<=cx+radius;x++){const id=x+','+z;needed.add(id);if(!this.chunks.has(id)){const g=this.make(body,x,z);this.chunks.set(id,g);this.group.add(g)}}for(const [id,g] of this.chunks)if(!needed.has(id)){disposeChunk(g);this.group.remove(g);this.chunks.delete(id)}this.visibilityAt=null}
+ update(pos,quality='Medium',{mobile=false,compatibility=false}={}){const body=this.view.session.body,budget=sceneryBudget(quality,mobile,compatibility),policy=budget.count+':'+budget.distance+':'+this.decorations+':'+this.grassAmount;if(body!==this.body||policy!==this.policy){this.clear();this.body=body;this.policy=policy;this.last=''}if(!body?.solid)return;this.grassCount=Math.round((mobile||compatibility?96:quality==='High'?240:quality==='Low'?72:180)*this.grassAmount/100);const [cx,cz]=chunkKey(pos.x,pos.z).split(',').map(Number),radius=this.radius??(quality==='High'?3:2),key=body.id+cx+','+cz+radius;this.view.session.terrainFog=terrainFog(radius);this.view.session.terrainRadius=radius;this.view.session.prospecting?.economy.discoverVillages(body,pos,radius);if(key!==this.last){this.last=key;const needed=new Set();for(let z=cz-radius;z<=cz+radius;z++)for(let x=cx-radius;x<=cx+radius;x++){const id=x+','+z;needed.add(id);if(!this.chunks.has(id)){const g=this.make(body,x,z);this.chunks.set(id,g);this.group.add(g)}}for(const [id,g] of this.chunks)if(!needed.has(id)){disposeChunk(g);this.group.remove(g);this.chunks.delete(id)}this.visibilityAt=null}
  const economy=this.view.session.prospecting?.economy,revision=(economy?.cycle||0)+':'+(economy?.depleted.size||0);if(revision!==this.treeRevision){this.treeRevision=revision;for(const g of this.chunks.values()){const mesh=g.userData.scenery;if(mesh){disposeChunk(mesh);g.remove(mesh);g.userData.scenery=null}}this.visibilityAt=null}
  // Avoid touching scene visibility every frame while standing still.
  this.updateTreeSnow();if(this.visibilityAt&&this.visibilityAt.distanceToSquared(pos)<16)return;this.visibilityAt=pos.clone();for(const g of this.chunks.values()){const {cx,cz}=g.userData,dx=Math.max(0,Math.abs(pos.x-cx*96)-48),dz=Math.max(0,Math.abs(pos.z-cz*96)-48),visible=Math.hypot(dx,dz,pos.y-surfaceHeight(pos.x,pos.z))<budget.distance;if(visible&&!g.userData.scenery){const mesh=this.decorate(body,cx,cz,budget.count);g.userData.scenery=mesh;g.add(mesh)}if(g.userData.scenery)g.userData.scenery.visible=visible}}

@@ -1,4 +1,4 @@
-import {gamingPhraseRows,gamingSentence} from './chat-phrase-templates.js?v=89';
+import {gamingPhraseRows,gamingSentence} from './chat-phrase-templates.js?v=90';
 // Exact, authored phrases only. Unknown messages are never guessed or rewritten.
 const rows=[
 ['hello space explorers','မင်္ဂလာပါ အာကာသ စူးစမ်းသူတို့','bonjour les explorateurs de l’espace','宇宙探検家の皆さん、こんにちは','สวัสดีนักสำรวจอวกาศทุกคน'],

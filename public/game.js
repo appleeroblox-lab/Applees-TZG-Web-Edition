@@ -1,19 +1,19 @@
-import {iconButton} from './ui-icons.js?v=89';
-import {surfaceGravity as mapGravity} from './surface.js?v=89';
-import {installDeviceSettings} from './device-settings.js?v=89';
-import {installLocalization} from './localization.js?v=89';
+import {iconButton} from './ui-icons.js?v=90';
+import {surfaceGravity as mapGravity} from './surface.js?v=90';
+import {installDeviceSettings} from './device-settings.js?v=90';
+import {installLocalization} from './localization.js?v=90';
 let devicePreferences=null,restoringDevicePreferences=false;
-import {PlayerAccount} from './player-account.js?v=89';
-import {cloudInventory} from './cloud-save.js?v=89';
-import {SupabaseDebugService} from './supabase-debug.js?v=89';
+import {PlayerAccount} from './player-account.js?v=90';
+import {cloudInventory} from './cloud-save.js?v=90';
+import {SupabaseDebugService} from './supabase-debug.js?v=90';
 import {supabaseConfig} from './supabase-config.js?v=61';
-import {installControlSizes} from './control-sizes.js?v=89';
+import {installControlSizes} from './control-sizes.js?v=90';
 import {GlobalShadows} from './global-shadows.js';
 import {biomeWeather,earthBiome,biomeDestination} from './earth-biomes.js?v=59';
 import {installMobileInput} from './mobile-input.js';
-import {GroundWeather} from './ground-weather.js?v=89';
+import {GroundWeather} from './ground-weather.js?v=90';
 import {underWeatherClouds} from './weather-state.js';
-import {DebugMenu} from './debug-menu.js?v=89';
+import {DebugMenu} from './debug-menu.js?v=90';
 import {rotateSubjectOrbit,shipCameraSubject,placeSubjectOrbit,ORBIT_MIN,ORBIT_MAX} from './subject-camera.js';
 import {padHeightAt} from './surface-layout.js';
 import {CockpitLabelMask} from './cockpit-labels.js';
@@ -21,41 +21,41 @@ import {installTouchButtons} from './touch-buttons.js?v=57';
 import {keyboardCode,pressKeyboardKey,releaseKeyboardKey} from './keyboard-input.js';
 import {rotationSpeed} from './ship-rotation.js';
 import {BodyTransition} from './body-transition.js';
-import {Forestry} from './forestry.js?v=89';
+import {Forestry} from './forestry.js?v=90';
 import {nearbyPlanetUp} from './camera-horizon.js';
 import {updateWarpHUD} from './warp-hud.js';
 import {graphicsPolicy} from './graphics-policy.js';
 import {TradeUI} from './trade-ui.js';
-import {Building} from './building.js?v=89';
-import {SurfaceStream} from './surface-streaming.js?v=89';
+import {Building} from './building.js?v=90';
+import {SurfaceStream} from './surface-streaming.js?v=90';
 import * as T from './vendor/three.module.js';
-import {bodies,earth,AU} from './catalog.js?v=89';
-import {Flight,V,attitude,clearance} from './flight.js?v=89';
+import {bodies,earth,AU} from './catalog.js?v=90';
+import {Flight,V,attitude,clearance} from './flight.js?v=90';
 import {TerrainManager,surfacePadding,terrainHeight} from './terrain.js';
-import {CompatibilityRenderer} from './compatibility.js?v=89';
-import {Economy,TRADER} from './economy.js?v=89';
-import {Prospecting} from './prospecting.js?v=89';
-import {InventoryUI} from './inventory-ui.js?v=89';
+import {CompatibilityRenderer} from './compatibility.js?v=90';
+import {Economy,TRADER} from './economy.js?v=90';
+import {Prospecting} from './prospecting.js?v=90';
+import {InventoryUI} from './inventory-ui.js?v=90';
 import {GameSound} from './sound.js?v=59';
-import {Crew} from './crew.js?v=89';
+import {Crew} from './crew.js?v=90';
 import {setupIcons} from './icons.js';
-import {SurfaceSession,surfaceHeight} from './surface.js?v=89';
-import {SurfaceView} from './surface-view.js?v=89';
-import {Explorer,formatSpeed} from './explorer.js?v=89';
+import {SurfaceSession,surfaceHeight} from './surface.js?v=90';
+import {SurfaceView} from './surface-view.js?v=90';
+import {Explorer,formatSpeed} from './explorer.js?v=90';
 import {TextureCache} from './textures.js';
-import {updateReferenceHUD} from './reference-hud.js?v=89';
+import {updateReferenceHUD} from './reference-hud.js?v=90';
 import {SystemAtlas} from './atlas-3d.js?v=57';
 import {ShipBoost} from './boost.js';
 import {updateBlackHole} from './black-hole-effects.js';
 import {holdVelocity,setSpeedCommand} from './speed-control.js';
 import {skyProfile,illustratedGalaxySky} from './sky-profiles.js';
-import {StellarGlare} from './stellar-glare.js?v=89';
+import {StellarGlare} from './stellar-glare.js?v=90';
 import {PostEffects} from './post-effects.js';
-import {EarthWeatherFX} from './earth-environment.js?v=89';
+import {EarthWeatherFX} from './earth-environment.js?v=90';
 import {lightingProfile} from './lighting.js';
 import {resolutionRatio,clampPanel} from './performance.js';
 import {localMoonFamily,bodyLabelAllowed,labelProjection,labelOccluded} from './body-labels.js';
-import {makeWorld,makeShip,makeStars,glow,random} from './visuals.js?v=89';
+import {makeWorld,makeShip,makeStars,glow,random} from './visuals.js?v=90';
 const $=id=>document.getElementById(id),touch=matchMedia('(pointer:coarse)').matches,clamp=T.MathUtils.clamp;
 let wasWalkingAirborne=false,stepAt=0,lastFootMaterial='grass';
 const cloudAccounts=!!globalThis.location?.hostname;let playerAccount=null,accountLocked=cloudAccounts;
@@ -130,7 +130,7 @@ $('settingsShield').onclick=()=>document.querySelectorAll('dialog[open]').forEac
 function toggleAssist(){flight.assist=!flight.assist;$('assistCheck').checked=flight.assist;toast(flight.assist?'Flight assist enabled':'Inertial flight enabled');save()}
 function toggleGear(){if(surface.onGround)return toast('Landing gear supports the ship on the ground');flight.gear=!flight.gear;toast('Landing gear '+(flight.gear?'deployed':'retracted'))}
 function resetFlight(){if((surface.active&&surface.body.name!=='Earth')||(!surface.active&&(flight.system!=='Sol'||flight.pos.distanceTo(earth.pos)>earth.r+1000))){const paid=economy.payWarp(earth,flight.system,flight.pos);if(!paid.ok)return toast(paid.message)}explorer.cancelOrbit();surface.body=null;flight.cancel();enterSurface(earth,true);clearInputs();syncThrottle();save();toast('New flight · Earth launch pad')}
-$('mapBtn').onclick=$('missionBtn').onclick=()=>open('mapDialog');$('brand').onclick=()=>open('settingsDialog');$('accountBtn').onclick=()=>{if($('accountDialog').open||$('accountDialog').hasAttribute('open')){closeDialog($('accountDialog'));updateRotate();return}if(playerAccount?.ready)playerAccount.renderProfile();open('accountDialog');updateRotate()};$('helpBtn').onclick=()=>open('helpDialog');document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeDialog(b.closest('dialog')));document.querySelectorAll('dialog').forEach(d=>d.addEventListener('close',()=>{if(d.id!=='inventoryDialog')clearInputs();$('settingsShield').hidden=true;clock.getDelta();updateRotate()}));$('approachBtn').onclick=()=>navigate('approach');$('landBtn').onclick=()=>navigate('land');$('warpBtn').onclick=()=>navigate('warp');$('cancelWarp').onclick=$('cancelNav').onclick=stop;$('brakeBtn').onclick=()=>{stop();toast('Brake engaged · velocity zero')};$('gearBtn').onclick=toggleGear;$('alignBtn').onclick=()=>{if(surface.active)return toast('Align is available in space');if(target.system!==flight.system)return toast('Warp to the selected system first');flight.align(target);toast('Aligned with '+target.name)};$('assistBtn').onclick=toggleAssist;$('cameraBtn').onclick=()=>{if(crew.onFoot)return;if(!cockpit&&!stableCamera){cockpit=true}else if(cockpit){cockpit=false;stableCamera=true;camQ.copy(surface.active&&surface.onGround?crew.quaternion():camera.quaternion);drag=null;pinchPointers.clear();pinching=false;clearInputs()}else{stableCamera=false}document.body.classList.toggle('cockpit',cockpit);$('orbitZoom').hidden=!stableCamera;$('flightCamera').setAttribute('aria-label',stableCamera?'Camera: orbit':cockpit?'Camera: cockpit':'Camera: chase');toast(stableCamera?'Orbit camera · drag / right-drag to rotate around ship · pinch / wheel to zoom':cockpit?'Cockpit camera':'Chase camera')};$('pauseBtn').onclick=()=>{paused=!paused;clearInputs();$('pauseBtn').textContent=paused?'▶':'Ⅱ'};$('throttle').oninput=e=>{if(flight.nav)flight.cancel();flight.throttle=+e.target.value/100;syncThrottle()};$('sensitivity').oninput=e=>{flight.sensitivity=clamp(+e.target.value,.3,6);$('sensitivityValue').textContent=flight.sensitivity.toFixed(1)+'×';save()};$('shipRotationSpeed').oninput=e=>{flight.rotationSpeed=rotationSpeed(e.target.value);$('shipRotationSpeedValue').textContent=flight.rotationSpeed.toFixed(2)+'×';save()};$('assistCheck').onchange=e=>flight.assist=e.target.checked;$('quality').onchange=e=>{graphics=e.target.value;applyGraphics();save()};$('saveBtn').onclick=()=>save(false);$('resetBtn').onclick=()=>{resetFlight();$('settingsDialog').close()};
+$('mapBtn').onclick=()=>{if($('mapDialog').open||$('mapDialog').hasAttribute('open'))closeDialog($('mapDialog'));else open('mapDialog')};$('missionBtn').onclick=()=>open('mapDialog');$('brand').onclick=()=>open('settingsDialog');$('accountBtn').onclick=()=>{if($('accountDialog').open||$('accountDialog').hasAttribute('open')){closeDialog($('accountDialog'));updateRotate();return}if(playerAccount?.ready)playerAccount.renderProfile();open('accountDialog');updateRotate()};$('helpBtn').onclick=()=>open('helpDialog');document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeDialog(b.closest('dialog')));document.querySelectorAll('dialog').forEach(d=>d.addEventListener('close',()=>{if(d.id!=='inventoryDialog')clearInputs();$('settingsShield').hidden=true;clock.getDelta();updateRotate()}));$('approachBtn').onclick=()=>navigate('approach');$('landBtn').onclick=()=>navigate('land');$('warpBtn').onclick=()=>navigate('warp');$('cancelWarp').onclick=$('cancelNav').onclick=stop;$('brakeBtn').onclick=()=>{stop();toast('Brake engaged · velocity zero')};$('gearBtn').onclick=toggleGear;$('alignBtn').onclick=()=>{if(surface.active)return toast('Align is available in space');if(target.system!==flight.system)return toast('Warp to the selected system first');flight.align(target);toast('Aligned with '+target.name)};$('assistBtn').onclick=toggleAssist;$('cameraBtn').onclick=()=>{if(crew.onFoot)return;if(!cockpit&&!stableCamera){cockpit=true}else if(cockpit){cockpit=false;stableCamera=true;camQ.copy(surface.active&&surface.onGround?crew.quaternion():camera.quaternion);drag=null;pinchPointers.clear();pinching=false;clearInputs()}else{stableCamera=false}document.body.classList.toggle('cockpit',cockpit);$('orbitZoom').hidden=!stableCamera;$('flightCamera').setAttribute('aria-label',stableCamera?'Camera: orbit':cockpit?'Camera: cockpit':'Camera: chase');toast(stableCamera?'Orbit camera · drag / right-drag to rotate around ship · pinch / wheel to zoom':cockpit?'Cockpit camera':'Chase camera')};$('pauseBtn').onclick=()=>{paused=!paused;clearInputs();$('pauseBtn').textContent=paused?'▶':'Ⅱ'};$('throttle').oninput=e=>{if(flight.nav)flight.cancel();flight.throttle=+e.target.value/100;syncThrottle()};$('sensitivity').oninput=e=>{flight.sensitivity=clamp(+e.target.value,.3,6);$('sensitivityValue').textContent=flight.sensitivity.toFixed(1)+'×';save()};$('shipRotationSpeed').oninput=e=>{flight.rotationSpeed=rotationSpeed(e.target.value);$('shipRotationSpeedValue').textContent=flight.rotationSpeed.toFixed(2)+'×';save()};$('assistCheck').onchange=e=>flight.assist=e.target.checked;$('quality').onchange=e=>{graphics=e.target.value;applyGraphics();save()};$('saveBtn').onclick=()=>save(false);$('resetBtn').onclick=()=>{resetFlight();$('settingsDialog').close()};
 async function landscape(){let fullscreen=false,locked=false;try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();fullscreen=true}catch{}try{if(screen.orientation?.lock){await screen.orientation.lock('landscape');locked=true}}catch{}updateRotate();if(!locked&&innerHeight>innerWidth)toast('Turn your phone sideways. This browser cannot lock orientation.');return {fullscreen,locked}}
 let portraitOverride=false;function updateRotate(){const visible=touch&&started&&innerHeight>innerWidth&&!portraitOverride&&!window.__tzgFilePickerOpen&&!$('accountDialog').hasAttribute('open')&&!accountLocked;$('rotatePrompt').classList.toggle('visible',visible);if(visible)clearInputs();clampLayouts()}
 $('rotateBtn').onclick=$('landscapeBtn').onclick=()=>landscape();$('portraitBtn').onclick=()=>{portraitOverride=true;updateRotate()};$('fullscreenBtn').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await landscape()}catch{toast('Fullscreen is unavailable')}};$('launchBtn').onclick=async()=>{if(cloudAccounts&&!playerAccount?.ready){playerAccount?.show();return}started=true;$('boot').classList.add('hidden');clock.getDelta();clearInputs();if(touch)await landscape();updateRotate();toast(surface.active?(surface.phase==='gas'?'Gas interior · fly away from the core to exit':surface.body.name==='Earth'?'Leave ship to mine · sell at Earth Trade to fund your first warp':'Drag to look around · leave ship to explore '+surface.body.name):'Welcome aboard · open Universe to explore')};$('startBtn').onclick=()=>{$('helpDialog').close();if(touch)landscape()};
@@ -337,7 +337,7 @@ $('adaptiveSpeed').checked=explorer.adaptive;$('adaptiveGraphics').checked=adapt
 
 $('globalChatSize').oninput=()=>{const value=Math.max(70,Math.min(140,Number($('globalChatSize').value)||100));document.body.style.setProperty('--global-chat-scale',value/100);$('globalChatSizeValue').textContent=value+'%'};$('globalChatSize').oninput();
 
-$('terrainDecorations').onchange=()=>surfaceStream.setDecorations($('terrainDecorations').checked);
+$('terrainDecorations').onchange=()=>surfaceStream.setDecorations($('terrainDecorations').checked);$('grassAmount').oninput=()=>{surfaceStream.setGrassAmount($('grassAmount').value);$('grassAmountValue').textContent=surfaceStream.grassAmount+'%'};
 restoringDevicePreferences=true;try{devicePreferences=installDeviceSettings(document,deviceStorage)}finally{restoringDevicePreferences=false}
 for(const[id,icon]of [['chatToggle','chat'],['friendsBtn','friends'],['accountBtn','account'],['mapBtn','globe'],['menuBtn','more'],['railSearch','search'],['selectTarget','globe'],['addStop','add-friend']]){const node=$(id);if(['chatToggle','friendsBtn','accountBtn','mapBtn','menuBtn'].includes(id)){node.querySelectorAll('.uiIcon,svg').forEach(n=>n.remove());if(id==='mapBtn')node.firstChild?.nodeType===3&&(node.firstChild.nodeValue='')}iconButton(node,icon)}
 const localization=installLocalization(document,{storage:deviceStorage});

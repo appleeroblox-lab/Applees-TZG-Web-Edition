@@ -1,5 +1,5 @@
 {
-  "version": 89,
+  "version": 90,
   "files": [
     "account-pages.js",
     "account.css",
@@ -160,6 +160,7 @@
     "language-fonts.css",
     "lighting.js",
     "localization.js",
+    "message-content.js",
     "message-editor.js",
     "message-options.js",
     "mobile-input.js",
@@ -198,6 +199,7 @@
     "ship-weather-mask.js",
     "sky-profiles.js",
     "social-ui.js",
+    "social-world-v90.css",
     "sound.js",
     "sounds/delete.wav",
     "sounds/jump-grass.wav",
@@ -390,6 +392,7 @@
     "inventory-ui.js",
     "language-fonts.css",
     "localization.js",
+    "message-content.js",
     "message-editor.js",
     "message-options.js",
     "models.js",
@@ -405,6 +408,7 @@
     "refined-v89.css",
     "settlements.js",
     "social-ui.js",
+    "social-world-v90.css",
     "sound.js",
     "sounds/delete.wav",
     "sounds/jump-grass.wav",

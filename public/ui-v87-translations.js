@@ -1,4 +1,8 @@
-export function extendPreviewTranslations(my,other){const rows=`Global Chat Size|ကမ္ဘာလုံးဆိုင်ရာ ချတ်အရွယ်အစား|Taille du chat global|全体チャットのサイズ|ขนาดแชททั่วโลก
+export function extendPreviewTranslations(my,other){const rows=`Grass Amount|မြက်ပမာဏ|Quantité d’herbe|草の量|ปริมาณหญ้า
+Group details|အဖွဲ့ အသေးစိတ်|Détails du groupe|グループの詳細|รายละเอียดกลุ่ม
+Chat details|စကားဝိုင်း အသေးစိတ်|Détails du chat|チャットの詳細|รายละเอียดแชท
+Load more GIFs|GIF ထပ်ဖွင့်ရန်|Charger plus de GIF|GIFをもっと表示|โหลด GIF เพิ่ม
+Global Chat Size|ကမ္ဘာလုံးဆိုင်ရာ ချတ်အရွယ်အစား|Taille du chat global|全体チャットのサイズ|ขนาดแชททั่วโลก
 Terrain Decorations|မြေပြင် အလှဆင်မှု|Décor du terrain|地形の装飾|รายละเอียดภูมิประเทศ
 Explorer Guide|စူးစမ်းသူ လမ်းညွှန်|Guide d’exploration|探索ガイド|คู่มือสำรวจ
 Launch and travel|လွှတ်တင်ခြင်းနှင့် ခရီးသွားခြင်း|Décollage et voyage|打ち上げと移動|การปล่อยยานและเดินทาง

@@ -27,7 +27,8 @@
     "test:account-pages:sql": "node tests/account-pages-postgres.mjs",
     "test:v88": "node tests/compact-ui-v88.mjs && node tests/resource-xp-postgres.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --compact-v88-only",
     "test:v89": "node tests/refinement-v89.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --compact-v88-only && node tests/scenery-performance.mjs",
-    "test:v90": "node tests/social-world-v90.mjs && node tests/world-upgrade.mjs && node tests/social-v80.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --compact-v88-only"
+    "test:v90": "node tests/social-world-v90.mjs && node tests/world-upgrade.mjs && node tests/social-v80.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --compact-v88-only",
+    "test:gifs": "node tests/gif-loading-v91.mjs && node tests/gif-loading-v92.mjs && node tests/gif-picker-v92.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

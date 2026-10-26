@@ -1,6 +1,6 @@
 """Original animated reaction stickers, generated for TZG; no external assets."""
 from PIL import Image, ImageDraw, ImageFont
-import math, json
+import math, json, base64
 from pathlib import Path
 out=Path(__file__).resolve().parents[1]/'public'/'gifs'
 out.mkdir(exist_ok=True)
@@ -31,3 +31,7 @@ for index,name in enumerate(names):
   frames.append(im)
  frames[0].save(out/(name+'.gif'),save_all=True,append_images=frames[1:],duration=85,loop=0,optimize=True)
 print('Generated',len(names),'original animated GIFs:',sum(p.stat().st_size for p in out.glob('*.gif')),'bytes')
+
+# Keep the request-free picker payload in sync with the generated originals.
+assets={p.stem:base64.b64encode(p.read_bytes()).decode() for p in sorted(out.glob('*.gif'))}
+(out.parent/'gif-reactions.js').write_text('// Original TZG reaction GIFs, bundled so preview and selection do not need another fetch.\nexport const reactionBytes='+json.dumps(assets,separators=(',',':'))+';\n')

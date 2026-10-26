@@ -1,12 +1,12 @@
-import {AccountPages} from './account-pages.js?v=88';
-import {ProfileView} from './profile-view.js?v=88';
-import {MessageEditor} from './message-editor.js?v=88';
-import {setVerifiedName} from './identity-ui.js?v=88';
-import {FriendsUI} from './friends-ui.js?v=88';
-import {AvatarCropEditor} from './avatar-crop.js?v=88';
-import {PhotoLibrary} from './photo-library.js?v=88';
-import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=88';
-import {CloudSave} from './cloud-save.js?v=88';
+import {AccountPages} from './account-pages.js?v=89';
+import {ProfileView} from './profile-view.js?v=89';
+import {MessageEditor} from './message-editor.js?v=89';
+import {setVerifiedName} from './identity-ui.js?v=89';
+import {FriendsUI} from './friends-ui.js?v=89';
+import {AvatarCropEditor} from './avatar-crop.js?v=89';
+import {PhotoLibrary} from './photo-library.js?v=89';
+import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=89';
+import {CloudSave} from './cloud-save.js?v=89';
 const $=id=>document.getElementById(id);
 const escapeError=e=>String(e?.message||'Account service unavailable. Please retry.');
 export class PlayerAccount{

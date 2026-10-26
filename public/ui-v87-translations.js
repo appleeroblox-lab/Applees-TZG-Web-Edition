@@ -1,4 +1,13 @@
-export function extendPreviewTranslations(my,other){const rows=`Profile|ကိုယ်ရေးအကျဉ်း|Profil|プロフィール|โปรไฟล์
+export function extendPreviewTranslations(my,other){const rows=`Global Chat Size|ကမ္ဘာလုံးဆိုင်ရာ ချတ်အရွယ်အစား|Taille du chat global|全体チャットのサイズ|ขนาดแชททั่วโลก
+Terrain Decorations|မြေပြင် အလှဆင်မှု|Décor du terrain|地形の装飾|รายละเอียดภูมิประเทศ
+Explorer Guide|စူးစမ်းသူ လမ်းညွှန်|Guide d’exploration|探索ガイド|คู่มือสำรวจ
+Launch and travel|လွှတ်တင်ခြင်းနှင့် ခရီးသွားခြင်း|Décollage et voyage|打ち上げと移動|การปล่อยยานและเดินทาง
+Other systems and routes|အခြား ကြယ်စနစ်နှင့် ခရီးလမ်း|Autres systèmes et itinéraires|他の星系とルート|ระบบดาวอื่นและเส้นทาง
+Ship controls|အာကာသယာဉ် ထိန်းချုပ်မှု|Commandes du vaisseau|宇宙船の操作|การควบคุมยาน
+On foot and resources|လမ်းလျှောက်ခြင်းနှင့် သယံဇာတ|À pied et ressources|徒歩と資源|การเดินและทรัพยากร
+Chat and settings|ချတ်နှင့် ဆက်တင်များ|Chat et paramètres|チャットと設定|แชทและการตั้งค่า
+Back to game|ဂိမ်းသို့ ပြန်ရန်|Retour au jeu|ゲームに戻る|กลับสู่เกม
+Profile|ကိုယ်ရေးအကျဉ်း|Profil|プロフィール|โปรไฟล์
 Account Information|အကောင့် အချက်အလက်|Informations du compte|アカウント情報|ข้อมูลบัญชี
 Security|လုံခြုံရေး|Sécurité|セキュリティ|ความปลอดภัย
 Data|သိမ်းဆည်းဒေတာ|Données|データ|ข้อมูล

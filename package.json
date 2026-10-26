@@ -25,7 +25,8 @@
     "test:social": "node tests/file-picker.mjs && node tests/photo-library.mjs && node tests/avatar-crop.mjs && node tests/social-ui.mjs && node tests/live-chat.mjs && node tests/friends-ui.mjs && node tests/social-v77.mjs && node tests/social-v78.mjs && node tests/social-v79.mjs && node tests/social-v80.mjs && node tests/social-v81.mjs && node tests/social-v85.mjs && node tests/interface-v86.mjs",
     "test:social:sql": "node tests/social-postgres.mjs",
     "test:account-pages:sql": "node tests/account-pages-postgres.mjs",
-    "test:v88": "node tests/compact-ui-v88.mjs && node tests/resource-xp-postgres.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --compact-v88-only"
+    "test:v88": "node tests/compact-ui-v88.mjs && node tests/resource-xp-postgres.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --compact-v88-only",
+    "test:v89": "node tests/refinement-v89.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --compact-v88-only && node tests/scenery-performance.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

@@ -1,14 +1,17 @@
-import {PlayerAccount} from './player-account.js?v=81';
+import {installDeviceSettings} from './device-settings.js?v=82';
+import {installLocalization} from './localization.js?v=82';
+let devicePreferences=null,restoringDevicePreferences=false;
+import {PlayerAccount} from './player-account.js?v=82';
 import {cloudInventory} from './cloud-save.js?v=62';
-import {SupabaseDebugService} from './supabase-debug.js?v=81';
+import {SupabaseDebugService} from './supabase-debug.js?v=82';
 import {supabaseConfig} from './supabase-config.js?v=61';
-import {installControlSizes} from './control-sizes.js?v=81';
+import {installControlSizes} from './control-sizes.js?v=82';
 import {GlobalShadows} from './global-shadows.js';
 import {biomeWeather,earthBiome,biomeDestination} from './earth-biomes.js?v=59';
 import {installMobileInput} from './mobile-input.js';
-import {GroundWeather} from './ground-weather.js?v=81';
+import {GroundWeather} from './ground-weather.js?v=82';
 import {underWeatherClouds} from './weather-state.js';
-import {DebugMenu} from './debug-menu.js?v=81';
+import {DebugMenu} from './debug-menu.js?v=82';
 import {rotateSubjectOrbit,shipCameraSubject,placeSubjectOrbit,ORBIT_MIN,ORBIT_MAX} from './subject-camera.js';
 import {padHeightAt} from './surface-layout.js';
 import {CockpitLabelMask} from './cockpit-labels.js';
@@ -16,41 +19,41 @@ import {installTouchButtons} from './touch-buttons.js?v=57';
 import {keyboardCode,pressKeyboardKey,releaseKeyboardKey} from './keyboard-input.js';
 import {rotationSpeed} from './ship-rotation.js';
 import {BodyTransition} from './body-transition.js';
-import {Forestry} from './forestry.js?v=81';
+import {Forestry} from './forestry.js?v=82';
 import {nearbyPlanetUp} from './camera-horizon.js';
 import {updateWarpHUD} from './warp-hud.js';
 import {graphicsPolicy} from './graphics-policy.js';
 import {TradeUI} from './trade-ui.js';
-import {Building} from './building.js?v=81';
-import {SurfaceStream} from './surface-streaming.js?v=81';
+import {Building} from './building.js?v=82';
+import {SurfaceStream} from './surface-streaming.js?v=82';
 import * as T from './vendor/three.module.js';
-import {bodies,earth,AU} from './catalog.js?v=81';
-import {Flight,V,attitude,clearance} from './flight.js?v=81';
+import {bodies,earth,AU} from './catalog.js?v=82';
+import {Flight,V,attitude,clearance} from './flight.js?v=82';
 import {TerrainManager,surfacePadding,terrainHeight} from './terrain.js';
-import {CompatibilityRenderer} from './compatibility.js?v=81';
-import {Economy,TRADER} from './economy.js?v=81';
-import {Prospecting} from './prospecting.js?v=81';
+import {CompatibilityRenderer} from './compatibility.js?v=82';
+import {Economy,TRADER} from './economy.js?v=82';
+import {Prospecting} from './prospecting.js?v=82';
 import {InventoryUI} from './inventory-ui.js';
 import {GameSound} from './sound.js?v=59';
-import {Crew} from './crew.js?v=81';
+import {Crew} from './crew.js?v=82';
 import {setupIcons} from './icons.js';
-import {SurfaceSession,surfaceHeight} from './surface.js?v=81';
-import {SurfaceView} from './surface-view.js?v=81';
-import {Explorer,formatSpeed} from './explorer.js?v=81';
+import {SurfaceSession,surfaceHeight} from './surface.js?v=82';
+import {SurfaceView} from './surface-view.js?v=82';
+import {Explorer,formatSpeed} from './explorer.js?v=82';
 import {TextureCache} from './textures.js';
-import {updateReferenceHUD} from './reference-hud.js?v=81';
+import {updateReferenceHUD} from './reference-hud.js?v=82';
 import {SystemAtlas} from './atlas-3d.js?v=57';
 import {ShipBoost} from './boost.js';
 import {updateBlackHole} from './black-hole-effects.js';
 import {holdVelocity,setSpeedCommand} from './speed-control.js';
 import {skyProfile,illustratedGalaxySky} from './sky-profiles.js';
-import {StellarGlare} from './stellar-glare.js?v=81';
+import {StellarGlare} from './stellar-glare.js?v=82';
 import {PostEffects} from './post-effects.js';
-import {EarthWeatherFX} from './earth-environment.js?v=81';
+import {EarthWeatherFX} from './earth-environment.js?v=82';
 import {lightingProfile} from './lighting.js';
 import {resolutionRatio,clampPanel} from './performance.js';
 import {localMoonFamily,bodyLabelAllowed,labelProjection,labelOccluded} from './body-labels.js';
-import {makeWorld,makeShip,makeStars,glow,random} from './visuals.js?v=81';
+import {makeWorld,makeShip,makeStars,glow,random} from './visuals.js?v=82';
 const $=id=>document.getElementById(id),touch=matchMedia('(pointer:coarse)').matches,clamp=T.MathUtils.clamp;
 let wasWalkingAirborne=false,stepAt=0,lastFootMaterial='grass';
 const cloudAccounts=!!globalThis.location?.hostname;let playerAccount=null,accountLocked=cloudAccounts;
@@ -86,7 +89,7 @@ function distanceText(units){const km=Math.max(0,units)*100;if(km>=14959787)retu
 function setTarget(b,quiet=false){target=b;$('targetName').textContent=b.name;$('targetType').textContent=b.type;$('targetDesc').textContent=b.desc;$('planetIcon').style.color=b.color;$('reticleLabel').textContent=b.name.toUpperCase();$('landBtn').disabled=!surface.active||!surface.body.solid;$('landBtn').textContent=explorer.enabled?'↓ Surface':'↓ Land';$('lockStatus').textContent='TARGET LOCKED';if(!quiet)toast('Target locked · '+b.name)}
 function applyGraphics(){const policy=graphicsPolicy(graphics);globalShadows.set(globalShadow,graphics);renderer.quality=graphics;surfaceView.quality=graphics;$('graphicsDescription').textContent=policy.description;document.body.dataset.graphics=graphics.toLowerCase();const ratio=resolutionRatio(innerWidth,innerHeight,devicePixelRatio,graphics,touch);if(Math.abs(renderer.getPixelRatio()-ratio)>.01)renderer.setPixelRatio(ratio);stars.material.size=graphics==='Low'?4:graphics==='Medium'?6:8;stars.geometry.setDrawRange(0,{Low:70,Medium:140,High:220}[graphics]||6500);textureCache.max=graphics==='Low'?2:graphics==='Medium'?4:6;$('quality').value=graphics;$('graphicsSlider').value=['Low','Medium','High'].indexOf(graphics);$('graphicsValue').textContent=graphics}
 
-function save(silent=true){groundWeather.persist();try{localStorage.setItem('zero-gravity-earth-environment',JSON.stringify(surfaceView.environment.serialize()));localStorage.setItem('cosmic-flight-v6',JSON.stringify({version:6,maxSpeedC:flight.maxSpeedC,surface:surface.serialize(),labelFilters,planetLabelsMode,pos:flight.pos.toArray(),q:flight.q.toArray(),system:flight.system,target:target.id,gear:flight.gear,assist:flight.assist,visited:[...visited],sensitivity:flight.sensitivity,rotationSpeed:flight.rotationSpeed,graphics,explorer:{enabled:explorer.enabled,exponent:explorer.exponent,fov:explorer.fov,exposure:explorer.exposure,adaptive:explorer.adaptive,labels:explorer.labels,paths:explorer.paths,timeScale:explorer.timeScale},parked:flight.landed?.id}));persistEconomy();if(!silent)toast(cloudAccounts?'Flight settings saved · '+($('accountCloudStatus').textContent):'Flight saved on this device')}catch{if(!silent)toast('Your browser could not save the flight')}}
+function save(silent=true){if(restoringDevicePreferences)return;devicePreferences?.save();groundWeather.persist();try{localStorage.setItem('zero-gravity-earth-environment',JSON.stringify(surfaceView.environment.serialize()));localStorage.setItem('cosmic-flight-v6',JSON.stringify({version:6,maxSpeedC:flight.maxSpeedC,surface:surface.serialize(),labelFilters,planetLabelsMode,pos:flight.pos.toArray(),q:flight.q.toArray(),system:flight.system,target:target.id,gear:flight.gear,assist:flight.assist,visited:[...visited],sensitivity:flight.sensitivity,rotationSpeed:flight.rotationSpeed,graphics,explorer:{enabled:explorer.enabled,exponent:explorer.exponent,fov:explorer.fov,exposure:explorer.exposure,adaptive:explorer.adaptive,labels:explorer.labels,paths:explorer.paths,timeScale:explorer.timeScale},parked:flight.landed?.id}));persistEconomy();if(!silent)toast(cloudAccounts?'Flight settings saved · '+($('accountCloudStatus').textContent):'Flight saved on this device')}catch{if(!silent)toast('Your browser could not save the flight')}}
 function load(){try{const s=JSON.parse(localStorage.getItem('cosmic-flight-v6'));if(!s)return;const b=bodies.find(b=>b.id===s.target);if(!b||s.pos?.length!==3||!s.pos.every(Number.isFinite)||s.q?.length!==4||!s.q.every(Number.isFinite)||!bodies.some(b=>b.system===s.system))return;planetLabelsMode=s.planetLabelsMode==='overlap'?'overlap':'collision';if(s.labelFilters)Object.assign(labelFilters,s.labelFilters);flight.pos.fromArray(s.pos);flight.q.fromArray(s.q).normalize();flight.system=s.system;flight.gear=!!s.gear;flight.assist=s.assist!==false;flight.sensitivity=clamp(Number(s.sensitivity)||5,.3,6);flight.rotationSpeed=rotationSpeed(s.rotationSpeed??2);visited=new Set(s.visited||[]);graphics=s.graphics||'Medium';flight.maxSpeedC=clamp(Number(s.maxSpeedC)||150,1,150);target=b;if(s.explorer){Object.assign(explorer,{enabled:s.explorer.enabled!==false,adaptive:s.explorer.adaptive!==false,exponent:clamp(Number.isFinite(s.explorer.exponent)?s.explorer.exponent:.4,-5,14),fov:clamp(Number(s.explorer.fov)||60,15,100),exposure:clamp(Number(s.explorer.exposure)||1.05,.2,2),labels:s.explorer.labels!==false,paths:!!s.explorer.paths,timeScale:clamp(Number(s.explorer.timeScale)||0,0,100)})}const parked=bodies.find(b=>b.id===s.parked);if(parked&&parked.solid&&parked.system===flight.system&&Math.abs(flight.pos.distanceTo(parked.pos)-parked.r-clearance)<1)flight.park(parked);if(s.surface)surface.restore(s.surface,bodies);camQ.copy(flight.q);return true}catch{}}
 let planetLabelsMode='collision';
 const labelFilters={solar:true,proxima:true,trappist:true,blackholes:true,clusters:true,galaxies:true,nebulae:true,other:true};
@@ -122,7 +125,7 @@ function updateHUD(){updateEconomyHUD();updateSurfaceControls();if(surface.activ
 function open(id){if(id!=='inventoryDialog')clearInputs();if(id!=='inventoryDialog'&&$('inventoryDialog').open)closeDialog($('inventoryDialog'));if(id==='settingsDialog'){const radius=surfaceStream.radius??(graphics==='High'?3:2);$('terrainSize').value=radius;$('terrainSizeValue').textContent=((2*radius+1)*96)+' m across';const env=surfaceView.environment;$('earthTime').value=env.hour;$('earthTimeValue').textContent=env.sample().clock;$('earthCycle').checked=env.running;$('earthWeatherMode').value=env.weather;$('earthDayMinutes').value=env.dayMinutes;$('shipMaxSpeed').value=flight.maxSpeedC;$('shipMaxSpeedValue').textContent=flight.maxSpeedC+' c';}const dialog=$(id);if(dialog.open)return;try{if(id==='accountDialog'){if(dialog.show)dialog.show();else{dialog.setAttribute('open','');dialog.classList.add('fallbackDialog')}}else if(id==='inventoryDialog'&&dialog.show)dialog.show();else dialog.showModal()}catch{dialog.setAttribute('open','');dialog.classList.add('fallbackDialog');$('settingsShield').hidden=id==='accountDialog'}if(id==='mapDialog')$('systemFilter').value=target.system;if(id==='mapDialog'){selected=target;tab=target.system;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));renderCatalog();selectInfo();drawAtlas();requestAnimationFrame(()=>requestAnimationFrame(drawAtlas))}}
 function closeDialog(d){if(!d)return;if(d.id==='inventoryDialog')$('inventoryBtn').textContent='Open Inventory';if(typeof d.close==='function')d.close();else d.removeAttribute('open');$('settingsShield').hidden=true;if(d.id!=='inventoryDialog')clearInputs()}
 $('settingsShield').onclick=()=>document.querySelectorAll('dialog[open]').forEach(closeDialog);
-function toggleAssist(){flight.assist=!flight.assist;$('assistCheck').checked=flight.assist;toast(flight.assist?'Flight assist enabled':'Inertial flight enabled')}
+function toggleAssist(){flight.assist=!flight.assist;$('assistCheck').checked=flight.assist;toast(flight.assist?'Flight assist enabled':'Inertial flight enabled');save()}
 function toggleGear(){if(surface.onGround)return toast('Landing gear supports the ship on the ground');flight.gear=!flight.gear;toast('Landing gear '+(flight.gear?'deployed':'retracted'))}
 function resetFlight(){if((surface.active&&surface.body.name!=='Earth')||(!surface.active&&(flight.system!=='Sol'||flight.pos.distanceTo(earth.pos)>earth.r+1000))){const paid=economy.payWarp(earth,flight.system,flight.pos);if(!paid.ok)return toast(paid.message)}explorer.cancelOrbit();surface.body=null;flight.cancel();enterSurface(earth,true);clearInputs();syncThrottle();save();toast('New flight · Earth launch pad')}
 $('mapBtn').onclick=$('missionBtn').onclick=()=>open('mapDialog');$('brand').onclick=()=>open('settingsDialog');$('accountBtn').onclick=()=>{if($('accountDialog').open||$('accountDialog').hasAttribute('open')){closeDialog($('accountDialog'));updateRotate();return}if(playerAccount?.ready)playerAccount.renderProfile();open('accountDialog');updateRotate()};$('helpBtn').onclick=()=>open('helpDialog');document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeDialog(b.closest('dialog')));document.querySelectorAll('dialog').forEach(d=>d.addEventListener('close',()=>{if(d.id!=='inventoryDialog')clearInputs();$('settingsShield').hidden=true;clock.getDelta();updateRotate()}));$('approachBtn').onclick=()=>navigate('approach');$('landBtn').onclick=()=>navigate('land');$('warpBtn').onclick=()=>navigate('warp');$('cancelWarp').onclick=$('cancelNav').onclick=stop;$('brakeBtn').onclick=()=>{stop();toast('Brake engaged · velocity zero')};$('gearBtn').onclick=toggleGear;$('alignBtn').onclick=()=>{if(surface.active)return toast('Align is available in space');if(target.system!==flight.system)return toast('Warp to the selected system first');flight.align(target);toast('Aligned with '+target.name)};$('assistBtn').onclick=toggleAssist;$('cameraBtn').onclick=()=>{if(crew.onFoot)return;if(!cockpit&&!stableCamera){cockpit=true}else if(cockpit){cockpit=false;stableCamera=true;camQ.copy(surface.active&&surface.onGround?crew.quaternion():camera.quaternion);drag=null;pinchPointers.clear();pinching=false;clearInputs()}else{stableCamera=false}document.body.classList.toggle('cockpit',cockpit);$('orbitZoom').hidden=!stableCamera;$('flightCamera').setAttribute('aria-label',stableCamera?'Camera: orbit':cockpit?'Camera: cockpit':'Camera: chase');toast(stableCamera?'Orbit camera · drag / right-drag to rotate around ship · pinch / wheel to zoom':cockpit?'Cockpit camera':'Chase camera')};$('pauseBtn').onclick=()=>{paused=!paused;clearInputs();$('pauseBtn').textContent=paused?'▶':'Ⅱ'};$('throttle').oninput=e=>{if(flight.nav)flight.cancel();flight.throttle=+e.target.value/100;syncThrottle()};$('sensitivity').oninput=e=>{flight.sensitivity=clamp(+e.target.value,.3,6);$('sensitivityValue').textContent=flight.sensitivity.toFixed(1)+'×';save()};$('shipRotationSpeed').oninput=e=>{flight.rotationSpeed=rotationSpeed(e.target.value);$('shipRotationSpeedValue').textContent=flight.rotationSpeed.toFixed(2)+'×';save()};$('assistCheck').onchange=e=>flight.assist=e.target.checked;$('quality').onchange=e=>{graphics=e.target.value;applyGraphics();save()};$('saveBtn').onclick=()=>save(false);$('resetBtn').onclick=()=>{resetFlight();$('settingsDialog').close()};
@@ -152,7 +155,7 @@ function select(b){selected=b;if(tab!==b.system){tab=b.system;$('systemFilter').
 const systemAtlas=new SystemAtlas($('atlasCanvas'),bodies,b=>select(b));function drawAtlas(){systemAtlas.setSystem(tab);systemAtlas.selected=selected;systemAtlas.requestDraw()}
 let resizeQueued=false,lastViewportWidth=innerWidth,lastViewportHeight=innerHeight;function resizeViewport(){resizeQueued=false;if(window.__tzgFilePickerOpen)return;const width=innerWidth,height=innerHeight;if(width!==lastViewportWidth||height!==lastViewportHeight){lastViewportWidth=width;lastViewportHeight=height;camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height);applyGraphics();if($('mapDialog').open)drawAtlas()}updateRotate()}
 function queueViewportResize(){if(resizeQueued||window.__tzgFilePickerOpen)return;resizeQueued=true;requestAnimationFrame(resizeViewport)}
-addEventListener('resize',queueViewportResize);addEventListener('tzg-file-picker',()=>{clearInputs();updateRotate();if(!window.__tzgFilePickerOpen){clock.getDelta();queueViewportResize()}});screen.orientation?.addEventListener('change',updateRotate);canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();webglLost=true;graphics='Low';save();$('fatal').hidden=false;$('fatal').replaceChildren();const text=document.createElement('p');text.textContent='Graphics paused. Your flight is saved; Safe graphics will be used on restart.';const reload=document.createElement('button');reload.textContent='Restart in Safe graphics';reload.onclick=()=>location.reload();$('fatal').append(text,reload)});canvas.addEventListener('webglcontextrestored',()=>{webglLost=false;$('fatal').hidden=true;applyGraphics();clock.getDelta()});addEventListener('pagehide',()=>{sfx.setActive(false);audio?.suspend().catch(()=>{});save()});addEventListener('blur',()=>{sfx.setActive(false);audio?.suspend().catch(()=>{})});const resumeGameAudio=()=>{const active=!document.hidden;sfx.setActive(active);if(!active)audio?.suspend().catch(()=>{});else if($('audioCheck').checked)audio?.resume().catch(()=>{})};addEventListener('focus',resumeGameAudio);document.addEventListener('visibilitychange',resumeGameAudio);clampLayouts();updateJournal();$('bootStatus').textContent=surface.active?'Ready · '+surface.body.name+' / Pad 01':'Ready · '+flight.system+' system';if(!window.__loadingSources)$('launchBtn').disabled=false;$('launchBtn').textContent='PLAY';$('rendererNote').textContent=compatibility?'Compatibility renderer · simplified graphics': '3D renderer · adaptive terrain';
+addEventListener('resize',queueViewportResize);addEventListener('tzg-file-picker',()=>{clearInputs();updateRotate();if(!window.__tzgFilePickerOpen){clock.getDelta();queueViewportResize()}});screen.orientation?.addEventListener('change',updateRotate);canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();webglLost=true;graphics='Low';$('graphicsSlider').value='0';$('quality').value='Low';save();$('fatal').hidden=false;$('fatal').replaceChildren();const text=document.createElement('p');text.textContent='Graphics paused. Your flight is saved; Safe graphics will be used on restart.';const reload=document.createElement('button');reload.textContent='Restart in Safe graphics';reload.onclick=()=>location.reload();$('fatal').append(text,reload)});canvas.addEventListener('webglcontextrestored',()=>{webglLost=false;$('fatal').hidden=true;applyGraphics();clock.getDelta()});addEventListener('pagehide',()=>{sfx.setActive(false);audio?.suspend().catch(()=>{});save()});addEventListener('blur',()=>{sfx.setActive(false);audio?.suspend().catch(()=>{})});const resumeGameAudio=()=>{const active=!document.hidden;sfx.setActive(active);if(!active)audio?.suspend().catch(()=>{});else if($('audioCheck').checked)audio?.resume().catch(()=>{})};addEventListener('focus',resumeGameAudio);document.addEventListener('visibilitychange',resumeGameAudio);clampLayouts();updateJournal();$('bootStatus').textContent=surface.active?'Ready · '+surface.body.name+' / Pad 01':'Ready · '+flight.system+' system';if(!window.__loadingSources)$('launchBtn').disabled=false;$('launchBtn').textContent='PLAY';$('rendererNote').textContent=compatibility?'Compatibility renderer · simplified graphics': '3D renderer · adaptive terrain';
 
 // Planetarium interaction layer: free camera, orbiting and remembered viewpoints.
 let cleanView=false,bookmarks=[];
@@ -324,3 +327,9 @@ if(cloudAccounts){
 // Schedule frames only after every state variable, handler and the ship are ready.
 await shipRig.ready;
 requestAnimationFrame(render);
+
+// Device UI preferences are independent of the flight/world save.
+let deviceStorage;try{deviceStorage=localStorage}catch{deviceStorage={getItem(){return null},setItem(){throw Error('Device storage unavailable')}}}
+$('adaptiveSpeed').checked=explorer.adaptive;$('adaptiveGraphics').checked=adaptiveResolution;
+restoringDevicePreferences=true;try{devicePreferences=installDeviceSettings(document,deviceStorage)}finally{restoringDevicePreferences=false}
+const localization=installLocalization(document,{storage:deviceStorage});

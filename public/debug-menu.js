@@ -1,6 +1,6 @@
-import {DebugMessageLogs} from './debug-message-logs.js?v=81';
-import {setVerifiedName} from './identity-ui.js?v=81';
-import {DebugModeration} from './debug-moderation.js?v=81';
+import {DebugMessageLogs} from './debug-message-logs.js?v=82';
+import {setVerifiedName} from './identity-ui.js?v=82';
+import {DebugModeration} from './debug-moderation.js?v=82';
 const $=id=>document.getElementById(id);
 export class DebugMenu{
  constructor({closeSettings,clearInputs,snapshot,execute,authorization=null,request=(...args)=>fetch(...args)}){this.authorization=authorization;this.snapshot=snapshot;this.execute=execute;this.request=request;this.logs=[];this.active=false;this.revision=0;this.elapsed=0;this.drag=null;this.resizeDrag=null;this.pageKey=Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');

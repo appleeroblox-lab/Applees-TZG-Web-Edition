@@ -1,9 +1,9 @@
-import {emojiButton,closeEmojiPicker} from './emoji-picker.js?v=81';
-import {safeChatImage,prepareGif} from './chat-media.js?v=81';
-import {messageOptions,closeMessageOptions} from './message-options.js?v=81';
-import {chatDialog,closeChatDialogs} from './chat-dialog.js?v=81';
-import {setVerifiedName} from './identity-ui.js?v=81';
-import {PhotoLibrary} from './photo-library.js?v=81';
+import {emojiButton,closeEmojiPicker} from './emoji-picker.js?v=82';
+import {safeChatImage,prepareGif} from './chat-media.js?v=82';
+import {messageOptions,closeMessageOptions} from './message-options.js?v=82';
+import {chatDialog,closeChatDialogs} from './chat-dialog.js?v=82';
+import {setVerifiedName} from './identity-ui.js?v=82';
+import {PhotoLibrary} from './photo-library.js?v=82';
 const $=id=>document.getElementById(id);
 export const APPEAL_URL='https://discord.gg/rPdRRHSkmw';
 export const DEFAULT_AVATAR='icons/default-profile.svg';

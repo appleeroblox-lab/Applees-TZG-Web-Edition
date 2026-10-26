@@ -1,10 +1,10 @@
-import {ProfileView} from './profile-view.js?v=81';
-import {MessageEditor} from './message-editor.js?v=81';
-import {setVerifiedName} from './identity-ui.js?v=81';
-import {FriendsUI} from './friends-ui.js?v=81';
-import {AvatarCropEditor} from './avatar-crop.js?v=81';
-import {PhotoLibrary} from './photo-library.js?v=81';
-import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=81';
+import {ProfileView} from './profile-view.js?v=82';
+import {MessageEditor} from './message-editor.js?v=82';
+import {setVerifiedName} from './identity-ui.js?v=82';
+import {FriendsUI} from './friends-ui.js?v=82';
+import {AvatarCropEditor} from './avatar-crop.js?v=82';
+import {PhotoLibrary} from './photo-library.js?v=82';
+import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=82';
 import {CloudSave} from './cloud-save.js?v=62';
 const $=id=>document.getElementById(id);
 const escapeError=e=>String(e?.message||'Account service unavailable. Please retry.');

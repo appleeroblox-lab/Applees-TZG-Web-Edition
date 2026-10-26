@@ -1,5 +1,5 @@
 {
-  "version": 81,
+  "version": 82,
   "files": [
     "account.css",
     "atlas-3d.js",
@@ -298,7 +298,13 @@
     "chat-dialog.js",
     "message-options.js",
     "chat-media.js",
-    "emoji-picker.js"
+    "emoji-picker.js",
+    "device-settings.js",
+    "localization.js",
+    "ui-languages.js",
+    "ui-strings.js",
+    "language-fonts.css",
+    "fonts/NotoSansMyanmar-OFL.txt"
   ],
   "versionedFiles": [
     "account.css",
@@ -380,6 +386,11 @@
     "chat-dialog.js",
     "message-options.js",
     "chat-media.js",
-    "emoji-picker.js"
+    "emoji-picker.js",
+    "device-settings.js",
+    "localization.js",
+    "ui-languages.js",
+    "ui-strings.js",
+    "language-fonts.css"
   ]
 }

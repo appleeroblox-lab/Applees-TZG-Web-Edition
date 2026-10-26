@@ -1,6 +1,6 @@
-import {safeChatImage} from './chat-media.js?v=81';
-import {setVerifiedName} from './identity-ui.js?v=81';
-import {setAvatar} from './social-ui.js?v=81';
+import {safeChatImage} from './chat-media.js?v=82';
+import {setVerifiedName} from './identity-ui.js?v=82';
+import {setAvatar} from './social-ui.js?v=82';
 const $=id=>document.getElementById(id);
 const text=(tag,value)=>{const node=document.createElement(tag);node.textContent=value;return node};
 export class DebugModeration{

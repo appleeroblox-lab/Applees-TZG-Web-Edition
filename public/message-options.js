@@ -1,4 +1,4 @@
-import {uiIcon} from './ui-icons.js?v=87';
+import {uiIcon} from './ui-icons.js?v=88';
 let closeActive=null;
 export function closeMessageOptions(){closeActive?.()}
 export function messageOptions(actions){

@@ -1,12 +1,12 @@
-import {AccountPages} from './account-pages.js?v=87';
-import {ProfileView} from './profile-view.js?v=87';
-import {MessageEditor} from './message-editor.js?v=87';
-import {setVerifiedName} from './identity-ui.js?v=87';
-import {FriendsUI} from './friends-ui.js?v=87';
-import {AvatarCropEditor} from './avatar-crop.js?v=87';
-import {PhotoLibrary} from './photo-library.js?v=87';
-import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=87';
-import {CloudSave} from './cloud-save.js?v=62';
+import {AccountPages} from './account-pages.js?v=88';
+import {ProfileView} from './profile-view.js?v=88';
+import {MessageEditor} from './message-editor.js?v=88';
+import {setVerifiedName} from './identity-ui.js?v=88';
+import {FriendsUI} from './friends-ui.js?v=88';
+import {AvatarCropEditor} from './avatar-crop.js?v=88';
+import {PhotoLibrary} from './photo-library.js?v=88';
+import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=88';
+import {CloudSave} from './cloud-save.js?v=88';
 const $=id=>document.getElementById(id);
 const escapeError=e=>String(e?.message||'Account service unavailable. Please retry.');
 export class PlayerAccount{
@@ -31,7 +31,7 @@ export class PlayerAccount{
  }catch(e){this.error(e)}finally{if(!window.__loadingSources){this.mounted=true;if(!this.ready||this.recovery)this.show()}}}
  async rpc(name,args={}){if(!this.client)throw Error('Account connection is still starting.');const {data,error}=await this.client.rpc(name,args);if(error){if(error.code==='PGRST202')error.message='Account database setup is missing. Ask the developer to run the player accounts migration.';throw error}return data}
  async connect(){this.ready=false;this.block(true);$('accountStatus').textContent='Loading your server inventory…';const {data,error}=await this.client.auth.getUser();if(error||!data?.user){if(await this.loadModeration())return;throw error||Error('Please sign in again.')}const user=data.user;this.user=user;if(await this.loadModeration())return;this.moderation=null;try{await this.rpc('tzg_player_session_start')}catch(e){if(e.code!=='PGRST202')throw e}const state=await this.rpc('tzg_player_load');if(state.user_id!==user.id)throw Error('Account identity mismatch. Reload and sign in again.');this.user=user;this.profile=state;this.loadedId=user.id;await this.hydrate(state,user.id);
- this.cloud=new CloudSave({rpc:(name,args)=>this.rpc(name,args),userId:user.id,snapshot:this.snapshot,onStatus:text=>{$('accountCloudStatus').textContent=text;if(text==='Saved to server'){$('accountLastSave').textContent='Last confirmed: '+new Date().toLocaleString();}if(text==='Saving…')$('accountSaveResult').textContent='';},onFailure:(e,conflict)=>{this.ready=false;this.needsReload=conflict;this.error(e)}});this.cloud.hydrate(state);this.ready=true;this.suspended=false;this.needsReload=false;this.renderProfile();this.pages?.load();this.chat.start();$('accountStatus').textContent='Signed in. Inventory and currencies loaded from server.';this.renderConnected();this.block(!this.gate.hidden)}
+ this.cloud=new CloudSave({rpc:(name,args)=>this.rpc(name,args),userId:user.id,snapshot:this.snapshot,onProgress:progress=>{globalThis.tzgPlayerProgress=progress;if(this.pages?.dashboard){this.pages.dashboard.progress=progress;this.pages.refreshLocal()}},onStatus:text=>{$('accountCloudStatus').textContent=text;if(text==='Saved to server'){$('accountLastSave').textContent='Last confirmed: '+new Date().toLocaleString();}if(text==='Saving…')$('accountSaveResult').textContent='';},onFailure:(e,conflict)=>{this.ready=false;this.needsReload=conflict;this.error(e)}});this.cloud.hydrate(state);this.ready=true;this.suspended=false;this.needsReload=false;this.renderProfile();this.pages?.load();this.chat.start();$('accountStatus').textContent='Signed in. Inventory and currencies loaded from server.';this.renderConnected();this.block(!this.gate.hidden)}
  renderProfile(){setAvatar($('accountAvatar'),this.profile.avatar);$('accountUsernameText').textContent='@'+(this.profile.username||'Explorer');$('accountDisplayName').value=this.profile.display_name;$('accountUserId').value=this.user.id;$('accountUserId').type='password';$('accountShowUid').textContent='Show';$('accountShowUid').setAttribute('aria-pressed','false');$('accountBio').value=this.profile.bio||'';this.renderUsername();$('accountUserEmail').value=this.user.email;$('accountUserEmail').type='password';$('accountShowEmail').textContent='Show';$('accountShowEmail').setAttribute('aria-pressed','false');setVerifiedName($('accountHeading'),this.profile.display_name,this.profile.verified);const state=this.snapshot();$('accountBalances').textContent=state.fp.toLocaleString()+' FP · '+state.rc.toLocaleString()+' RC · '+state.inventory.length+' inventory stacks';this.pages?.refreshLocal();}
  renderConnected(){const signed=!!this.user,moderated=!!this.moderation;$('accountModeration').hidden=!moderated;$('accountHelp').hidden=moderated;$('accountConnected').hidden=!signed;$('accountForm').hidden=moderated||signed&&!this.recovery;$('accountTabs').hidden=moderated||signed||this.recovery;$('accountForgot').hidden=signed||this.recovery;$('accountContinue').hidden=!this.ready;$('accountRetry').hidden=moderated||this.ready||this.needsReload||this.suspended;$('accountAppeal').hidden=this.moderation?.kind==='deactivated'||!moderated&&!this.suspended;$('accountReload').hidden=!this.needsReload;$('accountGateLogout').disabled=this.busy;$('accountTitle').textContent=this.duplicate?'Duplicate Game Session':moderated?'Account review':this.recovery?'Reset password':signed?'Welcome, '+this.profile?.display_name:'Sign in to The Zero Gravity';if(signed&&!moderated&&this.profile?.verified)setVerifiedName($('accountTitle'),$('accountTitle').textContent,true);}
  syncInert(){for(const child of document.body.children)if(child!==this.gate)child.inert=!this.gate.hidden}

@@ -1,5 +1,5 @@
-import {offlineChatTranslation} from './chat-phrasebook.js?v=87';
-import {systemText} from './localization.js?v=87';
+import {offlineChatTranslation} from './chat-phrasebook.js?v=88';
+import {systemText} from './localization.js?v=88';
 const translations=new Map();let nextKey=0;const installed=new WeakSet();
 function notice(node,text,available){node.parentElement?.querySelector('.chatTranslationResult')?.remove();const label=node.ownerDocument.createElement('span');label.className='chatTranslationResult';label.dataset.available=String(available);label.dataset.uiText=available?'Translated':'No offline translation for this message.';label.textContent=systemText(text,node.ownerDocument.documentElement.lang);node.after(label)}
 function restore(node){node.textContent=node.dataset.chatText||'';delete node.dataset.translated;node.parentElement?.querySelector('.chatTranslationResult')?.remove();translations.delete(node.dataset.chatKey)}

@@ -1,11 +1,11 @@
 import {payFreeCamera} from './free-camera.js?v=103';
-import {installUpdateLogs} from './update-logs.js?v=103';
+import {installUpdateLogs} from './update-logs.js?v=104';
 import {installScreenshot} from './game-screenshot.js?v=102';
 import {AsteroidBelts} from './asteroid-belts.js?v=102';
-import {SurfaceCollisions} from './surface-collision.js?v=100';
-import {ShipRespawnStation} from './ship-respawn.js?v=100';
+import {SurfaceCollisions} from './surface-collision.js?v=104';
+import {applyShipBlast,ShipRespawnStation} from './ship-respawn.js?v=104';
 import {iconButton} from './ui-icons.js?v=91';
-import {surfaceGravity as mapGravity} from './surface.js?v=100';
+import {surfaceGravity as mapGravity} from './surface.js?v=104';
 import {installDeviceSettings} from './device-settings.js?v=100';
 import {installLocalization} from './localization.js?v=91';
 let devicePreferences=null,restoringDevicePreferences=false;
@@ -17,7 +17,7 @@ import {installControlSizes} from './control-sizes.js?v=91';
 import {GlobalShadows} from './global-shadows.js?v=100';
 import {biomeWeather,earthBiome,biomeDestination} from './earth-biomes.js?v=59';
 import {installMobileInput} from './mobile-input.js';
-import {GroundWeather} from './ground-weather.js?v=101';
+import {GroundWeather} from './ground-weather.js?v=104';
 import {underWeatherClouds} from './weather-state.js?v=103';
 import {DebugMenu} from './debug-menu.js?v=103';
 import {rotateSubjectOrbit,shipCameraSubject,placeSubjectOrbit,ORBIT_MIN,ORBIT_MAX} from './subject-camera.js';
@@ -27,26 +27,26 @@ import {installTouchButtons} from './touch-buttons.js?v=57';
 import {keyboardCode,pressKeyboardKey,releaseKeyboardKey} from './keyboard-input.js';
 import {rotationSpeed} from './ship-rotation.js';
 import {BodyTransition} from './body-transition.js';
-import {Forestry} from './forestry.js?v=100';
+import {Forestry} from './forestry.js?v=104';
 import {nearbyPlanetUp} from './camera-horizon.js';
 import {updateWarpHUD} from './warp-hud.js';
 import {graphicsPolicy} from './graphics-policy.js';
 import {TradeUI} from './trade-ui.js';
-import {Building} from './building.js?v=100';
-import {SurfaceStream} from './surface-streaming.js?v=100';
+import {Building} from './building.js?v=104';
+import {SurfaceStream} from './surface-streaming.js?v=104';
 import * as T from './vendor/three.module.js';
 import {bodies,earth,AU} from './catalog.js?v=100';
 import {Flight,V,attitude,clearance} from './flight.js?v=100';
 import {TerrainManager,surfacePadding,terrainHeight} from './terrain.js';
-import {CompatibilityRenderer} from './compatibility.js?v=103';
-import {Economy,TRADER} from './economy.js?v=100';
-import {Prospecting} from './prospecting.js?v=100';
+import {CompatibilityRenderer} from './compatibility.js?v=104';
+import {Economy,TRADER} from './economy.js?v=104';
+import {Prospecting} from './prospecting.js?v=104';
 import {InventoryUI} from './inventory-ui.js?v=91';
-import {GameSound} from './sound.js?v=97';
-import {Crew} from './crew.js?v=100';
+import {GameSound} from './sound.js?v=104';
+import {Crew} from './crew.js?v=104';
 import {setupIcons} from './icons.js';
-import {SurfaceSession,surfaceHeight} from './surface.js?v=100';
-import {SurfaceView} from './surface-view.js?v=103';
+import {SurfaceSession,surfaceHeight} from './surface.js?v=104';
+import {SurfaceView} from './surface-view.js?v=104';
 import {Explorer,formatSpeed} from './explorer.js?v=100';
 import {TextureCache} from './textures.js';
 import {updateReferenceHUD} from './reference-hud.js?v=100';
@@ -55,9 +55,9 @@ import {ShipBoost} from './boost.js';
 import {updateBlackHole} from './black-hole-effects.js';
 import {holdVelocity,setSpeedCommand} from './speed-control.js';
 import {skyProfile,illustratedGalaxySky} from './sky-profiles.js';
-import {StellarGlare} from './stellar-glare.js?v=100';
+import {StellarGlare} from './stellar-glare.js?v=104';
 import {PostEffects} from './post-effects.js';
-import {EarthWeatherFX} from './earth-environment.js?v=103';
+import {EarthWeatherFX} from './earth-environment.js?v=104';
 import {lightingProfile} from './lighting.js';
 import {resolutionRatio,clampPanel} from './performance.js';
 import {meaningfulBodyLabel,localMoonFamily,bodyLabelAllowed,labelProjection,labelOccluded} from './body-labels.js?v=102';
@@ -225,7 +225,7 @@ $('routeBtn').onclick=()=>{renderRoute();open('routeDialog')};$('addStop').oncli
 
 function enterSurface(body,spawn=false){if(body?.landable===false)return toast('This small object has no landing surface. Choose a main asteroid.');if(!spawn)bodyTransition.play('enter',body);shipBoost.selected=false;shipBoost.active=false;boostSelected=false;flight.boostWindow=false;flight.cruiseSpeed=0;flight.speedCapHeld=0;stableCamera=false;explorer.cancelOrbit();routeActive=false;surface.enter(body,spawn);explorer.enabled=false;cockpit=false;document.body.classList.remove('cockpit');orbitDistance=16;$('orbitZoom').hidden=true;camQ.copy(flight.q);clearInputs();terrain.clear();setTarget(body,true);syncExplorer();updateSurfaceControls();visited.add(body.name);awardDiscovery(body);surfaceView.build();prospecting.key='';prospecting.sync();toast(spawn?body.name+' · launch pad ready':surface.phase==='gas'?body.name+' · gas interior · fly away from the core to exit':body.name+' · airborne entry · you have control; choose Land to descend')}
 function launchSurface(){if(surface.requestLaunch()){clearInputs();updateSurfaceControls();updateSurfaceHUD();toast('Launch sequence started · T minus 5 seconds')}else toast('Launch is available while resting on the surface')}
-function handleSurfaceEvent(e){if(!e)return;if(e.type==='obstacleContact'){sfx.play('boom');if(performance.now()-(handleSurfaceEvent.obstacleAt||0)>2000){handleSurfaceEvent.obstacleAt=performance.now();toast('Ship blocked by '+e.obstacle)}return;}if(e.type==='coreContact'){sfx.play('burn');resetFlight();toast('Core contact · restarted at Earth launch pad');return;}if(e.type==='ignition'){sfx.play('launch');}if(e.type==='ignition')toast('Liftoff · hold Space for thrust · WASD steer · Q / E roll');if(e.type==='touchdown'){sfx.play('land');clearInputs();syncThrottle();visited.add(e.b.name);updateJournal();save();toast('Touchdown · engines off · ship resting on landing gear')}if(e.type==='exit'){bodyTransition.play('leave',e.b);flight.cruiseSpeed=0;flight.speedCapHeld=0;prospecting.layer.hidden=true;forestry.label.hidden=true;clearInputs();camQ.copy(flight.q);camera.far=180000000;camera.near=.025;camera.updateProjectionMatrix();scene.add(ship);updateSurfaceControls();save();toast('Left '+e.b.name+' · space drive unlocked')}}
+function handleSurfaceEvent(e){if(!e)return;if(e.type==='obstacleContact'){const landing=surface.requestLand(true);clearInputs();syncThrottle();if(performance.now()-(handleSurfaceEvent.obstacleAt||0)>2000){handleSurfaceEvent.obstacleAt=performance.now();toast(landing?'Obstacle contact · landing on nearby clear ground':'Ship blocked by '+e.obstacle)}return;}if(e.type==='coreContact'){sfx.play('burn');resetFlight();toast('Core contact · restarted at Earth launch pad');return;}if(e.type==='ignition'){sfx.play('launch');}if(e.type==='ignition')toast('Liftoff · hold Space for thrust · WASD steer · Q / E roll');if(e.type==='touchdown'){sfx.play('land');clearInputs();syncThrottle();visited.add(e.b.name);updateJournal();save();toast('Touchdown · engines off · ship resting on landing gear')}if(e.type==='exit'){bodyTransition.play('leave',e.b);flight.cruiseSpeed=0;flight.speedCapHeld=0;prospecting.layer.hidden=true;forestry.label.hidden=true;clearInputs();camQ.copy(flight.q);camera.far=180000000;camera.near=.025;camera.updateProjectionMatrix();scene.add(ship);updateSurfaceControls();save();toast('Left '+e.b.name+' · space drive unlocked')}}
 function updateSurfaceControls(){$('orbitZoom').hidden=!stableCamera||crew.onFoot||explorer.enabled;document.body.classList.toggle('insideBody',surface.active);for(const id of ['warpBtn','approachBtn','railGo','railOrbit','railHome','orbitBtn','centerBtn','modeBtn']){$(id).disabled=surface.active;$(id).hidden=surface.active}$('landBtn').disabled=!surface.active||!surface.body?.solid;$('landBtn').textContent='↓ Land';$('alignBtn').disabled=surface.active;$('alignBtn').hidden=surface.active;$('landBtn').hidden=!surface.active||!surface.body?.solid||surface.onGround||crew.onFoot;$('surfacePanel').hidden=!surface.active||explorer.enabled;$('surfaceLaunchBtn').disabled=crew.onFoot||!surface.onGround||surface.phase==='countdown';$('surfaceLandBtn').disabled=!surface.active||!surface.body?.solid||surface.onGround;$('surfaceAbortBtn').disabled=!surface.active||surface.phase==='parked';document.body.classList.toggle('onFoot',crew.onFoot);$('exitShipBtn').hidden=!surface.active;$('exitShipBtn').disabled=crew.onFoot?!crew.canBoard:!surface.onGround||surface.phase!=='parked';$('exitShipBtn').textContent=crew.onFoot?'Board ship · F':'Leave ship · F';$('walkHint').hidden=!crew.onFoot;$('walkHint').textContent=crew.onFoot?(crew.canBoard?'Board ship · F':'Ship '+crew.distance.toFixed(0)+' m · walk back to board'):'';$('launchCountdown').hidden=surface.phase!=='countdown';const second=Math.ceil(surface.remaining);if(surface.phase==='countdown'&&second!==updateSurfaceControls.lastSecond)sfx.play('countdown');updateSurfaceControls.lastSecond=second;$('countdownNumber').textContent=second;$('launchCountdown').dataset.stage=second>=4?'green':second>=2?'yellow':'red';$('countdownBody').textContent=surface.body?.name||'';updateReferenceHUD({surface,crew,flight,boostSelected,explorer,shipBoost});}
 function updateSurfaceHUD(){const b=surface.body,gas=!b.solid,alt=crew.onFoot?Math.max(0,crew.pos.y-crew.ground()):surface.altitude,speed=crew.onFoot?(crew.moving?(flight.input.boost?8:4):0):surface.vel.length();$('surfaceBody').textContent=gas?b.name.toUpperCase()+' / FLY AWAY FROM CORE TO EXIT':b.name.toUpperCase()+' / SPACE AT '+surface.exitHeight+' M';$('objectRadius').textContent=(b.r*100).toLocaleString()+' km';$('objectClass').textContent=b.fictional?'SIMULATED SURFACE':'LOCAL SURFACE';$('surfacePhase').textContent=crew.onFoot?'ON FOOT · FIRST PERSON':surface.phase==='parked'?'ON LANDING GEAR':surface.phase==='countdown'?'PREPARING FOR LAUNCH':surface.phase==='flying'?'FREE FLIGHT':surface.phase.toUpperCase();$('surfaceTelemetry').textContent=gas?'Core distance '+surface.coreDistance.toFixed(0)+' / '+surface.exitDistance+' m · '+speed.toFixed(1)+' m/s':alt.toFixed(1)+' m altitude · '+speed.toFixed(1)+' m/s · Space at '+surface.exitHeight+' m';$('range').textContent='LOCAL SURFACE';$('speed').innerHTML=speed.toFixed(1)+' <small>m/s</small>';$('speedBar').style.width=clamp(speed,0,100)+'%';$('altitude').textContent=alt.toFixed(1)+' m';$('nearest').textContent='SURFACE / '+b.name.toUpperCase();$('modeText').textContent=surface.phase.toUpperCase();$('shipStatus').textContent=surface.onGround?'GROUND CONTACT':'SURFACE FLIGHT';$('gearStatus').textContent='LANDING GEAR '+(flight.gear?'DEPLOYED':'RETRACTED');$('location').textContent=b.name+' / LOCAL SURFACE';$('eta').textContent=surface.phase==='countdown'?Math.ceil(surface.remaining)+' s':'—';$('navInfo').style.display='none';$('reticle').style.display='none';$('surfaceReadout').textContent='INSIDE '+b.name+' · SPACE DRIVE LOCKED';}
 function renderSurface(dt,blocked){if(ship.parent!==surfaceView.scene)surfaceView.scene.add(ship);surfaceView.update(performance.now()*.001,shipRig,blocked?0:dt);ship.position.copy(surface.pos);if(surface.phase==='parked'||surface.phase==='countdown'){const offset=shipRig.padOffset.clone().applyQuaternion(flight.q);ship.position.add(offset)}ship.quaternion.copy(flight.q);const gas=surface.phase==='gas',standing=surface.phase==='parked'||surface.phase==='countdown';shipRig.model.rotation.x=standing?Math.PI/2:0;shipRig.exhaust.rotation.x=standing?Math.PI/2:0;surface.shipRig=shipRig;ship.visible=true;shipRig.gear.visible=flight.gear;shipRig.flames.forEach(f=>{f.visible=surface.launched&&(!gas||surface.vel.length()>.01);f.scale.z=.25+Math.min(1,(flight.cruiseSpeed||0)/150);f.material.opacity=.65});camera.near=.05;camera.far=18000;camera.fov=explorer.fov;if(crew.onFoot){camera.quaternion.copy(crew.quaternion());crew.eye(camera.position)}else{const view=stableCamera?camQ:surface.onGround||surface.phase==='countdown'?crew.quaternion():camQ;camera.quaternion.copy(view);if(cockpit){camera.quaternion.copy(flight.q).multiply(shipRig.model.quaternion);if(standing)camera.quaternion.multiply(crew.quaternion());cameraOffset.copy(shipRig.cockpitPosition).applyQuaternion(shipRig.model.quaternion).applyQuaternion(flight.q);}else cameraOffset.set(0,gas?3.4:4.8,stableCamera?orbitDistance:gas?13.5:16).applyQuaternion(view);camera.position.copy(surface.pos).add(cameraOffset);if(!cockpit){shipCameraSubject(shipRig,cameraSubject);if(stableCamera)placeSubjectOrbit(camera,camQ,cameraSubject,orbitDistance,{groundAt:surface.body.solid?orbitGround:null});else if(surface.body.solid)camera.position.y=Math.max(camera.position.y,surface.floor+1)}}surfaceView.updateCrew(crew,camera);camera.updateProjectionMatrix();camera.updateMatrixWorld();asteroidBelts.update(flight,surface,camera,graphics,touch||compatibility,explorer.labels&&labelFilters.asteroids);surfaceView.celestial.update(camera);surfaceStream.update(crew.onFoot?crew.pos:surface.pos,graphics,{mobile:touch,compatibility});building.update(camera);respawnStation.update(camera,blocked);sfx.weather(biomeWeather(surface.earthEnvironment,(crew.onFoot?crew.pos:surface.pos).x,(crew.onFoot?crew.pos:surface.pos).z), surface.body?.name==='Earth'&&!blocked&&underWeatherClouds((crew.onFoot?crew.pos:surface.pos).y));updateObjectLabels();prospecting.update(camera,performance.now()/1000);forestry.update(camera);updateMovementSound(dt);groundWeather.update(camera,surface.earthEnvironment,graphics,compatibility,touch);globalShadows.update(dt,surface,crew,camera);earthWeatherFX.update(camera,surface,surface.earthEnvironment,graphics,cockpit,compatibility);effects.render(surfaceView.scene,camera,graphics);updateEarthReadout();glare.update(camera,bodies,flight,surface,[ship,surfaceView.minerals,prospecting.group,surfaceView.celestial.group,prospecting.pickaxe,prospecting.heldRock,surfaceStream.group,building.group]);}
@@ -250,7 +250,7 @@ function digSnow(camera,x=0,y=0){const result=groundWeather.dig(camera,x,y);if(!
 function mineMineral(id){if(economy.toolKind==='shovel'){digSnow(camera);return}if(economy.toolKind==='saw'){cutTree();return}if(isBlocked()||!crew.onFoot)return;if(id===undefined)id=prospecting.pick(camera);const result=economy.hit(id,surface.body,crew.eye(),crew.onFoot);if(result.swing||result.ok)sfx.play('swing');if(!result.ok){if(result.swing)toast(result.reason);else if(result.reason)toast(result.reason);return}sfx.play(result.collected?'break':'hit');if(result.collected){sfx.play('pickup');toast('+1 '+result.node.name+' · '+result.node.fp+' FP sale value')}inventoryUI.render();prospecting.update(camera,performance.now()/1000)}
 function updateEconomyHUD(){inventoryUI?.render();$('mineBtn').hidden=true;$('mineBtn').disabled=economy.equipped!=='pickaxe';const nearby=economy.canSell(surface,crew);$('tradeBtn').classList.toggle('active',nearby);$('tradeRange').textContent=surface.active&&surface.body.name==='Earth'&&crew.onFoot?' · '+Math.round(crew.pos.distanceTo(TRADER))+' m':'';const cost=economy.quote(target,flight.system,flight.pos);$('warpCost').textContent=target.id==='Earth'?'Warp FREE · Earth':'Warp '+cost.fp+' FP'+(cost.rc?' + '+cost.rc+' RC':'');$('miningHint').hidden=true;$('miningHint').textContent=economy.equipped==='pickaxe'?'Tap anywhere to mine a nearby mineral · 6 m reach':economy.held?'Holding '+economy.definition(economy.held.type).name+' · press 1 for pickaxe':'Empty hands · press 1 or tap Pickaxe';}
 inventoryUI=new InventoryUI(economy,{open:openInventory,trade:tradeMinerals,equip:equipItem,select:key=>{economy.select(key);inventoryUI.render(true)}});
-economy.onBlast=event=>{if(surface.active&&surface.body.id===event.body){building.blast(event);sfx.play('explosion');toast('TNT blast · '+event.returned+' blocks returned · '+event.damaged+' minerals hit');prospecting.update(camera,performance.now()/1000)}};building.onIgnite=()=>sfx.play('tntFuse');building.onPlace=()=>sfx.play('place');building.onRemove=()=>sfx.play('dig');
+economy.onBlast=event=>{if(surface.active&&surface.body.id===event.body){building.blast(event);sfx.play('explosion');const shipDestroyed=applyShipBlast(surface,event);if(shipDestroyed){clearInputs();syncThrottle();updateSurfaceControls();save()}toast(shipDestroyed?'TNT destroyed the ship · replacement at the launch pad':'TNT blast · '+event.returned+' blocks returned · '+event.damaged+' minerals hit');prospecting.update(camera,performance.now()/1000)}};economy.onFuseTick=p=>{if(surface.active&&surface.body.id===p.body&&Math.hypot(p.x-camera.position.x,p.y-camera.position.y,p.z-camera.position.z)<80)sfx.play('tntFuse')};building.onPlace=()=>sfx.play('place');building.onRemove=()=>sfx.play('dig');
 let soundState={fp:economy.fp,rc:economy.rc,items:new Map([...economy.inventory].map(([key,row])=>[key,row.qty]))};
 economy.onChange=()=>{if(economy.fp>soundState.fp||economy.rc>soundState.rc)sfx.play('currencyAdded');if(economy.fp<soundState.fp||economy.rc<soundState.rc)sfx.play('currencyRemoved');if([...economy.inventory].some(([key,row])=>row.qty>(soundState.items.get(key)||0)))sfx.play('complete');soundState={fp:economy.fp,rc:economy.rc,items:new Map([...economy.inventory].map(([key,row])=>[key,row.qty]))};persistEconomy();inventoryUI?.render();if(tradeUI.dialog.open)tradeUI.render();};
 function resetWarpCamera(){explorer.cancelOrbit();explorer.enabled=false;cockpit=true;stableCamera=false;orbitDistance=16;document.body.classList.add('cockpit');$('flightCamera').setAttribute('aria-label','Camera: cockpit');$('orbitZoom').hidden=true;camQ.copy(flight.q);syncExplorer();updateSurfaceControls()}
@@ -332,7 +332,7 @@ function saveVisualSettings(){try{localStorage.setItem('zero-gravity-visual-sett
 $('globalShadow').checked=globalShadow;$('globalShadow').onchange=e=>{globalShadow=e.target.checked;globalShadows.set(globalShadow,graphics,touch);saveVisualSettings()};
 
 if(cloudAccounts){
- playerAccount=new PlayerAccount({config:supabaseConfig,progressSnapshot:()=>[...economy.visited],clearControls:clearInputs,resumeLandscape:landscape,snapshot:()=>cloudInventory(economy),hydrate:(state,uid)=>{let world={};try{world=JSON.parse(localStorage.getItem('tzg-world-'+uid))||{}}catch{}const onChange=economy.onChange,onBlast=economy.onBlast;Object.assign(economy,new Economy(bodies,{...world,fp:state.fp,rc:state.rc,inventory:state.inventory}),{onChange,onBlast});soundState={fp:economy.fp,rc:economy.rc,items:new Map([...economy.inventory].map(([key,row])=>[key,row.qty]))};inventoryUI?.render(true);updateEconomyHUD()},block:value=>{accountLocked=value;if(value)clearInputs()},onLogout:async()=>{debugMenu.active=false;await debugMenu.api('logout',{}).catch(()=>{})}});
+ playerAccount=new PlayerAccount({config:supabaseConfig,progressSnapshot:()=>[...economy.visited],clearControls:clearInputs,resumeLandscape:landscape,snapshot:()=>cloudInventory(economy),hydrate:(state,uid)=>{let world={};try{world=JSON.parse(localStorage.getItem('tzg-world-'+uid))||{}}catch{}const onChange=economy.onChange,onBlast=economy.onBlast,onFuseTick=economy.onFuseTick;Object.assign(economy,new Economy(bodies,{...world,fp:state.fp,rc:state.rc,inventory:state.inventory}),{onChange,onBlast,onFuseTick});soundState={fp:economy.fp,rc:economy.rc,items:new Map([...economy.inventory].map(([key,row])=>[key,row.qty]))};inventoryUI?.render(true);updateEconomyHUD()},block:value=>{accountLocked=value;if(value)clearInputs()},onLogout:async()=>{debugMenu.active=false;await debugMenu.api('logout',{}).catch(()=>{})}});
  await playerAccount.init();
 }
 

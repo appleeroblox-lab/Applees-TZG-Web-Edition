@@ -1,8 +1,18 @@
 import * as T from './vendor/three.module.js';
 import {loadBlenderModel} from './models.js?v=100';
-import {surfaceHeight} from './surface.js?v=100';
+import {surfaceHeight} from './surface.js?v=104';
 import {padHeightAt} from './surface-layout.js';
 export const SHIP_STATION={x:12,z:0,range:4};
+export function applyShipBlast(surface,event){
+ if(!surface.active||!surface.body?.solid||event.body!==surface.body.id||surface.shipBlastGrace>0)return false;
+ const upright=['parked','countdown'].includes(surface.phase),local=event.pos.clone().sub(surface.pos);
+ if(!upright)local.applyQuaternion(surface.flight.q.clone().invert());
+ const min=upright?new T.Vector3(-3.95,-4.23,-1.9):new T.Vector3(-3.7,-1.95,-4.5),max=upright?new T.Vector3(3.95,4.5,2.45):new T.Vector3(3.7,1.95,4.5);
+ if(local.distanceTo(local.clone().clamp(min,max))>event.radius)return false;
+ // Return only the ship. An on-foot player keeps their location and camera.
+ surface.pos.set(0,0,0);surface.pos.y=surface.floor;surface.vel.set(0,0,0);surface.phase='parked';surface.remaining=0;surface.launchElapsed=null;surface.landingTarget=null;surface.event=null;surface.shipBlastGrace=2;
+ const f=surface.flight;f.q.identity();f.vel.set(0,0,0);f.nav=null;f.cruiseSpeed=0;f.speedCapHeld=0;f.throttle=0;f.gear=true;f.boostHeld=false;f.boostWindow=false;return true;
+}
 export function respawnParkedShip(surface,crew){
  if(!surface.active||!surface.body?.solid||!crew.onFoot||Math.hypot(crew.pos.x-SHIP_STATION.x,crew.pos.z-SHIP_STATION.z)>SHIP_STATION.range)return false;
  // The character keeps its position, view, walking state and velocity.

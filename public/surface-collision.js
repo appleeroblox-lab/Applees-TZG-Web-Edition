@@ -1,7 +1,8 @@
 import * as T from './vendor/three.module.js';
+import {TOWER_PARTS} from './launch-tower.js?v=104';
 import {blockBounds} from './door-rules.js';
 import {CRAFT_LAYOUT,TRADE_LAYOUT,isSolidBlock,padHeightAt} from './surface-layout.js';
-import {surfaceHeight} from './surface.js?v=100';
+import {surfaceHeight} from './surface.js?v=104';
 const CELL=8,EPS=.002;
 const box=(x,y,z,hx,hy,hz,kind)=>({min:{x:x-hx,y:y-hy,z:z-hz},max:{x:x+hx,y:y+hy,z:z+hz},kind});
 export function sweepBox(start,end,half,b){let near=0,far=1,axis=null,sign=0;for(const k of ['x','y','z']){const lo=b.min[k]-half[k],hi=b.max[k]+half[k],d=end[k]-start[k];if(Math.abs(d)<1e-10){if(start[k]<=lo||start[k]>=hi)return null;continue}let a=(lo-start[k])/d,c=(hi-start[k])/d,n=-Math.sign(d);if(a>c)[a,c]=[c,a];if(a>=near&&a>=0){near=a;axis=k;sign=n}far=Math.min(far,c);if(near>far)return null}if(!axis||near<0||near>1)return null;const normal=new T.Vector3();normal[axis]=sign;return {t:near,normal,box:b}}
@@ -17,7 +18,7 @@ export class SurfaceCollisions{
    this.add(box(CRAFT_LAYOUT.x,ground(CRAFT_LAYOUT.x,CRAFT_LAYOUT.z)+2.5,CRAFT_LAYOUT.z,CRAFT_LAYOUT.halfX,2.5,CRAFT_LAYOUT.halfZ,'crafting'));
    this.add(box(TRADE_LAYOUT.x,ground(TRADE_LAYOUT.x,TRADE_LAYOUT.z)+3.2,TRADE_LAYOUT.z,6.1,3.2,4.1,'trade'));
    for(let i=0;i<5;i++)this.add(box(80+i*35,6+i,25,12.75,6.3+i,20.25,'hangar'));
-   this.add(box(-32,25,-15,4.5,25,4.5,'tower'));this.add(box(-20,40,-15,13.5,1,1.5,'tower arm'));
+   for(const part of TOWER_PARTS){const [x,y,z]=part.position,[w,h,d]=part.size;this.add(box(x,y,z,w/2,h/2,d/2,'tower'))}
   }
 
  }
@@ -36,7 +37,7 @@ export class SurfaceCollisions{
  moveShip(before){const s=this.surface;if(!s.body?.solid||!s.launched)return null;const half=new T.Vector3(3.7,1.95,4.5),matrix=new T.Matrix4().makeRotationFromQuaternion(s.flight.q),e=matrix.elements,extent=new T.Vector3(Math.abs(e[0])*half.x+Math.abs(e[4])*half.y+Math.abs(e[8])*half.z,Math.abs(e[1])*half.x+Math.abs(e[5])*half.y+Math.abs(e[9])*half.z,Math.abs(e[2])*half.x+Math.abs(e[6])*half.y+Math.abs(e[10])*half.z);let first=null;
   for(const b of this.query(Math.min(before.x,s.pos.x)-extent.x,Math.min(before.z,s.pos.z)-extent.z,Math.max(before.x,s.pos.x)+extent.x,Math.max(before.z,s.pos.z)+extent.z)){let hit=sweepBox(before,s.pos,extent,b);if(!hit&&['x','y','z'].every(k=>before[k]>b.min[k]-extent[k]+EPS&&before[k]<b.max[k]+extent[k]-EPS)){let depth=Infinity,normal=new T.Vector3();for(const k of ['x','y','z'])for(const sign of [-1,1]){const d=sign<0?before[k]-(b.min[k]-extent[k]):b.max[k]+extent[k]-before[k];if(d<depth){depth=d;normal.set(0,0,0);normal[k]=sign}}hit={t:0,normal,box:b,depth}}if(hit&&(!first||hit.t<first.t))first=hit}
   if(!first)return null;const delta=s.pos.clone().sub(before);s.pos.copy(before).addScaledVector(delta,Math.max(0,first.t-1e-5)).addScaledVector(first.normal,EPS+(first.depth||0));const into=s.vel.dot(first.normal);if(into<0)s.vel.addScaledVector(first.normal,-into);s.flight.cruiseSpeed=0;s.flight.speedCapHeld=0;s.launchElapsed=null;
-  if(first.normal.y>.7&&s.pos.x+.7>first.box.min.x&&s.pos.x-.7<first.box.max.x&&s.pos.z+.7>first.box.min.z&&s.pos.z-.7<first.box.max.z){s.pos.y=first.box.max.y+(s.shipRig?.contactHeight??1.39);s.vel.set(0,0,0);s.phase='parked';s.flight.q.identity();s.flight.gear=true;s.flight.throttle=0;return {type:'touchdown',b:s.body}}
+  if(!['terrain decoration','mineral','tree','rock'].includes(first.box.kind)&&first.normal.y>.7&&s.pos.x+.7>first.box.min.x&&s.pos.x-.7<first.box.max.x&&s.pos.z+.7>first.box.min.z&&s.pos.z-.7<first.box.max.z){s.pos.y=first.box.max.y+(s.shipRig?.contactHeight??1.39);s.vel.set(0,0,0);s.phase='parked';s.flight.q.identity();s.flight.gear=true;s.flight.throttle=0;return {type:'touchdown',b:s.body}}
   return {type:'obstacleContact',b:s.body,obstacle:first.box.kind};
  }
 }

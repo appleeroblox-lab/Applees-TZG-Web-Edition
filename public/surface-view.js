@@ -1,17 +1,18 @@
-import {PlanetBases} from './planet-bases.js?v=100';
+import {TOWER_PARTS} from './launch-tower.js?v=104';
+import {PlanetBases} from './planet-bases.js?v=104';
 import {addTerrainDetail,terrainMaterial} from './terrain-detail.js?v=100';
 import {NightAurora} from './night-aurora.js?v=91';
-import {createSurfaceRoads} from './surface-roads.js?v=100';
+import {createSurfaceRoads} from './surface-roads.js?v=104';
 import {buildGasInterior,gasCloudPosition} from './gas-interior.js';
 import {graphicsPolicy} from './graphics-policy.js';
 import {cloudProfile,cloudPosition,applyAtmosphericFog,upperSkyState,setAtmosphereStars} from './atmosphere-effects.js?v=103';
 import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 import * as T from './vendor/three.module.js';
 import {glow} from './visuals.js?v=100';
-import {surfaceHeight,atmosphere} from './surface.js?v=100';
+import {surfaceHeight,atmosphere} from './surface.js?v=104';
 import {SurfaceSky} from './surface-sky.js?v=100';
 import {terrainColor} from './surface-palette.js';
-import {EarthEnvironment} from './earth-environment.js?v=103';
+import {EarthEnvironment} from './earth-environment.js?v=104';
 import {applySurfaceLighting} from './lighting.js';
 export class SurfaceView{
  constructor(session,bodies=[]){this.session=session;this.scene=new T.Scene();this.bases=new PlanetBases(this.scene,session);this.aurora=new NightAurora(this.scene);this.scene.userData.surface=session;this.celestial=new SurfaceSky(session,bodies);this.scene.add(this.celestial.group);this.environment=new EarthEnvironment();try{this.environment.restore(JSON.parse(localStorage.getItem('zero-gravity-earth-environment')))}catch{}this.body=null;this.cloudTime=0;this.minerals=new T.Group();this.scene.add(this.minerals);this.spaceMap=null;this.fill=new T.HemisphereLight(0xc5dfff,0x3c4030,1.35);this.scene.add(this.fill);this.sun=new T.DirectionalLight(0xffedce,3);this.sun.position.set(-400,700,-300);this.scene.add(this.sun)}
@@ -24,7 +25,7 @@ export class SurfaceView{
  add(new T.CylinderGeometry(PAD_RADIUS,PAD_RADIUS,.55,64),steel,0,.275,0);const ring=add(new T.TorusGeometry(PAD_RADIUS*.71,.18,6,64),paint,0,.57,0);ring.rotation.x=Math.PI/2;for(const x of [-1,1]){add(new T.BoxGeometry(.25,.04,10),paint,x*3,.58,0);add(new T.BoxGeometry(6,.04,.25),paint,0,.58,0)}
  for(let i=0;i<20;i++){const t=i/20*Math.PI*2;add(new T.CylinderGeometry(.12,.2,.3,8),new T.MeshBasicMaterial({color:0x7df7e0}),Math.cos(t)*(PAD_RADIUS-1),.7,Math.sin(t)*(PAD_RADIUS-1))}
  group.add(createSurfaceRoads(this.body));
- if(this.body.name==='Earth'){for(let i=0;i<5;i++){const x=80+i*35;add(new T.BoxGeometry(25,12+i*2,40),new T.MeshStandardMaterial({color:0x6c7d85,roughness:.8}),x,6+i,25);add(new T.BoxGeometry(25.5,.6,40.5),steel,x,12+i*2,25)}add(new T.BoxGeometry(6,50,6),steel,-32,25,-15);for(let y=5;y<50;y+=9)add(new T.BoxGeometry(9,.6,9),paint,-32,y,-15);add(new T.BoxGeometry(27,2,3),steel,-20,40,-15)}
+ if(this.body.name==='Earth'){for(let i=0;i<5;i++){const x=80+i*35;add(new T.BoxGeometry(25,12+i*2,40),new T.MeshStandardMaterial({color:0x6c7d85,roughness:.8}),x,6+i,25);add(new T.BoxGeometry(25.5,.6,40.5),steel,x,12+i*2,25)}for(const part of TOWER_PARTS)add(new T.BoxGeometry(...part.size),part.paint?paint:steel,...part.position)}
  this.dust=[];for(let i=0;i<32;i++){const sprite=new T.Sprite(new T.SpriteMaterial({map:glow,color:air?0xc6b999:0x96938e,transparent:true,opacity:0,depthWrite:false}));sprite.userData.seed=i;group.add(sprite);this.dust.push(sprite)}
  const c=document.createElement('canvas');c.width=512;c.height=128;const ctx=c.getContext('2d');ctx.fillStyle='#102635';ctx.fillRect(0,0,512,128);ctx.fillStyle='#d7f6ff';ctx.textAlign='center';ctx.font='28px Fredoka';ctx.fillText(this.body.name.toUpperCase()+' / PAD 01',256,58);ctx.font='17px Fredoka';ctx.fillText('SURFACE OPERATIONS',256,91);const texture=new T.CanvasTexture(c);texture.userData.surfaceOwned=true;const board=new T.Group();board.name='Pad 01 sign board';board.position.set(PAD_SIGN.x,0,PAD_SIGN.z);board.rotation.y=PAD_SIGN.yaw;group.add(board);for(const x of [-3.4,3.4]){const post=new T.Mesh(new T.BoxGeometry(.22,4.2,.22),steel.clone());post.position.set(x,2.1,0);board.add(post)}const backing=new T.Mesh(new T.BoxGeometry(9.5,2.8,.22),steel.clone());backing.position.y=4.1;const sign=new T.Mesh(new T.PlaneGeometry(9,2.4),new T.MeshBasicMaterial({map:texture,side:T.DoubleSide}));sign.name='Pad sign text';sign.userData.padSignText=true;sign.position.set(0,4.1,.13);board.add(backing,sign);this.session.padSign=board;
  }

@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import * as T from '../public/vendor/three.module.js';
 import {clipPatch} from '../public/weather-patch-clip.js';
 import {biomeCell,biomeWeather} from '../public/earth-biomes.js';
-import {EarthEnvironment} from '../public/earth-environment.js?v=98';
-import {GroundWeather} from '../public/ground-weather.js?v=98';
-import {roadRoutes,createSurfaceRoads} from '../public/surface-roads.js?v=98';
+import {EarthEnvironment} from '../public/earth-environment.js?v=99';
+import {GroundWeather} from '../public/ground-weather.js?v=99';
+import {roadRoutes,createSurfaceRoads} from '../public/surface-roads.js?v=99';
 import {PAD_RADIUS,CRAFT_LAYOUT} from '../public/surface-layout.js';
-import {earth,bodies} from '../public/catalog.js?v=98';
-import {settlementSites,settlementBlocks} from '../public/settlements.js?v=98';
+import {earth,bodies} from '../public/catalog.js?v=99';
+import {settlementSites,settlementBlocks} from '../public/settlements.js?v=99';
 import {stormActivity} from '../public/weather-state.js';
 const area=p=>Math.abs(p.reduce((a,v,i)=>{const n=p[(i+1)%p.length];return a+v.x*n.z-v.z*n.x},0))/2;
 const square=[{x:-2,z:-2},{x:2,z:-2},{x:2,z:2},{x:-2,z:2}],box={min:{x:-.5,z:-.5},max:{x:.5,z:.5}},cut=clipPatch(square,[box]);assert(Math.abs(cut.reduce((s,p)=>s+area(p),0)-15)<1e-6,'one block removes exactly its footprint');for(const p of cut)for(let i=1;i<p.length-1;i++){const x=(p[0].x+p[i].x+p[i+1].x)/3,z=(p[0].z+p[i].z+p[i+1].z)/3;assert(!(Math.abs(x)<.5&&Math.abs(z)<.5),'no triangle bridges the block hole')}

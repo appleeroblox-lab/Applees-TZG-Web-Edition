@@ -33,7 +33,7 @@ export class Flight {
  navigate(b,mode){
   if(this.surface?.active)return mode==='land'&&this.surface.requestLand();
   if(this.strictSurface&&mode==='land')return false;
-  if(mode==='land'&&!b.solid)return false;
+  if(mode==='land'&&(!b.solid||b.landable===false))return false;
   this.lastDenial='';const willWarp=mode==='warp'||b.system!==this.system||this.pos.distanceTo(b.pos)>25000;if(this.beforeNavigate&&this.beforeNavigate(b,mode,willWarp)===false)return false;
   this.cancel();this.landed=null;
   // Cross-system journeys and distant local journeys stage the requested action after warp.
@@ -72,7 +72,7 @@ export class Flight {
   // Segment/sphere sweep catches fast crossings, not only endpoints inside a world.
   for(const b of this.active){
    if(['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type))continue;
-   const entering=this.allowInterior&&(b.solid||/GAS GIANT|ICE GIANT/.test(b.type));const floor=b.r+(entering?0:(typeof padding==='function'?padding(b):padding)),delta=this.pos.clone().sub(before),length=delta.length();
+   const entering=this.allowInterior&&((b.solid&&b.landable!==false)||/GAS GIANT|ICE GIANT/.test(b.type));const floor=b.r+(entering?0:(typeof padding==='function'?padding(b):padding)),delta=this.pos.clone().sub(before),length=delta.length();
    let hit=null;
    if(before.distanceTo(b.pos)>floor&&length>0){const ray=new T.Ray(before,delta.clone().normalize());const p=ray.intersectSphere(new T.Sphere(b.pos,floor),V());if(p&&p.distanceTo(before)<=length)hit=p}
    if(this.pos.distanceTo(b.pos)<floor)hit=this.pos.clone();
@@ -82,7 +82,7 @@ export class Flight {
    if(entering){this.nav=null;this.event={type:'enter',b,normal};return}
    this.pos.copy(b.pos).addScaledVector(normal,floor+.002);
    const normalSpeed=Math.max(0,-this.vel.dot(normal)),speed=this.vel.length();
-   if(b.solid&&this.gear&&normalSpeed<3&&speed<5){this.park(b);return}
+   if(b.solid&&b.landable!==false&&this.gear&&normalSpeed<3&&speed<5){this.park(b);return}
    this.vel.addScaledVector(normal,normalSpeed+Math.min(3,Math.max(.5,normalSpeed*.2)));this.event={type:b.solid?'contact':'hazard',b};
   }
   if(!this.event)this.asteroidField?.collide(before,this);

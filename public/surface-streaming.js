@@ -1,13 +1,13 @@
 import {addTerrainDetail,terrainMaterial,setTerrainDetailEnabled} from './terrain-detail.js?v=91';
 import {earthBiome} from './earth-biomes.js?v=59';
-import {onSurfaceRoad} from './surface-roads.js?v=98';
-import {settlementContains} from './settlements.js?v=98';
+import {onSurfaceRoad} from './surface-roads.js?v=99';
+import {settlementContains} from './settlements.js?v=99';
 import {biomeColor,biomeWeather} from './earth-biomes.js?v=59';
-import {sceneryPoints} from './tree-data.js?v=98';
+import {sceneryPoints} from './tree-data.js?v=99';
 import {graphicsPolicy} from './graphics-policy.js';
 import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 import * as T from './vendor/three.module.js';
-import {surfaceHeight} from './surface.js?v=98';
+import {surfaceHeight} from './surface.js?v=99';
 import {terrainColor} from './surface-palette.js';
 export const CHUNK_SIZE=96;
 export function chunkKey(x,z){return Math.floor((x+48)/96)+','+Math.floor((z+48)/96)}
@@ -23,7 +23,7 @@ export class SurfaceStream{
  setRadius(value){this.radius=T.MathUtils.clamp(Math.round(Number(value)||2),1,4);this.last='';this.visibilityAt=null;try{localStorage.setItem('zero-gravity-terrain-radius',String(this.radius))}catch{}}
  clear(){this.collisionRevision++;for(const g of this.chunks.values()){disposeChunk(g);this.group.remove(g)}this.chunks.clear();this.visibilityAt=null}
  update(pos,quality='Medium',{mobile=false,compatibility=false}={}){const body=this.view.session.body,budget=sceneryBudget(quality,mobile,compatibility),policy=budget.count+':'+budget.distance+':'+this.decorations+':'+this.grassAmount;if(body!==this.body||policy!==this.policy){this.clear();this.body=body;this.policy=policy;this.last=''}if(!body?.solid)return;this.grassCount=Math.round((mobile||compatibility?3500:quality==='High'?12000:quality==='Low'?3000:8000)*this.grassAmount/100);const [cx,cz]=chunkKey(pos.x,pos.z).split(',').map(Number),radius=this.radius??(quality==='High'?3:2),key=body.id+cx+','+cz+radius;this.view.session.terrainFog=terrainFog(radius);this.view.session.terrainRadius=radius;this.view.session.prospecting?.economy.discoverVillages(body,pos,radius);if(key!==this.last){this.last=key;const needed=new Set();for(let z=cz-radius;z<=cz+radius;z++)for(let x=cx-radius;x<=cx+radius;x++){const id=x+','+z;needed.add(id);if(!this.chunks.has(id)){const g=this.make(body,x,z);this.chunks.set(id,g);this.group.add(g)}}for(const [id,g] of this.chunks)if(!needed.has(id)){disposeChunk(g);this.group.remove(g);this.chunks.delete(id)}this.visibilityAt=null}
- const economy=this.view.session.prospecting?.economy,revision=(economy?.cycle||0)+':'+(economy?.depleted.size||0);if(revision!==this.treeRevision){this.collisionRevision++;this.treeRevision=revision;for(const g of this.chunks.values()){const mesh=g.userData.scenery;if(mesh){disposeChunk(mesh);g.remove(mesh);g.userData.scenery=null}}this.visibilityAt=null}
+ const economy=this.view.session.prospecting?.economy,revision=(economy?.cycle||0)+':'+(economy?.treeRevision||0);if(revision!==this.treeRevision){this.collisionRevision++;this.treeRevision=revision;for(const g of this.chunks.values()){const mesh=g.userData.scenery;if(mesh){disposeChunk(mesh);g.remove(mesh);g.userData.scenery=null}}this.visibilityAt=null}
  // Avoid touching scene visibility every frame while standing still.
  this.updateTreeSnow();if(this.visibilityAt&&this.visibilityAt.distanceToSquared(pos)<16)return;this.visibilityAt=pos.clone();for(const g of this.chunks.values()){const {cx,cz}=g.userData,dx=Math.max(0,Math.abs(pos.x-cx*96)-48),dz=Math.max(0,Math.abs(pos.z-cz*96)-48),visible=Math.hypot(dx,dz,pos.y-surfaceHeight(pos.x,pos.z))<budget.distance;if(visible&&!g.userData.scenery){const mesh=this.decorate(body,cx,cz,budget.count);g.userData.scenery=mesh;g.add(mesh);this.collisionRevision++}if(g.userData.scenery){if(g.userData.scenery.visible!==visible)this.collisionRevision++;g.userData.scenery.visible=visible}}}
  make(body,cx,cz){const g=new T.Group();g.userData={cx,cz};const geo=new T.PlaneGeometry(96,96,16,16);geo.rotateX(-Math.PI/2);const p=geo.attributes.position,colors=[];for(let i=0;i<p.count;i++){const x=p.getX(i)+cx*96,z=p.getZ(i)+cz*96;p.setXYZ(i,x,surfaceHeight(x,z)-.025,z);const c=body.name==='Earth'?biomeColor(x,z):terrainColor(body,x,z);colors.push(c.r,c.g,c.b)}geo.setAttribute('color',new T.Float32BufferAttribute(colors,3));geo.computeVertexNormals();const ground=new T.Mesh(addTerrainDetail(geo,body),terrainMaterial());ground.userData.terrain=true;g.add(ground);return g}

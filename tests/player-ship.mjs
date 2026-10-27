@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import * as T from '../public/vendor/three.module.js';
-import {modelFromData} from '../public/models.js?v=98';
-import {Flight} from '../public/flight.js?v=98';
-import {SurfaceSession} from '../public/surface.js?v=98';
-import {Crew} from '../public/crew.js?v=98';
-import {bodies,earth} from '../public/catalog.js?v=98';
+import {modelFromData} from '../public/models.js?v=99';
+import {Flight} from '../public/flight.js?v=99';
+import {SurfaceSession} from '../public/surface.js?v=99';
+import {Crew} from '../public/crew.js?v=99';
+import {bodies,earth} from '../public/catalog.js?v=99';
 const data=JSON.parse(fs.readFileSync(new URL('../public/models/player-ship.json',import.meta.url)));
 const model=modelFromData(data),box=new T.Box3().setFromObject(model),size=box.getSize(new T.Vector3());
 assert.equal(data.source,'TZG_Player_Ship.blend');assert(data.meshes.length<=16,'mobile material batching');

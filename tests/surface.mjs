@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import {Flight,V} from '../public/flight.js?v=98';
-import {SurfaceSession,CONTACT,surfaceHeight,atmosphere,exitHeight,LAUNCH_SECONDS} from '../public/surface.js?v=98';
+import {Flight,V} from '../public/flight.js?v=99';
+import {SurfaceSession,CONTACT,surfaceHeight,atmosphere,exitHeight,LAUNCH_SECONDS} from '../public/surface.js?v=99';
 const earth={id:'Earth',name:'Earth',r:64,pos:V(),solid:true,system:'Sol',type:'TERRESTRIAL PLANET'},moon={id:'Moon',name:'Moon',r:17,pos:V(400,0,0),solid:true,system:'Sol',type:'MOON'},gas={id:'Gas',name:'Gas',r:50,pos:V(1000,0,0),solid:false,system:'Sol',type:'GAS GIANT'};
 const f=new Flight([earth,moon,gas]),s=new SurfaceSession(f);f.strictSurface=true;f.allowInterior=true;s.enter(earth,true);
 assert.equal(s.phase,'parked');assert.equal(s.pos.y,CONTACT+.55);assert.equal(f.navigate(moon,'warp'),false);assert.equal(f.navigate(moon,'approach'),false);assert.equal(s.enter(gas),true);assert.equal(s.requestLaunch(),false);assert.equal(s.phase,'gas');s.enter(earth,true);

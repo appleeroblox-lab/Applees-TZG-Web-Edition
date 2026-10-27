@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import * as T from '../public/vendor/three.module.js';
 import {CockpitLabelMask} from '../public/cockpit-labels.js';
-import {modelFromData} from '../public/models.js?v=98';
+import {modelFromData} from '../public/models.js?v=99';
 const camera=new T.PerspectiveCamera(60,1,.025,100);camera.updateMatrixWorld();
 const root=new T.Group(),glass=new T.Mesh(new T.PlaneGeometry(4,4),new T.MeshStandardMaterial({transparent:true,opacity:.32}));glass.position.z=-1;root.add(glass);
 const wall=new T.Mesh(new T.PlaneGeometry(1,1),new T.MeshStandardMaterial({side:T.FrontSide}));wall.position.z=-2;wall.rotation.y=Math.PI;root.add(wall);

@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {bodies} from '../public/catalog.js?v=98';
-import {Flight} from '../public/flight.js?v=98';
-import {SurfaceSession} from '../public/surface.js?v=98';
-import {surfaceSkyLayout} from '../public/surface-sky.js?v=98';
+import {bodies} from '../public/catalog.js?v=99';
+import {Flight} from '../public/flight.js?v=99';
+import {SurfaceSession} from '../public/surface.js?v=99';
+import {surfaceSkyLayout} from '../public/surface-sky.js?v=99';
 const f=new Flight(bodies),s=new SurfaceSession(f);
 for(const name of ['Io','Europa','Titan','Moon']){
  const body=bodies.find(b=>b.name===name);s.enter(body,true);

@@ -1,4 +1,4 @@
-# World and interface update 98
+# World and interface update 99
 
 Play: https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html
 
@@ -28,7 +28,7 @@ Science references used for classification and shape context:
 
 The main belt is represented between 2.1 and 3.4 AU, the Kuiper Belt between 30 and 50 AU, and the spherical Oort field between 2,000 and 50,000 AU. These are illustrative regions rather than a live ephemeris. Named destinations remain searchable in Universe Map, and its asteroid filter includes Kuiper and Oort objects.
 
-Distant fields use 13,000 points total. Nearby rocks use eight shared Blender templates and eight instanced draw calls. Bounds are 54 rocks on mobile/compatibility or Low, 81 on desktop Medium, and 250 on desktop High. Neighbor-cell placement is deterministic. No local field rebuilding occurs while warping or travelling above 3,000 game units/s. Labels are capped at six nearby field rocks and can be disabled separately through Asteroids Labels. Solid terrain, grass and building budgets retain their prior controls.
+Distant point fields are removed: belts have no visible overview ring. Nearby rocks use eight shared Blender templates and eight instanced draw calls. Bounds are 54 rocks on mobile/compatibility or Low, 81 on desktop Medium, and 250 on desktop High. Neighbor-cell placement is deterministic. No local field rebuilding occurs while warping or travelling above 3,000 game units/s. Labels are capped at six nearby field rocks and can be disabled separately through Asteroids Labels. Solid terrain, grass and building budgets retain their prior controls.
 
 ## Collision and settlements
 
@@ -36,12 +36,23 @@ A spatial hash indexes solid blocks/doors, visible scenery components and statio
 
 Ship motion sweeps its rotated full wing/hull envelope against candidates, so a frame's endpoint cannot skip a thin wall. Contact cancels inward velocity. Descending onto a supporting roof parks the ship with stable subsequent ground contact. Base collision bounds come from the exported Blender objects. Base footprints are reserved against scenery and resource-node spawns. Collision is conservative around tree canopies and rounded base components.
 
-Village house footprints and the original six house positions remain unchanged. Six more houses and connected local streets extend each settlement. Existing generated block identities remain stable; removed blocks and doors continue to persist through the prior compact world-save mechanism. Earth has ten villages so all five biome themes occur; other solid worlds retain eight. Village loading remains bounded around the viewer and solid blocks remain instanced.
+Village house footprints and the original six house positions remain unchanged. Each settlement has six houses and a short central street. Existing generated block identities remain stable; removed blocks and doors continue to persist through the prior compact world-save mechanism. Earth has ten villages so all five biome themes occur; other solid worlds retain eight. Village loading remains bounded around the viewer and solid blocks remain instanced.
 
 ## Validation
 
-Passed the complete `npm test` gameplay suite, the new `tests/world-update.mjs`, the shared-auth integration tests, and startup checks covering delayed ship loading and authentication before preloading. New coverage includes thin-wall ship sweeps, roof parking, immediate door updates, tree/rock collision, grass exclusion, 12 unchanged-size houses, all biome themes, valid Blender data, native base bounds, three local belt regions, deterministic instancing, mobile caps and saved asteroid-label settings. Model renders were visually inspected. Every preload asset exists and authored JavaScript syntax checks pass.
+Passed the complete `npm test` gameplay suite, the new `tests/world-update.mjs`, the shared-auth integration tests, and startup checks covering delayed ship loading and authentication before preloading. New coverage includes thin-wall ship sweeps, roof parking, immediate door updates, tree/rock collision, grass exclusion, 6 unchanged-size houses, all biome themes, valid Blender data, native base bounds, three local belt regions, deterministic instancing, mobile caps and saved asteroid-label settings. Model renders were visually inspected. Every preload asset exists and authored JavaScript syntax checks pass.
 
 The existing social v79/v81 assertions described in `ROBLOX_MEDIA.md` remain unrelated baseline failures. Real browser/device FPS and a live-account playthrough were not measured in this environment; DOM/startup tests and Blender renders do not substitute for physical-device testing.
 
 No new SQL is required. The existing Supabase setup, player inventory/currency saves, account requirements and sound import status are unchanged.
+
+
+## Update 99 corrections
+
+Mining hits increment the economy/save revision without invalidating village meshes or static collision cells. Mineral depletion no longer invalidates every streamed tree/grass mesh. Tree removal has its own scenery revision. Mineral collision candidates are checked dynamically so collected nodes disappear immediately. The redundant forced inventory rebuild on every pickaxe strike is removed.
+
+Guided Land searches concentric rings up to 160 meters for an unobstructed full ship footprint. If necessary it climbs, moves above the safe site and descends. Existing manual-flight collision remains solid. The search can decline when no clear site exists in that radius.
+
+Vesta, Pallas, Hygiea, Eros, Ida, Gaspra, Itokawa, Bennu and Ryugu are landable named main asteroids. Other newly added minor objects are flyby-only, while existing planets, dwarf planets and moons retain landing. Procedural belt rocks never generate a surface session. Main/Kuiper/Oort regions retain nearby instanced rocks and optional nearby labels, without an artificial distant luminous ring.
+
+Regression coverage checks retained scenery/collision allocations while mining, safe landing beside an obstacle through the actual simulation, named asteroid landing restrictions and absence of distant overview geometry. Real device FPS remains unmeasured.

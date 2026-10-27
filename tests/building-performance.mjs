@@ -1,20 +1,20 @@
 import assert from 'node:assert/strict';
 import {parseHTML} from 'linkedom';
 import * as T from '../public/vendor/three.module.js';
-import {Building} from '../public/building.js?v=98';
-import {Economy} from '../public/economy.js?v=98';
-import {bodies,earth} from '../public/catalog.js?v=98';
-import {CompatibilityRenderer} from '../public/compatibility.js?v=98';
+import {Building} from '../public/building.js?v=99';
+import {Economy} from '../public/economy.js?v=99';
+import {bodies,earth} from '../public/catalog.js?v=99';
+import {CompatibilityRenderer} from '../public/compatibility.js?v=99';
 const {document}=parseHTML('<html><body></body></html>');globalThis.document=document;globalThis.innerWidth=1000;globalThis.innerHeight=600;
 const economy=new Economy(bodies),surface={body:earth,active:true,pos:new T.Vector3(),terrainRadius:2},crew={onFoot:true,moving:false,pos:new T.Vector3(40,0,35),eye(){return this.pos.clone().add(new T.Vector3(0,1.68,0))}},view={scene:new T.Scene()};
 const building=new Building(economy,surface,crew,view,{toast(){},open(){}});
 economy.placements=Array.from({length:3000},(_,i)=>({id:'block'+i,type:'concrete-gray',body:earth.id,x:40+i%60,y:.5,z:40+Math.floor(i/60)}));
 economy.placements.push({id:'glass',type:'glass',body:earth.id,x:35,y:.5,z:40},{id:'door',type:'door',body:earth.id,x:35,y:.5,z:43,open:false,yaw:0});
 building.sync();const batch=building.meshes.find(m=>m.isInstancedMesh),oldGlass=building.meshes.find(m=>m.userData.block.id==='glass'),hall=building.hall,geometry=batch.geometry;assert.equal(batch.count,3000);assert(building.meshes.length===3);
-economy.placements.push({id:'new',type:'concrete-gray',body:earth.id,x:105,y:.5,z:40});economy.worldRevision++;building.sync();assert.equal(building.meshes.find(m=>m.isInstancedMesh),batch,'placing retains batch/GPU buffers');assert.equal(batch.geometry,geometry);assert.equal(building.hall,hall,'crafting hall stays allocated');assert.equal(building.meshes.find(m=>m.userData.block.id==='glass'),oldGlass,'unrelated glass stays allocated');
-const door=building.meshes.find(m=>m.userData.block.id==='door');economy.placements.find(p=>p.id==='door').open=true;economy.worldRevision++;building.sync();assert.notEqual(building.meshes.find(m=>m.userData.block.id==='door'),door);assert.equal(building.meshes.find(m=>m.isInstancedMesh),batch);
-economy.placements.push({id:'glass2',type:'glass',body:earth.id,x:36,y:.5,z:40});economy.worldRevision++;building.sync();const connected=building.meshes.find(m=>m.userData.block.id==='glass');assert.notEqual(connected,oldGlass);assert.equal(connected.geometry.userData.exposedFaces,5);
-economy.placements=economy.placements.filter(p=>p.id!=='glass2');economy.worldRevision++;building.sync();assert.equal(building.meshes.find(m=>m.userData.block.id==='glass').geometry.userData.exposedFaces,6,'removal restores neighbor face');
+economy.placements.push({id:'new',type:'concrete-gray',body:earth.id,x:105,y:.5,z:40});economy.changed();building.sync();assert.equal(building.meshes.find(m=>m.isInstancedMesh),batch,'placing retains batch/GPU buffers');assert.equal(batch.geometry,geometry);assert.equal(building.hall,hall,'crafting hall stays allocated');assert.equal(building.meshes.find(m=>m.userData.block.id==='glass'),oldGlass,'unrelated glass stays allocated');
+const door=building.meshes.find(m=>m.userData.block.id==='door');economy.placements.find(p=>p.id==='door').open=true;economy.changed();building.sync();assert.notEqual(building.meshes.find(m=>m.userData.block.id==='door'),door);assert.equal(building.meshes.find(m=>m.isInstancedMesh),batch);
+economy.placements.push({id:'glass2',type:'glass',body:earth.id,x:36,y:.5,z:40});economy.changed();building.sync();const connected=building.meshes.find(m=>m.userData.block.id==='glass');assert.notEqual(connected,oldGlass);assert.equal(connected.geometry.userData.exposedFaces,5);
+economy.placements=economy.placements.filter(p=>p.id!=='glass2');economy.changed();building.sync();assert.equal(building.meshes.find(m=>m.userData.block.id==='glass').geometry.userData.exposedFaces,6,'removal restores neighbor face');
 const camera=new T.PerspectiveCamera(60,1,.05,100);camera.position.set(40,1,35);camera.lookAt(40,.5,40);camera.updateMatrixWorld();let tested=0;const original=T.Mesh.prototype.raycast;T.Mesh.prototype.raycast=function(...args){tested++;return original.apply(this,args)};let hit;try{hit=building.aim(camera).hit}finally{T.Mesh.prototype.raycast=original}assert(hit?.object.isInstancedMesh);assert.equal(hit.block.id,'block0');assert(tested<120,'nearby picking stays bounded with 3000 blocks');
 const savedAim=building.aim;building.aim=()=>{throw Error('unnecessary building raycast with pickaxe')};building.update(camera);building.aim=savedAim;
 // Canvas fallback must honor the transforms of every rendered instance.

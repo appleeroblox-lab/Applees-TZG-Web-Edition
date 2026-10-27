@@ -1,4 +1,4 @@
-import {applySmallBody,smallBodyFallback} from './small-body-models.js?v=98';
+import {applySmallBody,smallBodyFallback} from './small-body-models.js?v=99';
 import {starShineColor} from './star-colors.js';
 import {bodySphereGeometry} from './texture-geometry.js';
 import {surfaceFrame} from './surface-frame.js';

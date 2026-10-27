@@ -1,11 +1,11 @@
 import * as T from './vendor/three.module.js';
-import {BELTS} from './minor-body-data.js?v=98';
-import {smallBodyData,smallBodyGeometry} from './small-body-models.js?v=98';
+import {BELTS} from './minor-body-data.js?v=99';
+import {smallBodyData,smallBodyGeometry} from './small-body-models.js?v=99';
 const hash=s=>{let h=2166136261;for(const c of String(s))h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0};
 function random(seed){return()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296}}
 export class AsteroidBelts{
  constructor(scene,bodies,AU){this.AU=AU;this.sun=bodies.find(b=>b.name==='Sun');this.root=new T.Group();this.root.name='Asteroid Belt, Kuiper Belt and Oort Cloud';scene.add(this.root);this.overview=new T.Group();this.local=new T.Group();this.root.add(this.overview,this.local);this.rocks=[];this.anchor=new T.Vector3();this.material=new T.MeshStandardMaterial({color:'#a8a49c',roughness:1});this.labelRoot=document.createElement('div');this.labelRoot.className='asteroidFieldLabels';this.labelRoot.setAttribute('aria-hidden','true');document.body.append(this.labelRoot);this.labels=Array.from({length:6},()=>{const n=document.createElement('span');n.hidden=true;this.labelRoot.append(n);return n});
-  for(const belt of BELTS){const rand=random(belt.seed),positions=[],count=belt.spherical?5000:4000;for(let i=0;i<count;i++){const r=(belt.spherical?Math.cbrt(belt.inner**3+rand()*(belt.outer**3-belt.inner**3)):Math.sqrt(belt.inner**2+rand()*(belt.outer**2-belt.inner**2)))*AU,a=rand()*Math.PI*2,y=belt.spherical?rand()*2-1:(rand()-.5)*belt.height*AU,side=belt.spherical?Math.sqrt(1-y*y):1;positions.push(Math.cos(a)*r*side,belt.spherical?r*y:y,Math.sin(a)*r*side)}const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));const points=new T.Points(geometry,new T.PointsMaterial({color:belt.color,size:belt.spherical?1:1.3,sizeAttenuation:false,transparent:true,opacity: .4,depthWrite:false}));points.name=belt.name+' overview';this.overview.add(points)}
+  this.overview.visible=false; // Belts have no naked-eye ring or distant point-cloud representation.
   this.ready=Promise.all(Array.from({length:8},(_,i)=>smallBodyData('small-belt-'+i).then(d=>smallBodyGeometry(d)))).then(templates=>{this.templates=templates;return true}).catch(()=>false);
  }
  update(flight,surface,camera,quality='Medium',mobile=false,showLabels=true){const visible=!surface.active&&flight.system==='Sol';this.root.visible=visible;this.labels.forEach(n=>n.hidden=true);this.active=false;if(!visible)return;this.overview.position.copy(this.sun.pos).sub(flight.pos);const radial=flight.pos.distanceTo(this.sun.pos)/this.AU,belt=BELTS.find(b=>radial>=b.inner&&radial<=b.outer&&(b.spherical||Math.abs(flight.pos.y-this.sun.pos.y)<b.height*this.AU));if(!belt||!this.templates||flight.nav?.kind==='warp'||flight.vel.length()>3000){this.local.visible=false;return}

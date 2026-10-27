@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import * as T from '../public/vendor/three.module.js';
-import {Economy} from '../public/economy.js?v=98';
-import {SurfaceStream} from '../public/surface-streaming.js?v=98';
-import {surfaceHeight,SurfaceSession} from '../public/surface.js?v=98';
-import {Flight,V} from '../public/flight.js?v=98';
+import {Economy} from '../public/economy.js?v=99';
+import {SurfaceStream} from '../public/surface-streaming.js?v=99';
+import {surfaceHeight,SurfaceSession} from '../public/surface.js?v=99';
+import {Flight,V} from '../public/flight.js?v=99';
 const earth={id:'Earth',name:'Earth',solid:true,r:64,pos:V(),system:'Sol'},moon={id:'Moon',name:'Moon',solid:true,r:17,pos:V(400,0,0),system:'Sol'},gas={id:'Jupiter',name:'Jupiter',type:'GAS GIANT',solid:false,r:180,pos:V(3000,0,0),system:'Sol'};
 const e=new Economy([earth,moon,gas]);assert(!e.craft('concrete-gray'));e.add('quartz',1);assert(e.craft('concrete-gray'));assert.equal(e.count('quartz'),0);assert.equal(e.count('concrete-gray'),5);e.equipped='Earth|concrete-gray';assert(!e.place(earth,V(10,.5,0),false));assert(e.place(earth,V(10,.5,0),true));assert.equal(e.count('concrete-gray'),4);assert(!e.place(earth,V(10,.5,0),true));e.add('shovel',1);e.equipped='Earth|shovel';const id=e.placements[0].id;assert(!e.reclaim(id,false));assert(e.reclaim(id,true));assert(!e.reclaim(id,true));assert.equal(e.count('concrete-gray'),5);assert.equal(e.preview([...e.inventory.keys()]).count,0);e.fp=999;assert(!e.craft('concrete-gray',true));assert.equal(e.fp,999);e.fp=1000;assert(e.craft('concrete-gray',true));assert.equal(e.fp,0);assert.equal(e.count('concrete-gray'),69);e.rc=25;assert(e.craft('copper-pickaxe',true));assert.equal(e.rc,0);assert(!e.craft('copper-pickaxe',true));e.equipped='Earth|concrete-gray';assert(e.place(moon,V(8,.5,3),true));const restored=new Economy([earth,moon,gas],e.serialize());assert.equal(restored.placements.length,1);assert.equal(restored.count('concrete-gray'),68);
 const view={session:{body:earth},scene:new T.Scene()},stream=new SurfaceStream(view);stream.update(V());assert.equal(stream.chunks.size,25);stream.update(V(96000,0,-96000));assert.equal(stream.chunks.size,25);assert(!stream.chunks.has('0,0'));for(const group of stream.chunks.values()){const p=group.children[0].geometry.attributes.position;for(let i=0;i<p.count;i++)assert(Math.abs(p.getY(i)-(surfaceHeight(p.getX(i),p.getZ(i))-.025))<.01)}view.session.body=moon;stream.update(V(), 'High');assert.equal(stream.chunks.size,49);const f=new Flight([earth,gas]),s=new SurfaceSession(f);assert(s.enter(gas));assert(!s.onGround);assert(!s.requestLaunch());assert(!s.requestLand());assert.equal(s.phase,'gas');s.step(.1,{z:1});assert(s.pos.length()>100);assert(s.restore(s.serialize(),[gas]));assert.equal(s.phase,'gas');

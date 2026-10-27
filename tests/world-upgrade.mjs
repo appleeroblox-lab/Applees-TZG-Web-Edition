@@ -3,12 +3,12 @@ import * as T from '../public/vendor/three.module.js';
 import {audioFixture,flushAudio} from './audio-fakes.mjs';
 import {GameSound} from '../public/sound.js';
 import {connectedGlass} from '../public/connected-glass.js';
-import {Economy} from '../public/economy.js?v=98';
-import {settlementSites,settlementBlocks} from '../public/settlements.js?v=98';
+import {Economy} from '../public/economy.js?v=99';
+import {settlementSites,settlementBlocks} from '../public/settlements.js?v=99';
 import {cloudPosition,cloudProfile,aboveClouds,setAtmosphereStars} from '../public/atmosphere-effects.js';
-import {SurfaceSession,exitHeight} from '../public/surface.js?v=98';
-import {Flight,V} from '../public/flight.js?v=98';
-import {bodies,earth} from '../public/catalog.js?v=98';
+import {SurfaceSession,exitHeight} from '../public/surface.js?v=99';
+import {Flight,V} from '../public/flight.js?v=99';
+import {bodies,earth} from '../public/catalog.js?v=99';
 const fake=audioFixture(),s=new GameSound();s.unlock();s.weather({rain:1,storm:false},true);await flushAudio();assert(s.rainNode);const rain=s.rainNode.source;s.setActive(false);assert(rain.stopped);assert.equal(s.context.state,'suspended');const starts=fake.sources.length;await s.play('treeCut');s.weather({rain:1},true);await flushAudio();assert.equal(fake.sources.length,starts);s.setActive(true);assert.equal(s.context.state,'running');s.weather({rain:1},true);await flushAudio();assert(s.rainNode&&s.rainNode.source!==rain);assert.equal(fake.fetched.filter(f=>f.endsWith('rain.ogg')).length,1,'buffer reused');s.stop();assert(!s.rainNode);s.setActive(true);s.weather({rain:1},true);s.setActive(false);await flushAudio();assert(!s.rainNode,'pending rain cannot restart after blur');fake.restore();
 const a={id:'a',type:'glass',body:'Earth',x:0,y:.5,z:0},b={id:'b',type:'glass',body:'Earth',x:1,y:.5,z:0};assert.equal(connectedGlass(a,[a]).userData.exposedFaces,6);assert.equal(connectedGlass(a,[a,b]).userData.exposedFaces,5);assert.equal(connectedGlass(b,[a,b]).userData.exposedFaces,5);assert.equal(connectedGlass(a,[a,{...b,body:'Moon'}]).userData.exposedFaces,6);assert.equal(connectedGlass(a,[a]).attributes.position.count,36);
 for(const name of ['Earth','Venus','Titan','Mars']){const body=bodies.find(b=>b.name===name),profile=cloudProfile(body),low=cloudPosition(body,0,0,V(0,0,0)),high=cloudPosition(body,0,0,V(0,700,0));assert.equal(low.y,high.y,'cloud layer stays at world altitude');assert(exitHeight(body)>profile.height+60);assert(aboveClouds(body,profile.height+250)>.99);const f=new Flight(bodies),ss=new SurfaceSession(f);f.speedHold=true;ss.enter(body);ss.pos.y=profile.height+90;f.q.setFromAxisAngle(V(1,0,0),Math.PI/2);f.cruiseSpeed=40;ss.step(1/60);assert(ss.active,'can fly above cloud deck');ss.pos.y=ss.floor+ss.exitHeight+1;ss.step(1/60);assert(!ss.active);assert.equal(ss.event.type,'exit')}

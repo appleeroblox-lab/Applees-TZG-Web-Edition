@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import {Flight,V} from '../public/flight.js?v=98';
-import {SurfaceSession} from '../public/surface.js?v=98';
-import {Crew} from '../public/crew.js?v=98';
+import {Flight,V} from '../public/flight.js?v=99';
+import {SurfaceSession} from '../public/surface.js?v=99';
+import {Crew} from '../public/crew.js?v=99';
 const body={id:'Earth',name:'Earth',solid:true,system:'Sol',r:64,pos:V()},s=new SurfaceSession(new Flight([body])),c=new Crew(s);s.enter(body,true);c.leave();c.yaw=0;c.pos.set(45,0,2);s.building={economy:{placements:[{body:'Earth',x:45,y:.5,z:0}]}};
 for(let i=0;i<60;i++)c.step(1/60,{z:1});assert(c.pos.z>=.75,'walking cannot pass through a block wall');let maxY=0,landed=false;c.step(1/60,{y:1,z:1});for(let i=0;i<120;i++){const input={z:c.pos.z>.05?1:0};c.step(1/60,input);maxY=Math.max(maxY,c.pos.y);if(c.pos.y===1&&Math.abs(c.pos.z)<.75&&c.velocityY===0)landed=true}assert(maxY>1.25,'jump clears a one-metre block with margin');assert(landed,'jump lands on block top');assert.equal(c.pos.y,1);for(let i=0;i<60;i++)c.step(1/60);assert.equal(c.pos.y,1,'stands stably on top');
 s.building.economy.placements.push({body:'Earth',x:45,y:1.5,z:-2});c.step(1/60,{y:1,z:1});for(let i=0;i<150;i++)c.step(1/60,{z:c.pos.z>-2?1:0});assert.equal(c.pos.y,2,'jump from block onto a higher stacked block');for(let i=0;i<60;i++)c.step(1/60,{x:1});for(let i=0;i<120;i++)c.step(1/60);assert.equal(c.pos.y,0,'walking off a block falls to terrain');

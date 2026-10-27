@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import * as T from '../public/vendor/three.module.js';
-import {glareOccluded} from '../public/stellar-glare.js?v=98';
-import {clipMapSegment} from '../public/atlas-3d.js?v=98';
-import {nearbyMineral,pickaxePose} from '../public/prospecting.js?v=98';
+import {glareOccluded} from '../public/stellar-glare.js?v=99';
+import {clipMapSegment} from '../public/atlas-3d.js?v=99';
+import {nearbyMineral,pickaxePose} from '../public/prospecting.js?v=99';
 const V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z),origin=V(0,2,0),star={pos:V(0,2,-100),b:{name:'Sun'}},flight={system:'Sol',pos:V()},surface={active:false};
 const box=new T.Mesh(new T.BoxGeometry(4,4,4),new T.MeshBasicMaterial());box.position.set(0,2,-10);assert(glareOccluded(origin,star,[],flight,surface,[box]),'ship/building blocks star');box.visible=false;assert(!glareOccluded(origin,star,[],flight,surface,[box]));box.visible=true;box.position.x=15;assert(!glareOccluded(origin,star,[],flight,surface,[box]));assert(glareOccluded(origin,star,[{type:'GAS GIANT',system:'Sol',pos:V(0,2,-20),r:4}],flight,surface),'gas giants block shine');assert(glareOccluded(origin,{pos:V(0,-100,-100),b:star.b},[],flight,{active:true}),'ground blocks shine');box.position.x=0;assert(glareOccluded(origin,star,[],flight,{active:true},[box]),'surface buildings block shine');
 const camera=new T.PerspectiveCamera(48,1.6,.1,5000);camera.updateMatrixWorld();const matrix=new T.Matrix4().multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);assert.equal(clipMapSegment(V(-1,0,2),V(1,0,4),matrix,800,500),null,'behind-camera lines omitted');for(const pair of [[V(-1,0,-1),V(1,0,1)],[V(-100,0,-1),V(100,0,-1)],[V(0,-100,-1),V(0,100,-1)]]){const segment=clipMapSegment(...pair,matrix,800,500);if(segment)for(const p of segment){assert(Number.isFinite(p.x)&&Number.isFinite(p.y));assert(p.x>=-1e-6&&p.x<=800+1e-6);assert(p.y>=-1e-6&&p.y<=500+1e-6)}}

@@ -1,4 +1,4 @@
-import {installMinorBodies} from './minor-body-data.js?v=98';
+import {installMinorBodies} from './minor-body-data.js?v=99';
 import {robloxTextureAssets} from './roblox-texture-assets.js';
 import {surfacePalette} from './surface-palette.js';
 import {starShineColor} from './star-colors.js';

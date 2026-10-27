@@ -12,7 +12,7 @@
         "Added the Update Logs menu with recoverable release history and consistent semantic version labels.",
         "Screenshots now capture the game viewport with HUD, controls, chat and open menus.",
         "Removed legacy installation overlays and generated asteroid/hash labels across world, sky and map paths.",
-        "Startup checks uncached release metadata and upgrades stale source URLs."
+        "Corrected the HTML entrypoint still loading the legacy v0.0.100 boot module; startup now reads fresh release metadata and imports the matching game revision."
       ],
       "source": {
         "kind": "current release"

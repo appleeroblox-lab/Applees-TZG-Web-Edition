@@ -1,4 +1,4 @@
-import {hasKlipy,searchKlipy,chooseKlipy} from './klipy-client.js?v=94';
+import {hasKlipy,searchKlipy,chooseKlipy} from './klipy-client.js?v=95';
 import {reactionBytes} from './gif-reactions.js?v=92';
 const localReactions=["wave", "happy", "dance", "laugh", "think", "smile", "clap", "shrug", "sleep", "facepalm", "thumbsup", "nod", "confused", "salute", "wink", "spin", "love", "cry", "angry", "shocked", "rocket", "party", "hello", "thanks"];
 const localBase=new URL('./gifs/',import.meta.url);

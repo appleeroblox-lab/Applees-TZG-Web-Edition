@@ -1,0 +1,41 @@
+// Optional PostgreSQL integration test. Set TZG_PGLITE_MODULE to a local PGlite entry point, or install @electric-sql/pglite.
+const {PGlite}=await import(process.env.TZG_PGLITE_MODULE||'@electric-sql/pglite');import fs from 'node:fs/promises';import assert from 'node:assert/strict';
+const db=new PGlite();await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key,email text,created_at timestamptz default now(),email_confirmed_at timestamptz,raw_user_meta_data jsonb default '{}');create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade);create function auth.uid() returns uuid language sql stable as $$select (nullif(current_setting('request.jwt.claims',true),'')::jsonb->>'sub')::uuid$$;create function auth.jwt() returns jsonb language sql stable as $$select nullif(current_setting('request.jwt.claims',true),'')::jsonb$$;grant usage on schema auth to authenticated;grant execute on all functions in schema auth to authenticated;`);
+const root=new URL('../',import.meta.url).pathname;for(const p of ['202610250001_debug_authorization.sql','202610250002_player_accounts.sql','202610250003_social_accounts.sql','202610260011_discovery_gifs.sql']){try{await db.exec(await fs.readFile(root+'supabase/migrations/'+p,'utf8'))}catch(e){console.log(p,e.message,e);process.exit(1)}}
+await db.exec(await fs.readFile(root+'supabase/migrations/202610260011_discovery_gifs.sql','utf8'));
+const a='11111111-1111-4111-8111-111111111111',b='33333333-3333-4333-8333-333333333333',sid='22222222-2222-4222-8222-222222222222';
+for(const[id,name]of[[a,'Applee'],[b,'Explorer']])await db.query('insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values($1,$2,now(),$3)',[id,name+'@example.test',JSON.stringify({username:name,display_name:name})]);
+await db.query('insert into auth.sessions values($1,$2)',[sid,a]);
+const rpc=async(name,args=[]) =>(await db.query(`select public.${name}(${args.map((_,i)=>'$'+(i+1)).join(',')}) as value`,args)).rows[0].value;
+async function login(){await db.exec('reset role;set role authenticated');await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:a,session_id:sid})]);}
+await login();await rpc('tzg_player_load');const room=(await rpc('tzg_social_create',['group','Storage test',''])).id;await db.exec('reset role');
+const jpeg='data:image/jpeg;base64,AAAA';
+await db.query("insert into tzg_private.social_messages(room,sender,body,image,voice,mutation) values($1,$2,'[Screenshot]',$3,null,gen_random_uuid()),($1,$2,'keep text',$3,null,gen_random_uuid())",[room,a,jpeg]);
+await db.query("insert into tzg_private.message_audit(kind,message_id,actor,display_name,action,original) values('private',1,$1,'Applee','edit','{\"body\":\"private archive\"}')",[a]);
+const migration=await fs.readFile(root+'supabase/migrations/202610270014_temporary_chat_storage.sql','utf8');const core=migration.split('-- SCHEDULER:')[0];await db.exec(core);await db.exec(core);
+const count=async(table,where='true')=>(await db.query(`select count(*)::int as n from tzg_private.${table} where ${where}`)).rows[0].n;
+assert.equal(await count('message_audit'),0);assert.equal(await count('social_messages'),1);assert.equal(await count('social_messages','image is not null or voice is not null'),0);
+await db.exec("update tzg_private.social_messages set created_at=now()-interval '4 seconds'");
+await login();const msg=await rpc('tzg_social_send',[room,'temporary text',null,crypto.randomUUID()]);
+await rpc('tzg_message_change',['private',msg.id,'edit','edited text']);await rpc('tzg_message_change',['private',msg.id,'delete']);
+await assert.rejects(rpc('tzg_message_change',['private',msg.id,'edit','bad',jpeg,true]),/text only/);
+await assert.rejects(rpc('tzg_social_voice_send',[room,'data:audio/webm;base64,AAAA',crypto.randomUUID()]),/text only/);
+await db.exec('reset role');assert.equal(await count('message_audit'),0);assert.equal(await count('message_change_limits'),1);
+await db.exec("update tzg_private.social_messages set created_at=now()-interval '4 seconds'");await login();await assert.rejects(rpc('tzg_social_send',[room,'media',jpeg,crypto.randomUUID()]),/text only/);
+await assert.rejects(db.query('select tzg_private.cleanup_temporary_chat()'),/permission denied/);
+await db.exec('reset role');
+const editId=(await db.query("insert into tzg_private.social_messages(room,sender,body,mutation) values($1,$2,'edit target',gen_random_uuid()) returning id",[room,a])).rows[0].id;
+await login();for(let i=0;i<58;i++)await rpc('tzg_message_change',['private',editId,'edit','revision '+i]);await assert.rejects(rpc('tzg_message_change',['private',editId,'edit','over limit']),/limit reached/);await db.exec('reset role');assert.equal(await count('message_audit'),0);
+await db.query("insert into tzg_private.chat_messages(user_id,username,display_name,body,mutation) select $1,'applee','Applee','short text',gen_random_uuid() from generate_series(1,130)",[a]);assert.equal(await count('chat_messages'),100);
+await db.query('insert into tzg_private.chat_images(message_id,image) select id,$1 from tzg_private.chat_messages order by id desc limit 15',[jpeg]);assert.equal(await count('chat_images'),10);
+await assert.rejects(db.query('insert into tzg_private.chat_images values((select min(id) from tzg_private.chat_messages),$1)',[jpeg+'A'.repeat(160000)]),/120 KB/);
+await db.query("insert into tzg_private.social_messages(room,sender,body,mutation) select $1,$2,'room text',gen_random_uuid() from generate_series(1,130)",[room,a]);assert.equal(await count('social_messages'),100);
+await db.query("insert into tzg_private.chat_reports(message_id,reporter_id,reported_id,reporter_name,reported_name,evidence,category,reason,evidence_image) values(1,$1,$2,'Reporter','Player',$3,'Spam','Test',$4)",[b,a,'x'.repeat(1000),jpeg]);
+assert.equal((await db.query('select length(evidence) as n,evidence_image from tzg_private.chat_reports')).rows[0].n,200);assert.equal((await db.query('select evidence_image from tzg_private.chat_reports')).rows[0].evidence_image,null);
+await db.exec("update tzg_private.chat_messages set created_at=now()-interval '6 minutes';update tzg_private.social_messages set created_at=now()-interval '25 hours';update tzg_private.chat_reports set created_at=now()-interval '8 days';select tzg_private.cleanup_temporary_chat()");
+assert.equal(await count('chat_messages'),0);assert.equal(await count('chat_images'),0);assert.equal(await count('social_messages'),0);assert.equal(await count('chat_reports'),0);assert.equal(await count('player_profiles'),2);
+await db.query("insert into tzg_private.message_audit(kind,message_id,actor,display_name,action,original) values('private',1,$1,'Applee','edit','{}')",[a]);assert.equal(await count('message_audit'),0);
+await db.exec(`create schema cron;create table cron.job(jobid bigint,jobname text);create table cron.job_run_details(jobid bigint,start_time timestamptz);create function cron.schedule(text,text,text) returns bigint language sql as $$select 1::bigint$$;`);
+await db.exec(migration.split('-- SCHEDULER:')[1].replace(/^[^\n]*\n/,'').replace('create extension if not exists pg_cron with schema pg_catalog;',''));
+assert(migration.includes("'* * * * *'"));await db.close();
+console.log('PASS temporary storage: repeatable migration; old media/archive purge; text-only party server enforcement; real edit/delete with no archive; edit throttling; global/party/media caps; expiry and media cascades; small reports; private cleanup; accounts preserved; scheduling SQL accepted with cron fixture.');

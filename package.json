@@ -30,7 +30,8 @@
     "test:v90": "node tests/social-world-v90.mjs && node tests/world-upgrade.mjs && node tests/social-v80.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --compact-v88-only",
     "test:gifs": "node tests/gif-loading-v91.mjs && node tests/gif-loading-v92.mjs && node tests/gif-picker-v92.mjs",
     "test:klipy": "node tests/klipy-v93.mjs",
-    "test:klipy:sql": "node tests/klipy-sql-v93.mjs"
+    "test:klipy:sql": "node tests/klipy-sql-v93.mjs",
+    "test:temporary-chat": "node tests/temporary-chat-v95.mjs && node tests/friends-ui.mjs && node tests/social-ui.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

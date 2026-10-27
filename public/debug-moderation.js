@@ -1,4 +1,4 @@
-import {safeChatImage} from './chat-media.js?v=94';
+import {safeChatImage} from './chat-media.js?v=95';
 import {setVerifiedName} from './identity-ui.js?v=91';
 import {setAvatar} from './social-ui.js?v=91';
 const $=id=>document.getElementById(id);

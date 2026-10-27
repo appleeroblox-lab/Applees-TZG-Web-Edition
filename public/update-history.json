@@ -51,14 +51,13 @@
     {
       "legacyVersion": 100,
       "version": "v0.0.100",
-      "title": "Fix HTML still loading legacy v0.0.100 startup; assert release entrypoint version",
+      "title": "Optimize mobile village weather, align snow terrain and add install flow",
       "changes": [
-        "Optimize mobile village weather, align snow terrain and add install flow",
-        "Fix HTML still loading legacy v100 startup; assert release entrypoint version"
+        "Optimize mobile village weather, align snow terrain and add install flow"
       ],
       "date": "2026-10-27",
       "source": {
-        "commit": "07faad907cbaddebcc816ce7a17a5ebab3433049",
+        "commit": "a93e6246be6afd3932dc2b747553ba3bcb7a4041",
         "kind": "Git history"
       }
     },
@@ -1067,7 +1066,7 @@
       "version": "v0.0.14",
       "title": "Reference HUD and Blender models",
       "changes": [
-        "The v14 HUD follows Applee’s four reference screenshots: two currencies centered at the top; location beneath; blue and white inventory with an on-foot hotbar; parked Launch/Leave controls; flying direction, roll, thrust and brake controls. Touch camera look uses canvas drag, and the right camera stick has no handlers or visual presence. Boost is a persistent selection beside the speed bar and applies only while moving. Inventory cannot open aboard."
+        "The v14 HUD follows my four reference screenshots: two currencies centered at the top; location beneath; blue and white inventory with an on-foot hotbar; parked Launch/Leave controls; flying direction, roll, thrust and brake controls. Touch camera look uses canvas drag, and the right camera stick has no handlers or visual presence. Boost is a persistent selection beside the speed bar and applies only while moving. Inventory cannot open aboard."
       ],
       "source": {
         "path": "README.md",

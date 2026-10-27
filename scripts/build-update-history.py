@@ -29,6 +29,8 @@ for sha in git('rev-list','--reverse','HEAD').splitlines():
  if explicit and int(explicit.group(1))>=60:n=int(explicit.group(1))
  # The restore commit calls its archive v61, but its source manifest and README are v59.
  if sha.startswith('ef953e7'):n=59
+ # This patch mentions the stale boot version it fixed, not its release number.
+ if sha.startswith('07faad9'):n=102
  if n<59:continue
  date=git('show','-s','--format=%cs',sha).strip()
  description=re.sub(r'\s*\(v\d+\)|^v\d+:\s*','',subject)
@@ -38,7 +40,9 @@ for sha in git('rev-list','--reverse','HEAD').splitlines():
  if description not in entry['changes']:entry['changes'].append(description)
 entries[102]={'legacyVersion':102,'version':'v0.0.102','date':'2026-10-27','title':'Update history, full game screenshots and legacy cleanup','changes':['Added the Update Logs menu with recoverable release history and consistent semantic version labels.','Screenshots now capture the game viewport with HUD, controls, chat and open menus.','Removed legacy installation overlays and generated asteroid/hash labels across world, sky and map paths.','Corrected the HTML entrypoint still loading the legacy v0.0.100 boot module; startup now reads fresh release metadata and imports the matching game revision.'],'source':{'kind':'current release'}}
 entries[103]={'legacyVersion':103,'version':'v0.0.103','date':'2026-10-27','title':'I polished the release and added phone notification support','changes':['I centered and cleaned up Update Logs on phones and computers.','I added distance fog to hide terrain edges on airless worlds.','I fixed the unnecessary exploration error in the account menu.','I removed saved places from More. Entering free camera now costs 100 RC.','I added separate phone notification settings: global chat is off by default; party chats and friend requests are on.','I added a pending friend-request count and message-style request sounds. Closed-game notifications require the push backend and browser permission.'],'source':{'kind':'current release'}}
-for entry in entries.values():entry['title']=re.sub(r'\bv(\d+)\b',r'v0.0.\1',re.sub(r"Applee[’']s\s*",'My ',entry['title']))
+for entry in entries.values():
+ entry['changes']=[re.sub(r"Applee[’']s\s*",'my ',text) for text in entry['changes']]
+ entry['title']=re.sub(r'\bv(\d+)\b',r'v0.0.\1',re.sub(r"Applee[’']s\s*",'My ',entry['title']))
 data={'currentVersion':'v0.0.103','legacyMapping':'Legacy source N is displayed as v0.0.N.','historyNote':'The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.','entries':sorted(entries.values(),key=lambda e:e['legacyVersion'],reverse=True)}
 (root/'public/update-history.json').write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
 print(len(entries),'documented releases, earliest',min(entries))

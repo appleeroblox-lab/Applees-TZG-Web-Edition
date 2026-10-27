@@ -23,11 +23,7 @@ for x in [-5.4,5.4]:
 box('Counter plinth',(0,.75,3.3),(8.8,1.3,1.15),blue,.08)
 box('Workbench countertop',(0,1.47,3.5),(9.3,.24,1.8),wood,.08)
 box('Tool display recess',(0,2.65,3.08),(8.5,1.85,.12),navy)
-# Front tool silhouette: an actual crossed hammer and wrench, built as meshes.
-for x,angle in [(-1.5,-.5),(1.5,.5)]:
- o=box('Tool handle',(x,2.6,3.22),(.22,1.35,.18),gold,.025);o.rotation_euler[1]=angle
-box('Hammer head',(-1.75,3.3,3.24),(1.1,.38,.28),white,.05)
-for x in [1.1,1.8]:box('Wrench jaw',(x,3.3,3.24),(.25,.5,.24),white,.03)
+# Keep the workshop front clear of decorative tool displays.
 for x in [-3.55,3.55]:
  box('Storage cabinet',(x,2.2,3.32),(1.25,1.25,.5),blue,.05)
  box('Cabinet handle',(x,2.2,3.61),(.35,.09,.06),white)

@@ -1,0 +1,106 @@
+{
+  "audio": {
+    "Ambient1": {
+      "id": "134743167234703",
+      "file": null
+    },
+    "Ambient2": {
+      "id": "3419187043",
+      "file": null
+    },
+    "Ambient3": {
+      "id": "3179846605",
+      "file": null
+    },
+    "Beep": {
+      "id": "1283290053",
+      "file": null
+    },
+    "Boom": {
+      "id": "3149249837",
+      "file": "sounds/roblox/3149249837.ogg"
+    },
+    "Burn": {
+      "id": "298181829",
+      "file": null
+    },
+    "Complete": {
+      "id": "3198076659",
+      "file": null
+    },
+    "CurrencyAdded": {
+      "id": "1169806635",
+      "file": null
+    },
+    "CurrencyRemoved": {
+      "id": "6988710942",
+      "file": null
+    },
+    "Digged": {
+      "id": "139911414972673",
+      "file": null
+    },
+    "Explosion": {
+      "id": "2814355743",
+      "file": "sounds/roblox/2814355743.ogg"
+    },
+    "Launch": {
+      "id": "5199136449",
+      "file": null
+    },
+    "Lift": {
+      "id": "7204858708",
+      "file": null
+    },
+    "PickUp": {
+      "id": "1788243907",
+      "file": null
+    },
+    "Recieved_v1": {
+      "id": "138891370077088",
+      "file": null
+    },
+    "Stop": {
+      "id": "9099672278",
+      "file": null
+    },
+    "Swing": {
+      "id": "123796710194563",
+      "file": null
+    },
+    "UIClick": {
+      "id": "104588974442101",
+      "file": null
+    },
+    "UIClose": {
+      "id": "1169806635",
+      "file": null
+    },
+    "UIOpen": {
+      "id": "1169806635",
+      "file": null
+    },
+    "Warn_v1": {
+      "id": "3165700530",
+      "file": null
+    },
+    "normalPickaxeHit": {
+      "id": "9120146349",
+      "file": null
+    }
+  },
+  "sunshine": [
+    {
+      "id": "6281397906",
+      "file": null
+    },
+    {
+      "id": "5192965045",
+      "file": null
+    },
+    {
+      "id": "8172510073",
+      "file": null
+    }
+  ]
+}

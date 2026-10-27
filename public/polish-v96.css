@@ -9,21 +9,7 @@ button .uiIcon,button .previewIcon{object-fit:contain;object-position:center;fle
 .shipRespawnPrompt[hidden]{display:none!important}
 .shipRespawnPrompt kbd{display:grid;place-items:center;flex:0 0 30px}
 .deleteReport{background:#713c45!important;color:#fff}
-#preAuthGate{position:fixed;inset:0;z-index:20000;display:grid;place-items:center;padding:18px;background:#0c2135;overflow:auto;color:#e9f6ff;font-family:Fredoka,system-ui,sans-serif}
-#preAuthGate[hidden]{display:none}
-#preAuthGate .accountCard{width:min(430px,100%);max-height:none;background:#16354e;border:1px solid #417495;border-radius:18px;padding:24px;box-shadow:none}
-#preAuthGate .gameLogo{margin:0 auto 12px;width:70px;height:70px}
-#preAuthGate h1{font-size:25px;text-align:center;margin:0 0 5px}
-#preAuthGate p{font-size:13px;text-align:center}
-#preAuthGate form{display:grid;gap:10px}
-#preAuthGate label{display:grid;gap:5px;font-size:13px}
-#preAuthGate input{height:39px;box-sizing:border-box;border-radius:8px;border:1px solid #5785a0;background:#102c43;color:#fff;padding:8px 10px;font:inherit;width:100%}
-#preAuthGate button{min-height:38px;border-radius:9px;padding:7px 12px;font:inherit}
-#preAuthGate nav{display:flex;gap:8px;margin:15px 0}
-#preAuthGate nav button{flex:1}
-#preAuthStatus{min-height:20px;color:#d3e8f5}
 body:not(.authenticatedBoot)>#boot{visibility:hidden}
 body:not(.authenticatedBoot)>#rotatePrompt{display:none!important}
-@media(max-height:480px){#preAuthGate{padding:10px}#preAuthGate .accountCard{width:min(600px,96vw);padding:14px 22px}#preAuthGate .gameLogo{width:42px;height:42px;margin-bottom:5px}#preAuthGate h1{font-size:21px}#preAuthGate nav{margin:8px 0}#preAuthGate form{grid-template-columns:1fr 1fr;gap:8px}#preAuthSubmit{grid-column:1/-1}}
-#preAuthGate [hidden]{display:none!important}
-@media(max-height:480px){#preAuthGate{align-items:start}#preAuthGate .accountCard{margin:0 auto}}
+body.referenceHUD #respawnShipPrompt{transition:none!important;animation:none!important;will-change:left,top;touch-action:manipulation}
+#accountGate[data-preload] #accountConnected[hidden]{display:none!important}

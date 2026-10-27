@@ -1,49 +1,84 @@
-# The Zero Gravity – Web: complete source export
+# The Zero Gravity — Web Edition
 
-Export date: 2026-10-25. Latest saved Site version: **61**.
-Source commit: `cd1f7937a6267d0b07a36396c36d459da3c0f01d`.
-The internal game/package version is 59; this is preserved exactly. Site version numbers and game version numbers are separate.
+Current source update: **97**, 27 October 2026. The default branch is `main`.
 
-## Included
+## Play and publish
 
-Every tracked source file from this commit, byte-for-byte: `public/` HTML, CSS and JavaScript; bundled Three.js; local textures, sky images, sounds, icons, Fredoka fonts, exported models and ship textures; both native Blender scenes and model-generation scripts in `assets/blender/`; server/API source, database schema, project configuration, dependency lockfile, tests and original documentation.
-`EXPORT_MANIFEST.json` records the original paths, byte sizes and SHA-256 checksums. This export adds only this guide, that manifest and a GitHub Pages workflow. No gameplay code or recent fix was rewritten.
+Game: https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/
 
-## Upload to GitHub
+GitHub Actions publishes the contents of `public/` whenever `main` changes. Set **Settings → Pages → Source → GitHub Actions**. The workflow is `.github/workflows/github-pages.yml`; it uploads the static game directly, without a Node build. Keep all files inside `public/` together. Use the Actions run result to confirm each deployment.
 
-1. Extract this ZIP.
-2. Upload the **contents** of `The-Zero-Gravity-Web/` to your repository root, including `.github/`, `.openai/` and `.gitignore`. Git command-line upload includes these hidden folders reliably.
-3. Keep the default branch named `main`, or update the workflow's branch setting.
-4. For a playable static site, open repository **Settings → Pages → Source → GitHub Actions**.
-5. Push to `main` or run **Actions → Publish game to GitHub Pages → Run workflow**. The deployment provides the game URL.
-
-The workflow publishes `public/` directly. No Node package installation or build is required for the static game. Local module and asset paths remain relative so repository subdirectory hosting is supported. Keep all files inside `public/` together.
-
-## Play locally
-
-From the extracted project root:
+To play locally, run from the repository root:
 
 ```sh
-python3 -m http.server 8000 --directory public
+python -m http.server 8000 --directory public
 ```
 
-Open `http://localhost:8000/`. Use an HTTP server; double-clicking `index.html` is insufficient for module and asset loading.
+Then open http://localhost:8000/. ES modules and assets require HTTP; opening `index.html` directly does not work reliably.
 
-## Server-backed features
+## Latest changes
 
-GitHub Pages serves static files only. The current developer Debug Menu authorization uses `/api/debug/*`, trusted identity headers, a D1 database and server environment configuration. Its original client/server code and schema are included unchanged, but its login and authorized commands require a compatible backend and authenticated hosting. GitHub Pages alone cannot run these endpoints. Do not bypass those checks or trust identity headers supplied directly by a visitor.
+- The original account menu now appears before game source/model/texture loading. Its same DOM element and Supabase client are reused by the game. Startup waits for server inventory hydration before announcing readiness, preventing the second sign-in screen. Account connection errors, moderation notices and deliberate sign-outs can still require account attention.
+- Ship recall uses the current `player-ship` mesh, scaled to its pedestal. The proximity prompt tracks the current camera every rendered frame with no CSS movement transition, uses consistent pedestal height checks, and hides during blocked interaction.
+- The runtime Crafting Center mesh no longer displays the two decorative tools on its front. The Blender generation script is updated too. The existing `.blend` remains the earlier source scene; rerun `assets/blender/build_crafting_v96.py` in Blender to regenerate it.
+- Gameplay sounds now have explicit mappings for all requested Roblox SoundIds: countdown, takeoff, landing, star/core contact, warnings, pickaxe swing/hit, shovel interaction, resource/item gains, currency changes, UI buttons/open/close, stopping and chat notifications. Ambient tracks play sequentially when their media is available.
+- **Two exact Roblox audio assets were downloaded:** Boom `3149249837` and Explosion `2814355743`. They are bundled under `public/sounds/roblox/` and are used for collision feedback and TNT blasts.
+- **Still awaiting exported media:** the other 20 requested sound entries and all three sunshine images. Roblox Asset Delivery returned HTTP 401 for those requests. Existing bundled effects remain as fallbacks; no replacement is presented as the original Roblox recording. Sunshine layers and ambient playback activate after their actual media is imported.
 
-For the original server application, use Node 22.13+ and the pnpm version declared in `package.json`, install with the lockfile, then use the existing `dev`/`build` scripts. See `README.md`, `vite.config.ts`, `.openai/hosting.json`, `worker/`, `app/api/`, `server/` and `drizzle/`. The existing Site ID is retained as source provenance; do not reuse it to create an unrelated hosted Site. Backend deployment requires its own database, identity integration and environment configuration.
+## Import the remaining Roblox media
 
-Live database contents, authentication sessions and hosting secrets are not project assets and are not exported. Existing browser saves remain on their original browser and origin; a new GitHub Pages origin starts with separate browser-local storage. Player account/global chat requests are not implemented in this saved source version.
+An `rbxassetid://` reference is not a browser audio/image URL. The game uses real, locally hosted media files, rather than sending visitors to Roblox asset endpoints.
 
-## Verification
+For accessible assets, retry:
 
-- Original tracked files compared byte-for-byte to the source commit.
-- All loading-manifest assets are present.
-- Authored top-level JavaScript modules pass `node --check`.
-- Recent v57/v58/v59 regression checks and debug-service security checks passed.
-- The full `npm test` run passed its initial simulation checks, then stopped at the missing development dependency `linkedom`; remaining DOM/UI checks and a browser play-through were not performed for this export. Install declared dependencies before running the full suite.
-- ZIP integrity and archived source checksums verified.
+```sh
+python scripts/import-roblox-assets.py
+```
 
-The original asset credits and licenses remain included. See `public/credits.html` and the source/license files beside their assets. Review those terms before redistributing third-party assets.
+For media exported by the owner, place the files in one folder. Name each file after its listed sound name or numeric asset ID, retaining `.ogg`, `.mp3`, `.wav`, `.png` or `.jpg`. Then run:
+
+```sh
+python scripts/import-roblox-assets.py --from-dir /path/to/exported-media
+```
+
+The importer verifies file headers, handles compressed Roblox responses, reuses shared IDs, saves local media and updates `public/roblox-assets.json` and `public/roblox-assets.js`. Commit those updated files and media, then reload the game with a fresh browser cache. It never requests or stores Roblox account credentials.
+
+See `docs/ROBLOX_ASSET_IMPORT.json` for the actual retrieval results and `docs/ROBLOX_MEDIA.md` for the complete ID/event mapping.
+
+## Accounts, saves and chat
+
+Accounts use Supabase Auth. Inventory items and currencies use server-backed saves. Device UI preferences and local world edits have separate storage; changing browser or website origin changes that local storage. Passwords are handled by Supabase Auth.
+
+Setup references:
+
+- `docs/PLAYER_ACCOUNTS_SETUP.md`
+- `docs/SOCIAL_ACCOUNTS_SETUP.md`
+- `docs/SUPABASE_DEBUG_SETUP.md`
+- `docs/KLIPY_SETUP_V93.md`
+- `docs/TEMPORARY_CHAT_V95.md`
+- `docs/GAME_POLISH_V96.md`
+
+Keep the existing Supabase migrations applied in order. The latest required migration from update 96 is `supabase/migrations/202610270015_chat_expiry_reports.sql`. This update adds **no new SQL migration**. Project source alone cannot confirm which migrations have been applied to a live database.
+
+GitHub Pages hosts static files; it cannot run the included original `/api/debug/*` backend. Supabase features need the configured project, RPCs and access policies. Never put service-role keys, private credentials or live database exports in this public repository.
+
+## Source and checks
+
+`public/` contains the playable game, local Three.js, fonts, textures, sounds and models. `assets/blender/` contains source models and generators. `supabase/` contains database migrations. The original framework/server code remains in `app/`, `server/`, `worker/`, `db/` and `drizzle/`.
+
+For the optional framework application, use the Node and pnpm versions declared in `package.json`. For the static game, no Node installation is needed.
+
+Useful checks after installing the declared development dependencies:
+
+```sh
+node tests/update-v97.mjs
+node tests/game-polish-v96.mjs
+node --experimental-vm-modules tests/auth-boot-v96.mjs
+node --experimental-vm-modules tests/ui-smoke.mjs --startup-race-only
+npm run test:accounts
+npm run test:social
+```
+
+`EXPORT_MANIFEST.json` describes the original October 25 export, not current repository checksums. `public/source-manifest.json` is the current loading manifest. Older package/export labels are historical; this guide identifies the current source update.
+
+Third-party asset credits remain in `public/credits.html` and the license files alongside their assets.

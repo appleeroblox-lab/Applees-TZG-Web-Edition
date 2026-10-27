@@ -1,5 +1,5 @@
 import {chatDialog} from './chat-dialog.js?v=91';
-import {setAvatar} from './social-ui.js?v=96';
+import {setAvatar} from './social-ui.js?v=97';
 import {setVerifiedName} from './identity-ui.js?v=91';
 const $=id=>document.getElementById(id);
 export class ProfileView{

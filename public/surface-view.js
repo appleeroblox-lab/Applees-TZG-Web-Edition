@@ -6,7 +6,7 @@ import {graphicsPolicy} from './graphics-policy.js';
 import {cloudProfile,cloudPosition,applyAtmosphericFog,upperSkyState,setAtmosphereStars} from './atmosphere-effects.js';
 import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 import * as T from './vendor/three.module.js';
-import {glow} from './visuals.js?v=91';
+import {glow} from './visuals.js?v=97';
 import {surfaceHeight,atmosphere} from './surface.js?v=91';
 import {SurfaceSky} from './surface-sky.js?v=47';
 import {terrainColor} from './surface-palette.js';

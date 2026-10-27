@@ -11,7 +11,7 @@ import {chatDialog} from './chat-dialog.js?v=91';
 import {setVerifiedName} from './identity-ui.js?v=91';
 import {VoiceRecorder,safeVoice} from './voice-message.js?v=91';
 import {PhotoLibrary} from './photo-library.js?v=91';
-import {setAvatar,prepareAvatar,loadAvatarSource} from './social-ui.js?v=96';
+import {setAvatar,prepareAvatar,loadAvatarSource} from './social-ui.js?v=97';
 const el=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n};
 const photo=safeChatImage;
 export class FriendsUI{

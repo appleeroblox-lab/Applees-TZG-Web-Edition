@@ -1,4 +1,4 @@
-import {loadBlenderModel} from './models.js?v=96';
+import {loadBlenderModel} from './models.js?v=97';
 import {doorTransform} from './door-rules.js';
 import {HeldItemView} from './held-items.js';
 import {validMount} from './placement-rules.js';

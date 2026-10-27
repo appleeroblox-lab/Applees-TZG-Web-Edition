@@ -1,0 +1,1132 @@
+{
+  "currentVersion": "v0.0.102",
+  "legacyMapping": "Legacy source N is displayed as v0.0.N.",
+  "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
+  "entries": [
+    {
+      "legacyVersion": 102,
+      "version": "v0.0.102",
+      "date": "2026-10-27",
+      "title": "Update history, full game screenshots and legacy cleanup",
+      "changes": [
+        "Added the Update Logs menu with recoverable release history and consistent semantic version labels.",
+        "Screenshots now capture the game viewport with HUD, controls, chat and open menus.",
+        "Removed legacy installation overlays and generated asteroid/hash labels across world, sky and map paths.",
+        "Startup checks uncached release metadata and upgrades stale source URLs."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
+    {
+      "legacyVersion": 101,
+      "version": "v0.0.101",
+      "title": "Use native installation only, remove procedural asteroid labels and fade pools",
+      "changes": [
+        "Use native installation only, remove procedural asteroid labels and fade pools"
+      ],
+      "date": "2026-10-27",
+      "source": {
+        "commit": "0c90051b776b7b9f69bfd4fd2417725d021bb3c4",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 100,
+      "version": "v0.0.100",
+      "title": "Optimize mobile village weather, align snow terrain and add install flow",
+      "changes": [
+        "Optimize mobile village weather, align snow terrain and add install flow"
+      ],
+      "date": "2026-10-27",
+      "source": {
+        "commit": "a93e6246be6afd3932dc2b747553ba3bcb7a4041",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 99,
+      "version": "v0.0.99",
+      "title": "Fix village and mining lag, safe landing and asteroid belt visibility",
+      "changes": [
+        "Fix village and mining lag, safe landing and asteroid belt visibility"
+      ],
+      "date": "2026-10-27",
+      "source": {
+        "commit": "1156f0c4a25bb60721cbc8d812f8ec527b217ee6",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 98,
+      "version": "v0.0.98",
+      "title": "Add supplied game icon, Blender worlds and bases, expanded biome villages and shared collisions",
+      "changes": [
+        "Add supplied game icon, Blender worlds and bases, expanded biome villages and shared collisions"
+      ],
+      "date": "2026-10-27",
+      "source": {
+        "commit": "f46d82590c6641a8b13fe7b0fe66f969ed877e56",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 97,
+      "version": "v0.0.97",
+      "title": "Reuse original preloading sign-in, fix ship station and wire Roblox media",
+      "changes": [
+        "Reuse original preloading sign-in, fix ship station and wire Roblox media"
+      ],
+      "date": "2026-10-27",
+      "source": {
+        "commit": "71b61d59a3edc01e99389621424cc5fd0c8df1e9",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 96,
+      "version": "v0.0.96",
+      "title": "Add auth-first loading, individual chat expiry, report deletion, ship recall station and Blender/UI polish",
+      "changes": [
+        "Add auth-first loading, individual chat expiry, report deletion, ship recall station and Blender/UI polish"
+      ],
+      "date": "2026-10-27",
+      "source": {
+        "commit": "b9110e3872745539acc65fddab043728d38c4895",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 95,
+      "version": "v0.0.95",
+      "title": "Minimize chat storage with temporary queues, text-only party chats and disabled message archives",
+      "changes": [
+        "Minimize chat storage with temporary queues, text-only party chats and disabled message archives"
+      ],
+      "date": "2026-10-27",
+      "source": {
+        "commit": "cdcccca9f1f4f5f263d6862058d5457f9783f689",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 94,
+      "version": "v0.0.94",
+      "title": "Point KLIPY client to deployed rapid-responder function and refresh loader cache",
+      "changes": [
+        "Point KLIPY client to deployed rapid-responder function and refresh loader cache"
+      ],
+      "date": "2026-10-27",
+      "source": {
+        "commit": "029cf1539428a7ae967903846003e331e1bc069a",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 93,
+      "version": "v0.0.93",
+      "title": "Integrate KLIPY search through authenticated Supabase function and original GIF URL sharing",
+      "changes": [
+        "Integrate KLIPY search through authenticated Supabase function and original GIF URL sharing"
+      ],
+      "date": "2026-10-27",
+      "source": {
+        "commit": "b5c00bf8b8acfabb6591663f293810a46ed4f62d",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 92,
+      "version": "v0.0.92",
+      "title": "Fix GIF selection without image fetches and recover blocked online results",
+      "changes": [
+        "Fix GIF selection without image fetches and recover blocked online results"
+      ],
+      "date": "2026-10-27",
+      "source": {
+        "commit": "2c9f6ef4bd1b27895b3dfb8640ba85889db22c74",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 91,
+      "version": "v0.0.91",
+      "title": "Fix GIF fetch failures with same-host animated reactions and bounded online fallback",
+      "changes": [
+        "Fix GIF fetch failures with same-host animated reactions and bounded online fallback"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "ef520025a6b5593155112b7370dbc1da1c1cafce",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 90,
+      "version": "v0.0.90",
+      "title": "Fix media-only chat layout, group details and unread totals; expand GIFs, grass and villages",
+      "changes": [
+        "Fix media-only chat layout, group details and unread totals; expand GIFs, grass and villages"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "9f622b9ce86b8931092b0f93035ec9a35de966a0",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 89,
+      "version": "v0.0.89",
+      "title": "Refine chat bubbles and controls, center map, add terrain details and travel help",
+      "changes": [
+        "Refine chat bubbles and controls, center map, add terrain details and travel help"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "09408ae6790d22ff83403570ed91fe85b60ae8bf",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 88,
+      "version": "v0.0.88",
+      "title": "Compact and align UI, keep map gameplay active, add verified directory and resource XP",
+      "changes": [
+        "Compact and align UI, keep map gameplay active, add verified directory and resource XP"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "a929d559f5bef0d78a3f323b98dee2f9c492efed",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 87,
+      "version": "v0.0.87",
+      "title": "Match preview UI with supplied icons, account pages and secure account actions",
+      "changes": [
+        "Match preview UI with supplied icons, account pages and secure account actions"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "060d7482fe59f15b39074dc93ca57c132655139a",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 86,
+      "version": "v0.0.86",
+      "title": "compact settings, stable localization, expanded chat phrases and draggable media viewer",
+      "changes": [
+        "compact settings, stable localization, expanded chat phrases and draggable media viewer"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "63862e22f6e2de6a9daab828d5fe12ded5047417",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 85,
+      "version": "v0.0.85",
+      "title": "independent selectors, localized UI, manual chat replacement and built-in voice/GIF tools",
+      "changes": [
+        "independent selectors, localized UI, manual chat replacement and built-in voice/GIF tools"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "5384392a1f0dfbe1999abdf4bee1fdbe9b6d0990",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 84,
+      "version": "v0.0.84",
+      "title": "offline language controls, manual chat translation and stable inbox layout",
+      "changes": [
+        "offline language controls, manual chat translation and stable inbox layout"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "69f4a3e16094f828774dbaf8626f48de1f08643c",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 83,
+      "version": "v0.0.83",
+      "title": "Fix language switching and chat notices, add opt-in chat translation",
+      "changes": [
+        "Fix language switching and chat notices, add opt-in chat translation"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "4471584705ecd021ef8bcf8c7b5967d5c5cfbe63",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 82,
+      "version": "v0.0.82",
+      "title": "Add in-game language settings and reliable device preferences",
+      "changes": [
+        "Add in-game language settings and reliable device preferences"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "9d9e2cf55d418be85b05c763fe2030c80983f487",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 81,
+      "version": "v0.0.81",
+      "title": "Add chat profile photos, GIFs, emoji and public group discovery",
+      "changes": [
+        "Add chat profile photos, GIFs, emoji and public group discovery"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "7889308b1fca66d4f42c578307a101b9cb7af39d",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 80,
+      "version": "v0.0.80",
+      "title": "Separate social info and message action overlays, clarify unread chat counts",
+      "changes": [
+        "Separate social info and message action overlays, clarify unread chat counts"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "187a86d60d5135687a4d235df6e8edd47f023f1d",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 79,
+      "version": "v0.0.79",
+      "title": "Pin social composer and add inbox previews and Friends page",
+      "changes": [
+        "Pin social composer and add inbox previews and Friends page"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "c7185f97ae7016960e795f8085473834956bd035",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 78,
+      "version": "v0.0.78",
+      "title": "Improve social conversation layout and in-game message actions",
+      "changes": [
+        "Improve social conversation layout and in-game message actions"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "170b91221e08e34a002d9d5fd903847ed85b9f29",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 77,
+      "version": "v0.0.77",
+      "title": "Add shared verified profiles, party notifications and voice; archive message edits/deletions and animate nighttime aurora",
+      "changes": [
+        "Add shared verified profiles, party notifications and voice; archive message edits/deletions and animate nighttime aurora"
+      ],
+      "date": "2026-10-26",
+      "source": {
+        "commit": "f905613aa987ce364b1f2299659b54d6c4cc8892",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 76,
+      "version": "v0.0.76",
+      "title": "Add friend requests, blocks and private/group chats with owner controls; mask email and add chat transparency and profile presence",
+      "changes": [
+        "Add friend requests, blocks and private/group chats with owner controls; mask email and add chat transparency and profile presence"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "f4f6f57c6f9d249c7de2d4c13f83d5184c1f1de8",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 75,
+      "version": "v0.0.75",
+      "title": "Match debug UI, update control/world defaults and pad centering; add live chat screenshots, unread notifications and player presence",
+      "changes": [
+        "Match debug UI, update control/world defaults and pad centering; add live chat screenshots, unread notifications and player presence"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "d14be9ef5602b0694d09d34877e5ee3e3ff16f28",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 74,
+      "version": "v0.0.74",
+      "title": "Fix ship lighting normals, compact account UI and scrollbars; enforce single-device game sessions and confirm bio saves",
+      "changes": [
+        "Fix ship lighting normals, compact account UI and scrollbars; enforce single-device game sessions and confirm bio saves"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "e4514cc920934badba8c6165dac85ced87c0627d",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 73,
+      "version": "v0.0.73",
+      "title": "Add in-game photo library with visible Files picker and stop automatic fullscreen on photo return",
+      "changes": [
+        "Add in-game photo library with visible Files picker and stop automatic fullscreen on photo return"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "836316023ce5b48beca9381b6422bfd757b4a2c0",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 72,
+      "version": "v0.0.72",
+      "title": "Require moderation upgrade before game-account deletion; refresh mobile crop assets",
+      "changes": [
+        "Require moderation upgrade before game-account deletion; refresh mobile crop assets"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "af52f677a08628d532ee10994d0257ee75d21b9a",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 71,
+      "version": "v0.0.71",
+      "title": "Guard photo picker against disabled account actions and refresh native crop assets",
+      "changes": [
+        "Guard photo picker against disabled account actions and refresh native crop assets"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "2526306e5d74cbb9d0c8a41f6931ca78bc2ca075",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 70,
+      "version": "v0.0.70",
+      "title": "Fix mobile crop visibility and image picker; add private ban/removal review screens",
+      "changes": [
+        "Fix mobile crop visibility and image picker; add private ban/removal review screens"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "64291aa0f346aebc7c81c52bd28cf4e4323efd2c",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 69,
+      "version": "v0.0.69",
+      "title": "Fix silent signup validation and add explicit profile photo crop/save editor",
+      "changes": [
+        "Fix silent signup validation and add explicit profile photo crop/save editor"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "8c142a55791ccae4aa689556d1436d03098c8387",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 68,
+      "version": "v0.0.68",
+      "title": "Handle input-only native image pickers and refresh cached photo controls",
+      "changes": [
+        "Handle input-only native image pickers and refresh cached photo controls"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "4cf0ce64e57e4674a781703d55a10c7e0377ad60",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 67,
+      "version": "v0.0.67",
+      "title": "Fix native photo selection/upload and automatic landscape; add profile edit badge",
+      "changes": [
+        "Fix native photo selection/upload and automatic landscape; add profile edit badge"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "5656fd11aa71bfcaa16b8e2c5da2ce89467fbb70",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 66,
+      "version": "v0.0.66",
+      "title": "Fix mobile photo picker rotation, center accounts, report delivery and 24-hour username changes",
+      "changes": [
+        "Fix mobile photo picker rotation, center accounts, report delivery and 24-hour username changes"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "416d95c32e1d3e110dbf942d3ce353697ccbd8da",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 65,
+      "version": "v0.0.65",
+      "title": "Compact account/chat UI, private public profiles, message report flow and photo/password fixes",
+      "changes": [
+        "Compact account/chat UI, private public profiles, message report flow and photo/password fixes"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "fd6e0901c1a179f193ec12172023ab8e6a6c9016",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 64,
+      "version": "v0.0.64",
+      "title": "Add compact profiles, unique usernames, moderated global chat and developer account/report pages",
+      "changes": [
+        "Add compact profiles, unique usernames, moderated global chat and developer account/report pages"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "4ad6cc7f1da7e4ddb207a38f5d9b94db847ad364",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 63,
+      "version": "v0.0.63",
+      "title": "Separate player account menu with copyable UID and manual cloud save",
+      "changes": [
+        "Separate player account menu with copyable UID and manual cloud save"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "6be2fd589323f8d9793214ff0e6ff8fffd325223",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 62,
+      "version": "v0.0.62",
+      "title": "Add required player accounts, cloud inventory saves and developer account directory",
+      "changes": [
+        "Add required player accounts, cloud inventory saves and developer account directory"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "8b2320e53ba4bb28d07d8142a2545a1fed309cbf",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 61,
+      "version": "v0.0.61",
+      "title": "Connect Pages debug login to Supabase with protected developer allowlist",
+      "changes": [
+        "Connect Pages debug login to Supabase with protected developer allowlist"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "7dfe0337d8bb656c983e630d81011ab733b2b3d5",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 60,
+      "version": "v0.0.60",
+      "title": "Add independent ship control sizes and explain Pages authorization limitation",
+      "changes": [
+        "Add independent ship control sizes and explain Pages authorization limitation"
+      ],
+      "date": "2026-10-25",
+      "source": {
+        "commit": "41d6204d670554b6db37b46854119fedd546d9e3",
+        "kind": "Git history"
+      }
+    },
+    {
+      "legacyVersion": 59,
+      "version": "v0.0.59",
+      "title": "v0.0.59 — pools, weather and connected roads",
+      "changes": [
+        "Pools start empty and accumulate slowly, with clipped block/preview footprints and stable pool identities. Grass foley is softer; rain/snow blend across biome borders, including storms, with gusts and uneven lightning followed by thunder. Shared terrain-following roads connect the smaller 16 m pad, Earth shops, and village centers; village approaches meet doorsteps, and scenery avoids roads. Existing village edits remain saved."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 58,
+      "version": "v0.0.58",
+      "title": "v0.0.58 — World weather, medium biomes and bounded puddle effects",
+      "changes": [
+        "Rain, snow and precipitation impacts now occupy fixed world cells around the player/ship. Native graphics renders reusable scene geometry with depth testing and fog; compatibility graphics projects the same time-driven world positions. Camera rotation, zoom and orbit no longer drive particle motion or weather location. Weather remains bounded to nearby cells and stops above the cloud ceiling."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 57,
+      "version": "v0.0.57",
+      "title": "v0.0.57 — Orbit, biome weather, map cost and gameplay audio",
+      "changes": [
+        "SunRays is removed from settings, storage writes, the client module graph and source manifest; its module is deleted. The older stellar-glare streaks are also removed while the normal stellar glow remains. Space subject-orbit uses a stable world-up frame instead of changing to a nearby planet's surface normal. Orbit dragging remains available during approach autopilot, mode changes clear stale gestures, and lifting one finger after a pinch hands rotation back to the remaining finger. Chase steering retains its existing behavior."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 56,
+      "version": "v0.0.56",
+      "title": "v0.0.56 — Startup initialization race correction",
+      "changes": [
+        "Initialize movement-audio state with the other initial state, and schedule the first render frame only at the end of module initialization after the ship's asynchronous load completes. Previously the module scheduled rendering, awaited ship loading, and only then initialized `wasWalkingAirborne`; a frame during that wait could throw a temporal-dead-zone ReferenceError and leave the loading screen reporting Unable to start."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 55,
+      "version": "v0.0.55",
+      "title": "v0.0.55 — Biome weather, pool geometry, shadows and surface audio",
+      "changes": [
+        "All fifteen follow-up requests are represented in this update. Puddle jump effects use a reusable, depth-tested world mesh: circular rings lie on the water plane and the ring/spray footprint stays inside the pool. Reflection cube faces now represent their actual sky directions; the water shader adds a directional reflected Sun highlight. The fallback draws that highlight only where the reflected Sun ray intersects a pool. This remains a lightweight sky reflection, not a full-scene mirror."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 54,
+      "version": "v0.0.54",
+      "title": "v0.0.54 — Weather interactions, snow materials and mobile controls",
+      "changes": [
+        "Precipitation now varies its wind direction and speed, checks the uploaded ship's opaque source-part bounds, and respects roofs. Windows retain exterior rain visibility. Reliable nearby ground-impact ripples and drops replace the sparse phase-dependent effect; landing in a rain pool adds a ring and spray. Persistent randomized pool/snow records change with weather episodes, retain harvested depletion, and accumulate on exposed roof surfaces. Ground weather stays visible across a larger bounded range; torches retain a small distant beacon while expensive point lights remain local."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 53,
+      "version": "v0.0.53",
+      "title": "v0.0.53 — Below-cloud precipitation and lightweight ground accumulation",
+      "changes": [
+        "Earth rain, heavy rain and thunderstorms stop above the lowest cloud-base height (222 gameplay meters); rain/snow use terrain/pad/roof impact heights instead of the ship's contact floor. Ground hits add small splash/ripple rings. Existing atmospheric fog remains above the clouds, while rain audio and nearby precipitation stop there. Thunder flashes now illuminate the environment."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 52,
+      "version": "v0.0.52",
+      "title": "v0.0.52 — Texture-matched Proxima atmospheres and debug window session/size",
+      "changes": [
+        "Proxima b uses a golden sky/haze, and Proxima d uses a warm tan/brown sky/haze, matching the chosen surface artwork. Sky, fog, clouds, exterior atmospheric rim and fill lighting share per-body palettes; both remain landable with Earth-like cloud heights and 800m exits."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 51,
+      "version": "v0.0.51",
+      "title": "v0.0.51 — Server-authorized nonmodal developer tools",
+      "changes": [
+        "Settings → Debug Menu opens a floating, draggable window with Close, Debug Console and Developer Panel tabs. The window does not pause gameplay or shield inventory/other controls. Keyboard focus inside developer inputs clears ship movement and prevents game shortcuts. Console includes runtime errors, command feedback and live renderer/location/position/currency/inventory diagnostics, bounded to 150 messages."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 50,
+      "version": "v0.0.50",
+      "title": "v0.0.50 — Proxima b/d atmospheres and readable gas interiors",
+      "changes": [
+        "Proxima b/d use Earth-like blue skies, drifting clouds, fog, atmospheric rims and 800m gameplay exit heights while retaining solid landing. Atmospheres/terrain remain imagined game representations. Gas interiors use palettes sampled from each selected exterior map, including blue cores/haze for ice giants and Proxima c, brighter diffuse ship lighting, and up to 12 soft animated gas-cloud sprites (4/8/12 by quality). The Canvas fallback shares palettes and world-space cloud motion. Core collision and gas exit rules are unchanged."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 49,
+      "version": "v0.0.49",
+      "title": "v0.0.49 — Restore direction-steered Chase camera / Proxima landing rules",
+      "changes": [
+        "Chase uses the original camera quaternion and offset again, preserving pitch/yaw/roll and parked crew look rather than forcing a look-at rotation. Orbit retains its ship-centered independent rotation and zoom. Proxima c is represented as a non-landable gas giant; Proxima b and d remain solid landable worlds. Old landed Proxima c saves safely migrate to gas entry."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 48,
+      "version": "v0.0.48",
+      "title": "v0.0.48 — Ship-centered orbit camera / Planet X gas world",
+      "changes": [
+        "Zoomable camera mode now orbits the uploaded ship’s visual bounding-box center, with a level horizon, clamped vertical orbit and 6–120m zoom. Mouse/touch drag rotates the view independently of the ship, right-drag is supported without the browser menu, and existing wheel/pinch/zoom buttons change orbit distance. The ship stays centered after surface-ground clearance adjustment and in chase view. Cockpit and on-foot controls are preserved."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 47,
+      "version": "v0.0.47",
+      "title": "v0.0.47 — Applee’s Roblox texture selections and added worlds",
+      "changes": [
+        "All 46 supplied IDs map to locally bundled public Roblox preview PNGs. Original asset delivery returned authentication errors; these images are explicitly preview-resolution copies (up to 420px wide), with their source IDs, dimensions and SHA-256 hashes retained in `roblox-texture-assets.js` and `assets/roblox/texture-download-report.json`. Existing full-size maps remain bundled as historical fallback assets. The Moon selection is a transparent cube-cross atlas: face-local cube-sphere UVs prevent the empty corners appearing as black surface patches, and Canvas/atlas thumbnails use an occupied face."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 46,
+      "version": "v0.0.46",
+      "title": "v0.0.46 — Mobile building and camera frame cost",
+      "changes": [
+        "Building sync retains unchanged special-block meshes, crafting-hall geometry and existing solid-block instance buffers. Player solid blocks now share material batches with village blocks; capacity grows only when needed. Door state changes replace only the door, while connected glass refreshes only changed adjacency. A spatial picking grid narrows aiming/interactions to nearby blocks instead of testing every instance in the visible world. Preview aiming is skipped without a block/shovel equipped; ground probes reuse scratch vectors. Torch candidates are cached and nearest-light selection runs at most about seven times a second. Canvas compatibility graphics now render/cull actual instance transforms."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 45,
+      "version": "v0.0.45",
+      "title": "v0.0.45 — Upright landing and warp cockpit",
+      "changes": [
+        "The new ship parks nose-up again, matching its upright liftoff and guided descent. Its model-specific 4.23m contact offset keeps the two tail nozzles just above the ground; cockpit and exhaust transforms follow the parked pose, and on-foot collision follows the upright footprint. Confirmed/paid warp switches immediately to the actual 3D cockpit; cancellation preserves the camera. Labels are hidden when any sampled part of their on-screen rectangle overlaps opaque cockpit geometry, including back faces visible from inside; transparent windows remain clear. This check applies independently of celestial-body label overlap settings."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 44,
+      "version": "v0.0.44",
+      "title": "v0.0.44 — Uploaded TZG Player Ship",
+      "changes": [
+        "Replaced the scout rocket with the supplied `TZG_Player_Ship.blend`, retaining its 124 named exterior/interior parts, UVs, six packed textures, tinted glass, luminous displays and cyan engine/cabin lights. The static mesh uses eleven material batches (4,812 triangles). The original Blender file and deterministic export script are retained under `assets/blender/`. Twin gameplay exhaust emitters align with the two rear nozzles; the static model contains no baked flames. Parked and airborne orientations match; the pilot camera sits inside the actual 3D cockpit, and on-foot collision covers the wider hull/wings while preserving a clear exit and boarding access. Compatibility graphics retain material colors; full textures and lighting use WebGL."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 43,
+      "version": "v0.0.43",
+      "title": "v0.0.43 — Tool tap double-activation fix",
+      "changes": [
+        "Touch duplicate suppression now follows pointer IDs, tap position and button identity through inventory/hotbar rerenders, including delayed clicks targeted at replacement buttons or ancestors. Touch click events with zero detail are suppressed too. Mouse, pen, keyboard and programmatic activation remain available. Regression tests cover repeated equip/unequip, tool switching, modern and legacy compatibility clicks, simultaneous taps, cancelled/scrolled gestures, disabled buttons and disconnected buttons."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 42,
+      "version": "v0.0.42",
+      "title": "v0.0.42 — Independent touch UI",
+      "changes": [
+        "Each finger can tap game buttons independently while another finger holds the thumbstick or a flight control. Touch activation tracks pointer IDs, ignores scroll/cancel gestures and suppresses the duplicate native click. Inventory is non-modal for movement input and opening/closing it preserves held movement. Held controls reject pointer takeover; an existing camera drag keeps its original pointer. Mouse and keyboard activation remain native."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 41,
+      "version": "v0.0.41",
+      "title": "v0.0.41 — Browser right-click interruption",
+      "changes": [
+        "Right/middle mouse-down clears held input and cannot start a camera drag. Opening a context menu also releases keys and cancels any captured drag, even without window blur. Native context menus are blocked over the running game view/HUD so they cannot interrupt its canvas; text fields and links retain their normal menus."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 40,
+      "version": "v0.0.40",
+      "title": "v0.0.40 — PC focus and ship steering",
+      "changes": [
+        "Keyboard input clears on tab/window focus loss, page hiding and page exits; stale auto-repeat events cannot restart a released key. Captured key-up handlers release multi-key combinations independently. A saved 0.25–3× Ship rotation speed slider is separate from look sensitivity. Space and body flight share normalized rotation rates, slowing default space steering and speeding up body steering. Post-processing uses a single fullscreen triangle, bounded depth/edge sampling, explicit framebuffer clearing, a minimized-window guard and a direct-render fallback on framebuffer failure."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 39,
+      "version": "v0.0.39",
+      "title": "v0.0.39 — Growing upper atmosphere opening",
+      "changes": [
+        "The opening starts wider above the cloud deck, then continuously expands through the remaining ascent. It retains 24% of the body sky tint instead of becoming pure black. Expansion stays strictly above the horizon; lower sky colors, fog and the cloud layer remain unchanged."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 38,
+      "version": "v0.0.38",
+      "title": "v0.0.38 — Fog and upper sky",
+      "changes": [
+        "Fog keeps its normal body/weather distance above the cloud deck. Space and stars appear only in a small, smoothly blended cap overhead; the lower sky and horizon keep their atmospheric colors. Earth weather fog remains visible at high altitude while precipitation still fades above the cloud layer."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 37,
+      "version": "v0.0.37",
+      "title": "v0.0.37 — Atmospheres, light, glass and settlements",
+      "changes": [
+        "Sound effects and rain now use Web Audio buffers, pause immediately on blur/hidden/page exit and resume ambient audio only in the foreground. Touching glass blocks omit their shared faces. Placed torches emit wider omnidirectional light; held torches illuminate nearby terrain. Cloud decks stay at a fixed world height so rockets can cross them; upper atmosphere fades toward space, with fades on body entry and exit. Each landable body has two rare deterministic village sites within 1000 m of the launch station, with spaced houses and roads built from recoverable blocks. Village discovery, open doors and TNT/shovel destruction persist in compact saves; nearby village cubes render in batches."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 36,
+      "version": "v0.0.36",
+      "title": "v0.0.36 — Wood building blocks and cutting audio",
+      "changes": [
+        "Craft 1 LogBlock or 4 WoodPlanks from 1 TreeLog, or buy 64 for 1000 FP. Both support placement, collisions, shovel recovery, saved worlds and first-person holding. LogBlock has bark sides and ringed end grain; WoodPlanks has plank seams and grain. TreeLog now uses a solid capped wooden log model in hand. Saw hits and tree felling have dedicated original sounds, separate from mineral impacts."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 35,
+      "version": "v0.0.35",
+      "title": "v0.0.35 — Saws and TreeLogs",
+      "changes": [
+        "Craft or buy Iron, Steel and Diamond Saws (25/50/100 damage). Equip a saw and click a tree trunk within 6 m. Trees have 100 HP and drop 4–8 TreeLogs; logs sell for 10 FP + 1 RC each and craft upgraded saws. Trees retain damage/removal through saves and terrain streaming; selling all resource cargo resets trees and minerals together. Centered saw/log inventory images and solid first-person saw models included."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 34,
+      "version": "v0.0.34",
+      "title": "v0.0.34 — Body flight minimum",
+      "changes": [
+        "Body entry starts at 5 m/s. Airborne body flight cannot stop or boost, and decreasing speed bottoms out at 5 m/s. Launch ramps from 5 to 40 m/s; landing still parks the ship at zero."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 33,
+      "version": "v0.0.33",
+      "title": "World and gameplay update 33",
+      "changes": [
+        "Version 33 adds P Warp, B Boost, Tab Settings and X Stop without a B/brake conflict. Crafting, trading and inventory keep the simulation running while movement input stays blocked. Airborne planet entry transforms the incoming space orientation into the local surface frame, sharing the forward-axis model/thrust convention. The five-second launch countdown leads into a four-second smooth 1–40 m/s ramp with steering available; decrease/Stop can interrupt the ramp. Landing descends faster and fully zeros both velocity vectors, retained speed and throttle on touchdown, with an exact parked position hold. Legacy airborne saves convert their old ship axis. Free camera and stable orbit camera stabilize against local planet up near surfaces with a bounded pitch."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 32,
+      "version": "v0.0.32",
+      "title": "World and gameplay update 32",
+      "changes": [
+        "Version 32 maps PC spacecraft inputs to the on-screen buttons: held Space increases retained thrust speed, Left Ctrl decreases it, W/S pitch down/up, A/D turn left/right, and Q/E roll left/right. E only opens trade/crafting or interacts with blocks while on foot. Walking and free-camera movement retain their existing controls."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 31,
+      "version": "v0.0.31",
+      "title": "World and gameplay update 31",
+      "changes": [
+        "Version 31 replaces the full-screen blue warp frame with a nonblocking destination title/subtitle and a smoothly animated progress bar directly above the boost bar, plus a left-hand Warp button opposite Boost. Confirmation/payment share the ship-position quote: non-Earth local routes cost 50–300 FP across 0–50 AU of game distance; cross-system routes cost 150–1000 FP plus 5 RC across 0–200 AU of normalized game-route distance. Separate system scenes have deterministic illustrative pricing anchors, not measured interstellar coordinates. Earth remains free. Physical star contact uses swept collision and restarts at Earth while preserving cargo/currency. Settings now includes Refresh Game, which saves then reloads the page."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 30,
+      "version": "v0.0.30",
+      "title": "World and gameplay update 30",
+      "changes": [
+        "Version 30 keeps door leaves inside their cell when opened or closed, so one-block-wide, two-block-tall entrances work. Gas interiors now use the space rocket orientation and forward thrust axis, reset cockpit/orbit state on entry, and render aligned exhaust. TNT can be crafted (2 sulfur + 1 iron) or bought (180 FP), placed, and ignited by clicking with a held torch within 5 m. A persisted four-second flashing fuse triggers a 6 m blast: nearby placed blocks and unsupported attachments return once to inventory, the fired TNT is consumed, nearby TNT chains after 0.6 s, and minerals take distance-based damage with depleted minerals collected. Blast visuals and audio are bounded; terrain, buildings and ships are preserved. All crafted building items have right-hand first-person meshes; pickaxes, minerals and shovels retain their dedicated models."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 29,
+      "version": "v0.0.29",
+      "title": "World and gameplay update 29",
+      "changes": [
+        "Version 29 adds a craftable two-cell Door (2 iron + 1 quartz or 120 FP), screen-tap/E toggling within 5 m, saved door state, physical open/closed collision and blocked-swing guards. Gas exits are 340–480 m radially from the core; core contact restarts at Earth without clearing inventory, and the interior Return to Earth shortcut is removed. Look sensitivity now reaches 6×. Low/Medium/High visibly change cloud count, streamed decoration budgets, resolution and effect passes; mobile budgets stay capped. Space uses brighter neutral fill. Planet Labels Mode saves Overlap or Collision Check (default), with foreground-body occlusion on both space and surface skies. More no longer lists the four legacy panel shortcuts."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 28,
+      "version": "v0.0.28",
+      "title": "World and gameplay update 28",
+      "changes": [
+        "Version 28 makes ladders attach flush to a solid block side and rejects floor/unsupported placement. Torches can stand on terrain/block tops or lean outward from a supporting wall. Mount IDs/faces persist; removing a support refunds attached items, and legacy unsupported ladders are returned to inventory. Glass is listed as Glass Block and retains black color/0.5 opacity. Gas cores use unlit bright materials with a glow halo; gas exits are radial distance thresholds, with core-distance HUD instead of altitude. Venus/Mars/Titan fog now respects terrain generation boundaries, and twelve low-cost cloud meshes animate with body-specific wind/tint/density on atmospheric bodies. The fallback renderer also animates clouds and brightens gas cores. Tests cover mount geometry, rejection without item loss, saved attachments/refunds, radial exits and cloud/fog behavior. Native GPU/mobile lighting performance remains unmeasured."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 27,
+      "version": "v0.0.27",
+      "title": "World and gameplay update 27",
+      "changes": [
+        "Version 27 adds climbable ladder segments, placeable emissive torches with four nearby pooled lights, and black glass with 0.5 opacity. These use the existing crafting, inventory, placement and shovel-recovery save path. Placement previews use 0.3 opacity (0.7 transparency). Mobile inventory/crafting/trade panels are limited to 430px / 76vw. The craft counter faces its eastbound connecting road. Rain particles stop at roofs and are occluded by solid blocks/glass and buildings; ladders and torches are not roofs. On-foot gravity and jump impulse vary by body. The pad radius is 12m; minerals are moved outside its footprint and clear the nearby supported Pad 01 sign board. Tests cover climbing, light/glass state, recipes/save/refunds, different-gravity jumps, shelter, pad clearance, alignment and existing systems. Browser preview uses compatibility graphics; native GPU lighting and a physical phone remain unmeasured."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 26,
+      "version": "v0.0.26",
+      "title": "World and gameplay update 26",
+      "changes": [
+        "Version 26 fixes jumping onto placed blocks. Jump height now clears a one-metre block with margin; airborne movement can cross onto block tops instead of being rejected by the ground step limit. Support and wall footprints agree, landings stay on block tops, and overhead blocks stop upward head motion. Walking/running remain 4/8 m/s. Regression coverage includes one-block jumps, higher stacked blocks, standing, stepping off, ceilings and held-jump behavior."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 25,
+      "version": "v0.0.25",
+      "title": "World and gameplay update 25",
+      "changes": [
+        "Version 25 adds Earth distance fog that ends before the nearest streamed terrain edge; a persisted terrain-size setting selects 288–864m across (9–81 chunks). It retains the mobile tree budget. Inventory now only contains search, totals, close and scrollable item/name/stack cards; world simulation and Earth time/weather continue behind it while player input remains blocked. Selling uses a separate Earth Trade window. Crafting shares the inventory panel style and uses rendered tool/concrete thumbnails. Sixteen concrete colors replace iron blocks; old carried and placed blocks migrate to gray concrete without quantity loss. One Quartz crafts five blocks; buying 64 costs 1000 FP. Colored blocks retain their color when placed, recovered, saved and restored. Earth Trade/Crafting use small building-front prompts in reach, available by E or tap. Walking/running now use 4/8 metres per second. Tests cover migration, color refunds, image availability, movement, fog/terrain bounds, and active inventory simulation. Browser QA uses the compatibility renderer; native GPU/mobile performance is unmeasured."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 24,
+      "version": "v0.0.24",
+      "title": "World and gameplay update 24",
+      "changes": [
+        "Version 24 reduces Earth scenery rendering overhead: one vertex-colored scenery mesh per nearby chunk instead of separate objects for every tree part; reusable low-poly templates; sparse mobile/Low budgets; scenery culled beyond a bounded distance and while high above ground; compatibility renderer respects hidden parent groups. Star occlusion retains per-part bounds rather than treating a whole batched chunk as a solid box. Tests cover mesh budgets, altitude culling, stable reuse, colors, and disposal. FPS on a physical phone has not been measured."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 23,
+      "version": "v0.0.23",
+      "title": "World and gameplay update 23",
+      "changes": [
+        "Version 23 adds a mineral crafting center near Earth Trade, tiered pickaxes, a shovel, and iron-block building. One Iron Ore crafts five blocks; 1000 FP buys 64. Equip blocks outside the ship to preview and place; equip the shovel and double tap the aimed block to reclaim it. Crafted items and placed blocks share the existing inventory save and cannot be sold as mined ore. Terrain uses deterministic 96m chunks with a bounded 25/49-chunk cache, including Earth trees and lunar/Martian rocks and survey equipment. Gas-giant entry uses an illustrative colored fog interior and central core; launch/land are disabled and free Return to Earth remains available. Earth gains thunderstorm weather and original synthesized rain/thunder audio."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 17,
+      "version": "v0.0.17",
+      "title": "v0.0.17 visual and mining fixes",
+      "changes": [
+        "Star glare checks opaque planets (including gas giants), ship geometry, local buildings, celestial bodies and terrain. The glare overlay also masks foreground silhouettes so the corona cannot paint over nearby objects. The loading bar stays centered independently of its spinner, which hides at completion. The title button uses the main blue HUD treatment; inventory item art is centered."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 16,
+      "version": "v0.0.16",
+      "title": "v0.0.16 flight, atlas and menu update",
+      "changes": [
+        "Right flight controls are larger: a tall Thrust control, shorter Slower control, and Stop alongside Thrust. Hold or click to change a retained forward speed command; release keeps speed and Slower stops at zero. Normal/boost limits are 150/450 m/s on surfaces and 55/320 game units per second in space. Stop clears the command and velocity. Surface forward follows the Blender rocket’s local nose (+Y after its surface rotation), with no camera dependency. Engine flames pivot exactly at the Blender bell outlet (z=1.56) in both renderers."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 15,
+      "version": "v0.0.15",
+      "title": "v0.0.15 control and inventory fixes",
+      "changes": [
+        "Cargo uses a dedicated vertically scrolling grid, preserving the scroll position while selecting and equipping. All dialogs use the main blue glass palette. The hotbar contains at most seven items including the pickaxe, with keyboard slots 1–7. The inventory toggle is centered above it."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 14,
+      "version": "v0.0.14",
+      "title": "Reference HUD and Blender models",
+      "changes": [
+        "The v14 HUD follows Applee’s four reference screenshots: two currencies centered at the top; location beneath; blue and white inventory with an on-foot hotbar; parked Launch/Leave controls; flying direction, roll, thrust and brake controls. Touch camera look uses canvas drag, and the right camera stick has no handlers or visual presence. Boost is a persistent selection beside the speed bar and applies only while moving. Inventory cannot open aboard."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 8,
+      "version": "v0.0.8",
+      "title": "The Zero Gravity - Web — Mining Edition 8",
+      "changes": [
+        "Earth retains the pilot ship on Pad 01 and adds a separate trading ship at local (18, 0.55, 13). Leave with F; the trading marker and Earth Trade button show distance. Sell from inventory while on foot within 10 m. - 48 resource types have names, colors, sale values and varying HP (60–300). Each landable body has 24 deterministic deposits with thematic mineral pools. Exoplanet placements and exotic minerals are fictional game content. Deposits show world-positioned name labels, a bar and current/max HP within 48 m on foot. - Pickaxe is slot 1. Click/tap a visible deposit or aim and press R / Swing. Reach is 6 m, each hit deals 25 HP, with a 0.42 s cooldown. Depleted nodes pay exactly one unit, remain depleted across visits/reloads, and cannot be collected twice. The first-person pickaxe animates; other selected resources appear in hand in 3D. - I / Inventory opens the cargo grid. Clicking a card or hotbar slot equips/unequips it. Separate selection buttons support multiple sale stacks, select all and deselect all. Search and name/value/quantity sorting are included. Selling a stack sells its full quantity. FP payout is each unit’s catalog value; every sold unit adds 2 RC. Partial sales retain remaining cargo and depleted nodes. When a sale empties cargo, ALL body deposits respawn and partial HP damage resets. - New accounts start with 0 FP and 0 RC. Earth deposits supply initial funding. Discovery of a new catalog body pays 5 RC once, including arrival or first physical entry; Earth is already discovered. Warping to Earth is always free, including across systems. Other normal warps cost 100 FP. Cross-system warp costs 100 FP + 5 RC. The shared Flight navigation hook also applies to distant approaches, tours and orbit transfers. Bookmarked travel charges the same fee based on its saved coordinate system. Insufficient funds cause no debit or navigation cancellation. Accepted warp charges once; cancelling an already charged warp does not refund it. Manual flight remains free. - Economy saves under `cosmic-economy-v8`: balances, inventory, claimed discoveries, damage, depleted nodes and respawn cycle. New Flight does not wipe inventory or balances, and distant rescue/reset travel charges the Earth return fee. This remains a single-player browser-local game, without multiplayer/account trading. - Kenney CC0 sound assets (Interface, Impact, Sci-fi Sounds) supply UI, equip, swing, hit, break, pickup, sale, discovery, warp, countdown, launch, landing, error and footstep effects. Settings includes a persisted effects toggle and volume. The original Google Actions library limits reuse to Google Actions, so it was excluded. Sounds unlock after a pointer/key gesture; audio pools are bounded. - Tests verify per-body deposits, HP/reach/tool/cooldown, duplicate pickup prevention, inventory equip/selection, full/partial sales, 2 RC/unit, global respawn, one-time discovery, warp charges/denial and safe persistence. Existing flight, terrain, walking and settings/UI regressions are retained. Cloud browser verification uses compatibility graphics; GPU and actual phone audio/motion require device testing."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 7,
+      "version": "v0.0.7",
+      "title": "The Zero Gravity - Web — Walking Edition 7",
+      "changes": [
+        "Parked camera look is independent from the ship. Drag the canvas or use the right thumbstick before launching; the grounded hull stays still. - Leave a parked ship with F or Leave ship. Walk in first person with WASD / the left stick, look by dragging / the right stick, run with Shift and jump with Space (mobile Jump/Run buttons). Terrain, pad steps, ship and base building contact are checked. Board within 8 m with F / Board ship. Launch is blocked while on foot, and leaving is blocked during countdown or flight. Reset returns the player aboard. - Space and airless surface skies use the photographic 360° Milky Way panorama by ESO/S. Brunier (CC BY 4.0), resized into desktop and mobile assets. The 28,000-point background overlay and fallback synthetic star dots are removed. Atmospheric worlds keep their own daytime skies. Other-system scenery remains artistic; this is an Earth-observed sky panorama reused across destinations. - UI icons are local Google Material Design SVG assets, Apache 2.0. Icon-only buttons have accessible labels. No Google font/icon CDN is required at runtime. - Tests cover parked camera separation, leave/board distance and phase guards, walking, jumping, ground/building collision and the existing manual launch/entry behavior. UI smoke checks cover parked drag, first-person controls, launch lock while walking, boarding and loaded icon elements. WebGL is mocked in this suite; browser QA uses the cloud's compatibility renderer. Physical phone sensors and GPU appearance require device testing."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 6,
+      "version": "v0.0.6",
+      "title": "Surface launch and landing",
+      "changes": [
+        "Serve `dist/` with an HTTP static server. No build step or runtime dependency download is required."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 5,
+      "version": "v0.0.5",
+      "title": "Edition 5 — terrain, survey and compatibility",
+      "changes": [
+        "Added six deterministic fictional survey systems containing 30 explicitly marked objects (six stars, eighteen planets, six moons). The catalog contains 121 destinations total. Survey system names and positions are invented, with borrowed texture artwork credited as before."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 4,
+      "version": "v0.0.4",
+      "title": "Edition 4 — planetarium exploration",
+      "changes": [
+        "The default experience now uses a free camera, inspired by the navigation patterns described in the official SpaceEngine user manual (https://spaceengine.org/manual/user-manual-0980/). The Zero Gravity - Web remains its own browser sandbox; SpaceEngine code, UI assets and branding are not included."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    },
+    {
+      "legacyVersion": 3,
+      "version": "v0.0.3",
+      "title": "Edition 3 — mobile stability, HUD ownership and image assets",
+      "changes": [
+        "Settings no longer composites a blurred WebGL scene; 3D redraws are suspended while any dialog is open. Mobile canvas allocation is capped at 1.1 million pixels even at High. A tiny LRU-style image map cache keeps only two maps (Low/mobile) or three (other mobile quality settings) resident, with serial loading and disposal on eviction. Context loss saves the flight and offers a Safe graphics restart. This addresses identified resource pressure; the original crash cannot be confirmed resolved without a real device test."
+      ],
+      "source": {
+        "path": "README.md",
+        "kind": "historical documentation"
+      }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
+import {removeLegacyUI} from './legacy-ui.js?v=102';
 export function installGameUI(win=window,doc=document){
- const button=doc.getElementById('installGame');if(!button)return null;
+ removeLegacyUI(doc);const button=doc.getElementById('installGame');if(!button)return null;
  const standalone=()=>win.matchMedia?.('(display-mode: standalone)')?.matches||win.navigator?.standalone===true;
  let deferred=null,installed=standalone(),signed=false,attempted=false,busy=false;
  const refresh=()=>{button.textContent=installed?'Game Installed':'Install Game';button.disabled=installed||busy;button.title=deferred?'Install this game':/iPad|iPhone|iPod/.test(win.navigator?.userAgent||'')?'Share → Add to Home Screen':'Browser menu → Install app / Add to Home screen'};

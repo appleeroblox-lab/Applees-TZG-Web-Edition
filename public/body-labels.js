@@ -12,7 +12,7 @@ export function localMoonFamily(bodies,position,system){
  return closest;
 }
 export function bodyLabelAllowed(body,system,family){
- return body.system===system&&(!body.parent||body.parent===family);
+ return meaningfulBodyLabel(body)&&body.system===system&&(!body.parent||body.parent===family);
 }
 export function labelProjection(relative,camera,width,height){
  // Update camera matrices before calling this, in the same frame as rendering.
@@ -24,3 +24,6 @@ export function labelProjection(relative,camera,width,height){
 }
 
 export function labelOccluded(origin,target,occluders){const delta=target.pos.clone().sub(origin),distance=delta.length();if(distance<=target.r)return false;const dir=delta.multiplyScalar(1/distance),end=distance-target.r;for(const body of occluders){if(body===target||body.id===target.id||!(body.r>0))continue;const rel=body.pos.clone().sub(origin),along=rel.dot(dir),perp2=Math.max(0,rel.lengthSq()-along*along),radius2=body.r*body.r;if(perp2>=radius2)continue;const hit=along-Math.sqrt(radius2-perp2);if(hit>.0001&&hit<end-.0001)return true}return false}
+
+// Named bodies stay useful; procedural identifiers and fictional survey markers do not need labels.
+export function meaningfulBodyLabel(body){if(!body||body.procedural||body.generated||body.fictional&&body.belt==='oort')return false;return !/^(?:(?:Asteroid\s*Belt|Kuiper\s*Belt|Oort\s*Cloud)\s*[•·:#-]?\s*[a-z0-9]{4,}|Belt\s*asteroid(?:\s*[•·:#-]\s*\w+)?)$/i.test(String(body.name||'').trim())}

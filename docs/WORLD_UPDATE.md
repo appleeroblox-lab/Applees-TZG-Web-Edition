@@ -82,3 +82,16 @@ The custom install invitation is removed. After sign-in, the retained browser pr
 Procedural Asteroid Belt/Kuiper/Oort instance labels with generated identifiers are removed entirely, avoiding their per-frame sorting/projection. Named catalog labels remain controlled by Asteroids Labels.
 
 Pools use an 80–140 m alpha fade, scene-fog alpha attenuation and distant-record drawing exclusion. The water reflection shader composes with that fade rather than overwriting it. The Canvas fallback multiplies pool distance fade with its existing fog opacity. Snow layers use the fog alpha fade too.
+
+
+## v0.0.102: planned release
+
+New `Update Logs` toggles in More and Settings share one nonmodal, scrollable history window. The generated `update-history.json` contains 90 entries: separately documented legacy releases starting at v0.0.3, followed by actual release commits through v0.0.102. Missing initial/intermediate notes are disclosed. Version N maps to v0.0.N; no invented v0.0.1/v0.0.2 creation timeline is shown. Commit messages take precedence over stale cache revisions for the v0.0.92–v0.0.95 releases. Rebuild with `python scripts/build-update-history.py`.
+
+`meaningfulBodyLabel` is shared by world, surface-sky and map label paths. It suppresses generated identifiers and fictional Oort survey markers while retaining named real bodies. The belt field no longer mounts its label container. `legacy-ui.js` removes old belt containers/custom install overlays, and the new stylesheet prevents them reappearing visually. Native browser installation and the Settings action remain; no custom invitation dialog exists.
+
+The Screenshot action uses bundled html2canvas 1.4.1 (MIT). It renders and freezes all visible canvases synchronously, copies them into the cloned page as PNG images, retains canvas CSS, captures the current viewport including HUD/controls/chat/open menus, and downloads the composited PNG. Maximum pixel count is four million and scale at most 2×. It does not record the screen or request screen-sharing permission. Browser chrome/OS status bars are outside page capture; cross-origin media restrictions and CSS-filter support can affect exact fidelity.
+
+Boot metadata bypasses cache and the selected source revision determines the imported game URL. Unchanged assets retain normal caching. This prevents future startup from reading fresh metadata and still importing a hardcoded old game module.
+
+Validation: full `npm test`, complete mocked UI integration, auth-first startup, account suite, source asset/syntax checks, and planned-release tests passed. A real Chromium 844×390 touch fixture loaded the actual game/UI (cloud activation stubbed only), rendered all 90 history cards, verified More toggle behavior, and exported a 370 KB PNG containing the game/HUD/open log menu without page errors. The original and composed images were visually inspected. The older mocked UI fixture now supplies an explicit rejected network stub rather than throwing an undefined-fetch error during small-body setup. Physical phone capture and live-account QA remain unmeasured.

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import * as T from '../public/vendor/three.module.js';
 import {glareOccluded} from '../public/stellar-glare.js?v=100';
-import {clipMapSegment} from '../public/atlas-3d.js?v=100';
+import {clipMapSegment} from '../public/atlas-3d.js?v=102';
 import {nearbyMineral,pickaxePose} from '../public/prospecting.js?v=100';
 const V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z),origin=V(0,2,0),star={pos:V(0,2,-100),b:{name:'Sun'}},flight={system:'Sol',pos:V()},surface={active:false};
 const box=new T.Mesh(new T.BoxGeometry(4,4,4),new T.MeshBasicMaterial());box.position.set(0,2,-10);assert(glareOccluded(origin,star,[],flight,surface,[box]),'ship/building blocks star');box.visible=false;assert(!glareOccluded(origin,star,[],flight,surface,[box]));box.visible=true;box.position.x=15;assert(!glareOccluded(origin,star,[],flight,surface,[box]));assert(glareOccluded(origin,star,[{type:'GAS GIANT',system:'Sol',pos:V(0,2,-20),r:4}],flight,surface),'gas giants block shine');assert(glareOccluded(origin,{pos:V(0,-100,-100),b:star.b},[],flight,{active:true}),'ground blocks shine');box.position.x=0;assert(glareOccluded(origin,star,[],flight,{active:true},[box]),'surface buildings block shine');

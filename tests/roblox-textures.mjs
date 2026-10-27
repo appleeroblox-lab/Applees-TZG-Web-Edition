@@ -5,7 +5,7 @@ import * as T from '../public/vendor/three.module.js';
 import {bodies} from '../public/catalog.js?v=100';
 import {robloxTextureAssets} from '../public/roblox-texture-assets.js';
 import {bodySphereGeometry,drawBodyMap} from '../public/texture-geometry.js';
-import {localMoonFamily,bodyLabelAllowed} from '../public/body-labels.js?v=100';
+import {localMoonFamily,bodyLabelAllowed} from '../public/body-labels.js?v=102';
 import {Flight} from '../public/flight.js?v=100';
 import {SurfaceSession} from '../public/surface.js?v=100';
 const ids=JSON.parse(fs.readFileSync(new URL('../assets/roblox/planet-asset-ids.json',import.meta.url))),expectedParents={Actaea:'Salacia','Ilmarë':'Varda',Vanth:'Orcus',Xiangliu:'Gonggong'};

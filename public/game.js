@@ -1,4 +1,6 @@
-import {AsteroidBelts} from './asteroid-belts.js?v=101';
+import {installUpdateLogs} from './update-logs.js?v=102';
+import {installScreenshot} from './game-screenshot.js?v=102';
+import {AsteroidBelts} from './asteroid-belts.js?v=102';
 import {SurfaceCollisions} from './surface-collision.js?v=100';
 import {ShipRespawnStation} from './ship-respawn.js?v=100';
 import {iconButton} from './ui-icons.js?v=91';
@@ -47,7 +49,7 @@ import {SurfaceView} from './surface-view.js?v=100';
 import {Explorer,formatSpeed} from './explorer.js?v=100';
 import {TextureCache} from './textures.js';
 import {updateReferenceHUD} from './reference-hud.js?v=100';
-import {SystemAtlas} from './atlas-3d.js?v=100';
+import {SystemAtlas} from './atlas-3d.js?v=102';
 import {ShipBoost} from './boost.js';
 import {updateBlackHole} from './black-hole-effects.js';
 import {holdVelocity,setSpeedCommand} from './speed-control.js';
@@ -57,7 +59,7 @@ import {PostEffects} from './post-effects.js';
 import {EarthWeatherFX} from './earth-environment.js?v=100';
 import {lightingProfile} from './lighting.js';
 import {resolutionRatio,clampPanel} from './performance.js';
-import {localMoonFamily,bodyLabelAllowed,labelProjection,labelOccluded} from './body-labels.js?v=100';
+import {meaningfulBodyLabel,localMoonFamily,bodyLabelAllowed,labelProjection,labelOccluded} from './body-labels.js?v=102';
 import {makeWorld,makeShip,makeStars,glow,random} from './visuals.js?v=100';
 const $=id=>document.getElementById(id),touch=matchMedia('(pointer:coarse)').matches,clamp=T.MathUtils.clamp;
 let wasWalkingAirborne=false,stepAt=0,lastFootMaterial='grass';
@@ -178,7 +180,8 @@ canvas.addEventListener('wheel',e=>{if(isBlocked())return;if(stableCamera&&!crew
 function renderPlaces(){$('placesList').replaceChildren();if(!bookmarks.length){const p=document.createElement('p');p.textContent='No saved locations yet. Save this viewpoint to begin.';$('placesList').append(p)}for(const [i,b]of bookmarks.entries()){const row=document.createElement('div');row.className='placeRow';const go=document.createElement('button');go.textContent=b.name+' ↗';go.onclick=()=>{if(surface.active)return toast('Saved location travel is locked inside a body');const targetBody=bodies.find(x=>x.id===b.target);if(!targetBody)return;closeDialog($('placesDialog'));confirmWarp(targetBody,()=>{const price=economy.payWarp(targetBody,flight.system);if(!price.ok)return toast(price.message);explorer.cancelOrbit();flight.cancel();flight.system=b.system;flight.pos.fromArray(b.pos);flight.q.fromArray(b.q).normalize();flight.landed=null;resetWarpCamera();setTarget(targetBody,true);toast('Restored viewpoint · '+b.name)})};const del=document.createElement('button');del.textContent='✕';del.setAttribute('aria-label','Delete saved viewpoint');del.onclick=()=>{bookmarks.splice(i,1);persistPlaces();renderPlaces()};row.append(go,del);$('placesList').append(row)}}
 function persistPlaces(){try{localStorage.setItem('cosmic-places-v4',JSON.stringify(bookmarks))}catch{toast('Could not save this viewpoint')}}
 $('railBookmarks').onclick=()=>{renderPlaces();open('placesDialog')};$('bookmarkBtn').onclick=()=>{bookmarks.push({name:target.name+' · '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),system:flight.system,target:target.id,pos:flight.pos.toArray(),q:flight.q.toArray()});bookmarks=bookmarks.slice(-30);persistPlaces();renderPlaces();toast('Viewpoint saved')};
-$('railPhoto').onclick=()=>{renderer.render(surface.active?surfaceView.scene:scene,camera);canvas.toBlob(blob=>{if(!blob)return toast('Screenshot is unavailable');const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='The-Zero-Gravity-Web-'+target.name.replace(/[^a-z0-9]/gi,'-')+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),15000);toast('Screenshot saved')},'image/png')};
+installScreenshot($('railPhoto'),{renderFrame:()=>effects.render(surface.active?surfaceView.scene:scene,camera,graphics),name:()=>'The-Zero-Gravity-Web-'+target.name.replace(/[^a-z0-9]/gi,'-')+'.png',toast});
+installUpdateLogs(document,{toggle:[$('updateLogsBtn'),$('settingsUpdateLogs')],open:id=>{clearInputs();closeDialog($('settingsDialog'));const dialog=$(id);if(dialog.show)dialog.show();else dialog.setAttribute('open','')},close:closeDialog});
 for(const [name,caption]of [['Earth','Oceans, clouds and a familiar horizon'],['Saturn','The rings of a gas giant'],['Moon','Craters in the sunlight'],['Proxima b','An imagined nearby world'],['Sagittarius A*','At the heart of the Milky Way'],['Carina Nebula','Clouds of gas and distant stars'],['TRAPPIST-1 e','A small world around a red dwarf']]){const b=bodies.find(b=>b.name===name);if(!b)continue;const button=document.createElement('button');const title=document.createElement('strong'),sub=document.createElement('small');title.textContent=name;sub.textContent=caption;button.append(title,sub);button.onclick=()=>{if(surface.active)return toast('Launch and leave the body before starting a tour');closeDialog($('tourDialog'));setTarget(b);if(!explorer.enabled)setMode(true);if(explorer.beginOrbit(b)===false){sfx.play('error');toast(flight.lastDenial||'Travel unavailable')}syncExplorer()};$('tourList').append(button)}$('tourBtn').onclick=()=>open('tourDialog');
 const orbitPaths=new T.Group(),solarCenter=bodies.find(b=>b.name==='Sun').pos.clone();for(const b of bodies.filter(b=>b.system==='Sol'&&['TERRESTRIAL PLANET','GAS GIANT','ICE GIANT'].includes(b.type))){const r=b.pos.distanceTo(solarCenter),points=[];for(let i=0;i<256;i++){const a=i/256*Math.PI*2;points.push(V(Math.cos(a)*r,0,Math.sin(a)*r))}const g=new T.BufferGeometry().setFromPoints(points);orbitPaths.add(new T.LineLoop(g,new T.LineBasicMaterial({color:0x66839a,transparent:true,opacity:.22,depthWrite:false})))}scene.add(orbitPaths);orbitPaths.visible=false;syncExplorer();
 
@@ -195,7 +198,7 @@ function updateObjectLabels(){
   const relative=b.pos.clone().sub(flight.pos),point=labelProjection(relative,camera,innerWidth,innerHeight);
   if(point){const depth=-relative.clone().applyMatrix4(camera.matrixWorldInverse).z;point.y-=b.r/Math.max(depth,b.r)*innerHeight/(2*Math.tan(camera.fov*Math.PI/360))+10;candidates.push({b,point,distance:flight.pos.distanceTo(b.pos)})}
  }
- if(surface.active)for(const item of surface.skyBodies||[]){const localBodies=(surface.skyBodies||[]).map(o=>({id:o.body.id,pos:o.direction.clone().multiplyScalar(6000).add(camera.position),r:o.radius})),localTarget=localBodies.find(o=>o.id===item.body.id);if(planetLabelsMode==='collision'&&localTarget&&labelOccluded(camera.position,localTarget,localBodies))continue;if(item.direction.y<=0||!labelFilters[labelCategory(item.body)])continue;const point=labelProjection(item.direction.clone().multiplyScalar(6000).add(camera.position),camera,innerWidth,innerHeight);if(point){const depth=-item.direction.clone().applyQuaternion(camera.quaternion.clone().invert()).z;point.y-=item.radius/6000/Math.max(.01,depth)*innerHeight/(2*Math.tan(camera.fov*Math.PI/360))+10;candidates.push({b:item.body,point,distance:item.distance})}}
+ if(surface.active)for(const item of surface.skyBodies||[]){const localBodies=(surface.skyBodies||[]).map(o=>({id:o.body.id,pos:o.direction.clone().multiplyScalar(6000).add(camera.position),r:o.radius})),localTarget=localBodies.find(o=>o.id===item.body.id);if(planetLabelsMode==='collision'&&localTarget&&labelOccluded(camera.position,localTarget,localBodies))continue;if(!meaningfulBodyLabel(item.body)||item.direction.y<=0||!labelFilters[labelCategory(item.body)])continue;const point=labelProjection(item.direction.clone().multiplyScalar(6000).add(camera.position),camera,innerWidth,innerHeight);if(point){const depth=-item.direction.clone().applyQuaternion(camera.quaternion.clone().invert()).z;point.y-=item.radius/6000/Math.max(.01,depth)*innerHeight/(2*Math.tan(camera.fov*Math.PI/360))+10;candidates.push({b:item.body,point,distance:item.distance})}}
  candidates.sort((a,b)=>(a.b===target?-1:b.b===target?1:0)||((a.b.parent===family?0:1)-(b.b.parent===family?0:1))||a.distance-b.distance);
  for(const {b,point,distance}of candidates.slice(0,Math.max(6,candidates.filter(c=>c.b.parent===family).length+1))){
   let node=objectLabels.get(b.id);

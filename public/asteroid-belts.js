@@ -4,7 +4,7 @@ import {smallBodyData,smallBodyGeometry} from './small-body-models.js?v=100';
 const hash=s=>{let h=2166136261;for(const c of String(s))h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0};
 function random(seed){return()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296}}
 export class AsteroidBelts{
- constructor(scene,bodies,AU){this.AU=AU;this.sun=bodies.find(b=>b.name==='Sun');this.root=new T.Group();this.root.name='Asteroid Belt, Kuiper Belt and Oort Cloud';scene.add(this.root);this.overview=new T.Group();this.local=new T.Group();this.root.add(this.overview,this.local);this.rocks=[];this.anchor=new T.Vector3();this.material=new T.MeshStandardMaterial({color:'#a8a49c',roughness:1});this.labelRoot=document.createElement('div');this.labelRoot.className='asteroidFieldLabels';this.labelRoot.setAttribute('aria-hidden','true');document.body.append(this.labelRoot);this.labels=[];
+ constructor(scene,bodies,AU){this.AU=AU;this.sun=bodies.find(b=>b.name==='Sun');this.root=new T.Group();this.root.name='Asteroid Belt, Kuiper Belt and Oort Cloud';scene.add(this.root);this.overview=new T.Group();this.local=new T.Group();this.root.add(this.overview,this.local);this.rocks=[];this.anchor=new T.Vector3();this.material=new T.MeshStandardMaterial({color:'#a8a49c',roughness:1});this.labels=[];
   this.overview.visible=false; // Belts have no naked-eye ring or distant point-cloud representation.
   this.ready=Promise.all(Array.from({length:8},(_,i)=>smallBodyData('small-belt-'+i).then(d=>smallBodyGeometry(d)))).then(templates=>{this.templates=templates;return true}).catch(()=>false);
  }

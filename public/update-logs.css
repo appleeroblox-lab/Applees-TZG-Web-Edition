@@ -1,0 +1,13 @@
+/* Legacy overlays are never part of the native installation flow. */
+#installGameDialog,#installPromptDialog,#installPromptMenu,#pwaInstallPrompt,.asteroidFieldLabels{display:none!important}
+#updateLogsDialog{z-index:2000;width:min(680px,94vw);max-height:82dvh;color:#e9f4ff}
+#updateLogsDialog .updateHistoryNote{font-size:11px;line-height:1.5;opacity:.72;margin:10px 0}
+#updateLogsDialog .updateHistoryList{max-height:58dvh;overflow-y:auto;overscroll-behavior:contain;padding-right:6px}
+#updateLogsDialog .updateLogEntry{padding:14px 10px;border-top:1px solid #a4d8ff30}
+#updateLogsDialog .updateLogEntry>strong{color:#8ed0ff;font-size:14px}
+#updateLogsDialog h3{font-size:14px;line-height:1.4;margin:6px 0}
+#updateLogsDialog small{font-size:10px;opacity:.7}
+#updateLogsDialog ul{padding-left:18px;font-size:12px;line-height:1.6;margin:8px 0}
+@media(max-width:700px){#updateLogsDialog{max-height:88dvh}#updateLogsDialog .updateHistoryList{max-height:57dvh}}
+
+body.updateLogsOpen #utilityMenu{z-index:2100!important}

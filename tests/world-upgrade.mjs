@@ -5,7 +5,7 @@ import {GameSound} from '../public/sound.js';
 import {connectedGlass} from '../public/connected-glass.js';
 import {Economy} from '../public/economy.js?v=100';
 import {settlementSites,settlementBlocks} from '../public/settlements.js?v=100';
-import {cloudPosition,cloudProfile,aboveClouds,setAtmosphereStars} from '../public/atmosphere-effects.js';
+import {cloudPosition,cloudProfile,aboveClouds,setAtmosphereStars} from '../public/atmosphere-effects.js?v=103';
 import {SurfaceSession,exitHeight} from '../public/surface.js?v=100';
 import {Flight,V} from '../public/flight.js?v=100';
 import {bodies,earth} from '../public/catalog.js?v=100';

@@ -11,3 +11,16 @@
 @media(max-width:700px){#updateLogsDialog{max-height:88dvh}#updateLogsDialog .updateHistoryList{max-height:57dvh}}
 
 body.updateLogsOpen #utilityMenu{z-index:2100!important}
+
+#updateLogsDialog{position:fixed!important;inset:auto!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%)!important;margin:0!important;height:min(590px,84dvh);max-height:calc(100dvh - 24px);box-sizing:border-box}
+#updateLogsDialog[open]{display:flex;flex-direction:column;gap:8px;padding:16px}
+#updateLogsDialog .dialogHead{flex:none;margin:0}
+#updateLogsDialog .updateHistoryList{flex:1;min-height:0;max-height:none;padding-right:8px}
+#updateLogsDialog .updateHistoryNote{margin:0;font-size:12px;opacity:.85}
+#updateLogsDialog .updateLogEntry{background:#082f501f;border-radius:10px;margin-bottom:9px;padding:13px}
+#updateLogsDialog .updateLogEntry:first-child{background:#99d6ff1f;border:1px solid #b6e2ff50}
+#updateLogsDialog .historyAbout{flex:none;font-size:10px;line-height:1.4;opacity:.7;max-height:65px;overflow:auto}
+#friendsRequestsUnread{position:absolute;right:-5px;bottom:-5px;border-radius:10px;padding:1px 4px;background:#ffb55d;color:#18354c;font-size:9px;line-height:13px;min-width:14px}
+#friendsRequestsUnread[hidden]{display:none!important}
+
+#mobileNotificationStatus{font-size:11px;line-height:1.4;margin:5px 0;opacity:.8}

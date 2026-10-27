@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {parseHTML} from 'linkedom';
-import {FriendsUI} from '../public/friends-ui.js';
+import {FriendsUI} from '../public/friends-ui.js?v=103';
 const {window,document}=parseHTML(fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8'));Object.assign(globalThis,{window,document});
 const self={username:'self',display_name:'Me'},peer={username:'friend',display_name:'Applee',online:true};let pings=0,notes={rooms:[{id:'a',last_id:'1',unread:0},{id:'b',last_id:'2',unread:0}],requests:[]};
 const state={friends:[peer],incoming:[],outgoing:[],blocked:[],rooms:[{id:'a',kind:'dm',name:'Applee'},{id:'b',kind:'group',name:'Explorers'}]};

@@ -3,7 +3,7 @@ import {gasInteriorProfile,gasCloudPosition} from './gas-interior.js';
 import {drawBodyMap} from './texture-geometry.js';
 import {graphicsPolicy} from './graphics-policy.js';
 import {atmosphere} from './surface.js?v=100';
-import {cloudProfile,cloudPosition} from './atmosphere-effects.js';
+import {cloudProfile,cloudPosition} from './atmosphere-effects.js?v=103';
 import {PAD_RADIUS} from './surface-layout.js';
 import {surfacePalette} from './surface-palette.js';
 import {starShineColor,glowRGBA} from './star-colors.js';

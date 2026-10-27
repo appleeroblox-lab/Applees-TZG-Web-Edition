@@ -5,3 +5,7 @@ verify_jwt = false
 # Existing dashboard deployment uses this name.
 [functions.rapid-responder]
 verify_jwt = false
+
+[functions.push-dispatch]
+# Config requests validate the player JWT; delivery validates a server-only dispatch secret.
+verify_jwt = false

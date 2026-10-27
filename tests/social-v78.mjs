@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {parseHTML} from 'linkedom';
-import {GlobalChat} from '../public/social-ui.js';
-import {FriendsUI} from '../public/friends-ui.js';
-import {MessageEditor} from '../public/message-editor.js';
+import {GlobalChat} from '../public/social-ui.js?v=103';
+import {FriendsUI} from '../public/friends-ui.js?v=103';
+import {MessageEditor} from '../public/message-editor.js?v=103';
 const {window,document}=parseHTML(fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8'));
 Object.assign(globalThis,{window,document});
 window.confirm=window.prompt=window.alert=()=>{throw Error('Browser dialogs must not be used')};

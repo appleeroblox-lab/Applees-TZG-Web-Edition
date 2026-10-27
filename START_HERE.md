@@ -1,6 +1,6 @@
 # The Zero Gravity — Web Edition
 
-Current game version: **v0.0.102** (source/cache revision **102**), 27 October 2026. The default branch is `main`.
+Current game version: **v0.0.103** (source/cache revision **103**), 27 October 2026. The default branch is `main`.
 
 ## Play and publish
 
@@ -18,7 +18,15 @@ Then open http://localhost:8000/. ES modules and assets require HTTP; opening `i
 
 ## Latest changes
 
-- **Update Logs** is available from More and Settings → Display. Either button toggles the same scrollable menu. It lists 90 recoverable releases from **v0.0.3** through **v0.0.102**, using historical README notes and Git commits. Missing early entries are explicitly identified; legacy source revision N displays as v0.0.N.
+- **v0.0.103 release fixes:** Update Logs is centered on phone and desktop, scrolls within the screen, and uses first-person release wording. Early-history provenance is available in a collapsed details section.
+- Airless terrain fades into dark horizon fog to hide the streamed ground edge. The star sky remains clear.
+- More no longer shows Favorite Places. Entering Free Camera costs **100 RC per use**; returning to Ship is free. Insufficient funds prevents entry. Reloading does not restore unpaid Free Camera.
+- Background exploration no longer prints an unsupported destination error across the account header. Migration 017 updates the trusted destination list for the newer named worlds.
+- Chat settings add **Mobile Global Chat Notification** (off by default), **Party Chat Notification** (on by default), and an explicit **Enable Mobile Notifications** action. Friend requests have a separate pending count and a message sound.
+- **Closed-site phone notifications need backend activation:** the client, service worker, SQL migration and push Edge Function are prepared and tested, but have not been deployed to the connected game database in this release session. Until activation, Settings reports that server setup is needed. See [Mobile Push setup](docs/MOBILE_PUSH.md). Do not advertise closed-site push as live before completing that checklist.
+
+
+- **Update Logs** is available from More and Settings → Display. Either button toggles the same scrollable menu. It lists 91 recoverable releases from **v0.0.3** through **v0.0.103**, using historical README notes and Git commits. Missing early entries are explicitly identified; legacy source revision N displays as v0.0.N.
 - Screenshot now saves the visible game viewport **including HUD, currency, controls, chat and open menus**. It freezes visible canvases before cloning the interface, then renders locally to PNG using bundled MIT-licensed html2canvas. It captures in-game content, not the phone status bar or browser chrome; browser font/filter/CORS support can affect exact appearance. No screen-sharing permission is requested by this local composition path.
 - A shared label filter hides generated belt/hash names in space, surface skies and Universe Map; named bodies remain available. Legacy belt-label containers and custom install overlays are removed and hidden defensively.
 - Settings Install Game retains only the native browser prompt. Startup reads uncached release metadata, then imports the matching game revision while retaining normal caching for unchanged assets.

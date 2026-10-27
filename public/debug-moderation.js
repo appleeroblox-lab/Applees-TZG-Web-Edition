@@ -1,7 +1,7 @@
 import {chatDialog} from './chat-dialog.js?v=91';
 import {safeChatImage} from './chat-media.js?v=96';
 import {setVerifiedName} from './identity-ui.js?v=91';
-import {setAvatar} from './social-ui.js?v=97';
+import {setAvatar} from './social-ui.js?v=103';
 const $=id=>document.getElementById(id);
 const text=(tag,value)=>{const node=document.createElement(tag);node.textContent=value;return node};
 export class DebugModeration{

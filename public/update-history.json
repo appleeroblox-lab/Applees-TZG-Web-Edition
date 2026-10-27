@@ -1,8 +1,25 @@
 {
-  "currentVersion": "v0.0.102",
+  "currentVersion": "v0.0.103",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 103,
+      "version": "v0.0.103",
+      "date": "2026-10-27",
+      "title": "I polished the release and added phone notification support",
+      "changes": [
+        "I centered and cleaned up Update Logs on phones and computers.",
+        "I added distance fog to hide terrain edges on airless worlds.",
+        "I fixed the unnecessary exploration error in the account menu.",
+        "I removed saved places from More. Entering free camera now costs 100 RC.",
+        "I added separate phone notification settings: global chat is off by default; party chats and friend requests are on.",
+        "I added a pending friend-request count and message-style request sounds. Closed-game notifications require the push backend and browser permission."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 102,
       "version": "v0.0.102",
@@ -34,13 +51,14 @@
     {
       "legacyVersion": 100,
       "version": "v0.0.100",
-      "title": "Optimize mobile village weather, align snow terrain and add install flow",
+      "title": "Fix HTML still loading legacy v0.0.100 startup; assert release entrypoint version",
       "changes": [
-        "Optimize mobile village weather, align snow terrain and add install flow"
+        "Optimize mobile village weather, align snow terrain and add install flow",
+        "Fix HTML still loading legacy v100 startup; assert release entrypoint version"
       ],
       "date": "2026-10-27",
       "source": {
-        "commit": "a93e6246be6afd3932dc2b747553ba3bcb7a4041",
+        "commit": "07faad907cbaddebcc816ce7a17a5ebab3433049",
         "kind": "Git history"
       }
     },
@@ -711,7 +729,7 @@
     {
       "legacyVersion": 47,
       "version": "v0.0.47",
-      "title": "v0.0.47 — Applee’s Roblox texture selections and added worlds",
+      "title": "v0.0.47 — My Roblox texture selections and added worlds",
       "changes": [
         "All 46 supplied IDs map to locally bundled public Roblox preview PNGs. Original asset delivery returned authentication errors; these images are explicitly preview-resolution copies (up to 420px wide), with their source IDs, dimensions and SHA-256 hashes retained in `roblox-texture-assets.js` and `assets/roblox/texture-download-report.json`. Existing full-size maps remain bundled as historical fallback assets. The Moon selection is a transparent cube-cross atlas: face-local cube-sphere UVs prevent the empty corners appearing as black surface patches, and Canvas/atlas thumbnails use an occupied face."
       ],

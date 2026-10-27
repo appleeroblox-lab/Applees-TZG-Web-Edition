@@ -2,13 +2,13 @@ import assert from 'node:assert/strict';
 import * as T from '../public/vendor/three.module.js';
 import {clipPatch} from '../public/weather-patch-clip.js';
 import {biomeCell,biomeWeather} from '../public/earth-biomes.js';
-import {EarthEnvironment} from '../public/earth-environment.js?v=100';
+import {EarthEnvironment} from '../public/earth-environment.js?v=103';
 import {GroundWeather} from '../public/ground-weather.js?v=101';
 import {roadRoutes,createSurfaceRoads} from '../public/surface-roads.js?v=100';
 import {PAD_RADIUS,CRAFT_LAYOUT} from '../public/surface-layout.js';
 import {earth,bodies} from '../public/catalog.js?v=100';
 import {settlementSites,settlementBlocks} from '../public/settlements.js?v=100';
-import {stormActivity} from '../public/weather-state.js';
+import {stormActivity} from '../public/weather-state.js?v=103';
 const area=p=>Math.abs(p.reduce((a,v,i)=>{const n=p[(i+1)%p.length];return a+v.x*n.z-v.z*n.x},0))/2;
 const square=[{x:-2,z:-2},{x:2,z:-2},{x:2,z:2},{x:-2,z:2}],box={min:{x:-.5,z:-.5},max:{x:.5,z:.5}},cut=clipPatch(square,[box]);assert(Math.abs(cut.reduce((s,p)=>s+area(p),0)-15)<1e-6,'one block removes exactly its footprint');for(const p of cut)for(let i=1;i<p.length-1;i++){const x=(p[0].x+p[i].x+p[i+1].x)/3,z=(p[0].z+p[i].z+p[i+1].z)/3;assert(!(Math.abs(x)<.5&&Math.abs(z)<.5),'no triangle bridges the block hole')}
 let cold;for(let z=-3;z<=3&&!cold;z++)for(let x=-3;x<=3&&!cold;x++){const c=biomeCell(x,z);if(c.key==='tundra')cold=c}let mixed=false,last=-1;for(let d=0;d<24;d+=.5){const s=biomeWeather({rain:1,name:'Thunderstorm',storm:true},cold.x+cold.radius-d,cold.z);assert(Math.abs(s.rain+s.snow-1)<1e-8);if(s.snow>0&&s.snow<1)mixed=true;assert(s.snow>=last-1e-8);last=s.snow}assert(mixed,'rain and snow blend at the biome boundary');

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {parseHTML} from 'linkedom';
-import {DebugMenu} from '../public/debug-menu.js';
+import {DebugMenu} from '../public/debug-menu.js?v=103';
 import {SupabaseDebugService} from '../public/supabase-debug.js';
 const {window,document}=parseHTML('<html><body><button id="debugMenuBtn">Debug</button></body></html>');
 globalThis.document=document;globalThis.addEventListener=window.addEventListener.bind(window);

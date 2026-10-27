@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import * as T from '../public/vendor/three.module.js';
 import {ShipWeatherMask} from '../public/ship-weather-mask.js';
 import {installMobileInput} from '../public/mobile-input.js';
-import {precipitationSegment} from '../public/weather-precipitation.js?v=100';
+import {precipitationSegment} from '../public/weather-precipitation.js?v=103';
 import {Economy,CRAFTS} from '../public/economy.js?v=100';
 import {bodies,earth} from '../public/catalog.js?v=100';
 import {GroundWeather} from '../public/ground-weather.js?v=101';

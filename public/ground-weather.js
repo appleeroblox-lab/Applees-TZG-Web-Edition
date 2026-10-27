@@ -4,7 +4,7 @@ import {earthBiome,biomeWeather} from './earth-biomes.js?v=59';
 import {clipPatch} from './weather-patch-clip.js';
 import {PoolSplashes} from './pool-splashes.js?v=59';
 import * as T from './vendor/three.module.js';
-import {surfaceHeight} from './surface.js?v=91';
+import {surfaceHeight} from './surface.js?v=98';
 import {PAD_RADIUS,padHeightAt} from './surface-layout.js';
 import {weatherOccluders,rainRoof,rainOccluded} from './rain-shelter.js';
 import {WaterReflection} from './water-reflection.js?v=59';

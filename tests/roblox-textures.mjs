@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import * as T from '../public/vendor/three.module.js';
-import {bodies} from '../public/catalog.js';
+import {bodies} from '../public/catalog.js?v=98';
 import {robloxTextureAssets} from '../public/roblox-texture-assets.js';
 import {bodySphereGeometry,drawBodyMap} from '../public/texture-geometry.js';
-import {localMoonFamily,bodyLabelAllowed} from '../public/body-labels.js';
-import {Flight} from '../public/flight.js';
-import {SurfaceSession} from '../public/surface.js';
+import {localMoonFamily,bodyLabelAllowed} from '../public/body-labels.js?v=98';
+import {Flight} from '../public/flight.js?v=98';
+import {SurfaceSession} from '../public/surface.js?v=98';
 const ids=JSON.parse(fs.readFileSync(new URL('../assets/roblox/planet-asset-ids.json',import.meta.url))),expectedParents={Actaea:'Salacia','Ilmarë':'Varda',Vanth:'Orcus',Xiangliu:'Gonggong'};
 assert.equal(robloxTextureAssets.length,46);assert.equal(new Set(bodies.map(b=>b.id)).size,bodies.length);
 for(const row of robloxTextureAssets){const body=bodies.find(b=>b.name===row.name);assert(body,row.name);assert.equal(body.robloxAssetId,ids[row.suppliedName]);assert.equal(body.texture,row.texture);assert.equal(body.mapKind,'user-supplied-preview');assert(row.width>0&&row.height>0&&row.width<=420);const png=fs.readFileSync(new URL('../public/textures/'+row.texture,import.meta.url));assert.equal(png.subarray(0,8).toString('hex'),'89504e470d0a1a0a');assert.equal(crypto.createHash('sha256').update(png).digest('hex'),row.sha256)}

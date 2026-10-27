@@ -2,7 +2,7 @@ import {audioFixture} from './audio-fakes.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import * as T from '../public/vendor/three.module.js';
-import {Economy} from '../public/economy.js';
+import {Economy} from '../public/economy.js?v=98';
 import {createBlockModel} from '../public/block-models.js';
 import {createTreeLog} from '../public/wood-models.js';
 import {HeldItemView} from '../public/held-items.js';

@@ -1,10 +1,10 @@
 # The Zero Gravity — Web Edition
 
-Current source update: **97**, 27 October 2026. The default branch is `main`.
+Current source update: **98**, 27 October 2026. The default branch is `main`.
 
 ## Play and publish
 
-Game: https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/
+Game: https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html
 
 GitHub Actions publishes the contents of `public/` whenever `main` changes. Set **Settings → Pages → Source → GitHub Actions**. The workflow is `.github/workflows/github-pages.yml`; it uploads the static game directly, without a Node build. Keep all files inside `public/` together. Use the Actions run result to confirm each deployment.
 
@@ -17,6 +17,17 @@ python -m http.server 8000 --directory public
 Then open http://localhost:8000/. ES modules and assets require HTTP; opening `index.html` directly does not work reliably.
 
 ## Latest changes
+
+- The supplied game artwork now appears in the loading poster, settings button, browser icon, install icon and link preview. The original sign-in menu uses the loading screen background. Currency icons, the mobile game-logo button and global/party chat retention notices are compact.
+- Phobos, Deimos, Haumea and its moons, additional irregular moons, Zoozve, named asteroids and Kuiper objects use local Blender-authored meshes. The catalog includes Vesta, Pallas, Hygiea, Eros, Ida, Gaspra, Itokawa, Bennu, Ryugu, Arrokoth, Varuna and Ixion. Zoozve is identified as Venus's asteroid quasi-satellite. Oort Survey destinations are explicitly fictional.
+- The Asteroid Belt, Kuiper Belt and spherical Oort Cloud combine distant point fields with nearby instanced Blender rocks. **Asteroids Labels** is a saved setting. Mobile/compatibility uses at most 54 nearby rocks; desktop High uses at most 250, sharing eight mesh templates.
+- Indexed surface collision now covers village/player blocks and doors, trees, rocks, cactus, scenery structures, pad buildings, signs and planet bases. Ships use a swept wing/hull box to prevent tunnelling, and can settle on block roofs. Grass remains collision-free.
+- Villages now contain **12 houses of the existing size**. Original house positions and saved block identities are preserved. Earth retains its eight existing villages and adds desert/tundra sites, giving ten villages across all five biomes, with different wall/roof materials. Other solid worlds retain eight expanded settlements.
+- Six Blender base designs cover lunar research, Mars habitats, Mercury mining, raised Venus thermal stations, icy-world outposts and Proxima greenhouses. They appear on appropriate landable worlds and share the collision system.
+
+Details, model generation and validation: `docs/WORLD_UPDATE.md`.
+
+### Retained account and audio changes
 
 - The original account menu now appears before game source/model/texture loading. Its same DOM element and Supabase client are reused by the game. Startup waits for server inventory hydration before announcing readiness, preventing the second sign-in screen. Account connection errors, moderation notices and deliberate sign-outs can still require account attention.
 - Ship recall uses the current `player-ship` mesh, scaled to its pedestal. The proximity prompt tracks the current camera every rendered frame with no CSS movement transition, uses consistent pedestal height checks, and hides during blocked interaction.
@@ -71,6 +82,7 @@ For the optional framework application, use the Node and pnpm versions declared 
 Useful checks after installing the declared development dependencies:
 
 ```sh
+node tests/world-update.mjs
 node tests/update-v97.mjs
 node tests/game-polish-v96.mjs
 node --experimental-vm-modules tests/auth-boot-v96.mjs

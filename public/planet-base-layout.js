@@ -1,0 +1,2 @@
+export function baseSite(body){if(!body?.solid||body.name==='Earth'||body.smallBody)return null;const kind={Mercury:'mining',Venus:'venus',Mars:'mars',Moon:'lunar',Pluto:'ice',Eris:'ice',Makemake:'ice',Titan:'ice',Europa:'ice','Proxima b':'garden','Proxima d':'garden'}[body.name]||(/PLANET/.test(body.type)?'lunar':null);return kind?{x:48,z:-36,halfX:19,halfZ:14,model:'base-'+kind}:null}
+export function insideBase(body,x,z,padding=0){const s=baseSite(body);return !!s&&Math.abs(x-s.x)<s.halfX+padding&&Math.abs(z-s.z)<s.halfZ+padding}

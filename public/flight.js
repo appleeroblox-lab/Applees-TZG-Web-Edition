@@ -85,6 +85,7 @@ export class Flight {
    if(b.solid&&this.gear&&normalSpeed<3&&speed<5){this.park(b);return}
    this.vel.addScaledVector(normal,normalSpeed+Math.min(3,Math.max(.5,normalSpeed*.2)));this.event={type:b.solid?'contact':'hazard',b};
   }
+  if(!this.event)this.asteroidField?.collide(before,this);
  }
  park(b){const normal=this.pos.clone().sub(b.pos).normalize();if(normal.lengthSq()<.01)normal.set(0,1,0);this.pos.copy(b.pos).addScaledVector(normal,b.r+clearance);this.q.copy(surfaceAttitude(b,this.pos));this.vel.set(0,0,0);this.landed=b;this.nav=null;this.throttle=0;this.gear=true;this.event={type:'land',b}}
  stepNavigation(dt){

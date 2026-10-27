@@ -13,3 +13,13 @@ body:not(.authenticatedBoot)>#boot{visibility:hidden}
 body:not(.authenticatedBoot)>#rotatePrompt{display:none!important}
 body.referenceHUD #respawnShipPrompt{transition:none!important;animation:none!important;will-change:left,top;touch-action:manipulation}
 #accountGate[data-preload] #accountConnected[hidden]{display:none!important}
+
+/* Match the loading screen background on the original sign-in menu. */
+body.referenceHUD #accountGate{background:#090b10;isolation:isolate}
+body.referenceHUD #accountGate::before{content:"";position:fixed;inset:-70%;z-index:-1;pointer-events:none;opacity:.035;background:url('icons/rocket_launch.svg') repeat;background-size:145px;transform:rotate(-24deg)}
+body.referenceHUD #wallet .currencyIcon,body.referenceHUD .currencyIcon{width:24px!important;height:24px!important;max-width:24px!important;max-height:24px!important;flex:0 0 24px!important}
+body.referenceHUD #brand .gameLogo{width:32px!important;height:32px!important;max-width:32px!important;max-height:32px!important;flex:0 0 32px!important;object-fit:cover}
+body.referenceHUD :is(#chatPanel,#friendsPanel) .chatRetentionInfo{font-size:9px!important;line-height:12px!important;padding:2px 7px!important;margin:0!important;min-height:0!important;height:auto!important;max-height:16px!important;flex:0 0 16px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:900px),(max-height:550px){body.referenceHUD #wallet .currencyIcon,body.referenceHUD .currencyIcon{width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important;flex-basis:20px!important}body.referenceHUD #brand .gameLogo{width:26px!important;height:26px!important;max-width:26px!important;max-height:26px!important;flex-basis:26px!important}body.referenceHUD #brand{gap:5px!important;max-width:155px}body.referenceHUD #wallet :is(.fpCoin,.rcCoin){gap:4px;padding:2px 7px 2px 3px}}
+
+.asteroidFieldLabels{position:fixed;inset:0;z-index:12;pointer-events:none}.asteroidFieldLabels span{position:absolute;transform:translate(-50%,-130%);font-size:10px;line-height:14px;color:#d8e3ec;background:#11202c88;border-radius:3px;padding:1px 4px;white-space:nowrap}

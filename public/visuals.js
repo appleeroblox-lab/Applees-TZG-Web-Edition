@@ -1,9 +1,10 @@
+import {applySmallBody,smallBodyFallback} from './small-body-models.js?v=98';
 import {proximaAtmosphere} from './proxima-atmospheres.js';
 import {bodySphereGeometry} from './texture-geometry.js';
 import {createBlackHole} from './black-hole-effects.js';
 import {starShineColor} from './star-colors.js';
 import * as T from './vendor/three.module.js';
-import {loadBlenderModel} from './models.js?v=97';
+import {loadBlenderModel} from './models.js?v=98';
 export function random(seed=1){return()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}}
 function planetTexture(b){
  const rand=random([...b.name].reduce((s,c)=>s+c.charCodeAt(0)*97,99)),c=document.createElement('canvas');c.width=1024;c.height=512;const ctx=c.getContext('2d');ctx.fillStyle=b.color;ctx.fillRect(0,0,1024,512);
@@ -27,9 +28,9 @@ export function makeWorld(b){
  if(b.type==='GALAXY')return makeGalaxy(b);
  if(b.type==='BLACK HOLE')return createBlackHole(b);
  if(b.type==='NEBULA'||b.type==='STAR CLUSTER')return makeNebula(b);
- const geometry=bodySphereGeometry(b);
+ const geometry=b.modelFile?smallBodyFallback(b):bodySphereGeometry(b);
 
- const mesh=new T.Mesh(geometry,new T.MeshStandardMaterial({color:b.color,roughness:b.name==='Earth'?.63:.95,metalness:0,emissive:b.type==='STAR'?b.color:0,emissiveIntensity:b.type==='STAR'?3.5:0}));mesh.userData.body=b;
+ const mesh=new T.Mesh(geometry,new T.MeshStandardMaterial({color:b.color,roughness:b.name==='Earth'?.63:.95,metalness:0,emissive:b.type==='STAR'?b.color:0,emissiveIntensity:b.type==='STAR'?3.5:0}));mesh.userData.body=b;if(b.modelFile)mesh.userData.shapeReady=applySmallBody(mesh,b);
  if(b.solid&&!b.texture){const c=document.createElement('canvas');c.width=512;c.height=256;const x=c.getContext('2d');let seed=0;for(const ch of b.name)seed=(seed*31+ch.charCodeAt(0))>>>0;const rng=random(seed);x.fillStyle=b.color;x.fillRect(0,0,512,256);if(b.type.includes('DWARF')){for(let i=0;i<850;i++){const px=rng()*512,py=rng()*256;x.fillStyle=i%3?'#ffe7ce14':'#31222b22';x.beginPath();x.ellipse(px,py,3+rng()*38,1+rng()*12,rng()*3,0,7);x.fill()}}else{for(let i=0;i<360;i++){x.fillStyle=`rgba(25,28,32,${.03+rng()*.15})`;x.beginPath();x.ellipse(rng()*512,rng()*256,1+rng()*12,1+rng()*6,rng()*3,0,7);x.fill()}}const map=new T.CanvasTexture(c);map.colorSpace=T.SRGBColorSpace;mesh.material.map=map;mesh.material.color.set(0xffffff)}
 
  if(b.type==='STAR'){const halo=new T.Sprite(new T.SpriteMaterial({map:glow,color:starShineColor(b),transparent:true,opacity:.85,blending:T.AdditiveBlending,depthWrite:false}));halo.scale.setScalar(b.r*9);mesh.add(halo)}

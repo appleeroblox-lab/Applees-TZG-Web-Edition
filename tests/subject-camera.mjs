@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import * as T from '../public/vendor/three.module.js';
 import {shipCameraSubject,rotateSubjectOrbit,placeSubjectOrbit,ORBIT_MIN,ORBIT_MAX} from '../public/subject-camera.js';
-import {bodies} from '../public/catalog.js';
-import {Flight} from '../public/flight.js';
-import {SurfaceSession} from '../public/surface.js';
+import {bodies} from '../public/catalog.js?v=98';
+import {Flight} from '../public/flight.js?v=98';
+import {SurfaceSession} from '../public/surface.js?v=98';
 const ship=new T.Group(),model=new T.Group();ship.add(model);const rig={ship,model,subjectCenter:new T.Vector3(0,.2775,-.176)},camera=new T.PerspectiveCamera(60,2,.05,1e6),q=new T.Quaternion(),subject=new T.Vector3();
 function centered(){camera.updateMatrixWorld();const p=subject.clone().project(camera);assert(Math.abs(p.x)<1e-7&&Math.abs(p.y)<1e-7,'ship subject stays at screen center');assert(new T.Vector3(0,1,0).applyQuaternion(camera.quaternion).dot(new T.Vector3(0,1,0))>=0,'no upside-down camera')}
 for(const standing of [false,true]){ship.position.set(123,10,-350);ship.quaternion.setFromEuler(new T.Euler(.3,.7,-.2));model.rotation.x=standing?Math.PI/2:0;shipCameraSubject(rig,subject);for(const distance of [6,16,55,120]){rotateSubjectOrbit(q,600,-250,2);placeSubjectOrbit(camera,q,subject,distance);centered();assert(Math.abs(camera.position.distanceTo(subject)-distance)<1e-6)}}

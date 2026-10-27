@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import * as T from '../public/vendor/three.module.js';
-import {bodies,earth} from '../public/catalog.js';
-import {Economy,REACH,TRADER} from '../public/economy.js';
-import {Flight,V} from '../public/flight.js';
-import {SurfaceSession} from '../public/surface.js';
-import {Crew} from '../public/crew.js';
-import {modelFromData} from '../public/models.js';
+import {bodies,earth} from '../public/catalog.js?v=98';
+import {Economy,REACH,TRADER} from '../public/economy.js?v=98';
+import {Flight,V} from '../public/flight.js?v=98';
+import {SurfaceSession} from '../public/surface.js?v=98';
+import {Crew} from '../public/crew.js?v=98';
+import {modelFromData} from '../public/models.js?v=98';
 assert.equal(REACH,6);const wallet=new Economy(bodies),node=wallet.nodes(earth)[0];
 assert(node.radius<.6,'resources have compact colliders');assert(wallet.hit(node.id,earth,node.pos.clone().add(V(5.9,0,0)),true).ok,'6m mining reach');wallet.tick(1);assert(!wallet.hit(node.id,earth,node.pos.clone().add(V(6.1,0,0)),true).ok,'beyond reach denied');
 const f=new Flight(bodies),s=new SurfaceSession(f),c=new Crew(s);s.enter(earth,true);assert(c.blocked(0,0));assert(!c.blocked(3,0),'narrow rocket collider leaves space to walk');assert(c.blocked(TRADER.x,TRADER.z));assert(!c.blocked(TRADER.x+7,TRADER.z),'station collision matches walls');

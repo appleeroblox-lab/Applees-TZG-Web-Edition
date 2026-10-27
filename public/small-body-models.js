@@ -1,0 +1,6 @@
+import * as T from './vendor/three.module.js';
+const cache=new Map();
+export function smallBodyData(file){if(!cache.has(file))cache.set(file,fetch('./models/'+file+'.json?v=98').then(r=>{if(!r.ok)throw Error(file);return r.json()}));return cache.get(file)}
+export function smallBodyGeometry(data,radius=1){const part=data.meshes[0],g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(part.positions,3));if(part.normals)g.setAttribute('normal',new T.Float32BufferAttribute(part.normals,3));else g.computeVertexNormals();if(part.uvs)g.setAttribute('uv',new T.Float32BufferAttribute(part.uvs,2));g.scale(radius,radius,radius);g.computeBoundingSphere();return g}
+export function applySmallBody(mesh,body,radius=body.r){if(!body.modelFile)return Promise.resolve(false);return smallBodyData(body.modelFile).then(data=>{if(mesh.userData.disposed)return false;const geometry=smallBodyGeometry(data,radius);mesh.geometry.dispose();mesh.geometry=geometry;mesh.userData.blenderShape=body.modelFile;return true}).catch(()=>false)}
+export function smallBodyFallback(body,radius=body.r){const g=new T.IcosahedronGeometry(radius,1);const scales={Haumea:[1,.51,.41],Phobos:[1,.78,.67],Deimos:[1,.81,.71],Zoozve:[1,.63,.57]};g.scale(...(scales[body.name]||[1,.8,.7]));return g}

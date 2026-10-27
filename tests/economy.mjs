@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import {Economy,minerals,MINERALS,TRADER} from '../public/economy.js';
-import {Flight,V} from '../public/flight.js';
+import {Economy,minerals,MINERALS,TRADER} from '../public/economy.js?v=98';
+import {Flight,V} from '../public/flight.js?v=98';
 const earth={id:'Earth',name:'Earth',solid:true,system:'Sol',r:64,pos:V()},moon={id:'Moon',name:'Moon',solid:true,system:'Sol',r:17,pos:V(400,0,0)},proxima={id:'Proxima b',name:'Proxima b',solid:true,system:'Proxima',r:64,pos:V()},gas={id:'Jupiter',name:'Jupiter',solid:false,system:'Sol',r:500,pos:V(5000,0,0)},bodies=[earth,moon,proxima,gas];
 const e=new Economy(bodies);assert.equal(MINERALS.length,48);assert.equal(new Set(MINERALS.map(r=>r.id)).size,48);assert.equal(e.fp,0);assert.equal(e.rc,0);assert.equal(minerals(gas).length,0);assert.equal(new Set(minerals(earth).map(n=>n.id)).size,24);assert.deepEqual(minerals(earth),minerals(earth));assert.notDeepEqual(minerals(earth).map(n=>n.type),minerals(moon).map(n=>n.type));assert(new Set(MINERALS.map(r=>r.hp)).size>5);
 const node=e.nodes(earth)[0];assert(!e.hit(node.id,earth,node.pos,false).ok);e.equipped=null;assert(!e.hit(node.id,earth,node.pos,true).ok,'pickaxe must be held');e.tick(.5);e.damage.clear();e.equip('pickaxe');assert(!e.hit(node.id,earth,V(900,0,0),true).ok);e.tick(1);const hit=e.hit(node.id,earth,node.pos,true);assert.equal(hit.hp,node.maxHp-25);assert(!e.hit(node.id,earth,node.pos,true).ok,'swing cooldown');assert.equal(e.total,0);while(!e.depleted.has(node.id)){e.tick(.5);e.hit(node.id,earth,node.pos,true)}assert.equal(e.total,1);e.tick(.5);assert(!e.hit(node.id,earth,node.pos,true).ok,'depleted minerals cannot pay twice');assert.equal(e.total,1);

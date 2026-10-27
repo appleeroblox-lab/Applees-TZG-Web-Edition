@@ -4,7 +4,7 @@ import {surfaceFrame} from './surface-frame.js';
 import {padHeightAt} from './surface-layout.js';
 import {holdVelocity} from './speed-control.js';
 import * as T from './vendor/three.module.js';
-import {V,surfaceAttitude} from './flight.js?v=91';
+import {V,surfaceAttitude} from './flight.js?v=98';
 export const isGasGiant=body=>/GAS GIANT|ICE GIANT/.test(body?.type||'');
 export function gasExitRadius(body){return Math.max(340,Math.min(480,(body?.r||180)*1.2))}
 export const CONTACT=1.39,LAUNCH_SECONDS=5;
@@ -16,7 +16,7 @@ export function atmosphere(body){const profile=proximaAtmosphere(body);if(profil
 export class SurfaceSession{
  constructor(flight){this.flight=flight;flight.surface=this;this.body=null;this.pos=V();this.vel=V();this.normal=V(0,1,0);this.phase='parked';this.remaining=0;this.elapsed=0;this.event=null;this.launchElapsed=null}
  get active(){return !!this.body} get onGround(){return this.active&&this.body.solid&&this.pos.y<=this.floor+.015} get launched(){return this.active&&['ascent','flying','descending','gas'].includes(this.phase)}
- get floor(){return surfaceHeight(this.pos.x,this.pos.z)+(this.shipRig?.contactHeight??CONTACT)+padHeightAt(this.pos.x,this.pos.z)}
+ get floor(){const contact=this.shipRig?.contactHeight??CONTACT;return (this.collisions?this.collisions.floorAt(this.pos.x,this.pos.z,this.pos.y-contact,.7):surfaceHeight(this.pos.x,this.pos.z)+padHeightAt(this.pos.x,this.pos.z))+contact}
  get exitHeight(){return exitHeight(this.body)}
  get coreDistance(){return this.active&&!this.body.solid?this.pos.length():0}
  get exitDistance(){return gasExitRadius(this.body)}
@@ -36,7 +36,7 @@ export class SurfaceSession{
  else if(this.phase==='flying'&&f.speedHold){this.launchElapsed=null;holdVelocity(f,dt,input,V(0,0,-1).applyQuaternion(f.q),true,this.vel);if(this.altitude>15)f.gear=false;}
  else if(this.phase==='flying'){this.launchElapsed=null;const power=1,thrust=V((input.x||0)*18,0,-T.MathUtils.clamp((input.z||0)+f.throttle,-1,1)*24).applyQuaternion(f.q).add(V(0,(input.y||0)*120,0));this.vel.addScaledVector(thrust,power*dt);if(f.assist){this.vel.y+=gravity*dt;this.vel.multiplyScalar(Math.exp(-dt*.7))}if(this.altitude>15)f.gear=false;}
  if(this.phase==='flying'&&this.vel.length()<5)this.vel.copy(V(0,0,-1).applyQuaternion(f.q)).multiplyScalar(5);
- this.pos.addScaledVector(this.vel,dt);if(this.pos.y<=this.floor){this.pos.y=this.floor;this.vel.set(0,0,0);f.vel.set(0,0,0);f.speedCapHeld=0;this.launchElapsed=null;if(this.phase!=='parked'){this.event={type:'touchdown',b:this.body};this.phase='parked';f.cruiseSpeed=0;f.q.identity();f.gear=true;f.throttle=0;}}
+ const beforeMove=this.pos.clone();this.pos.addScaledVector(this.vel,dt);const collision=this.collisions?.moveShip(beforeMove);if(collision)this.event=collision;if(this.pos.y<=this.floor){this.pos.y=this.floor;this.vel.set(0,0,0);f.vel.set(0,0,0);f.speedCapHeld=0;this.launchElapsed=null;if(this.phase!=='parked'){this.event={type:'touchdown',b:this.body};this.phase='parked';f.cruiseSpeed=0;f.q.identity();f.gear=true;f.throttle=0;}}
  if(this.altitude>=this.exitHeight&&this.launched){const b=this.body;f.pos.copy(b.pos).addScaledVector(this.normal,b.r+10);f.vel.copy(this.normal).multiplyScalar(.8);f.q.copy(surfaceAttitude(b,f.pos));f.landed=null;f.gear=false;this.body=null;this.event={type:'exit',b};}
  }
  serialize(){return this.active?{body:this.body.id,pos:this.pos.toArray(),q:this.flight.q.toArray(),phase:this.phase,orientation:'forward',launchElapsed:this.launchElapsed}:null}

@@ -12,7 +12,7 @@ export function localMoonFamily(bodies,position,system){
  return closest;
 }
 export function bodyLabelAllowed(body,system,family){
- return body.system===system&&(body.type!=='MOON'||body.parent===family);
+ return body.system===system&&(!body.parent||body.parent===family);
 }
 export function labelProjection(relative,camera,width,height){
  // Update camera matrices before calling this, in the same frame as rendering.

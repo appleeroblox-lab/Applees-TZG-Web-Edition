@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import {Flight,V} from '../public/flight.js';
-import {SurfaceSession} from '../public/surface.js';
-import {Crew} from '../public/crew.js';
+import {Flight,V} from '../public/flight.js?v=98';
+import {SurfaceSession} from '../public/surface.js?v=98';
+import {Crew} from '../public/crew.js?v=98';
 const b={name:'Earth',id:'Earth',r:64,pos:V(),system:'Sol',solid:true},f=new Flight([b]),s=new SurfaceSession(f),c=new Crew(s);s.enter(b,true);
 const shipQ=f.q.clone();c.look(.8,.4);assert(c.quaternion().angleTo(shipQ)>.5,'parked view rotates');assert.equal(f.q.angleTo(shipQ),0,'looking never rotates parked ship');assert(c.leave());assert(c.onFoot);assert(c.canBoard);assert(!s.requestLaunch(),'cannot launch while walking');const origin=c.pos.clone();for(let i=0;i<120;i++)c.step(1/60,{z:-1,boost:true});assert(c.pos.distanceTo(origin)>10,'walking follows view');assert(!c.canBoard);assert(!c.board(),'boarding requires ship proximity');c.pos.copy(s.pos).add(V(6,0,1));c.pos.y=c.ground();c.step(.1,{y:1});assert(c.pos.y>c.ground(),'jump');for(let i=0;i<120;i++)c.step(1/60);assert.equal(c.pos.y,c.ground(),'ground contact after jump');assert(c.board());assert(!c.onFoot);assert(s.requestLaunch());assert(!c.leave(),'cannot leave during countdown');s.step(5);assert(!c.leave(),'cannot leave in flight');s.enter(b,true);assert(!c.onFoot);assert(c.blocked(0,0));assert(c.blocked(80,25));assert(c.blocked(-32,-15));assert(!c.blocked(40,-50));
 console.log('PASS: independent parked camera, leave/board guards, first-person walking, proximity, jump, terrain contact, ship/building collision and reset.');

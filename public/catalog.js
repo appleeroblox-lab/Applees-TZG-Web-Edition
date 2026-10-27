@@ -1,3 +1,4 @@
+import {installMinorBodies} from './minor-body-data.js?v=98';
 import {robloxTextureAssets} from './roblox-texture-assets.js';
 import {surfacePalette} from './surface-palette.js';
 import {starShineColor} from './star-colors.js';
@@ -99,3 +100,5 @@ for(const asset of robloxTextureAssets){const b=bodies.find(b=>b.name===asset.na
 
 // Playable rocky worlds use a consistent game scale; other body categories retain their sizes.
 for(const b of bodies)if(b.solid&&/PLANET/.test(b.type)&&!b.parent){b.physicalRadius=b.r;if(b.name!=='Mars')b.r=32;}
+
+installMinorBodies(bodies,AU);

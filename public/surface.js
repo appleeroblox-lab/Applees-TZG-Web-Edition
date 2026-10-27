@@ -4,7 +4,7 @@ import {surfaceFrame} from './surface-frame.js';
 import {padHeightAt} from './surface-layout.js';
 import {holdVelocity} from './speed-control.js';
 import * as T from './vendor/three.module.js';
-import {V,surfaceAttitude} from './flight.js?v=99';
+import {V,surfaceAttitude} from './flight.js?v=100';
 export const isGasGiant=body=>/GAS GIANT|ICE GIANT/.test(body?.type||'');
 export function gasExitRadius(body){return Math.max(340,Math.min(480,(body?.r||180)*1.2))}
 export const CONTACT=1.39,LAUNCH_SECONDS=5;

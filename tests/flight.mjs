@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import {Flight,V,clearance,safeArrival} from '../public/flight.js?v=99';
-import {bodies,AU} from '../public/catalog.js?v=99';
+import {Flight,V,clearance,safeArrival} from '../public/flight.js?v=100';
+import {bodies,AU} from '../public/catalog.js?v=100';
 const planet=(id,x=0,r=10,system='Sol')=>({id,name:id,pos:V(x,0,0),r,solid:true,system});
 const a=planet('A'),f=new Flight([a]);f.pos.set(0,0,50);f.input.z=1;for(let i=0;i<60;i++)f.step(1/60);assert(f.vel.z< -4.8,'forward thrust');f.input.z=0;const speed=f.vel.length();for(let i=0;i<60;i++)f.step(1/60);assert(f.vel.length()<speed*.3,'assist brake');
 f.pos.set(0,0,15);f.vel.set(0,0,0);f.navigate(a,'land');for(let i=0;i<1200&&f.nav;i++)f.step(1/60);assert.equal(f.landed,a,'guided touchdown');assert(Math.abs(f.pos.distanceTo(a.pos)-a.r-clearance)<.01);const up=V(0,1,0).applyQuaternion(f.q),normal=f.pos.clone().sub(a.pos).normalize();assert(up.dot(normal)>.99,'park with landing gear toward ground');f.input.y=1;f.step(1/60);assert.equal(f.landed,null,'liftoff');assert(f.pos.distanceTo(a.pos)>a.r+clearance);
@@ -18,6 +18,6 @@ const panel=clampPanel(999,-20,900,100,844,390);assert(panel.x>=8&&panel.y===8&&
 const bh=bodies.find(b=>b.type==='BLACK HOLE'),blackholeFlight=new Flight(bodies);blackholeFlight.navigate(bh,'warp');for(let i=0;i<500&&blackholeFlight.nav;i++)blackholeFlight.step(1/60);assert(blackholeFlight.pos.distanceTo(bh.pos)>=bh.r*10,'black hole safe view');assert.equal(blackholeFlight.navigate(bh,'land'),false);
 const cloud={...planet('Cloud'),type:'NEBULA',solid:false},nf=new Flight([cloud]);nf.pos.set(0,0,20);nf.vel.set(0,0,-100);nf.assist=false;nf.step(.2);assert(nf.pos.length()<cloud.r,'nebula volume is traversable');
 console.log('PASS: pixel budget, HUD bounds, black-hole safe viewing, traversable nebula.');
-const {Explorer,formatSpeed}=await import('../public/explorer.js?v=99');
+const {Explorer,formatSpeed}=await import('../public/explorer.js?v=100');
 const ef=new Flight([a]);ef.pos.set(0,0,100);ef.q.identity();const ex=new Explorer(ef);ex.exponent=1;ef.input.z=1;ex.step(.1);assert(Math.abs(ef.pos.z-99)<.001,'free camera moves at specified speed');ef.input.z=0;ex.step(.1);assert.equal(ef.vel.length(),0,'free camera stops without inertia');ef.event={type:'arrive',b:a};ex.step(.1);assert.equal(ef.event,null,'navigation event does not repeat');
 ex.beginOrbit(a);assert(ex.orbit);const radius=ef.pos.distanceTo(a.pos);ex.step(1);assert(Math.abs(ef.pos.distanceTo(a.pos)-radius)<.001,'orbit keeps constant distance');ef.input.x=1;ex.step(.1);assert(!ex.orbit,'manual motion exits orbit');ex.changeSpeed(999);assert.equal(ex.exponent,14);ex.changeSpeed(-999);assert.equal(ex.exponent,-5);assert(formatSpeed(3000).includes('c'),'relativistic speed formatting');console.log('PASS: free-camera speed, immediate stop, event lifecycle, constant orbit radius, orbit cancellation and speed bounds.');

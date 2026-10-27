@@ -1,0 +1,5 @@
+import {surfaceHeight} from './surface.js?v=100';
+const STEP=6;
+function half(poly,fn){const out=[];for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length],da=fn(a),db=fn(b);if(da>=-1e-8)out.push(a);if(da*db<0){const t=da/(da-db);out.push({x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t})}}return out}
+export function terrainMeshHeight(x,z){const x0=Math.floor(x/STEP)*STEP,z0=Math.floor(z/STEP)*STEP,u=(x-x0)/STEP,v=(z-z0)/STEP,a=surfaceHeight(x0,z0),b=surfaceHeight(x0+STEP,z0),c=surfaceHeight(x0,z0+STEP),d=surfaceHeight(x0+STEP,z0+STEP);return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v)}
+export function terrainPatchPieces(poly){const out=[],xs=poly.map(p=>p.x),zs=poly.map(p=>p.z);for(let x=Math.floor(Math.min(...xs)/STEP)*STEP;x<Math.max(...xs);x+=STEP)for(let z=Math.floor(Math.min(...zs)/STEP)*STEP;z<Math.max(...zs);z+=STEP){let cell=poly;for(const fn of [p=>p.x-x,p=>x+STEP-p.x,p=>p.z-z,p=>z+STEP-p.z])cell=half(cell,fn);if(cell.length<3)continue;for(const sign of [1,-1]){const piece=half(cell,p=>sign*(x+z+STEP-p.x-p.z));if(piece.length>=3)out.push(piece)}}return out}

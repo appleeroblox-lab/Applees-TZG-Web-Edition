@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
-import {loadBlenderModel} from './models.js?v=99';
-import {surfaceHeight} from './surface.js?v=99';
+import {loadBlenderModel} from './models.js?v=100';
+import {surfaceHeight} from './surface.js?v=100';
 import {padHeightAt} from './surface-layout.js';
 export const SHIP_STATION={x:12,z:0,range:4};
 export function respawnParkedShip(surface,crew){

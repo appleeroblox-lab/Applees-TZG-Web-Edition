@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import {parseHTML} from 'linkedom';
 import * as T from '../public/vendor/three.module.js';
-import {Building} from '../public/building.js?v=99';
-import {Economy} from '../public/economy.js?v=99';
-import {bodies,earth} from '../public/catalog.js?v=99';
-import {CompatibilityRenderer} from '../public/compatibility.js?v=99';
+import {Building} from '../public/building.js?v=100';
+import {Economy} from '../public/economy.js?v=100';
+import {bodies,earth} from '../public/catalog.js?v=100';
+import {CompatibilityRenderer} from '../public/compatibility.js?v=100';
 const {document}=parseHTML('<html><body></body></html>');globalThis.document=document;globalThis.innerWidth=1000;globalThis.innerHeight=600;
 const economy=new Economy(bodies),surface={body:earth,active:true,pos:new T.Vector3(),terrainRadius:2},crew={onFoot:true,moving:false,pos:new T.Vector3(40,0,35),eye(){return this.pos.clone().add(new T.Vector3(0,1.68,0))}},view={scene:new T.Scene()};
 const building=new Building(economy,surface,crew,view,{toast(){},open(){}});

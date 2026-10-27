@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
-import {BELTS} from './minor-body-data.js?v=99';
-import {smallBodyData,smallBodyGeometry} from './small-body-models.js?v=99';
+import {BELTS} from './minor-body-data.js?v=100';
+import {smallBodyData,smallBodyGeometry} from './small-body-models.js?v=100';
 const hash=s=>{let h=2166136261;for(const c of String(s))h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0};
 function random(seed){return()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296}}
 export class AsteroidBelts{

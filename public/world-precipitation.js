@@ -1,7 +1,7 @@
 import * as T from './vendor/three.module.js';
-import {surfaceHeight} from './surface.js?v=99';
+import {surfaceHeight} from './surface.js?v=100';
 import {padHeightAt} from './surface-layout.js';
-import {rainRoof} from './rain-shelter.js';
+import {rainRoof} from './rain-shelter.js?v=100';
 import {precipitationCeiling} from './weather-state.js';
 export const WEATHER_CELL=32,WEATHER_LAYER=48;
 export const wrapWeather=(x,n)=>(x%n+n)%n;

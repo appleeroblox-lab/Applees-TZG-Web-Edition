@@ -1,4 +1,4 @@
-import {loadBlenderModel} from './models.js?v=99';
+import {loadBlenderModel} from './models.js?v=100';
 import {doorTransform} from './door-rules.js';
 import {HeldItemView} from './held-items.js';
 import {validMount} from './placement-rules.js';
@@ -7,8 +7,8 @@ import {CRAFT_LAYOUT,padHeightAt} from './surface-layout.js';
 import {itemVisual} from './item-images.js';
 import {createShovel} from './tool-models.js';
 import * as T from './vendor/three.module.js';
-import {surfaceHeight} from './surface.js?v=99';
-import {CRAFTS} from './economy.js?v=99';
+import {surfaceHeight} from './surface.js?v=100';
+import {CRAFTS} from './economy.js?v=100';
 export const CRAFT_CENTER=new T.Vector3(-28,0,-38);
 export class Building{
  constructor(economy,surface,crew,view,{toast,open}){Object.assign(this,{economy,surface,crew,view,toast,open});this.mobile=globalThis.matchMedia?.('(pointer:coarse)')?.matches===true;this.group=new T.Group();view.scene.add(this.group);this.meshes=[];this.heldItem=new HeldItemView(view.scene);this.blasts=[];this.torchLights=Array.from({length:4},()=>{const light=new T.PointLight('#ffb558',0,22,1.4);view.scene.add(light);return light});this.heldTorchLight=new T.PointLight('#ffbd67',0,18,1.4);view.scene.add(this.heldTorchLight);this.preview=new T.Mesh(new T.BoxGeometry(1.025,1.025,1.025),new T.MeshBasicMaterial({color:'#70f4dc',transparent:true,opacity:.3,wireframe:false,depthWrite:false,depthTest:true}));this.preview.renderOrder=5;view.scene.add(this.preview);this.preview.visible=false;this.ray=new T.Raycaster();this.lastTap=null;this.key='';this.label=document.createElement('button');this.label.className='traderBillboard';this.label.classList.add('proximityPrompt');this.label.innerHTML='<kbd>E</kbd><span><small>Crafting Center</small><b>Craft items</b></span>';this.label.onclick=()=>this.showCraft();document.body.append(this.label);this.dialog=document.createElement('dialog');this.dialog.id='craftingDialog';this.dialog.className='cargoDialog';this.dialog.innerHTML='<div class="dialogHead"><h2>Crafting Center</h2><button aria-label="Close crafting">×</button></div><div class="cargoToolbar"><input id="craftSearch" placeholder="Search recipes…" aria-label="Search crafting recipes"><select id="craftCategory" aria-label="Craft category"><option value="all">All items</option><option value="block">Building blocks</option><option value="tool">Tools</option></select></div><div class="craftList cargoGrid"></div>' ;document.body.append(this.dialog);this.dialog.querySelector('.dialogHead button').onclick=()=>this.dialog.close();this.shovel=createShovel();view.scene.add(this.shovel);this.dialog.querySelector('#craftSearch').oninput=()=>this.renderCraft();this.dialog.querySelector('#craftCategory').onchange=()=>this.renderCraft();surface.building=this;}
@@ -18,7 +18,7 @@ export class Building{
  sync(){
   const origin=this.crew.onFoot?this.crew.pos:this.surface.pos,range=Math.max(160,(this.surface.terrainRadius||2)*96+45),body=this.surface.body?.id,key=body+':'+(this.economy.placementRevision??this.economy.worldRevision)+':'+this.economy.placements.length+':'+this.economy.placements[0]?.id+':'+this.economy.placements.at(-1)?.id+':'+Math.floor(origin.x/48)+','+Math.floor(origin.z/48)+':'+range;
   if(key===this.key)return;this.key=key;
-  this.entries??=new Map();const wanted=new Set(),visible=this.economy.placements.filter(p=>{if(p.body!==body)return false;const detail=this.mobile&&p.origin==='village'&&['glass','door','torch','ladder','tnt'].includes(p.type),limit=detail?Math.min(130,range):p.type==='torch'?Math.max(520,range):range;return Math.hypot(p.x-origin.x,p.z-origin.z)<limit}),batches=new Map(),glass=new Map(),at=p=>[p.x,p.y,p.z].map(v=>v.toFixed(3)).join(',');
+  this.entries??=new Map();const wanted=new Set(),visible=this.economy.placements.filter(p=>{if(p.body!==body)return false;const detail=this.mobile&&p.origin==='village'&&['glass','door','torch','ladder','tnt'].includes(p.type),limit=detail?Math.min(130,range):this.mobile&&p.origin==='village'?Math.min(180,range):p.type==='torch'?Math.max(520,range):range;return Math.hypot(p.x-origin.x,p.z-origin.z)<limit}),batches=new Map(),glass=new Map(),at=p=>[p.x,p.y,p.z].map(v=>v.toFixed(3)).join(',');
   for(const p of visible)if(p.type==='glass')glass.set(at(p),p.id);
   const remove=entry=>{this.group.remove(entry.mesh);entry.mesh.dispose?.();entry.mesh.traverse(o=>{o.geometry?.dispose();const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats)m?.dispose()})};
   this.meshes=[];

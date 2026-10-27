@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import * as T from '../public/vendor/three.module.js';
-import {Economy,CRAFTS,TRADER} from '../public/economy.js?v=99';
-import {sceneryPoints,treeFromId} from '../public/tree-data.js?v=99';
-import {SurfaceStream} from '../public/surface-streaming.js?v=99';
+import {Economy,CRAFTS,TRADER} from '../public/economy.js?v=100';
+import {sceneryPoints,treeFromId} from '../public/tree-data.js?v=100';
+import {SurfaceStream} from '../public/surface-streaming.js?v=100';
 import {HeldItemView} from '../public/held-items.js';
 import {itemImage} from '../public/item-images.js';
 const earth={id:'Earth',name:'Earth',solid:true},moon={id:'Moon',name:'Moon',solid:true},bodies=[earth,moon];

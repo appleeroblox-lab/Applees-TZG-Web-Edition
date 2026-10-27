@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import * as T from '../public/vendor/three.module.js';
-import {EarthWeatherFX} from '../public/weather-precipitation.js?v=99';
+import {EarthWeatherFX} from '../public/weather-precipitation.js?v=100';
 import {weatherPolicy} from '../public/weather-state.js';
 import {biomeCell,BIOME_SPACING,biomeDestination} from '../public/earth-biomes.js';
-import {GroundWeather} from '../public/ground-weather.js?v=99';
+import {GroundWeather} from '../public/ground-weather.js?v=100';
 import {POOL_SEGMENTS,insidePool,poolShape} from '../public/pool-shape.js';
-import {CompatibilityRenderer} from '../public/compatibility.js?v=99';
+import {CompatibilityRenderer} from '../public/compatibility.js?v=100';
 import {GameSound} from '../public/sound.js';
 const gradient={addColorStop(){}},ctx=new Proxy({createLinearGradient:()=>gradient,createRadialGradient:()=>gradient,createImageData(w,h){return {data:new Uint8ClampedArray(w*h*4)}}},{get:(o,k)=>o[k]??(()=>{})});globalThis.document={createElement:()=>({style:{},width:32,height:32,setAttribute(){},getContext:()=>ctx}),body:{append(){}},addEventListener(){}};globalThis.localStorage={getItem:()=>null,setItem(){}};globalThis.innerWidth=800;globalThis.innerHeight=500;
 const pos=new T.Vector3(65,2,55),surface={active:true,body:{name:'Earth',id:'Earth'},pos,building:{economy:{placements:[]}}},scene=new T.Scene(),fx=new EarthWeatherFX(scene),camera=new T.PerspectiveCamera(60,1.6,.05,18000);camera.position.set(65,4,55);camera.lookAt(65,3,40);camera.updateMatrixWorld();const state={elapsed:10,rain:1,snow:0,wind:.4,name:'Rain'};fx.update(camera,surface,state,'Low',false,false);assert(fx.world.group.parent===scene&&fx.world.group.visible&&fx.canvas.hidden);assert(fx.world.rain.isLineSegments&&fx.world.snow.isPoints);assert(fx.world.rain.material.depthTest&&fx.world.rain.material.fog);const count=fx.world.rain.geometry.drawRange.count;assert(count>0&&count<=weatherPolicy('Low').rain*2);const a=fx.world.rain.geometry.attributes.position,before=a.array.slice(0,count*3);camera.position.set(-200,180,800);camera.rotation.set(1,2,.5);camera.updateMatrixWorld();fx.update(camera,surface,state,'Low',false,false);assert.deepEqual(a.array.slice(0,count*3),before,'orbiting/translating the camera does not move precipitation');surface.pos.x+=.25;fx.update(camera,surface,state,'Low',false,false);assert.deepEqual(a.array.slice(0,count*3),before,'world cells do not drag with fractional actor motion');state.elapsed+=.016;fx.update(camera,surface,state,'Low',false,false);for(let i=1;i<count*3;i+=6){const dy=a.array[i]-before[i];if(Math.abs(dy)<20)assert(Math.abs(dy)<.4,'rain speed follows elapsed time, never camera rotation')}

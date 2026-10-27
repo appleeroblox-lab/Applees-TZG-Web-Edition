@@ -1,6 +1,6 @@
 # The Zero Gravity — Web Edition
 
-Current source update: **99**, 27 October 2026. The default branch is `main`.
+Current source update: **100**, 27 October 2026. The default branch is `main`.
 
 ## Play and publish
 
@@ -18,13 +18,19 @@ Then open http://localhost:8000/. ES modules and assets require HTTP; opening `i
 
 ## Latest changes
 
+- Update 100 caches and spatially indexes village weather blockers, sends only active weather vertices to the GPU, and updates only changed tree snow colors. Mobile High retains its visual preset with a 512px shadow map at four updates/second and a 64-patch ground-weather budget at two updates/second.
+- Villages start at least 650 m from the launch area and 650 m apart. All five Earth biomes use the same old wooden six-house village. Procedural villages regenerate at the wider spacing; player-placed blocks remain saved in their original positions.
+- Snow patches follow the actual six-meter terrain triangles; biome texture channels blend directly, and spruce snow caps fit their trees.
+- Settings → Display → **Install Game** opens the browser install dialog when available, with browser-menu instructions otherwise. After a successful sign-in an install invitation appears once loading ends. A tap is required for the native dialog; dismissal snoozes the automatic invitation for seven days. Installed app windows hide the invitation.
+
+
 - Update 99 separates mining health/resource changes from village rendering, collision indexing and scenery rebuilds. Guided Land searches for clear ground nearby and redirects descent there. Named main asteroids are landable; Zoozve, Kuiper objects, fictional Oort objects and procedural belt rocks are flyby-only. Distant belt point clouds are removed. Villages return to six houses without shrinking houses.
 
 - The supplied game artwork now appears in the loading poster, settings button, browser icon, install icon and link preview. The original sign-in menu uses the loading screen background. Currency icons, the mobile game-logo button and global/party chat retention notices are compact.
 - Phobos, Deimos, Haumea and its moons, additional irregular moons, Zoozve, named asteroids and Kuiper objects use local Blender-authored meshes. The catalog includes Vesta, Pallas, Hygiea, Eros, Ida, Gaspra, Itokawa, Bennu, Ryugu, Arrokoth, Varuna and Ixion. Zoozve is identified as Venus's asteroid quasi-satellite. Oort Survey destinations are explicitly fictional.
 - The Asteroid Belt, Kuiper Belt and spherical Oort Cloud show only nearby instanced Blender rocks; distant rings and point fields are hidden. **Asteroids Labels** is a saved setting. Mobile/compatibility uses at most 54 nearby rocks; desktop High uses at most 250, sharing eight mesh templates.
 - Indexed surface collision now covers village/player blocks and doors, trees, rocks, cactus, scenery structures, pad buildings, signs and planet bases. Ships use a swept wing/hull box to prevent tunnelling, and can settle on block roofs. Grass remains collision-free.
-- Villages now contain **6 houses of the existing size**. Original house positions and saved block identities are preserved. Earth retains its eight existing villages and adds desert/tundra sites, giving ten villages across all five biomes, with different wall/roof materials. Other solid worlds retain eight settlements.
+- Villages now contain **6 houses of the existing size**. Each house keeps its original size and local layout. Earth has ten spaced villages across all five biomes with one shared wooden style. Other solid worlds retain eight settlements.
 - Six Blender base designs cover lunar research, Mars habitats, Mercury mining, raised Venus thermal stations, icy-world outposts and Proxima greenhouses. They appear on appropriate landable worlds and share the collision system.
 
 Details, model generation and validation: `docs/WORLD_UPDATE.md`.

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import * as T from '../public/vendor/three.module.js';
-import {bodies,earth} from '../public/catalog.js?v=99';
-import {localMoonFamily,bodyLabelAllowed,labelProjection} from '../public/body-labels.js?v=99';
+import {bodies,earth} from '../public/catalog.js?v=100';
+import {localMoonFamily,bodyLabelAllowed,labelProjection} from '../public/body-labels.js?v=100';
 const jupiter=bodies.find(b=>b.id==='Jupiter'),moon=bodies.find(b=>b.id==='Moon'),io=bodies.find(b=>b.id==='Io');
 for(const parent of [earth,jupiter]){
  const family=localMoonFamily(bodies,parent.pos,parent.system);

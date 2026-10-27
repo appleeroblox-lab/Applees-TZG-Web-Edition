@@ -1,4 +1,4 @@
-# World and interface update 99
+# World and interface update 100
 
 Play: https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html
 
@@ -36,7 +36,7 @@ A spatial hash indexes solid blocks/doors, visible scenery components and statio
 
 Ship motion sweeps its rotated full wing/hull envelope against candidates, so a frame's endpoint cannot skip a thin wall. Contact cancels inward velocity. Descending onto a supporting roof parks the ship with stable subsequent ground contact. Base collision bounds come from the exported Blender objects. Base footprints are reserved against scenery and resource-node spawns. Collision is conservative around tree canopies and rounded base components.
 
-Village house footprints and the original six house positions remain unchanged. Each settlement has six houses and a short central street. Existing generated block identities remain stable; removed blocks and doors continue to persist through the prior compact world-save mechanism. Earth has ten villages so all five biome themes occur; other solid worlds retain eight. Village loading remains bounded around the viewer and solid blocks remain instanced.
+Village house footprints and the original six house positions remain unchanged. Each settlement has six houses and a short central street. Generated settlements are selected at the update-100 wider spacing. Player-placed blocks stay at their saved positions; removals/doors at retained site IDs still use the compact world-save mechanism. Earth has ten villages across all five biomes with the same wooden style; other solid worlds retain eight. Village loading remains bounded around the viewer and solid blocks remain instanced.
 
 ## Validation
 
@@ -56,3 +56,20 @@ Guided Land searches concentric rings up to 160 meters for an unobstructed full 
 Vesta, Pallas, Hygiea, Eros, Ida, Gaspra, Itokawa, Bennu and Ryugu are landable named main asteroids. Other newly added minor objects are flyby-only, while existing planets, dwarf planets and moons retain landing. Procedural belt rocks never generate a surface session. Main/Kuiper/Oort regions retain nearby instanced rocks and optional nearby labels, without an artificial distant luminous ring.
 
 Regression coverage checks retained scenery/collision allocations while mining, safe landing beside an obstacle through the actual simulation, named asteroid landing restrictions and absence of distant overview geometry. Real device FPS remains unmeasured.
+
+
+## Update 100: mobile village, snow and installation
+
+Village centers are at least 650 m from launch and each other, within 1900 m. Six original-size houses use the same wooden walls/floors and log roofs in every Earth biome. Existing hand-placed blocks are unaffected by procedural site selection.
+
+Weather blockers cache block bounds by body, placement revision and source array, with 8 m cells. Repeated stationary queries retain the same result/index; roof and patch clipping use nearby cells instead of scanning thousands of blocks for every patch. Mobile village residency uses a one-chunk discovery radius and village solids render within 180 m (130 m for fine details), avoiding work on settlements hidden in fog. Mobile ground weather is bounded to 64 patches at two updates per second. Active buffer ranges replace full weather-buffer uploads. Tree snow uploads only changed canopy vertices once the snow-cover change reaches 1%, and never re-uploads grass colors each second. Mobile High shadows use 512px maps and a four-Hz update budget. Other High settings remain selected.
+
+Snow/water polygons split on the actual terrain grid and triangle diagonal, avoiding large fans crossing slopes. Four-channel terrain texture weights prevent the previous numeric interpolation from passing through sand at grass/snow borders. Spruce snow cap geometry now matches its 0.8-scale canopy.
+
+The boot loader captures `beforeinstallprompt` before account/loading waits. Successful account hydration emits `tzg-signed-in`; after loading, an automatic in-game install invitation appears once. Settings → Display → Install Game is always available unless already installed. A button tap invokes a saved native browser prompt once. Unsupported browsers receive menu instructions; dismissals snooze automatic invitations for seven days. This adds no offline-play promise or service-worker caching of account data.
+
+Browser references:
+- https://web.dev/learn/pwa/installation-prompt
+- https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent/prompt
+
+Validation: `tests/mobile-world-update.mjs` checks village spacing/style, cached shelter identities and bounded candidates, GPU upload ranges, triangle-plane agreement, biome weights, early install capture, deferred sign-in invitation, user-action native prompt, dismissal/manual fallback and installed state. `node scripts/benchmark-ground-weather.mjs` exercises mobile High weather against a real generated village and reports median/p95 CPU update time. It uses a stub Canvas context and does not measure device FPS or GPU timing.

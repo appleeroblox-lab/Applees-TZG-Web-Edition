@@ -1,6 +1,12 @@
 # The Zero Gravity — Web Edition
 
-Current game version: **v0.0.103** (source/cache revision **103**), 27 October 2026. The default branch is `main`.
+Current game version: **v0.0.104** (source/cache revision **104**), 27 October 2026. The default branch is `main`.
+
+## v0.0.104 fixes
+
+A nearby village now streams at mobile spawn without relocating older villages. Ship obstacle contacts are silent and trigger guided landing; TNT blasts replace a hit ship at this world’s pad without moving an on-foot player. Tower collision matches each visible part. Held minerals follow the camera like tools, TNT beeps once per second, and UI sounds share a short duplicate guard.
+
+Checks: `npm run test:world-polish`, `npm run test:world`, `npm run test:release`, and `npm run test:ui`. Closed-site push still requires the Supabase activation described in `docs/MOBILE_PUSH.md`.
 
 ## Play and publish
 

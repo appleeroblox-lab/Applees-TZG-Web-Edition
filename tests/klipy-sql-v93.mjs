@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const {PGlite}=await import('@electric-sql/pglite');const db=new PGlite();
+await db.exec('create role anon; create role authenticated; create schema tzg_private;');
+const src=fs.readFileSync(new URL('../supabase/migrations/202610260011_discovery_gifs.sql',import.meta.url),'utf8');const start=src.indexOf('create or replace function tzg_private.valid_chat_image('),end=src.indexOf('revoke all on function tzg_private.valid_chat_image(text)',start);
+await db.exec(src.slice(start,end));
+await db.exec('create table tzg_private.chat_images(image text check(tzg_private.valid_chat_image(image)));');
+const sql=fs.readFileSync(new URL('../supabase/migrations/202610270013_klipy_urls.sql',import.meta.url),'utf8');await db.exec(sql);await db.exec(sql);
+const valid=['https://static.klipy.com/ii/test.gif','https://static1.klipy.com/ii/test.gif?delivery=a%2Fb','https://static2.klipy.com/test.gif','data:image/jpeg;base64,AAAA', 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'];
+for(const image of valid)await db.query('insert into tzg_private.chat_images values($1)',[image]);
+for(const image of ['https://evil.test/test.gif','https://static.klipy.com.evil.test/test.gif','https://static.klipy.com@evil.test/test.gif','http://static.klipy.com/test.gif','https://static.klipy.com:443/test.gif','https://static.klipy.com/test.png','data:image/gif;base64,AAAA','https://static.klipy.com/test.gif#fragment'])await assert.rejects(db.query('insert into tzg_private.chat_images values($1)',[image]));
+assert.equal((await db.query('select count(*)::int as n from tzg_private.chat_images')).rows[0].n,valid.length);await db.close();console.log('PASS SQL: rerunnable migration, existing constraint accepts KLIPY hosts and original JPEG/GIF payloads; rejects other hosts, malformed GIFs and unsafe URL variants.');

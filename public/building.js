@@ -1,3 +1,4 @@
+import {loadBlenderModel} from './models.js?v=96';
 import {doorTransform} from './door-rules.js';
 import {HeldItemView} from './held-items.js';
 import {validMount} from './placement-rules.js';
@@ -41,7 +42,7 @@ export class Building{
   }
   this.lightSelectionAt=-Infinity;
   if(this.hallBody!==body){if(this.hall){this.hall.traverse(o=>{o.geometry?.dispose();o.material?.dispose()});this.group.remove(this.hall)}this.hallBody=body;this.hall=new T.Group();this.group.add(this.hall);
-   if(this.surface.body?.name==='Earth'){const add=(size,pos,color)=>{const m=new T.Mesh(new T.BoxGeometry(...size),new T.MeshStandardMaterial({color}));m.position.copy(new T.Vector3(...pos).applyAxisAngle(new T.Vector3(0,1,0),CRAFT_LAYOUT.yaw)).add(CRAFT_CENTER);m.rotation.y=CRAFT_LAYOUT.yaw;this.hall.add(m)};add([12,5,8],[0,2.5,0],'#b5d5e5');add([13,.4,9],[0,5,0],'#3485ba');add([8,1,2],[0,1,5],'#31546a');}
+   if(this.surface.body?.name==='Earth'){const add=(size,pos,color)=>{const m=new T.Mesh(new T.BoxGeometry(...size),new T.MeshStandardMaterial({color}));m.position.copy(new T.Vector3(...pos).applyAxisAngle(new T.Vector3(0,1,0),CRAFT_LAYOUT.yaw)).add(CRAFT_CENTER);m.rotation.y=CRAFT_LAYOUT.yaw;this.hall.add(m)};add([12,5,8],[0,2.5,0],'#b5d5e5');add([13,.4,9],[0,5,0],'#3485ba');add([8,1,2],[0,1,5],'#31546a');const modelTarget=new T.Group();modelTarget.position.copy(CRAFT_CENTER);modelTarget.rotation.y=CRAFT_LAYOUT.yaw;const hall=this.hall;loadBlenderModel(modelTarget,'crafting-center-v96').then(ok=>{if(!ok||this.hall!==hall)return;for(const child of [...hall.children]){child.traverse(o=>{o.geometry?.dispose();o.material?.dispose()});hall.remove(child)}hall.add(modelTarget)});}
   }
  }
  nearbyHits(camera,x=0,y=0,reach=8){

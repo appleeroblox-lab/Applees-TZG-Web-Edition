@@ -1,12 +1,13 @@
-import {configureKlipy} from './klipy-client.js?v=95';
+import {takePreAuthClient} from './auth-first.js?v=96';
+import {configureKlipy} from './klipy-client.js?v=96';
 import {AccountPages} from './account-pages.js?v=91';
 import {ProfileView} from './profile-view.js?v=91';
-import {MessageEditor} from './message-editor.js?v=95';
+import {MessageEditor} from './message-editor.js?v=96';
 import {setVerifiedName} from './identity-ui.js?v=91';
-import {FriendsUI} from './friends-ui.js?v=95';
+import {FriendsUI} from './friends-ui.js?v=96';
 import {AvatarCropEditor} from './avatar-crop.js?v=91';
 import {PhotoLibrary} from './photo-library.js?v=91';
-import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=95';
+import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=96';
 import {CloudSave} from './cloud-save.js?v=91';
 const $=id=>document.getElementById(id);
 const escapeError=e=>String(e?.message||'Account service unavailable. Please retry.');
@@ -23,7 +24,7 @@ export class PlayerAccount{
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&this.cloud?.ready&&this.cloud.dirty)this.cloud.flush().catch(()=>{})});
  }
  setMode(mode){this.mode=mode;this.gate.dataset.mode=mode;const signup=mode==='signup',recover=mode==='recovery';$('accountUsernameRow').hidden=!signup;$('accountUsername').required=signup;$('accountNameRow').hidden=!signup;$('accountName').required=signup;$('accountConfirmRow').hidden=!(signup||recover);$('accountConfirm').required=signup||recover;$('accountEmailRow').hidden=recover;$('accountEmail').required=!recover;$('accountTabs').hidden=recover;$('accountForgot').hidden=recover;$('accountPassword').autocomplete=signup||recover?'new-password':'current-password';$('accountSubmit').textContent=signup?'Create account':recover?'Set new password':'Log in';$('accountLoginTab').setAttribute('aria-pressed',String(!signup));$('accountSignupTab').setAttribute('aria-pressed',String(signup));$('accountStatus').textContent='';$('accountPassword').value='';$('accountConfirm').value=''}
- async init(){try{const {createClient}=await this.requestSDK();this.client=createClient(this.config.url,this.config.publishableKey,{auth:{storageKey:'tzg-player-session-v1',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true},global:{fetch:async(url,options={})=>{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);const cancel=()=>controller.abort();options.signal?.addEventListener('abort',cancel,{once:true});try{return await fetch(url,{...options,signal:controller.signal})}finally{clearTimeout(timer);options.signal?.removeEventListener('abort',cancel)}}}});
+ async init(){try{const {createClient}=await this.requestSDK();this.client=takePreAuthClient()||createClient(this.config.url,this.config.publishableKey,{auth:{storageKey:'tzg-player-session-v1',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true},global:{fetch:async(url,options={})=>{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);const cancel=()=>controller.abort();options.signal?.addEventListener('abort',cancel,{once:true});try{return await fetch(url,{...options,signal:controller.signal})}finally{clearTimeout(timer);options.signal?.removeEventListener('abort',cancel)}}}});
  this.client.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY'){this.recovery=true;this.ready=false;this.setMode('recovery');if(!window.__loadingSources)this.show()}
  if(this.loadedId&&session?.user?.id!==this.loadedId)setTimeout(()=>this.accountChanged(),0)});
  const {data,error}=await this.client.auth.getSession();if(error)throw error;

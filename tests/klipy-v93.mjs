@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {parseHTML} from 'linkedom';
 import {createHandler,klipyImage} from '../supabase/functions/klipy-gifs/index.ts';
-import {configureKlipy,searchKlipy,chooseKlipy} from '../public/klipy-client.js?v=95';
+import {configureKlipy,searchKlipy,chooseKlipy} from '../public/klipy-client.js?v=96';
 import {safeChatImage,prepareGif} from '../public/chat-media.js';
 import {gifGallery} from '../public/gif-gallery.js';
 const media='https://static1.klipy.com/ii/test/reaction.gif?delivery=abc%2Fdef';

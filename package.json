@@ -31,7 +31,8 @@
     "test:gifs": "node tests/gif-loading-v91.mjs && node tests/gif-loading-v92.mjs && node tests/gif-picker-v92.mjs",
     "test:klipy": "node tests/klipy-v93.mjs",
     "test:klipy:sql": "node tests/klipy-sql-v93.mjs",
-    "test:temporary-chat": "node tests/temporary-chat-v95.mjs && node tests/friends-ui.mjs && node tests/social-ui.mjs"
+    "test:temporary-chat": "node tests/temporary-chat-v95.mjs && node tests/friends-ui.mjs && node tests/social-ui.mjs",
+    "test:v96": "node tests/game-polish-v96.mjs && node tests/chat-expiry-v96.mjs && node tests/social-ui.mjs && node tests/friends-ui.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --startup-race-only && node tests/report-delete-v96.mjs && node --experimental-vm-modules tests/auth-boot-v96.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

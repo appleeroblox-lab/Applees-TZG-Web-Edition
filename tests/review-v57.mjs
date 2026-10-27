@@ -6,7 +6,7 @@ import {EarthEnvironment} from '../public/earth-environment.js?v=100';
 import {weatherPresets,weatherSchedule} from '../public/weather-state.js';
 import {sceneryPoints} from '../public/tree-data.js?v=100';
 import {earth,bodies} from '../public/catalog.js?v=100';
-import {GroundWeather} from '../public/ground-weather.js?v=100';
+import {GroundWeather} from '../public/ground-weather.js?v=101';
 import {SystemAtlas} from '../public/atlas-3d.js?v=100';
 import {parseDebugCommand} from '../server/debug-service.mjs';
 import {GameSound,sources} from '../public/sound.js';

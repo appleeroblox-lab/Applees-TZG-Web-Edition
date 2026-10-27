@@ -6,7 +6,7 @@ import {installMobileInput} from '../public/mobile-input.js';
 import {precipitationSegment} from '../public/weather-precipitation.js?v=100';
 import {Economy,CRAFTS} from '../public/economy.js?v=100';
 import {bodies,earth} from '../public/catalog.js?v=100';
-import {GroundWeather} from '../public/ground-weather.js?v=100';
+import {GroundWeather} from '../public/ground-weather.js?v=101';
 import {biomeDestination} from '../public/earth-biomes.js';
 import {surfaceHeight} from '../public/surface.js?v=100';
 const V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);

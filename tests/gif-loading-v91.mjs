@@ -7,5 +7,5 @@ for(const item of items){assert(allowedGifUrl(item.url));const bytes=fs.readFile
 assert.equal((await findGifs('hello')).length,1);assert.equal((await findGifs('laugh')).length,1);
 assert.equal((await findGifs('',{seen:items.map(x=>x.url)})).length,0);
 const fallback=await findGifs('',{online:true,fetcher:blocked});assert.equal(fallback.length,24);assert.equal(requests,3);
-assert(!allowedGifUrl(new URL('./gifs/../game.js',import.meta.url).href));assert(!allowedGifUrl('https://evil.test/gifs/wave.gif'));
+assert(!allowedGifUrl(new URL('./gifs/../game.js?v=101',import.meta.url).href));assert(!allowedGifUrl('https://evil.test/gifs/wave.gif'));
 console.log('PASS: all 24 same-host GIFs load, animate and become upload files; blocked external provider falls back; default uses zero external requests.');

@@ -73,3 +73,12 @@ Browser references:
 - https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent/prompt
 
 Validation: `tests/mobile-world-update.mjs` checks village spacing/style, cached shelter identities and bounded candidates, GPU upload ranges, triangle-plane agreement, biome weights, early install capture, deferred sign-in invitation, user-action native prompt, dismissal/manual fallback and installed state. `node scripts/benchmark-ground-weather.mjs` exercises mobile High weather against a real generated village and reports median/p95 CPU update time. It uses a stub Canvas context and does not measure device FPS or GPU timing.
+
+
+## Update 101: native installation, minor labels and pool fog
+
+The custom install invitation is removed. After sign-in, the retained browser prompt is invoked only while user activation is available, otherwise on the next real click (for example PLAY). Settings Install Game calls the same API directly. No extra modal is created on unsupported browsers or on native rejection; the settings button tooltip offers browser-menu instructions. Installation still depends on browser support.
+
+Procedural Asteroid Belt/Kuiper/Oort instance labels with generated identifiers are removed entirely, avoiding their per-frame sorting/projection. Named catalog labels remain controlled by Asteroids Labels.
+
+Pools use an 80–140 m alpha fade, scene-fog alpha attenuation and distant-record drawing exclusion. The water reflection shader composes with that fade rather than overwriting it. The Canvas fallback multiplies pool distance fade with its existing fog opacity. Snow layers use the fog alpha fade too.

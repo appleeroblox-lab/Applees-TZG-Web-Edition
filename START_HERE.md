@@ -1,6 +1,6 @@
 # The Zero Gravity — Web Edition
 
-Current source update: **100**, 27 October 2026. The default branch is `main`.
+Current source update: **101**, 27 October 2026. The default branch is `main`.
 
 ## Play and publish
 
@@ -18,10 +18,15 @@ Then open http://localhost:8000/. ES modules and assets require HTTP; opening `i
 
 ## Latest changes
 
+- Update 101 removes the custom install invitation. Only the native browser install dialog is used; after sign-in it opens on the next available user tap (or immediately if browser activation is still available). Settings → Install Game triggers the same native dialog. Unsupported browsers get no substitute popup.
+- Procedural belt rocks no longer display generated hash-name labels. Named catalog body labels and their setting remain.
+- Water pools fade over 80–140 m and also fade their transparency with scene fog. Distant pools are culled; Canvas fallback uses the same fade. Snow layers also fade into scene fog.
+
+
 - Update 100 caches and spatially indexes village weather blockers, sends only active weather vertices to the GPU, and updates only changed tree snow colors. Mobile High retains its visual preset with a 512px shadow map at four updates/second and a 64-patch ground-weather budget at two updates/second.
 - Villages start at least 650 m from the launch area and 650 m apart. All five Earth biomes use the same old wooden six-house village. Procedural villages regenerate at the wider spacing; player-placed blocks remain saved in their original positions.
 - Snow patches follow the actual six-meter terrain triangles; biome texture channels blend directly, and spruce snow caps fit their trees.
-- Settings → Display → **Install Game** opens the browser install dialog when available, with browser-menu instructions otherwise. After a successful sign-in an install invitation appears once loading ends. A tap is required for the native dialog; dismissal snoozes the automatic invitation for seven days. Installed app windows hide the invitation.
+
 
 
 - Update 99 separates mining health/resource changes from village rendering, collision indexing and scenery rebuilds. Guided Land searches for clear ground nearby and redirects descent there. Named main asteroids are landable; Zoozve, Kuiper objects, fictional Oort objects and procedural belt rocks are flyby-only. Distant belt point clouds are removed. Villages return to six houses without shrinking houses.

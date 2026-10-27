@@ -3,7 +3,7 @@ import * as T from '../public/vendor/three.module.js';
 import {clipPatch} from '../public/weather-patch-clip.js';
 import {biomeCell,biomeWeather} from '../public/earth-biomes.js';
 import {EarthEnvironment} from '../public/earth-environment.js?v=100';
-import {GroundWeather} from '../public/ground-weather.js?v=100';
+import {GroundWeather} from '../public/ground-weather.js?v=101';
 import {roadRoutes,createSurfaceRoads} from '../public/surface-roads.js?v=100';
 import {PAD_RADIUS,CRAFT_LAYOUT} from '../public/surface-layout.js';
 import {earth,bodies} from '../public/catalog.js?v=100';

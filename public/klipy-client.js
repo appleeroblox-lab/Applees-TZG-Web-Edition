@@ -5,8 +5,8 @@ export const hasKlipy=()=>!!connection;
 async function invoke(body,{signal}={}){
  const account=connection?.();if(!account?.client)throw Error('Sign in to browse KLIPY.');
  const {data,error}=await account.client.auth.getSession();if(error||!data?.session?.access_token)throw Error('Sign in to browse KLIPY.');
- const response=await fetch(account.config.url+'/functions/v1/klipy-gifs',{method:'POST',signal,credentials:'omit',headers:{'Content-Type':'application/json',apikey:account.config.publishableKey,Authorization:'Bearer '+data.session.access_token},body:JSON.stringify(body)});
- let result;try{result=await response.json()}catch{throw Error('Deploy the klipy-gifs function in Supabase first.')}
+ const response=await fetch(account.config.url+'/functions/v1/rapid-responder',{method:'POST',signal,credentials:'omit',headers:{'Content-Type':'application/json',apikey:account.config.publishableKey,Authorization:'Bearer '+data.session.access_token},body:JSON.stringify(body)});
+ let result;try{result=await response.json()}catch{throw Error('The GIF service is unavailable. Please retry.')}
  if(!response.ok)throw Error(result.error||'KLIPY is unavailable. Please retry.');return result;
 }
 export async function searchKlipy(query,{signal,page=0,seen=[]}={}){const body=await invoke({action:'search',q:String(query||'').slice(0,80),page:page+1},{signal});const exclude=new Set(seen);return(body.items||[]).filter(item=>item.source==='klipy'&&klipyImage(item.url)&&klipyImage(item.preview)&&!exclude.has(item.url))}

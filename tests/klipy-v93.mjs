@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {parseHTML} from 'linkedom';
 import {createHandler,klipyImage} from '../supabase/functions/klipy-gifs/index.ts';
-import {configureKlipy,searchKlipy,chooseKlipy} from '../public/klipy-client.js?v=93';
+import {configureKlipy,searchKlipy,chooseKlipy} from '../public/klipy-client.js?v=94';
 import {safeChatImage,prepareGif} from '../public/chat-media.js';
 import {gifGallery} from '../public/gif-gallery.js';
 const media='https://static1.klipy.com/ii/test/reaction.gif?delivery=abc%2Fdef';
@@ -34,7 +34,7 @@ apiStatus=429;assert.equal((await handler(request({action:'search'}))).status,42
 for(let i=0;i<21;i++)response=await handler(request({action:'search'}));assert.equal(response.status,429);
 const fresh=createHandler({env,fetcher});
 const originalFetch=globalThis.fetch;
-globalThis.fetch=async(url,options)=>{assert(!String(url).includes('key-fixture'));return fresh(new Request(url,options))};
+globalThis.fetch=async(url,options)=>{assert.equal(new URL(url).pathname,'/functions/v1/rapid-responder');assert(!String(url).includes('key-fixture'));return fresh(new Request(url,options))};
 configureKlipy(()=>({config:{url:'https://project.supabase.co',publishableKey:'public-fixture'},client:{auth:{getSession:async()=>({data:{session:{access_token:'fixture'}}})}}}));
 const items=await searchKlipy('Hello!!',{page:1});assert.equal(items[0].url,media);
 assert.equal((await searchKlipy('Hello!!',{seen:[media]})).length,0);

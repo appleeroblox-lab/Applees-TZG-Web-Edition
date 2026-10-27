@@ -1,5 +1,5 @@
 import {emojiButton,closeEmojiPicker} from './emoji-picker.js?v=91';
-import {safeChatImage,prepareGif} from './chat-media.js?v=93';
+import {safeChatImage,prepareGif} from './chat-media.js?v=94';
 import {chatDialog} from './chat-dialog.js?v=91';
 import {PhotoLibrary} from './photo-library.js?v=91';
 import {loadAvatarSource} from './social-ui.js?v=91';

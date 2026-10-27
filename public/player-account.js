@@ -1,12 +1,12 @@
-import {configureKlipy} from './klipy-client.js?v=93';
+import {configureKlipy} from './klipy-client.js?v=94';
 import {AccountPages} from './account-pages.js?v=91';
 import {ProfileView} from './profile-view.js?v=91';
-import {MessageEditor} from './message-editor.js?v=93';
+import {MessageEditor} from './message-editor.js?v=94';
 import {setVerifiedName} from './identity-ui.js?v=91';
-import {FriendsUI} from './friends-ui.js?v=93';
+import {FriendsUI} from './friends-ui.js?v=94';
 import {AvatarCropEditor} from './avatar-crop.js?v=91';
 import {PhotoLibrary} from './photo-library.js?v=91';
-import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=93';
+import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=94';
 import {CloudSave} from './cloud-save.js?v=91';
 const $=id=>document.getElementById(id);
 const escapeError=e=>String(e?.message||'Account service unavailable. Please retry.');

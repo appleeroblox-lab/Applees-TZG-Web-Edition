@@ -1,3 +1,7 @@
 [functions.klipy-gifs]
 # The handler validates the user's bearer token through Supabase Auth itself.
 verify_jwt = false
+
+# Existing dashboard deployment uses this name.
+[functions.rapid-responder]
+verify_jwt = false

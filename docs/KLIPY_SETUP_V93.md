@@ -35,3 +35,7 @@ Testing keys are limited to 100 API calls/hour by KLIPY; request production acce
 Run `npm run test:klipy`, `npm run test:gifs` and `node tests/social-world-v90.mjs`. Optional SQL validation: install `@electric-sql/pglite` locally and run `npm run test:klipy:sql`. These use fixtures; the live application key is neither available to the development environment nor needed for tests. Live provider/account testing must follow dashboard deployment.
 
 References: https://docs.klipy.com/gifs-api , https://klipy.com/support/api-terms , https://supabase.com/docs/guides/functions/secrets , https://supabase.com/docs/guides/functions/function-configuration .
+
+## Existing dashboard deployment (v94)
+
+The owner deployed the supplied handler as `rapid-responder`. The browser now calls `/functions/v1/rapid-responder`; keep this existing deployment. The source remains in `supabase/functions/klipy-gifs/index.ts`. No additional SQL or secret changes are needed. Public checks confirmed OPTIONS 204 with the expected origin and unauthenticated POST 401 from the handler. Authenticated live searches still require an in-game account.

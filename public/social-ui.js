@@ -1,9 +1,9 @@
 import{messageContent}from'./message-content.js?v=91';
 import {uiIcon,iconButton,relativeTime,messageTime} from './ui-icons.js?v=91';
-import {enableImageViewer,closeImageViewer} from './image-viewer.js?v=93';
+import {enableImageViewer,closeImageViewer} from './image-viewer.js?v=94';
 import {markChatText,chatTranslationAction} from './chat-translation.js?v=91';
-import {emojiButton,closeEmojiPicker} from './emoji-picker.js?v=93';
-import {safeChatImage,prepareGif} from './chat-media.js?v=93';
+import {emojiButton,closeEmojiPicker} from './emoji-picker.js?v=94';
+import {safeChatImage,prepareGif} from './chat-media.js?v=94';
 import {messageOptions,closeMessageOptions} from './message-options.js?v=91';
 import {chatDialog,closeChatDialogs} from './chat-dialog.js?v=91';
 import {setVerifiedName} from './identity-ui.js?v=91';

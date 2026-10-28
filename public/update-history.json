@@ -1,8 +1,24 @@
 {
-  "currentVersion": "v0.0.107",
+  "currentVersion": "v0.0.108",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 108,
+      "version": "v0.0.108",
+      "date": "2026-10-28",
+      "title": "I improved guest menus, tutorial saves and daily supplies",
+      "changes": [
+        "I save fully completed tutorials and retry interrupted account syncs. Skip leaves the tutorial available for next time. Guest tutorial preferences are remembered on this device.",
+        "I moved the Guest label below the top-right buttons and kept the account button icon-only. Guest account, friends and reward menus explain each feature and close with an X.",
+        "I added public Online/Offline status and refreshed player profiles, plus Guest Mode help.",
+        "I moved Daily Rewards to a gift icon left of Global Chat, with a ready badge and one message sound per available daily reward.",
+        "I centered and compacted the reward menu, added currency/item icons, and added building supplies throughout the week, including 64 TNT on Day 7. Server claims remain atomic and safe to retry."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 107,
       "version": "v0.0.107",

@@ -1,16 +1,17 @@
+import {ensureGraphicsControls} from './graphics-controls.js?v=106';
 import {destinationOffset,destinationLightYears} from './warp-pricing.js?v=105';
 import {payFreeCamera,installFreeCameraConfirmation} from './free-camera.js?v=105';
-import {installUpdateLogs} from './update-logs.js?v=105';
+import {installUpdateLogs} from './update-logs.js?v=106';
 import {installScreenshot} from './game-screenshot.js?v=102';
 import {AsteroidBelts} from './asteroid-belts.js?v=105';
 import {SurfaceCollisions} from './surface-collision.js?v=104';
 import {applyShipBlast,ShipRespawnStation} from './ship-respawn.js?v=104';
 import {iconButton} from './ui-icons.js?v=91';
 import {surfaceGravity as mapGravity} from './surface.js?v=104';
-import {installDeviceSettings} from './device-settings.js?v=100';
+import {installDeviceSettings} from './device-settings.js?v=106';
 import {installLocalization} from './localization.js?v=91';
 let devicePreferences=null,restoringDevicePreferences=false;
-import {PlayerAccount} from './player-account.js?v=103';
+import {PlayerAccount} from './player-account.js?v=106';
 import {cloudInventory} from './cloud-save.js?v=91';
 import {SupabaseDebugService} from './supabase-debug.js?v=105';
 import {supabaseConfig} from './supabase-config.js?v=61';
@@ -51,7 +52,7 @@ import {SurfaceView} from './surface-view.js?v=105';
 import {Explorer,formatSpeed} from './explorer.js?v=100';
 import {TextureCache} from './textures.js';
 import {updateReferenceHUD} from './reference-hud.js?v=100';
-import {SystemAtlas} from './atlas-3d.js?v=105';
+import {SystemAtlas} from './atlas-3d.js?v=106';
 import {ShipBoost} from './boost.js';
 import {updateBlackHole} from './black-hole-effects.js';
 import {holdVelocity,setSpeedCommand} from './speed-control.js';
@@ -61,9 +62,10 @@ import {PostEffects} from './post-effects.js?v=105';
 import {EarthWeatherFX} from './earth-environment.js?v=105';
 import {lightingProfile} from './lighting.js?v=105';
 import {resolutionRatio,clampPanel} from './performance.js?v=105';
-import {lockedLabelPoint,pickSpaceBody,meaningfulBodyLabel,localMoonFamily,bodyLabelAllowed,labelProjection,labelOccluded} from './body-labels.js?v=105';
+import {pickSpaceBody,meaningfulBodyLabel,localMoonFamily,bodyLabelAllowed,labelProjection,labelOccluded} from './body-labels.js?v=106';
 import {makeWorld,makeShip,makeStars,glow,random} from './visuals.js?v=105';
 const $=id=>document.getElementById(id),touch=matchMedia('(pointer:coarse)').matches,clamp=T.MathUtils.clamp;
+ensureGraphicsControls(document);
 let wasWalkingAirborne=false,stepAt=0,lastFootMaterial='grass';
 const cloudAccounts=!!globalThis.location?.hostname;let playerAccount=null,accountLocked=cloudAccounts;
 const mobileInput=installMobileInput(document,window);let keyboardFocused=true;let debugMenu=null;
@@ -97,7 +99,7 @@ const flash=document.createElement('div');flash.id='warpFlash';document.body.app
 function toast(t){$('toast').textContent=t;$('toast').style.opacity='1';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').style.opacity='0',3500)}
 function distanceText(units){const km=Math.max(0,units)*100;if(km>=14959787)return (km/149597870.7).toFixed(2)+' AU';if(km>=1e6)return(km/1e6).toFixed(2)+' Gm';if(km>=1000)return(km/1000).toFixed(2)+' Mm';return km.toFixed(km<10?1:0)+' km'}
 function setTarget(b,quiet=false){target=b;$('targetName').textContent=b.name;$('targetType').textContent=b.type;$('targetDesc').textContent=b.desc;$('planetIcon').style.color=b.color;$('reticleLabel').textContent=b.name.toUpperCase();$('landBtn').disabled=!surface.active||!surface.body.solid;$('landBtn').textContent=explorer.enabled?'↓ Surface':'↓ Land';$('lockStatus').textContent='TARGET LOCKED';if(!quiet)toast('Target locked · '+b.name)}
-function applyGraphics(){const policy=graphicsPolicy(graphics);globalShadows.set(globalShadow,graphics,touch);renderer.quality=graphics;surfaceView.quality=graphics;$('graphicsDescription').textContent=policy.description;document.body.dataset.graphics=graphics.toLowerCase();const ratio=resolutionRatio(innerWidth,innerHeight,devicePixelRatio,graphics,touch);if(Math.abs(renderer.getPixelRatio()-ratio)>.01)renderer.setPixelRatio(ratio);stars.material.size=graphics==='Low'?4:graphics==='Medium'?6:8;stars.geometry.setDrawRange(0,policy.stars);textureCache.max=({Low:2,Medium:4,High:6,Ultra:8,'Ultra+':12}[graphics]||4);$('quality').value=graphics;$('graphicsSlider').value=GRAPHICS_MODES.indexOf(graphics);$('graphicsValue').textContent=graphics}
+function applyGraphics(){const policy=graphicsPolicy(graphics);globalShadows.set(globalShadow,graphics,touch);renderer.quality=graphics;surfaceView.quality=graphics;$('graphicsDescription').textContent=policy.description;document.body.dataset.graphics=graphics.toLowerCase();const ratio=resolutionRatio(innerWidth,innerHeight,devicePixelRatio,graphics,touch);if(Math.abs(renderer.getPixelRatio()-ratio)>.01)renderer.setPixelRatio(ratio);stars.material.size=graphics==='Low'?4:graphics==='Medium'?6:8;stars.geometry.setDrawRange(0,policy.stars);textureCache.max=({Low:2,Medium:4,High:6,Ultra:8,'Ultra+':12}[graphics]||4);$('quality').value=graphics;$('graphicsPreset').value=graphics;$('graphicsSlider').value=GRAPHICS_MODES.indexOf(graphics);$('graphicsValue').textContent=graphics}
 
 function save(silent=true){if(restoringDevicePreferences)return;devicePreferences?.save();groundWeather.persist();try{localStorage.setItem('zero-gravity-earth-environment',JSON.stringify(surfaceView.environment.serialize()));localStorage.setItem('cosmic-flight-v6',JSON.stringify({version:6,maxSpeedC:flight.maxSpeedC,surface:surface.serialize(),labelFilters,planetLabelsMode,pos:flight.pos.toArray(),q:flight.q.toArray(),system:flight.system,target:target.id,gear:flight.gear,assist:flight.assist,visited:[...visited],sensitivity:flight.sensitivity,rotationSpeed:flight.rotationSpeed,graphics,explorer:{enabled:explorer.enabled,exponent:explorer.exponent,fov:explorer.fov,exposure:explorer.exposure,adaptive:explorer.adaptive,labels:explorer.labels,paths:explorer.paths,timeScale:explorer.timeScale},parked:flight.landed?.id}));persistEconomy();if(!silent)toast(cloudAccounts?'Flight settings saved · '+($('accountCloudStatus').textContent):'Flight saved on this device')}catch{if(!silent)toast('Your browser could not save the flight')}}
 function load(){try{const s=JSON.parse(localStorage.getItem('cosmic-flight-v6'));if(!s)return;const b=bodies.find(b=>b.id===s.target);if(!b||s.pos?.length!==3||!s.pos.every(Number.isFinite)||s.q?.length!==4||!s.q.every(Number.isFinite)||!bodies.some(b=>b.system===s.system))return;planetLabelsMode=s.planetLabelsMode==='overlap'?'overlap':'collision';if(s.labelFilters)Object.assign(labelFilters,s.labelFilters);flight.pos.fromArray(s.pos);flight.q.fromArray(s.q).normalize();flight.system=s.system;flight.gear=!!s.gear;flight.assist=s.assist!==false;flight.sensitivity=clamp(Number(s.sensitivity)||5,.3,6);flight.rotationSpeed=rotationSpeed(s.rotationSpeed??2);visited=new Set(s.visited||[]);graphics=GRAPHICS_MODES.includes(s.graphics)?s.graphics:'Medium';flight.maxSpeedC=clamp(Number(s.maxSpeedC)||150,1,150);target=b;if(s.explorer){Object.assign(explorer,{enabled:s.explorer.enabled!==false,adaptive:s.explorer.adaptive!==false,exponent:clamp(Number.isFinite(s.explorer.exponent)?s.explorer.exponent:.4,-5,14),fov:clamp(Number(s.explorer.fov)||60,15,100),exposure:clamp(Number(s.explorer.exposure)||1.05,.2,2),labels:s.explorer.labels!==false,paths:!!s.explorer.paths,timeScale:clamp(Number(s.explorer.timeScale)||0,0,100)})}const parked=bodies.find(b=>b.id===s.parked);if(parked&&parked.solid&&parked.landable!==false&&parked.system===flight.system&&Math.abs(flight.pos.distanceTo(parked.pos)-parked.r-clearance)<1)flight.park(parked);explorer.enabled=false;if(s.surface)surface.restore(s.surface,bodies);camQ.copy(flight.q);return true}catch{}}
@@ -203,14 +205,14 @@ function updateObjectLabels(){
  }
  if(surface.active)for(const item of surface.skyBodies||[]){if(item.body===target)continue;const localBodies=(surface.skyBodies||[]).map(o=>({id:o.body.id,pos:o.direction.clone().multiplyScalar(6000).add(camera.position),r:o.radius})),localTarget=localBodies.find(o=>o.id===item.body.id);if(planetLabelsMode==='collision'&&localTarget&&labelOccluded(camera.position,localTarget,localBodies))continue;if(!meaningfulBodyLabel(item.body)||item.direction.y<=0||!labelFilters[labelCategory(item.body)])continue;const point=labelProjection(item.direction.clone().multiplyScalar(6000).add(camera.position),camera,innerWidth,innerHeight);if(point){const depth=-item.direction.clone().applyQuaternion(camera.quaternion.clone().invert()).z;point.y-=item.radius/6000/Math.max(.01,depth)*innerHeight/(2*Math.tan(camera.fov*Math.PI/360))+10;candidates.push({b:item.body,point,distance:item.distance})}}
  const cross=target.system!==flight.system,relative=destinationOffset(target,flight.system,flight.pos);
- if(!surface.active||cross){const pinned=lockedLabelPoint(relative,camera,innerWidth,innerHeight);candidates.push({b:target,point:pinned,distance:relative.length(),locked:true,cross})}
- else {const item=(surface.skyBodies||[]).find(item=>item.body===target);if(item)candidates.push({b:target,point:lockedLabelPoint(item.direction.clone().multiplyScalar(6000).add(camera.position),camera,innerWidth,innerHeight),distance:item.distance,locked:true})}
+ if(!surface.active||cross){const point=labelProjection(relative,camera,innerWidth,innerHeight);if(point)candidates.push({b:target,point,distance:relative.length(),locked:true,cross})}
+ else {const item=(surface.skyBodies||[]).find(item=>item.body===target);if(item){const point=labelProjection(item.direction.clone().multiplyScalar(6000).add(camera.position),camera,innerWidth,innerHeight);if(point)candidates.push({b:target,point,distance:item.distance,locked:true})}}
  candidates.sort((a,b)=>(a.b===target?-1:b.b===target?1:0)||((a.b.parent===family?0:1)-(b.b.parent===family?0:1))||a.distance-b.distance);
  for(const {b,point,distance,locked,cross}of candidates.slice(0,Math.max(6,candidates.filter(c=>c.b.parent===family).length+1))){
   let node=objectLabels.get(b.id);
   if(!node){node=document.createElement('button');node.className='objectLabel';node.onclick=()=>setTarget(b);objectLabels.set(b.id,node);labelLayer.append(node)}
   node.hidden=false;node.classList.toggle('selected',b===target);
-  node.textContent=(locked&&point.offscreen?'➜ ':'')+b.name+'\n'+(cross?destinationLightYears(b,flight.system,flight.pos).toFixed(2)+' Ly':distanceText(Math.max(0,distance-b.r)));
+  node.textContent=b.name+'\n'+(cross?destinationLightYears(b,flight.system,flight.pos).toFixed(2)+' Ly':distanceText(Math.max(0,distance-b.r)));
   node.title=b.type+(b.parent?' of '+b.parent:'')+(cross?' · Schematic intersystem distance':'');node.setAttribute('aria-pressed',String(b===target));
   node.style.left=point.x+'px';node.style.top=point.y+'px';if(!locked&&cockpit&&!crew.onFoot){const rect=node.getBoundingClientRect();if(cockpitLabels.blocked(point,camera,innerWidth,innerHeight,rect.width||100,rect.height||32))node.hidden=true}node.style.color=b.type==='BLACK HOLE'?'#f1c181':'#b6d4e6';
  }
@@ -307,6 +309,7 @@ function updateSky(){const p=skyProfile(flight.system);if(activeSkyKey===p.key&&
 for(const system of [...new Set(bodies.map(b=>b.system))])if(![...$('systemFilter').children].some(o=>o.value===system)){const option=document.createElement('option');option.value=system;option.textContent=system.replace('Galaxy:','Galaxy · ');$('systemFilter').append(option)}
 $('atlasFit').onclick=()=>systemAtlas.fit();$('atlasFocus').onclick=()=>systemAtlas.focus(selected);$('atlasPan').onclick=()=>{systemAtlas.pan=!systemAtlas.pan;$('atlasPan').setAttribute('aria-pressed',String(systemAtlas.pan))};$('atlasZoomIn').onclick=()=>{systemAtlas.zoom(-180);drawAtlas()};$('atlasZoomOut').onclick=()=>{systemAtlas.zoom(180);drawAtlas()};
 $('freeSpeed').oninput=e=>{explorer.exponent=+e.target.value;syncExplorer()};
+$('graphicsPreset').onchange=e=>{if(!GRAPHICS_MODES.includes(e.target.value))return;graphics=e.target.value;applyGraphics();save()};
 $('graphicsSlider').oninput=e=>{graphics=GRAPHICS_MODES[clamp(Math.round(+e.target.value),0,4)];applyGraphics();save()};
 $('resumeGame').onclick=()=>{paused=false;closeDialog($('settingsDialog'));clock.getDelta()};$('restartGame').onclick=()=>{paused=false;resetFlight();closeDialog($('settingsDialog'))};$('leaveGame').onclick=()=>{save();closeDialog($('settingsDialog'));clearInputs();started=false;paused=false;$('boot').classList.remove('hidden');$('bootStatus').textContent='Flight saved on this device';$('launchBtn').textContent='RESUME GAME'};
 

@@ -1,8 +1,22 @@
 {
-  "currentVersion": "v0.0.108",
+  "currentVersion": "v0.0.109",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 109,
+      "version": "v0.0.109",
+      "date": "2026-10-28",
+      "title": "I made menus compact and fixed portrait controls",
+      "changes": [
+        "I added separate Menu Size settings for Account, Party, Global Chat, Daily Rewards, Update Logs and Universe Map, with smaller defaults and saved device preferences.",
+        "I separated Run Button Size from Jump Button Size, matched the Gift and Global Chat icons, and spaced Guest, Continue and sign-in actions.",
+        "I gave portrait mode compact HUD and separate steering, thrust and speed-gauge areas, and refresh the canvas after orientation/fullscreen/viewport changes."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 108,
       "version": "v0.0.108",

@@ -1,6 +1,14 @@
 # The Zero Gravity — Web Edition
 
-Current game version: **v0.0.108** (source/cache revision **108**), 28 October 2026. The default branch is `main`.
+Current game version: **v0.0.109** (source/cache revision **109**), 28 October 2026. The default branch is `main`.
+
+## v0.0.109 compact menus and portrait layout
+
+Settings → Menu Sizes has separate persisted sliders for Account, Party, Global Chat, Daily Rewards, Update Logs and Universe Map. Defaults are smaller; each panel remains bounded by the viewport. Run Button Size and Jump Button Size are separate controls, with previous Jump preferences retained. Portrait gameplay caps oversized control groups to keep the speed gauge, steering pad and thrust controls apart.
+
+Gift and Global Chat buttons share the same dimensions at each breakpoint. Sign-in/Guest/Continue actions have consistent gaps. Narrow portrait uses a compact header, wallet, status bars and separate control zones. The renderer refreshes dimensions on orientation, visual-viewport, fullscreen and page restoration events, including delayed orientation changes. Physical-device sensor/fullscreen behavior is browser-dependent; browser layout QA and mocked renderer tests cover the implemented fallback.
+
+Validation: `npm run test:menu-sizing`, the full gameplay/UI suites and responsive browser QA.
 
 ## v0.0.108 guest UI and daily supplies
 

@@ -1,5 +1,5 @@
 {
-  "version": 108,
+  "version": 109,
   "files": [
     "account-gate.js",
     "account-pages.js",
@@ -183,6 +183,7 @@
     "legacy-ui.js",
     "lighting.js",
     "localization.js",
+    "menu-sizes.js",
     "message-content.js",
     "message-editor.js",
     "message-options.js",
@@ -264,6 +265,7 @@
     "rain-shelter.js",
     "reference-hud.js",
     "refined-v89.css",
+    "responsive-ui.css",
     "roblox-assets.js",
     "roblox-assets.json",
     "roblox-texture-assets.js",
@@ -645,14 +647,14 @@
     "chat-translation.js": 91,
     "cloud-save.js": 107,
     "compatibility.js": 105,
-    "control-sizes.js": 91,
+    "control-sizes.js": 109,
     "crew.js": 105,
     "debug-commands.js": 105,
     "debug-menu.js": 107,
     "debug-message-logs.js": 96,
     "debug-moderation.js": 103,
     "debug-verified.js": 103,
-    "device-settings.js": 106,
+    "device-settings.js": 109,
     "earth-biomes.js": 59,
     "earth-environment.js": 105,
     "economy.js": 105,
@@ -662,7 +664,7 @@
     "flight.js": 100,
     "forestry.js": 104,
     "friends-ui.js": 103,
-    "game.js": 108,
+    "game.js": 109,
     "gif-gallery.js": 96,
     "ground-weather.js": 104,
     "identity-ui.js": 91,
@@ -714,7 +716,7 @@
     "world-precipitation.js": 105,
     "models/crafting-center-v96.json": 97,
     "account-gate.js": 107,
-    "boot-loader.js": 108,
+    "boot-loader.js": 109,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
     "models/base-venus.json": 100,
@@ -797,6 +799,8 @@
     "guest-access.js": 108,
     "player-activity.js": 107,
     "player-journey.js": 108,
-    "journey.css": 108
+    "journey.css": 108,
+    "menu-sizes.js": 109,
+    "responsive-ui.css": 109
   }
 }

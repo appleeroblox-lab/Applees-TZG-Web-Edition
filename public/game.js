@@ -11,7 +11,7 @@ import {surfaceGravity as mapGravity} from './surface.js?v=104';
 import {installDeviceSettings} from './device-settings.js?v=106';
 import {installLocalization} from './localization.js?v=91';
 let devicePreferences=null,restoringDevicePreferences=false;
-import {PlayerAccount} from './player-account.js?v=107';
+import {PlayerAccount} from './player-account.js?v=108';
 import {cloudInventory} from './cloud-save.js?v=107';
 import {SupabaseDebugService} from './supabase-debug.js?v=107';
 import {supabaseConfig} from './supabase-config.js?v=61';
@@ -341,7 +341,7 @@ function saveVisualSettings(){try{localStorage.setItem('zero-gravity-visual-sett
 $('globalShadow').checked=globalShadow;$('globalShadow').onchange=e=>{globalShadow=e.target.checked;globalShadows.set(globalShadow,graphics,touch);saveVisualSettings()};
 
 if(cloudAccounts){
- playerAccount=new PlayerAccount({config:supabaseConfig,notify:toast,applyReward:(fp,rc)=>{economy.fp+=fp;economy.rc+=rc;updateEconomyHUD();inventoryUI?.render(true)},onGuestStart:()=>{crew.onFoot=false;surface.enter(earth,true);flight.system=earth.system;setTarget(earth,true)},onMemberStart:()=>{crew.onFoot=false;surface.enter(earth,true);load();},progressSnapshot:()=>[...economy.visited],clearControls:clearInputs,resumeLandscape:landscape,snapshot:()=>cloudInventory(economy),hydrate:(state,uid)=>{let world={};if(uid)try{world=JSON.parse(localStorage.getItem('tzg-world-'+uid))||{}}catch{}const onChange=economy.onChange,onBlast=economy.onBlast,onFuseTick=economy.onFuseTick;Object.assign(economy,new Economy(bodies,{...world,fp:state.fp,rc:state.rc,inventory:state.inventory}),{onChange,onBlast,onFuseTick});soundState={fp:economy.fp,rc:economy.rc,items:new Map([...economy.inventory].map(([key,row])=>[key,row.qty]))};inventoryUI?.render(true);updateEconomyHUD()},block:value=>{accountLocked=value;if(value)clearInputs()},onLogout:async()=>{debugMenu.active=false;await debugMenu.api('logout',{}).catch(()=>{})}});
+ playerAccount=new PlayerAccount({config:supabaseConfig,notify:toast,applyReward:(fp,rc,items=[])=>{economy.fp+=fp;economy.rc+=rc;for(const item of items)economy.add(item.type,item.qty);updateEconomyHUD();inventoryUI?.render(true)},onGuestStart:()=>{crew.onFoot=false;surface.enter(earth,true);flight.system=earth.system;setTarget(earth,true)},onMemberStart:()=>{crew.onFoot=false;surface.enter(earth,true);load();},progressSnapshot:()=>[...economy.visited],clearControls:clearInputs,resumeLandscape:landscape,snapshot:()=>cloudInventory(economy),hydrate:(state,uid)=>{let world={};if(uid)try{world=JSON.parse(localStorage.getItem('tzg-world-'+uid))||{}}catch{}const onChange=economy.onChange,onBlast=economy.onBlast,onFuseTick=economy.onFuseTick;Object.assign(economy,new Economy(bodies,{...world,fp:state.fp,rc:state.rc,inventory:state.inventory}),{onChange,onBlast,onFuseTick});soundState={fp:economy.fp,rc:economy.rc,items:new Map([...economy.inventory].map(([key,row])=>[key,row.qty]))};inventoryUI?.render(true);updateEconomyHUD()},block:value=>{accountLocked=value;if(value)clearInputs()},onLogout:async()=>{debugMenu.active=false;await debugMenu.api('logout',{}).catch(()=>{})}});
  await playerAccount.init();
 }
 

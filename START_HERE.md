@@ -1,6 +1,16 @@
 # The Zero Gravity — Web Edition
 
-Current game version: **v0.0.107** (source/cache revision **107**), 28 October 2026. The default branch is `main`.
+Current game version: **v0.0.108** (source/cache revision **108**), 28 October 2026. The default branch is `main`.
+
+## v0.0.108 guest UI and daily supplies
+
+Tutorial completion persists only after Finish, with a per-account local retry record for interrupted server syncs. Skip dismisses the current tutorial without marking it complete; Replay Tutorial remains in Settings. Guest tutorial completion and tips preferences persist on this device; guest gameplay remains temporary.
+
+The Guest label sits under the top-right frame, the account icon has no text, and guest Account / Party & Friends / Daily Rewards menus explain their respective features. Public profiles include session-validated online status. Help explains Guest Mode. New panels use shared spacing and X close controls.
+
+Daily Rewards uses the gift icon immediately left of Global Chat, a ready badge and the message sound once per claim window while playing. The compact centered menu shows currency and supply icons. Days 1–7 grant 100/150/200/250/300/400/500 FP; Day 7 also grants 10 RC. Supplies: 16 WoodPlanks, 16 Gray Concrete, 16 LogBlock, 24 White Concrete, 16 Glass Blocks, 32 WoodPlanks, then 64 TNT. Missing a day preserves the cycle. Items merge into Earth inventory stacks in the same server transaction; full-stack failures leave the reward available. Existing claims are preserved.
+
+Backend update: `supabase/migrations/20261028123958_guest_presence_reward_supplies.sql` after the onboarding migration. Installed on the configured live project; rollback verification passed for item grants, Day 7 TNT, same-mutation retries, tutorial persistence and anonymous read/write boundaries. Validation: `npm run test:onboarding` covers tutorial completion/retry/isolation, daily item claims/retries, stack-limit rollback and public presence permissions.
 
 ## v0.0.107 guest play, tutorial and rewards
 

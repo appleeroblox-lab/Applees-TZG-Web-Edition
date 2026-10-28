@@ -1,5 +1,5 @@
 {
-  "version": 107,
+  "version": 108,
   "files": [
     "account-gate.js",
     "account-pages.js",
@@ -82,6 +82,7 @@
     "icons/explore.svg",
     "icons/flight.svg",
     "icons/fullscreen.svg",
+    "icons/gift.svg",
     "icons/gps_fixed.svg",
     "icons/group.svg",
     "icons/help.svg",
@@ -661,7 +662,7 @@
     "flight.js": 100,
     "forestry.js": 104,
     "friends-ui.js": 103,
-    "game.js": 107,
+    "game.js": 108,
     "gif-gallery.js": 96,
     "ground-weather.js": 104,
     "identity-ui.js": 91,
@@ -674,7 +675,7 @@
     "models.js": 100,
     "night-aurora.js": 91,
     "photo-library.js": 91,
-    "player-account.js": 107,
+    "player-account.js": 108,
     "pool-shape.js": 59,
     "pool-splashes.js": 59,
     "profile-view.js": 103,
@@ -713,7 +714,7 @@
     "world-precipitation.js": 105,
     "models/crafting-center-v96.json": 97,
     "account-gate.js": 107,
-    "boot-loader.js": 107,
+    "boot-loader.js": 108,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
     "models/base-venus.json": 100,
@@ -793,9 +794,9 @@
     "post-effects.js": 105,
     "warp-pricing.js": 105,
     "graphics-controls.js": 106,
-    "guest-access.js": 107,
+    "guest-access.js": 108,
     "player-activity.js": 107,
-    "player-journey.js": 107,
-    "journey.css": 107
+    "player-journey.js": 108,
+    "journey.css": 108
   }
 }

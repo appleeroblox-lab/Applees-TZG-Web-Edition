@@ -16,3 +16,5 @@ body.referenceHUD dialog.gameSelectionDialog[open],body.referenceHUD dialog.game
 body.referenceHUD #settingsDialog .settingsFooter .sessionActions{flex-wrap:nowrap;gap:8px}body.referenceHUD #settingsDialog .settingsFooter .sessionActions>button{flex:0 0 auto;min-width:72px;padding-inline:10px}.settingsFooter{overflow-x:auto;min-height:58px}
 body.referenceHUD #settingsDialog .settingsFooter .sessionActions{display:flex;flex-wrap:nowrap}body.referenceHUD #settingsDialog .settingsFooter{height:58px;max-height:58px;min-height:58px;flex-wrap:nowrap}#friendSearch input::placeholder{color:#c5eaff!important}
 body:has(#boot:not(.hidden)) dialog.imageViewer,body:has(#rotatePrompt.visible) dialog.imageViewer{display:none!important}
+
+body.referenceHUD #freeCameraConfirmDialog{width:min(450px,calc(100vw - 28px));padding:20px;background:linear-gradient(145deg,#298db5,#165a80);color:white;border:2px solid #9de8ff;border-radius:16px}#freeCameraConfirmDialog h1{font-size:23px;margin:0}#freeCameraMessage{color:#d8f5ff}

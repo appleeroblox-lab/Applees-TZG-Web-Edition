@@ -1,4 +1,4 @@
-import {parseDebugCommand} from './debug-commands.js?v=61';
+import {parseDebugCommand} from './debug-commands.js?v=105';
 
 // Developer tokens stay in memory for this page only, separate from game saves.
 export class SupabaseDebugService{

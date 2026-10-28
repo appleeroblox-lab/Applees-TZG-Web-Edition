@@ -1,4 +1,4 @@
-import {meaningfulBodyLabel} from './body-labels.js?v=102';
+import {meaningfulBodyLabel} from './body-labels.js?v=105';
 import {drawMapSky} from './atlas-sky.js?v=91';
 import {starShineColor} from './star-colors.js';
 import {drawBodyMap} from './texture-geometry.js';

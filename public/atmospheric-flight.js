@@ -1,4 +1,4 @@
-export const ATMOSPHERE_HEIGHT=2500,LANDING_HEIGHT=800;
+export const ATMOSPHERE_HEIGHT=2500,LANDING_HEIGHT=800,SPACE_METERS_PER_UNIT=100000;
 export const LANDING_MESSAGE='Descend below 800m to land.';
 export function hasAtmosphere(body){return !!body&&(body.hasAtmosphere===true||['Earth','Venus','Mars','Titan','Proxima b','Proxima d'].includes(body.name)||/GAS GIANT|ICE GIANT/.test(body.type||''))}
 const smooth=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t)};

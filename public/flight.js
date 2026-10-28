@@ -1,5 +1,5 @@
 import {rotateShip} from './ship-rotation.js';
-import {holdVelocity} from './speed-control.js';
+import {holdVelocity} from './speed-control.js?v=110';
 import * as T from './vendor/three.module.js';
 export const V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
 export const clearance=1.65;

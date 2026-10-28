@@ -1,6 +1,18 @@
 # The Zero Gravity — Web Edition
 
-Current game version: **v0.0.109** (source/cache revision **109**), 28 October 2026. The default branch is `main`.
+Current game version: **v0.0.110** (source/cache revision **110**), 28 October 2026. The default branch is `main`.
+
+## v0.0.110 graphics and atmospheric flight
+
+The six existing solid-world atmospheres now extend to 2,500m. The upper 800–2,500m band is capped at 200 m/s; the lower band has a 450 m/s maximum, with a smooth 600–800m cap transition before crossing upward. Atmospheric entry starts near the upper boundary, retaining incoming direction and bounded momentum. Exit converts m/s back to space units without stopping. Gas worlds retain their radial interiors, normalized to the same atmosphere effect bands. Airless worlds retain their existing boundary and landing rules.
+
+Atmospheric landing requests at or above 800m are rejected with “Descend below 800m to land.” Windward surface heating and bounded glow samples follow incoming airflow. Entry plasma peaks at 1,500–1,000m, fades through 1,000–800m and is zero below 800m. Exit effects are weaker and fade at 2,500m. Wind uses a reusable muted/paused-aware noise loop; camera shake only offsets the rendered camera. No heat damage, inventory or account mutations are added.
+
+White trails originate at the existing model's wing extrema, use bounded buffers and fade with speed or approaching an atmosphere. Boost extends and brightens them. Settings → Ship Trails in Space defaults On and persists per device; the toggle leaves atmospheric effects active. No ship asset or control bindings changed.
+
+Graphics adds authored-map micro-relief and anisotropy tiers, soft cloud edges/billows, individual star twinkle, detailed black-hole bands, subtle highlight bloom, warm direct lighting and steadier soft Ultra shadows. Ultra/Ultra+ retain their increasing scenery/cloud/pixel budgets. Mobile caps anisotropy, glow samples and trail history; Low keeps cheaper passes. Compatibility rendering includes windward heat/glow and trails.
+
+Validation: `npm run test:atmospheric-entry`, full gameplay/UI, account, social and onboarding regressions. New checks cover boundaries, speed continuity, steering, landing denials, old save restoration, exit momentum, shader hooks, unchanged hull geometry, wind cleanup, trail budgets/boost/toggle isolation and saved preferences. Browser visual QA uses an isolated local fixture with no account/database writes. This environment exposes only the Compatibility renderer; native GPU shader rendering and physical-phone performance were not measured. Supabase schemas, permissions and player data are unchanged.
 
 ## v0.0.109 compact menus and portrait layout
 

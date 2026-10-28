@@ -1,6 +1,14 @@
 # The Zero Gravity — Web Edition
 
-Current game version: **v0.0.104** (source/cache revision **104**), 27 October 2026. The default branch is `main`.
+Current game version: **v0.0.105** (source/cache revision **105**), 28 October 2026. The default branch is `main`.
+
+## v0.0.105 graphics and navigation
+
+Ultra and Ultra+ increase scenery/cloud/star budgets, image resolution and sharpness, and shadow resolution when Global Shadow is enabled. Mobile budgets remain bounded. Airless terrain uses dark-gray radial fog in WebGL and the compatibility renderer. Free Camera requires a 100 RC confirmation; its payment is rechecked on acceptance. Only Settings pauses simulation among menus.
+
+Cross-system warps always cost 1000 FP plus 5–10 RC based on the destination’s schematic distance from Sol; repeat visits do not discount this, and Earth return remains free. The selected destination remains labeled across systems with a screen-edge marker and Ly distance on the schematic game map. Empty-space clicks only select visible bodies at their current relative position.
+
+Validation: `npm run test:graphics-navigation`, the full gameplay and UI suites, release startup checks, and previous world regressions. UI tests mock WebGL; physical-device rendering is not covered.
 
 ## v0.0.104 fixes
 

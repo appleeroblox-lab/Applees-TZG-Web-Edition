@@ -1,5 +1,5 @@
 import {proximaAtmosphere} from './proxima-atmospheres.js';
-import {gasInteriorProfile} from './gas-interior.js';
+import {gasInteriorProfile} from './gas-interior.js?v=105';
 import {surfacePalette} from './surface-palette.js';
 import * as T from './vendor/three.module.js';
 export function lightingProfile(system,star,altitude=Infinity){const tint=system==='Proxima'?0xffb797:system==='TRAPPIST-1'?0xffb284:0xf5f8ff;return {tint,ambient:altitude<2000?.65:.62,intensity:system==='Proxima'?2.5:system==='TRAPPIST-1'?2.1:2.8}}

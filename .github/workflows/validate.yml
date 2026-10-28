@@ -1,0 +1,30 @@
+name: Validate game
+on:
+  pull_request:
+    branches: [main]
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
+      - name: Install test dependencies
+        run: npm ci --prefix tests --ignore-scripts --no-audit --no-fund
+      - name: Gameplay regressions
+        run: npm test
+      - name: Account regressions
+        run: npm run test:accounts
+      - name: Social regressions
+        run: npm run test:social
+      - name: Mining database migration
+        run: npm run test:mining-catalog:sql
+      - name: UI smoke tests
+        run: npm run test:ui

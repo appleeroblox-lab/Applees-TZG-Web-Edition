@@ -6,7 +6,7 @@ Current game version: **v0.0.106** (source/cache revision **106**), 28 October 2
 
 The visible Graphics quality dropdown exposes all five presets, including Ultra and Ultra+. Current modules repair older HTML shells and keep the legacy slider in sync. Locked destinations use normal onscreen labels; edge markers are removed. Inventory validation and transient save errors keep the signed-in game running with a visible pending-save status. Real session/authentication failures and cloud revision conflicts retain their existing account protections.
 
-**Backend step still pending:** apply `supabase/migrations/202610280018_mining_catalog.sql` after SQL013 on the existing Supabase project. This update is prepared and tested but has not been applied to the live database. It expands both catalogue-validation paths without weakening schema, ownership, revision, session or XP checks. Until applied, newer bodies can still be rejected by cloud save; keep the game open if progress is pending. See `docs/MINING_CATALOG.md`.
+**Live backend verified on 28 October 2026:** the SQL018 catalogue validator and save delegate are already present on the configured Supabase project. A live, non-mutating check accepted all 108 supported solid bodies and 81 item types, including Bennu/Vesta, and rejected unknown IDs, oversized stacks and duplicates. The private functions remain inaccessible to anonymous/authenticated callers, and the public save wrapper retains authenticated-only access. No player saves were changed. SQL018 is repeatable for other deployments; see `docs/MINING_CATALOG.md`.
 
 Play: https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html
 
@@ -14,7 +14,7 @@ Play: https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html
 
 Ultra and Ultra+ increase scenery/cloud/star budgets, image resolution and sharpness, and shadow resolution when Global Shadow is enabled. Mobile budgets remain bounded. Airless terrain uses dark-gray radial fog in WebGL and the compatibility renderer. Free Camera requires a 100 RC confirmation; its payment is rechecked on acceptance. Only Settings pauses simulation among menus.
 
-Cross-system warps always cost 1000 FP plus 5–10 RC based on the destination’s schematic distance from Sol; repeat visits do not discount this, and Earth return remains free. The selected destination remains labeled across systems with a screen-edge marker and Ly distance on the schematic game map. Empty-space clicks only select visible bodies at their current relative position.
+Cross-system warps always cost 1000 FP plus 5–10 RC based on the destination’s schematic distance from Sol; repeat visits do not discount this, and Earth return remains free. The selected destination uses an onscreen label across systems, with Ly distance on the schematic game map. Offscreen edge markers were removed in v0.0.106. Empty-space clicks only select visible bodies at their current relative position.
 
 Validation: `npm run test:graphics-navigation`, the full gameplay and UI suites, release startup checks, and previous world regressions. UI tests mock WebGL; physical-device rendering is not covered.
 
@@ -28,7 +28,7 @@ Checks: `npm run test:world-polish`, `npm run test:world`, `npm run test:release
 
 Game: https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html
 
-GitHub Actions publishes the contents of `public/` whenever `main` changes. Set **Settings → Pages → Source → GitHub Actions**. The workflow is `.github/workflows/github-pages.yml`; it uploads the static game directly, without a Node build. Keep all files inside `public/` together. Use the Actions run result to confirm each deployment.
+GitHub Actions runs gameplay, account, social, mining-database and mocked UI tests before publishing the contents of `public/` whenever `main` changes. Pull requests run the same validation workflow. A failing check prevents deployment. Set **Settings → Pages → Source → GitHub Actions**. The workflow is `.github/workflows/github-pages.yml`; it uploads the static game directly, without a Node build. Keep all files inside `public/` together. Use the Actions run result to confirm each deployment.
 
 To play locally, run from the repository root:
 
@@ -118,7 +118,7 @@ Setup references:
 - `docs/TEMPORARY_CHAT_V95.md`
 - `docs/GAME_POLISH_V96.md`
 
-Keep the existing Supabase migrations applied in order. The latest required migration from update 96 is `supabase/migrations/202610270015_chat_expiry_reports.sql`. This update adds **no new SQL migration**. Project source alone cannot confirm which migrations have been applied to a live database.
+Keep the existing Supabase migrations applied in order. The v0.0.106 mining fix requires `supabase/migrations/202610280018_mining_catalog.sql` after SQL013. The newer push and exploration migrations remain separately required for their features; see the setup documents above. Project source alone cannot confirm which migrations have been applied to a live database.
 
 GitHub Pages hosts static files; it cannot run the included original `/api/debug/*` backend. Supabase features need the configured project, RPCs and access policies. Never put service-role keys, private credentials or live database exports in this public repository.
 
@@ -128,7 +128,9 @@ GitHub Pages hosts static files; it cannot run the included original `/api/debug
 
 For the optional framework application, use the Node and pnpm versions declared in `package.json`. For the static game, no Node installation is needed.
 
-Useful checks after installing the declared development dependencies:
+For static-game validation only, install the small pinned test toolchain with `npm ci --prefix tests --ignore-scripts`. This does not install or build the optional framework application. CI uses Node 24.
+
+Useful checks after installing the test toolchain or the declared development dependencies:
 
 ```sh
 node tests/world-update.mjs

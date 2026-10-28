@@ -1,6 +1,14 @@
 # The Zero Gravity — Web Edition
 
-Current game version: **v0.0.105** (source/cache revision **105**), 28 October 2026. The default branch is `main`.
+Current game version: **v0.0.106** (source/cache revision **106**), 28 October 2026. The default branch is `main`.
+
+## v0.0.106 settings and mining recovery
+
+The visible Graphics quality dropdown exposes all five presets, including Ultra and Ultra+. Current modules repair older HTML shells and keep the legacy slider in sync. Locked destinations use normal onscreen labels; edge markers are removed. Inventory validation and transient save errors keep the signed-in game running with a visible pending-save status. Real session/authentication failures and cloud revision conflicts retain their existing account protections.
+
+**Backend step still pending:** apply `supabase/migrations/202610280018_mining_catalog.sql` after SQL013 on the existing Supabase project. This update is prepared and tested but has not been applied to the live database. It expands both catalogue-validation paths without weakening schema, ownership, revision, session or XP checks. Until applied, newer bodies can still be rejected by cloud save; keep the game open if progress is pending. See `docs/MINING_CATALOG.md`.
+
+Play: https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html
 
 ## v0.0.105 graphics and navigation
 

@@ -1,5 +1,4 @@
 import * as T from './vendor/three.module.js';
-export function lockedLabelPoint(relative,camera,width,height){const local=relative.clone().sub(camera.position).applyQuaternion(camera.quaternion.clone().invert()),front=local.z<0,p=relative.clone().project(camera);let x=p.x,y=p.y;if(!front||!Number.isFinite(x)||!Number.isFinite(y)){x=local.x/Math.max(1,Math.abs(local.z));y=local.y/Math.max(1,Math.abs(local.z));if(Math.abs(x)+Math.abs(y)<.001)y=-1}const scale=Math.max(1,Math.abs(x)/.85,Math.abs(y)/.78);return {x:(x/scale*.5+.5)*width,y:(-y/scale*.5+.5)*height,offscreen:!front||scale>1}}
 // Pick the visible body at its current floating-origin position.
 export function pickSpaceBody(ray,bodies,origin){let result=null,nearest=Infinity;const hit=new T.Vector3();for(const b of bodies){if(!b.mesh?.visible||!(b.r>0))continue;const sphere=new T.Sphere(b.pos.clone().sub(origin),b.r);if(ray.intersectSphere(sphere,hit)){const distance=ray.origin.distanceTo(hit);if(distance<nearest){nearest=distance;result=b}}}return result}
 // A moon belongs to its local planet, rather than the whole stellar system.

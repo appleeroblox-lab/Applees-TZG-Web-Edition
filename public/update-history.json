@@ -1,8 +1,25 @@
 {
-  "currentVersion": "v0.0.106",
+  "currentVersion": "v0.0.107",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 107,
+      "version": "v0.0.107",
+      "date": "2026-10-28",
+      "title": "I added guest play, a beginner guide and account rewards",
+      "changes": [
+        "I added Play as Guest. Guests can explore, fly, land, mine, craft and sell with temporary progress, read Global Chat and view public profiles. Signing in loads account progress without refreshing.",
+        "I added a short PC and mobile tutorial, a Skip option, Replay Tutorial in Settings and optional beginner tips. Account tutorial completion is saved; guest completion lasts only for the current page session.",
+        "I added daily rewards from 100 FP to 500 FP, with 10 RC on Day 7. The cycle repeats after seven claims and refreshes at midnight UTC.",
+        "New accounts receive a one-time welcome gift of 250 FP and 5 RC. Existing accounts keep their balances and do not receive this new-account gift.",
+        "I added discovery marks to Universe Map and aggregate player statistics to the developer menu.",
+        "I reduced startup asset preloading and stopped hidden Universe Map thumbnails from requesting textures. All five graphics modes and existing world effects remain available."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 106,
       "version": "v0.0.106",

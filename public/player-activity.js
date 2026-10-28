@@ -1,0 +1,6 @@
+export class PlayerActivity{
+ constructor(account){this.account=account;try{this.visitor=localStorage.getItem('tzg-visitor-id')||crypto.randomUUID();localStorage.setItem('tzg-visitor-id',this.visitor)}catch{this.visitor=crypto.randomUUID()}this.playing=false;this.generation=0;window.addEventListener('tzg-play',()=>{this.playing=true;this.start()});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&this.playing)this.beat()});window.addEventListener('pagehide',()=>this.stop());}
+ start(){this.stop();if(!this.playing)return;this.session=crypto.randomUUID();this.activeClient=this.account.guest?this.account.guestAccess?.client:this.account.client;this.generation++;this.beat();this.timer=setInterval(()=>{if(!document.hidden)this.beat()},30000);this.timer.unref?.();}
+ async beat(end=false){const client=this.activeClient;if(!client||!this.session||this.busy)return;this.busy=true;try{await client.rpc('tzg_activity',{p_visitor:this.visitor,p_session:this.session,p_end:end})}catch{}finally{this.busy=false}}
+ stop(){clearInterval(this.timer);if(this.session&&this.activeClient){const client=this.activeClient,session=this.session;Promise.resolve(client.rpc('tzg_activity',{p_visitor:this.visitor,p_session:session,p_end:true})).catch(()=>{})}this.session=null;this.activeClient=null}
+}

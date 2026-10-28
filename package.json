@@ -40,7 +40,8 @@
     "test:world-polish": "node tests/world-polish.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --world-polish-only",
     "test:graphics-navigation": "node tests/graphics-navigation.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --graphics-navigation-only",
     "test:settings-save-recovery": "node tests/settings-save-recovery.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --graphics-navigation-only",
-    "test:mining-catalog:sql": "node tests/inventory-catalog-postgres.mjs"
+    "test:mining-catalog:sql": "node tests/inventory-catalog-postgres.mjs",
+    "test:onboarding": "node tests/guest-journey.mjs && node tests/onboarding-rewards-postgres.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

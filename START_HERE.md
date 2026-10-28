@@ -1,6 +1,16 @@
 # The Zero Gravity — Web Edition
 
-Current game version: **v0.0.106** (source/cache revision **106**), 28 October 2026. The default branch is `main`.
+Current game version: **v0.0.107** (source/cache revision **107**), 28 October 2026. The default branch is `main`.
+
+## v0.0.107 guest play, tutorial and rewards
+
+Play as Guest keeps gameplay progress temporary, with read-only Global Chat and public profiles. Members can sign in from Guest Mode without refreshing; their saved inventory replaces temporary guest items. A skippable PC/mobile tutorial, Replay Tutorial and optional beginner tips are included. Registered accounts have UTC daily rewards. Accounts created after the new migration activates receive a one-time 250 FP / 5 RC welcome gift; existing accounts do not receive it.
+
+The developer menu adds private aggregate activity statistics. Startup preloads critical assets instead of every model/texture, and hidden map thumbnails defer texture requests. All five graphics presets and existing gameplay systems remain.
+
+New exploration tracking is included. The requested 50 FP discovery / 100 FP landing bonuses remain disabled until trusted gameplay verification exists; browser-reported travel alone is not sufficient proof. Existing exploration XP and RC rewards remain unchanged.
+
+**Database status:** the new SQL is installed on the configured live project. Live rollback tests passed for welcome/daily claims, duplicate prevention, tutorial persistence and anonymous permissions. Real HTTP checks accepted guest chat/profile reads and denied guest reward/statistics calls. No manual SQL step is needed for this project. The migration API returned expired-request errors, so the exact additive script was installed through the SQL endpoint; no migration-history entry is claimed. Full setup and validation: `docs/ONBOARDING_GUESTS_REWARDS.md`.
 
 ## v0.0.106 settings and mining recovery
 

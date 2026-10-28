@@ -26,5 +26,9 @@ jobs:
         run: npm run test:social
       - name: Mining database migration
         run: npm run test:mining-catalog:sql
+      - name: Guest, tutorial and reward regressions
+        run: npm run test:onboarding
+      - name: Auth-first startup
+        run: node --experimental-vm-modules tests/auth-boot-v96.mjs
       - name: UI smoke tests
         run: npm run test:ui

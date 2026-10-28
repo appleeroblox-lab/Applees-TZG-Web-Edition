@@ -43,7 +43,7 @@
     "test:mining-catalog:sql": "node tests/inventory-catalog-postgres.mjs",
     "test:onboarding": "node tests/guest-journey.mjs && node tests/onboarding-rewards-postgres.mjs",
     "test:menu-sizing": "node tests/menu-sizing.mjs && node tests/control-sizes.mjs",
-    "test:atmospheric-entry": "node tests/atmospheric-entry.mjs"
+    "test:atmospheric-entry": "node tests/atmospheric-entry.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --atmospheric-entry-only"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

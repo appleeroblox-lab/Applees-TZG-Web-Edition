@@ -19,6 +19,11 @@ const $=id=>document.getElementById(id);assert.equal($('launchBtn').disabled,fal
 const state=game.namespace;
 {const original=[context.innerWidth,context.innerHeight];context.innerWidth=390;context.innerHeight=740;dom.dispatchEvent(new dom.Event('resize'));assert.deepEqual(rendererSizes.at(-1),[390,740]);assert.equal(state.camera.aspect,390/740);const before=rendererSizes.length;dom.dispatchEvent(new dom.Event('pageshow'));assert(rendererSizes.length>before,'page restore refreshes even an unchanged viewport');[context.innerWidth,context.innerHeight]=original;dom.dispatchEvent(new dom.Event('resize'));assert.equal(state.camera.aspect,original[0]/original[1]);console.log('PASS portrait/landscape renderer dimensions, camera aspect and same-size page restoration.');}
 
+if(process.argv.includes('--atmospheric-entry-only')){
+ const earth=state.flight.bodies.find(b=>b.name==='Earth');state.enterSurface(earth,true);state.surface.phase='flying';state.surface.pos.y=state.surface.floor+1000;
+ for(const id of ['landBtn','surfaceLandBtn','surfaceAbortBtn']){$(id).onclick();assert.equal(state.surface.phase,'flying');assert.equal($('toast').textContent,'Descend below 800m to land.',id+' reports the altitude guard');}
+ state.surface.pos.y=state.surface.floor+799;$('surfaceLandBtn').onclick();assert.equal(state.surface.phase,'descending');console.log('PASS all PC/mobile landing and Return routes enforce the 800m guard and exact message.');process.exit(0)
+}
 if(process.argv.includes('--graphics-navigation-only')){
  const earth=state.flight.bodies.find(b=>b.name==='Earth');state.enterSurface(earth,true);state.surfaceView.environment.running=true;
  for(const id of ['inventoryDialog','helpDialog','warpConfirmDialog','updateLogsDialog','freeCameraConfirmDialog']){const before=state.surfaceView.environment.hour,rendered=draws;$(id).showModal();for(let i=0;i<3;i++)queued();assert(state.surfaceView.environment.hour>before,id+' keeps simulation running');assert(draws>rendered,id+' keeps rendering');$(id).close()}

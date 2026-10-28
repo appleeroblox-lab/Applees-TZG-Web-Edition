@@ -1,0 +1,9 @@
+{
+  "name": "tzg-validation",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.12",
+    "linkedom": "0.18.13"
+  }
+}

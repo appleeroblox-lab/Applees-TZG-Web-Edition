@@ -1,5 +1,5 @@
-import {C_UNITS,DEFAULT_MAX_C,BOOST_MAX_C} from './speed-control.js';
-import {formatSpeed} from './explorer.js?v=100';
+import {C_UNITS,DEFAULT_MAX_C,BOOST_MAX_C} from './speed-control.js?v=110';
+import {formatSpeed} from './explorer.js?v=110';
 export function updateReferenceHUD({surface,crew,flight,boostSelected,explorer,shipBoost}){
  const $=id=>document.getElementById(id),active=surface.active,foot=crew.onFoot,free=!!explorer?.enabled,flying=!free&&!foot&&(!active||surface.launched),parked=active&&surface.phase==='parked';
  document.body.classList.toggle('shipFlying',flying);document.body.classList.toggle('onPad',parked&&!foot);document.body.classList.toggle('launching',surface.phase==='countdown');

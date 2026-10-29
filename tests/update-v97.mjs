@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import {parseHTML} from 'linkedom';
 import * as T from '../public/vendor/three.module.js';
 import {accountGate} from '../public/account-gate.js?v=97';
-import {authenticateFirst,takePreAuthClient} from '../public/auth-first.js?v=97';
+import {authenticateFirst,takePreAuthClient} from '../public/auth-first.js?v=112';
 import {PlayerAccount} from '../public/player-account.js?v=103';
 import {ShipRespawnStation,SHIP_STATION} from '../public/ship-respawn.js?v=100';
 import {Flight} from '../public/flight.js?v=100';

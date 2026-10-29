@@ -1,6 +1,6 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.111**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.112**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
 
 ## v0.0.111 extended atmosphere and reentry
 

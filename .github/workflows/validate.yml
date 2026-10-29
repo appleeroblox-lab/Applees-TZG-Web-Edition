@@ -29,6 +29,6 @@ jobs:
       - name: Guest, tutorial and reward regressions
         run: npm run test:onboarding
       - name: Auth-first startup
-        run: node --experimental-vm-modules tests/auth-boot-v96.mjs
+        run: npm run test:boot
       - name: UI smoke tests
         run: npm run test:ui

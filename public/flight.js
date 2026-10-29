@@ -1,5 +1,6 @@
+import {atmosphereBoundary} from './atmospheric-flight.js?v=111';
 import {rotateShip} from './ship-rotation.js';
-import {holdVelocity} from './speed-control.js?v=110';
+import {holdVelocity} from './speed-control.js?v=111';
 import * as T from './vendor/three.module.js';
 export const V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
 export const clearance=1.65;
@@ -16,10 +17,10 @@ export function surfaceAttitude(b,position){
 }
 export function safeArrival(b,from,bodies,margin){
  const dir=from.clone().sub(b.pos).normalize();if(dir.lengthSq()<.01)dir.set(.3,.2,1).normalize();
- const end=b.pos.clone().addScaledVector(dir,b.r+margin);
+ const end=b.pos.clone().addScaledVector(dir,atmosphereBoundary(b)+margin);
  for(let attempt=0;attempt<6;attempt++)for(const other of bodies){
   if(other===b||other.system!==b.system)continue;
-  const delta=end.clone().sub(other.pos),floor=other.r+clearance+10;
+  const delta=end.clone().sub(other.pos),floor=atmosphereBoundary(other)+clearance+10;
   if(delta.length()<floor)end.copy(other.pos).addScaledVector(delta.lengthSq()?delta.normalize():V(0,1,0),floor);
  }
  return end;
@@ -72,7 +73,7 @@ export class Flight {
   // Segment/sphere sweep catches fast crossings, not only endpoints inside a world.
   for(const b of this.active){
    if(['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type))continue;
-   const entering=this.allowInterior&&((b.solid&&b.landable!==false)||/GAS GIANT|ICE GIANT/.test(b.type));const floor=b.r+(entering?0:(typeof padding==='function'?padding(b):padding)),delta=this.pos.clone().sub(before),length=delta.length();
+   const entering=this.allowInterior&&((b.solid&&b.landable!==false)||/GAS GIANT|ICE GIANT/.test(b.type));const floor=(entering?atmosphereBoundary(b):b.r)+(entering?0:(typeof padding==='function'?padding(b):padding)),delta=this.pos.clone().sub(before),length=delta.length();
    let hit=null;
    if(before.distanceTo(b.pos)>floor&&length>0){const ray=new T.Ray(before,delta.clone().normalize());const p=ray.intersectSphere(new T.Sphere(b.pos,floor),V());if(p&&p.distanceTo(before)<=length)hit=p}
    if(this.pos.distanceTo(b.pos)<floor)hit=this.pos.clone();

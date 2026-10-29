@@ -1,6 +1,14 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.107**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.111**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.111 extended atmosphere and reentry
+
+Atmospheric worlds extend to 5,000 m. The sky reaches space colors by 3,000 m, with a depth-preserving terrain/globe dissolve and a matched surface/space planet size. Entry starts at up to 50 m/s; the upper band is limited to 100 m/s. Below 800 m, descending flight can accelerate to 450 m/s; ascending ships ease down before crossing the upper band. Landing remains restricted above 800 m.
+
+Airflow-facing hull glow, thin plasma shells, sparks and fiery streaks peak at 1,500–1,000 m, fade by 800 m, and cause no damage. Ascent effects are weaker. Camera shake uses a smooth local translation after camera placement; entry preserves the selected camera and orbit zoom. High and above add subtle heat distortion; Ultra/Ultra+ increase surface glow detail. Low/Medium disable shell draws and distortion, and mobile particle budgets remain bounded. White space wing trails and their saved toggle are preserved.
+
+Validation: gameplay, accounts, social, onboarding/reward SQL, mining migration, auth-first startup and UI regression suites; PC/mobile atmosphere checks cover globe blending, landing guards and camera preservation. Browser preview in this environment falls back to the compatibility renderer and lacks a secure context, so native WebGL visual/device verification remains outstanding. No Supabase migration is needed for this release.
 
 The notes below are historical release records; older hosting instructions and gameplay values describe those releases.
 

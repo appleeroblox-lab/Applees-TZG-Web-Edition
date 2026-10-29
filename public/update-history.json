@@ -1,8 +1,25 @@
 {
-  "currentVersion": "v0.0.119",
+  "currentVersion": "v0.0.120",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 120,
+      "version": "v0.0.120",
+      "date": "2026-10-30",
+      "title": "Smooth minimaps and a nonmodal planet map",
+      "changes": [
+        "Moved coordinates, altitude, biome, planet information and the icon guide into a centered map menu, leaving a smaller circular HUD map and a bottom-right question-mark button.",
+        "Added a square 96 \u00d7 96 m map that pans with mouse or touch, keeps one terrain raster, marks Center Station at the edge and shows place names when selected. Panning does not generate gameplay terrain.",
+        "Kept the map menu nonmodal so gameplay, Settings, Account and other visible controls remain usable. Added an X close button and map-click toggle.",
+        "Avoided guest notices and right-side flight/walking controls at different minimap sizes, moving the HUD left when necessary.",
+        "Rendered map heading and positions every frame and scrolled cached terrain continuously in world coordinates.",
+        "Updated enabled shadows every rendered frame on PC and mobile, retained existing map resolutions and moved the shadow light with its stabilized target. Scene-caster discovery remains cached."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 119,
       "version": "v0.0.119",

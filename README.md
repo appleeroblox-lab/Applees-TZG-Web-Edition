@@ -1,6 +1,14 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.119**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.120**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.120 smooth minimap and nonmodal square map
+
+The HUD now contains only a compact circular map and a bottom-right question-mark button. Coordinates, altitude, biome, planet preview and icon explanations are inside a centered nonmodal map window. Tap the circle to toggle the window, use ? to open the icon guide, and close it with X. The square view covers 96 × 96 m and supports mouse/touch panning and place selection; one terrain raster is reused, and panning never generates gameplay chunks. Center Station retains its off-map direction marker. Other visible UI and gameplay remain interactive.
+
+HUD placement accounts for right flight/walking controls and guest notices at each size, moving left when a right-side placement cannot fit. Map positions/headings draw every frame; background caches scroll continuously in world coordinates. Enabled shadow maps refresh each rendered frame at their existing resolution, while caster discovery is cached separately. Light position and target use the same stabilized origin.
+
+Regression coverage includes PC/mobile control clearance, world-aligned cache scrolling, single-raster panning, square-map center markers, question-mark guidance, nonmodal UI interaction, pointer cleanup, close controls and per-frame shadows. Physical GPU appearance and FPS remain unverified; the managed browser preview previously lacked its framework dependency.
 
 ## v0.0.119 minimap, sky and account maintenance
 

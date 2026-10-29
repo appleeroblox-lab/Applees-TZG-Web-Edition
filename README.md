@@ -1,6 +1,12 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.120**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.121**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.121 minimap zoom and navigation lock
+
+The question-mark button now toggles the guide open and closed. Added smooth + / − zoom controls at the square map's right middle and Lock To Navigation to follow the blue player arrow. Dragging unlocks following; zoom and pan reuse the existing map raster without generating gameplay chunks. The circular HUD gently zooms out during movement and back in while stationary. Map controls continue animating while Settings pauses the world.
+
+PC/mobile automated coverage checks repeated guide toggles, zoom, follow, drag-to-unlock and movement-based zoom. Physical GPU appearance and device FPS remain unverified.
 
 ## v0.0.120 smooth minimap and nonmodal square map
 

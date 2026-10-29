@@ -1,8 +1,24 @@
 {
-  "currentVersion": "v0.0.120",
+  "currentVersion": "v0.0.121",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 121,
+      "version": "v0.0.121",
+      "date": "2026-10-30",
+      "title": "Minimap zoom and navigation lock",
+      "changes": [
+        "Fixed the question-mark button so clicking it again closes the map menu.",
+        "Added right-middle + and \u2212 buttons with smooth bounded map zoom.",
+        "Added Lock To Navigation to follow the blue player arrow; dragging the map unlocks following.",
+        "Added subtle circular minimap zoom out while moving and zoom in while stationary.",
+        "Kept map controls responsive while Settings pauses gameplay."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 120,
       "version": "v0.0.120",

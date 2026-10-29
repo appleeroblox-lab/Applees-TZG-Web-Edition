@@ -1,25 +1,25 @@
-import {TerrainClouds} from './terrain-clouds.js?v=118';
+import {TerrainClouds} from './terrain-clouds.js?v=119';
 import {biomeColor} from './earth-biomes.js?v=59';
-import {PlanetTransition} from './planet-transition.js?v=118';
+import {PlanetTransition} from './planet-transition.js?v=119';
 import {installCloudDetail} from './graphics-detail.js?v=110';
 import {TOWER_PARTS} from './launch-tower.js?v=104';
-import {PlanetBases} from './planet-bases.js?v=118';
+import {PlanetBases} from './planet-bases.js?v=119';
 import {addTerrainDetail,terrainMaterial} from './terrain-detail.js?v=100';
 import {NightAurora} from './night-aurora.js?v=91';
-import {createSurfaceRoads} from './surface-roads.js?v=118';
+import {createSurfaceRoads} from './surface-roads.js?v=119';
 import {buildGasInterior,gasCloudPosition} from './gas-interior.js?v=105';
 import {graphicsPolicy} from './graphics-policy.js?v=110';
-import {cloudProfile,applyAtmosphericFog,upperSkyState,setAtmosphereStars} from './atmosphere-effects.js?v=118';
+import {cloudProfile,applyAtmosphericFog,upperSkyState,setAtmosphereStars} from './atmosphere-effects.js?v=119';
 import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 import * as T from './vendor/three.module.js';
-import {glow} from './visuals.js?v=118';
-import {surfaceHeight,atmosphere} from './surface.js?v=118';
+import {glow} from './visuals.js?v=119';
+import {surfaceHeight,atmosphere} from './surface.js?v=119';
 import {SurfaceSky} from './surface-sky.js?v=100';
 import {terrainColor} from './surface-palette.js';
-import {EarthEnvironment} from './earth-environment.js?v=118';
+import {EarthEnvironment} from './earth-environment.js?v=119';
 import {applySurfaceLighting} from './lighting.js?v=110';
 export class SurfaceView{
- constructor(session,bodies=[]){this.session=session;this.scene=new T.Scene();this.bases=new PlanetBases(this.scene,session);this.aurora=new NightAurora(this.scene);this.scene.userData.surface=session;this.celestial=new SurfaceSky(session,bodies);this.scene.add(this.celestial.group);this.environment=new EarthEnvironment();try{this.environment.restore(JSON.parse(localStorage.getItem('zero-gravity-earth-environment')))}catch{}this.body=null;this.transition=new PlanetTransition(this);this.session.planetView=this.transition;this.cloudTime=0;this.minerals=new T.Group();this.scene.add(this.minerals);this.spaceMap=null;this.fill=new T.HemisphereLight(0xc5dfff,0x3c4030,1.35);this.scene.add(this.fill);this.sun=new T.DirectionalLight(0xffedce,3);this.sun.position.set(-400,700,-300);this.scene.add(this.sun)}
+ constructor(session,bodies=[]){this.session=session;this.scene=new T.Scene();this.bases=new PlanetBases(this.scene,session);this.aurora=new NightAurora(this.scene);this.session.aurora=this.aurora;this.scene.userData.surface=session;this.celestial=new SurfaceSky(session,bodies);this.scene.add(this.celestial.group);this.environment=new EarthEnvironment();try{this.environment.restore(JSON.parse(localStorage.getItem('zero-gravity-earth-environment')))}catch{}this.body=null;this.transition=new PlanetTransition(this);this.session.planetView=this.transition;this.cloudTime=0;this.minerals=new T.Group();this.scene.add(this.minerals);this.spaceMap=null;this.fill=new T.HemisphereLight(0xc5dfff,0x3c4030,1.35);this.scene.add(this.fill);this.sun=new T.DirectionalLight(0xffedce,3);this.sun.position.set(-400,700,-300);this.scene.add(this.sun)}
  setSky(map){this.spaceMap=map;setAtmosphereStars(this,map);if(this.earthSky){this.earthSky.material.uniforms.stars.value=map;this.earthSky.material.uniforms.hasStars.value=1;}if(this.body&&!atmosphere(this.body))this.build()}
  build(){this.transition.reset();const group=this.minerals;group.traverse(o=>{o.geometry?.dispose();if(o.material)for(const m of(Array.isArray(o.material)?o.material:[o.material])){if(m.map?.userData?.surfaceOwned)m.map.dispose();m.dispose()}});group.clear();this.cloudField=null;this.session.terrainClouds=[];this.earthSky=null;this.skyDome=null;this.earthClouds=[];this.atmoClouds=[];this.gasClouds=[];this.dust=[];this.core=null;this.body=this.session.body;this.bases.build(this.body);this.celestial.build();if(!this.body)return;if(!this.body.solid){buildGasInterior(this,glow);return}this.celestial.group.visible=true;const air=atmosphere(this.body);this.scene.background=new T.Color(air?.[0]||'#02040b');this.scene.fog=air?new T.Fog(air[1],1800,6500):new T.Fog('#25272b',45,158);
  const ground=new T.PlaneGeometry(96,96,16,16);ground.rotateX(-Math.PI/2);const a=ground.attributes.position;for(let i=0;i<a.count;i++)a.setY(i,surfaceHeight(a.getX(i),a.getZ(i)));ground.computeVertexNormals();const colors=[];for(let i=0;i<a.count;i++){const c=this.body.name==='Earth'?biomeColor(a.getX(i),a.getZ(i)):terrainColor(this.body,a.getX(i),a.getZ(i));colors.push(c.r,c.g,c.b)}ground.setAttribute('color',new T.Float32BufferAttribute(colors,3));group.add(new T.Mesh(addTerrainDetail(ground,this.body),terrainMaterial()));

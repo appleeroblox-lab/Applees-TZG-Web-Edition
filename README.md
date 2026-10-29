@@ -1,6 +1,12 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.118**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.119**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.119 minimap, sky and account maintenance
+
+Added a compact circular planet minimap, Global Chat-adjacent toggle, cardinal directions, heading, XYZ, altitude, current biome, planet preview, real building/village landmarks and an off-map Center Station arrow. Settings includes Minimap Menu Size; the panel avoids guest notices. Expanded the 4km aurora, extended cloud wind across chunks, capped space flight and boost at 100c, added the requested rings and enabled alien tree harvesting.
+
+Account management uses a checkbox bound to the selected UID and shows total/online guests. **Database setup required:** run [the account maintenance SQL](supabase/migrations/20261029153639_atmosphere_minimap_account_maintenance.sql) in the existing Supabase project's SQL Editor. It installs guest totals, the new deletion confirmation and minute-based cleanup of unverified email registrations older than five hours. This migration has not been applied to the live database. Existing verified accounts and player progress are preserved. Physical-device GPU visuals and FPS remain unverified.
 
 ## v0.0.118 globe alignment and terrain-owned scenery
 

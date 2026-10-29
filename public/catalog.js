@@ -102,3 +102,6 @@ for(const asset of robloxTextureAssets){const b=bodies.find(b=>b.name===asset.na
 for(const b of bodies)if(b.solid&&/PLANET/.test(b.type)&&!b.parent){b.physicalRadius=b.r;if(b.name!=='Mars')b.r=32;}
 
 installMinorBodies(bodies,AU);
+
+// Requested ring artwork; ordinary body textures remain unchanged.
+for(const b of bodies){if(['Quaoar','Haumea'].includes(b.name)){b.rings=true;b.ringProfile={count:1,color:'#999b9e',inner:1.65,outer:1.86}}if(b.name==='Proxima c'){b.rings=true;b.ringProfile={count:10,color:'#b4e6ff'}}}

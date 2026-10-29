@@ -1,4 +1,4 @@
-import {texturePalette} from './texture-palettes.js?v=118';
+import {texturePalette} from './texture-palettes.js?v=119';
 import * as T from './vendor/three.module.js';
 // Gameplay atmosphere choices; fictional/exoplanet palettes are artistic, not measurements.
 const named={

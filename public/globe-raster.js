@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
-import {PLANET_VIEW_RADIUS} from './atmospheric-flight.js?v=118';
-import {atmosphereProfile} from './atmosphere-profiles.js?v=118';
+import {PLANET_VIEW_RADIUS} from './atmospheric-flight.js?v=119';
+import {atmosphereProfile} from './atmosphere-profiles.js?v=119';
 // Bounded 2D fallback only: sample the same sphere, texture and travel rotation as WebGL.
 export class GlobeRaster{
  constructor(){this.canvas=document.createElement('canvas');this.canvas.width=192;this.canvas.height=108;this.ctx=this.canvas.getContext('2d');this.maps=new WeakMap();this.next=0;this.ray=new T.Vector3();this.normal=new T.Vector3()}

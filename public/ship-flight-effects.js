@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {entryEffects,hasAtmosphere,atmosphereAltitude} from './atmospheric-flight.js?v=118';
+import {entryEffects,hasAtmosphere,atmosphereAltitude} from './atmospheric-flight.js?v=119';
 import {graphicsPolicy} from './graphics-policy.js?v=110';
 const vertex=`varying vec3 vEntryNormal;varying vec3 vEntryPoint;`;
 // Surface normals facing the velocity vector meet incoming air first. No hull edits.

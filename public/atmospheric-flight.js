@@ -1,4 +1,4 @@
-import {atmosphereProfile} from './atmosphere-profiles.js?v=118';
+import {atmosphereProfile} from './atmosphere-profiles.js?v=119';
 export const ATMOSPHERE_HEIGHT=5000,LANDING_HEIGHT=800,SPACE_METERS_PER_UNIT=100000;
 export const LANDING_MESSAGE='Descend below 800m to land.';
 export function hasAtmosphere(body){return !!body&&(body.hasAtmosphere===true||!!atmosphereProfile(body)||/GAS GIANT|ICE GIANT/.test(body.type||''))}

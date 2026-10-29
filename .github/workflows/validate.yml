@@ -30,5 +30,7 @@ jobs:
         run: npm run test:onboarding
       - name: Auth-first startup
         run: npm run test:boot
+      - name: Account maintenance and minimap regressions
+        run: npm run test:maintenance:sql && npm run test:minimap
       - name: UI smoke tests
         run: npm run test:ui

@@ -1,6 +1,10 @@
 # The Zero Gravity — Web Edition
 
-Current game version: **v0.0.110** (source/cache revision **110**), 28 October 2026. The default branch is `main`.
+Current game version: **v0.0.119** (source/cache revision **119**), 29 October 2026. The default branch is `main`.
+
+## v0.0.119 database installation
+
+Run `supabase/migrations/20261029153639_atmosphere_minimap_account_maintenance.sql` in the existing project SQL Editor to enable guest totals, UID-confirmed game-account deletion and five-hour unverified email cleanup. This update does not apply the migration to the live database automatically.
 
 ## v0.0.110 graphics and atmospheric flight
 

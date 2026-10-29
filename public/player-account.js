@@ -1,5 +1,5 @@
 import {GuestAccess} from './guest-access.js?v=108';
-import {PlayerJourney,PlayerRewards} from './player-journey.js?v=118';
+import {PlayerJourney,PlayerRewards} from './player-journey.js?v=119';
 import {PlayerActivity} from './player-activity.js?v=107';
 import {MobileNotifications} from './mobile-notifications.js?v=103';
 import {accountGate} from './account-gate.js?v=107';
@@ -56,7 +56,7 @@ export class PlayerAccount{
  if(this.mode!=='recovery'&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){this.authStatus('Enter a valid email address.','accountEmail');return}if((this.mode==='signup'||this.mode==='recovery')&&password!==confirm){this.authStatus('Passwords do not match.','accountConfirm');return}if(password.length<12||password.length>128){this.authStatus('Use a password with 12–128 characters.','accountPassword');return}if(this.mode==='signup'&&(!name||name.length>32)){ this.authStatus('Use a display name with 1–32 characters.','accountName');return}
  if(this.mode==='signup'&&!/^[a-z0-9_]{3,36}$/.test(username)){this.authStatus('Use a username with 3–36 letters, numbers or underscores.','accountUsername');return}this.duplicate=false;this.busy=true;$('accountSubmit').disabled=true;$('accountPassword').value='';$('accountConfirm').value='';this.authStatus(this.mode==='signup'?'Creating your account…':'Connecting…');try{
  if(this.mode==='recovery'){const {error}=await this.client.auth.updateUser({password});if(error)throw error;this.recovery=false;this.setMode('login');await this.connect()}
- else if(this.mode==='signup'){const available=await this.rpc('tzg_username_available',{p_username:username});if(!available)throw Error('Username is unavailable. Choose another username.');const {data,error}=await this.accountRequest(this.client.auth.signUp({email,password,options:{data:{display_name:name,username},emailRedirectTo:this.redirectURL()}}));if(error)throw error;if(data.session)await this.connect();else{this.authStatus('Request accepted. Check your email to confirm your account, then log in. If this email is already registered, use Log in or Forgot password.');$('accountSubmit').textContent='Create account'}}
+ else if(this.mode==='signup'){const available=await this.rpc('tzg_username_available',{p_username:username});if(!available)throw Error('Username is unavailable. Choose another username.');const {data,error}=await this.accountRequest(this.client.auth.signUp({email,password,options:{data:{display_name:name,username},emailRedirectTo:this.redirectURL()}}));if(error)throw error;if(data.session)await this.connect();else{this.authStatus('Request accepted. Confirm your email within 5 hours, then log in. If this email is already registered, use Log in or Forgot password.');$('accountSubmit').textContent='Create account'}}
  else{const {error}=await this.client.auth.signInWithPassword({email,password});if(error)throw error;await this.connect()}
  }catch(e){this.error(e)}finally{this.busy=false;$('accountSubmit').disabled=false;this.renderConnected();$('accountStatus').scrollIntoView?.({block:'nearest'})}}
  redirectURL(){return location.origin+location.pathname}

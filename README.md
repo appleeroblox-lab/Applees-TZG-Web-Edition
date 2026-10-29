@@ -1,6 +1,10 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.114**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.115**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.115 planet lighting and world-space clouds
+
+Atmospheric in-scattering now follows the star direction and cannot exceed the incoming lit surface brightness. It does not add self-illumination to the planet's night side. Cloud positions no longer include the viewer/player origin. Native and compatibility renderers project the same wind-driven world positions; the screen-space Earth cloud passes were removed. Regressions cover star direction, unchanged material emission, world position invariance, actual ship/on-foot movement and PC/mobile startup. Native WebGL visual/device QA remains unavailable here.
 
 ## v0.0.114 shared spherical atmosphere
 

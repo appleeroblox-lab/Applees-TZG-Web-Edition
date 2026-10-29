@@ -43,7 +43,7 @@
     "test:mining-catalog:sql": "node tests/inventory-catalog-postgres.mjs",
     "test:onboarding": "node tests/guest-journey.mjs && node tests/onboarding-rewards-postgres.mjs",
     "test:menu-sizing": "node tests/menu-sizing.mjs && node tests/control-sizes.mjs",
-    "test:atmospheric-entry": "node tests/atmospheric-entry.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --atmospheric-entry-only",
+    "test:atmospheric-entry": "node tests/atmospheric-entry.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --atmospheric-entry-only && node --experimental-vm-modules tests/ui-smoke.mjs --cloud-world-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --cloud-world-only",
     "test:boot": "node tests/boot-connection.mjs && node --experimental-vm-modules tests/boot-entry.mjs && node --experimental-vm-modules tests/auth-boot-v96.mjs"
   },
   "dependencies": {

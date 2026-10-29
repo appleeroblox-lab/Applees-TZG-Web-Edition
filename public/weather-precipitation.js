@@ -1,5 +1,5 @@
 import {WorldPrecipitation,precipitationSegment,WEATHER_CELL,WEATHER_LAYER,weatherGroundHeight,wrapWeather} from './world-precipitation.js?v=119';
-import {earthBiome,biomeWeather} from './earth-biomes.js?v=59';
+import {earthBiome,biomeWeather} from './earth-biomes.js?v=122';
 import {ShipWeatherMask} from './ship-weather-mask.js';
 import * as T from './vendor/three.module.js';
 import {surfaceHeight} from './surface.js?v=119';

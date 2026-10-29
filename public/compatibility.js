@@ -1,6 +1,6 @@
 import {atmosphereProfile} from './atmosphere-profiles.js?v=119';
 import {GlobeRaster} from './globe-raster.js?v=119';
-import {earthBiome} from './earth-biomes.js?v=59';
+import {earthBiome} from './earth-biomes.js?v=122';
 import {gasInteriorProfile,gasCloudPosition} from './gas-interior.js?v=105';
 import {drawBodyMap} from './texture-geometry.js';
 import {graphicsPolicy} from './graphics-policy.js?v=110';

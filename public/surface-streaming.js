@@ -1,10 +1,10 @@
-import {DistantTerrain} from './distant-terrain.js?v=119';
-import {addTerrainDetail,terrainMaterial,setTerrainDetailEnabled} from './terrain-detail.js?v=100';
-import {earthBiome} from './earth-biomes.js?v=59';
+import {DistantTerrain} from './distant-terrain.js?v=122';
+import {addTerrainDetail,terrainMaterial,setTerrainDetailEnabled} from './terrain-detail.js?v=122';
+import {earthBiome} from './earth-biomes.js?v=122';
 import {onSurfaceRoad} from './surface-roads.js?v=119';
-import {settlementContains} from './settlements.js?v=119';
-import {biomeColor,biomeWeather} from './earth-biomes.js?v=59';
-import {sceneryPoints} from './tree-data.js?v=119';
+import {settlementContains} from './settlements.js?v=122';
+import {biomeColor,biomeWeather} from './earth-biomes.js?v=122';
+import {sceneryPoints} from './tree-data.js?v=122';
 import {graphicsPolicy} from './graphics-policy.js?v=110';
 import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 import * as T from './vendor/three.module.js';

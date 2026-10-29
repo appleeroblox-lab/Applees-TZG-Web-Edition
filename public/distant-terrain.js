@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
 import {surfaceHeight} from './surface.js?v=119';
-import {biomeColor} from './earth-biomes.js?v=59';
+import {biomeColor} from './earth-biomes.js?v=122';
 import {terrainColor} from './surface-palette.js';
 export const DISTANT_TERRAIN_RADIUS=60000;
 const rings=[0,48,96,144,192,240,288,384,512,768,1024,1536,2048,3072,4096,6144,8192,12288,16384,24576,32768,45000,DISTANT_TERRAIN_RADIUS],segments=96;

@@ -1,6 +1,16 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.121**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.122**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.122 live map buildings and natural biome placement
+
+Moved + / − controls into a separate column outside the square map. Movement now widens the circular HUD view by roughly 2.2× at ground level, easing back when stationary. Map half-range is capped at 983 m, giving a maximum 1966 × 1966 m square view. Biome icons select the actual biome name.
+
+Biome centers now use broad deterministic offsets and organic outlines. Sampling neighboring regions removes hard former-cell boundaries; launch-area plains remain protected. Village selection retains its original region lookup so village IDs, player edits and destruction records stay valid. Gold and Emerald deposits retain their existing resource IDs and types but appear only in open spaces inside villages; existing inventory and mining progress are preserved.
+
+Both maps draw overhead station roads/buildings, discovered village roofs and player-built blocks. Every frame checks geometry revisions; roof columns rebuild only after changes, while markers and map positions render every frame. Unloaded villages reuse deterministic blueprints with removed blocks filtered out. Map drawing creates no gameplay chunks.
+
+Automated checks cover PC/mobile zoom placement, the exact range cap, biome-name clicks, movement zoom, biome seam continuity, stable village IDs, exclusive resource locations and save persistence, plus building addition/removal and unloaded-village destruction. Physical GPU appearance and device FPS remain unverified.
 
 ## v0.0.121 minimap zoom and navigation lock
 

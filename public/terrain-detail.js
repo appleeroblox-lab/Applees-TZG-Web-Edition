@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {earthBiome,biomeSample} from './earth-biomes.js?v=59';
+import {earthBiome,biomeSample} from './earth-biomes.js?v=122';
 const enabled={value:1};let texture;
 export function setTerrainDetailEnabled(value){enabled.value=value?1:0}
 export function terrainKind(body,x,z){if(body.name==='Earth'){const biome=earthBiome(x,z);return biome.sound==='sand'?1:biome.sound==='snow'?2:0}return /ice|snow/i.test(body.type+' '+body.name)||['Pluto','Europa','Enceladus','Eris','Triton','Haumea','Makemake'].includes(body.name)?2:3}

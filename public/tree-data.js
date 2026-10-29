@@ -1,8 +1,8 @@
 import {insideBase} from './planet-base-layout.js?v=100';
 import {onSurfaceRoad} from './surface-roads.js?v=119';
-import {earthBiome} from './earth-biomes.js?v=59';
+import {earthBiome} from './earth-biomes.js?v=122';
 import * as T from './vendor/three.module.js';
-import {settlementContains} from './settlements.js?v=119';
+import {settlementContains} from './settlements.js?v=122';
 import {surfaceHeight} from './surface.js?v=119';
 import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 export const TREE_HP=100,TREE_REACH=6;

@@ -1,6 +1,10 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.112**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.113**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.113 nearby Earth transition and stronger reentry
+
+The terrain/globe blend now starts strictly above 4,000 m and completes at 5,000 m. A larger near-planet radius keeps Earth against the horizon at exit, with an opaque closed ground shell behind streamed terrain to seal dissolve holes. Sky fading still completes at 3,000 m. Reentry has brighter hull glow, longer turbulent sparks, a second bow-shock layer on desktop Ultra/Ultra+, and stronger bounded translation shake across ship cameras. Native WebGL visual/device verification remains outstanding in this environment.
 
 ## v0.0.111 extended atmosphere and reentry
 

@@ -1,4 +1,4 @@
-import {transitionState} from './atmospheric-flight.js?v=111';
+import {transitionState} from './atmospheric-flight.js?v=113';
 import {proximaAtmosphere} from './proxima-atmospheres.js';
 import * as T from './vendor/three.module.js';
 export function cloudProfile(body){const profile=proximaAtmosphere(body);if(profile)return {wind:7,height:260,opacity:.3,color:profile.cloud,width:130};return {Earth:{wind:7,height:260,opacity:.3,color:'#e8f1f6',width:130},Venus:{wind:14,height:210,opacity:.62,color:'#d9c195',width:190},Titan:{wind:5,height:180,opacity:.45,color:'#d9b879',width:160},Mars:{wind:9,height:300,opacity:.16,color:'#e3c8bb',width:140}}[body?.name]||null}

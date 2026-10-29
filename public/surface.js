@@ -1,11 +1,11 @@
-import {atmosphereBoundary,hasAtmosphere,ATMOSPHERE_HEIGHT,LANDING_HEIGHT,LANDING_MESSAGE,atmosphereSpeedCap,SPACE_METERS_PER_UNIT} from './atmospheric-flight.js?v=111';
+import {atmosphereBoundary,hasAtmosphere,ATMOSPHERE_HEIGHT,LANDING_HEIGHT,LANDING_MESSAGE,atmosphereSpeedCap,SPACE_METERS_PER_UNIT} from './atmospheric-flight.js?v=113';
 import {proximaAtmosphere} from './proxima-atmospheres.js';
 import {rotateShip} from './ship-rotation.js';
 import {surfaceFrame} from './surface-frame.js';
 import {padHeightAt} from './surface-layout.js';
-import {holdVelocity} from './speed-control.js?v=111';
+import {holdVelocity} from './speed-control.js?v=113';
 import * as T from './vendor/three.module.js';
-import {V,surfaceAttitude} from './flight.js?v=111';
+import {V,surfaceAttitude} from './flight.js?v=113';
 export const isGasGiant=body=>/GAS GIANT|ICE GIANT/.test(body?.type||'');
 export function gasExitRadius(body){return Math.max(340,Math.min(480,(body?.r||180)*1.2))}
 export const CONTACT=1.39,LAUNCH_SECONDS=5;

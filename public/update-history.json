@@ -1,8 +1,23 @@
 {
-  "currentVersion": "v0.0.112",
+  "currentVersion": "v0.0.113",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 113,
+      "version": "v0.0.113",
+      "date": "2026-10-29",
+      "title": "I fixed the nearby Earth transition and intensified reentry",
+      "changes": [
+        "I moved the terrain-to-planet blend to 4,000–5,000m while keeping the sky fade complete by 3,000m.",
+        "I enlarged the near-planet horizon and matched the space boundary so Earth remains close at atmospheric exit. An opaque ground shell seals terrain gaps during the blend.",
+        "I intensified airflow-facing plasma, added a compressed bow shock on desktop Ultra/Ultra+, lengthened fiery streaks and added turbulent ember movement. Low/Medium and mobile retain bounded effects.",
+        "I made reentry shake roughly four times stronger on PC, with stronger mobile shake, while retaining smooth fades and independent camera rotation and zoom."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 112,
       "version": "v0.0.112",

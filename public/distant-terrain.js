@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {surfaceHeight} from './surface.js?v=116';
+import {surfaceHeight} from './surface.js?v=117';
 import {biomeColor} from './earth-biomes.js?v=59';
 import {terrainColor} from './surface-palette.js';
 export const DISTANT_TERRAIN_RADIUS=60000;

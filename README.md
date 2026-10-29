@@ -1,6 +1,12 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.116**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.117**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.117 clearer moving globes and body-specific atmosphere colors
+
+Mars and other atmospheric worlds now share body-specific colors across sky, lower fog and the orbital rim. Io, TRAPPIST-1 e/f/g and simulated solid worlds gain artistic gameplay atmospheres; these are not scientific claims about exoplanet atmospheres. Lower terrain and clouds become fully fog-covered during ascent, while the separate globe uses bundled surface maps without ground haze. The atmospheric rim is restricted to the silhouette; clouds are composited into the opaque surface instead of a transparent sphere. Wind moves clouds independently of the paused orbital Earth clock. Horizontal ship travel slowly and reversibly rotates the local globe, without turning the ordinary space body.
+
+High-speed wing trails stop once at their length budget, with a transparent tail. Atmospheric exits reserve at least 20 world units of clearance outside the normal planet for the ship and chase camera. Both landing buttons hide outside valid landing conditions, including the existing 800m restriction. Free-camera plus/minus buttons are removed; the speed sliders, wheel and keyboard remain. The 2D fallback samples the same sphere and texture in a bounded 192×108 raster at up to 24 updates/sec. Automated checks cover palettes, haze exclusion, texture/cloud shader bindings, motion, clock pause/resume, landing visibility, exit clearance, trail clipping and fallback projection. Native WebGL appearance and physical-device FPS remain unverified.
 
 ## v0.0.116 close Earth horizon and hidden terrain swaps
 

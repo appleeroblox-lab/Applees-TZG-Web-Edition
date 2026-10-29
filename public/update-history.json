@@ -1,8 +1,25 @@
 {
-  "currentVersion": "v0.0.116",
+  "currentVersion": "v0.0.117",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 117,
+      "version": "v0.0.117",
+      "date": "2026-10-29",
+      "title": "Body-colored atmospheres and clearer moving globes",
+      "changes": [
+        "Matched sky, fog, clouds and orbital rim colors per world, including Mars. Added artistic atmospheres for Io, TRAPPIST-1 e/f/g and simulated solid worlds.",
+        "Covered lower terrain and clouds with dense altitude fog before the black-covered globe swap. Globe surfaces use their own bundled textures without ground fog or full-disk transparent haze.",
+        "Added silhouette-only atmospheric glow, independent wind-driven clouds composited into the opaque globe and slow reversible surface movement based on ship travel. Earth daylight pauses in globe mode and space.",
+        "Clipped high-speed white wing trails once at each tail instead of folding old endpoints. Atmospheric exits leave camera clearance outside the ordinary planet ball.",
+        "Hide both Land buttons when landing is unavailable; preserve the 800m guard. Removed the free-camera plus/minus buttons while retaining sliders, wheel and keyboard controls.",
+        "Added bounded textured globe rendering for the 2D fallback and PC/mobile regression coverage. Native GPU appearance and physical-device frame rates remain unverified."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 116,
       "version": "v0.0.116",

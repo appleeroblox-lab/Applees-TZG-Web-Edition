@@ -1,6 +1,7 @@
+import {atmosphereProfile} from './atmosphere-profiles.js?v=117';
 export const ATMOSPHERE_HEIGHT=5000,LANDING_HEIGHT=800,SPACE_METERS_PER_UNIT=100000;
 export const LANDING_MESSAGE='Descend below 800m to land.';
-export function hasAtmosphere(body){return !!body&&(body.hasAtmosphere===true||['Earth','Venus','Mars','Titan','Proxima b','Proxima d'].includes(body.name)||/GAS GIANT|ICE GIANT/.test(body.type||''))}
+export function hasAtmosphere(body){return !!body&&(body.hasAtmosphere===true||!!atmosphereProfile(body)||/GAS GIANT|ICE GIANT/.test(body.type||''))}
 const smooth=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t)};
 // Anticipate the upper cap before crossing 800m; no velocity reset at the boundary.
 export function atmosphereSpeedCap(body,altitude,vertical=0){if(!hasAtmosphere(body))return 450;if(altitude>=800)return 100;return vertical>0?450-350*smooth(600,800,altitude):450}
@@ -17,3 +18,8 @@ export function entryEffects(body,altitude,speed,vertical=0){
 
 // Gas worlds keep their radial interior; normalize its compressed outer shell to the same effect band.
 export function atmosphereAltitude(session){if(session?.active&&session.body?.solid===false&&hasAtmosphere(session.body))return Math.max(0,Math.min(ATMOSPHERE_HEIGHT,(session.coreDistance-104)/Math.max(1,session.exitDistance-104)*ATMOSPHERE_HEIGHT));return session?.altitude||0}
+
+// Leave room for the chase camera and ship outside the ordinary space sphere.
+export function surfaceExitRadius(body){return Math.max(atmosphereBoundary(body)+.05,body.r+Math.max(20,body.r*.15))}
+export function canLandHere(session){return !!(session?.active&&session.body?.solid&&session.body.landable!==false&&!session.onGround&&!session.crew?.onFoot&&session.phase!=='countdown'&&session.phase!=='descending'&&(!hasAtmosphere(session.body)||session.altitude<LANDING_HEIGHT))}
+export function advanceLocalDay(session,transition){return !!(session?.active&&session.body?.name==='Earth'&&session.altitude<=4000&&transition?.cover?.mode!=='orbit')}

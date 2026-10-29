@@ -1,11 +1,12 @@
-import {C_UNITS,DEFAULT_MAX_C,BOOST_MAX_C} from './speed-control.js?v=113';
-import {formatSpeed} from './explorer.js?v=113';
+import {canLandHere} from './atmospheric-flight.js?v=117';
+import {C_UNITS,DEFAULT_MAX_C,BOOST_MAX_C} from './speed-control.js?v=117';
+import {formatSpeed} from './explorer.js?v=117';
 export function updateReferenceHUD({surface,crew,flight,boostSelected,explorer,shipBoost}){
  const $=id=>document.getElementById(id),active=surface.active,foot=crew.onFoot,free=!!explorer?.enabled,flying=!free&&!foot&&(!active||surface.launched),parked=active&&surface.phase==='parked';
  document.body.classList.toggle('shipFlying',flying);document.body.classList.toggle('onPad',parked&&!foot);document.body.classList.toggle('launching',surface.phase==='countdown');
  $('inventoryBtn').hidden=!foot;$('inventoryBtn').textContent=$('inventoryDialog').open?'Close Inventory':'Open Inventory';$('gearBar').hidden=!foot;$('lookStick').hidden=true;$('moveStick').hidden=!foot&&!free;$('freeCameraSpeed').hidden=!free;document.body.classList.toggle('freeCamera',free);
  $('flightPad').hidden=!flying;$('flightRight').hidden=!flying;$('flightGauge').hidden=foot||(free&&flight.nav?.kind!=='warp');$('gaugeWarpBtn').hidden=active||foot||free;$('gaugeWarpBtn').disabled=!!flight.nav;
- $('surfaceLaunchBtn').hidden=!parked||foot||free;$('surfaceLandBtn').hidden=!flying||!active||!surface.body.solid||surface.onGround;$('surfaceAbortBtn').hidden=surface.phase!=='countdown'&&surface.phase!=='descending';
+ $('surfaceLaunchBtn').hidden=!parked||foot||free;$('surfaceLandBtn').hidden=!flying||!canLandHere(surface);$('surfaceAbortBtn').hidden=surface.phase!=='countdown'&&surface.phase!=='descending';
  $('exitShipBtn').hidden=!active||(foot?!crew.canBoard:!parked);$('mineBtn').hidden=!foot;
  $('locationCaption').lastChild.textContent=active?' Current Celestial Body':' Current Location';$('bodyName').textContent=active?surface.body.name:'Deep Space';
  const temperature={Earth:15,Venus:464,Mars:-63,Moon:-20,Mercury:167,Io:-143,Europa:-160,Titan:-179,Ganymede:-163,Callisto:-139,Triton:-235,Pluto:-229}[surface.body?.name]??-270;

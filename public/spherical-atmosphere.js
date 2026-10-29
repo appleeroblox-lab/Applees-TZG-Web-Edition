@@ -2,7 +2,7 @@ import * as T from './vendor/three.module.js';
 import {hasAtmosphere,PLANET_VIEW_RADIUS} from './atmospheric-flight.js?v=114';
 const bindings=new WeakMap();
 const smooth=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t)};
-export function atmosphereFogRange(height,near=45,far=158){const clear=smooth(350,4000,height);return {near:near+(20000-near)*clear,far:far+(300000-far)*clear}}
+export function atmosphereFogRange(height,near=45,far=158){const clear=smooth(350,4000,height);return {near:Math.max(near+(6000-near)*clear,height*1.2+near),far:Math.max(far+(24000-far)*clear,height*6+far)}}
 export function makeAirUniforms(){return {airCenter:{value:new T.Vector3(0,-PLANET_VIEW_RADIUS,0)},airRadius:{value:PLANET_VIEW_RADIUS},airMeters:{value:1},airColor:{value:new T.Color('#c4e7f6')},airWeather:{value:0},airSamples:{value:3},airEye:{value:new T.Vector3()},airSunDirection:{value:new T.Vector3(0,1,0)},airOverrideEye:{value:0}}}
 export function airColor(body,state){return state?.horizon||new T.Color(({Earth:'#c4e7f6',Venus:'#e7c183',Mars:'#d9ae8f',Titan:'#d5a85e','Proxima b':'#d6b5aa','Proxima d':'#d6b5aa'})[body?.name]||'#b8dcf2')}
 export function airDensity(height,weather=0){const h=Math.max(0,height);return (Math.exp(-h/950)*.00032+Math.exp(-h/65)*weather*.025)*(1-smooth(4200,5000,h))}

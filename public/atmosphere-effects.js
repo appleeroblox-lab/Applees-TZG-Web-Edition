@@ -1,4 +1,4 @@
-import {airColor,atmosphereFogRange} from './spherical-atmosphere.js?v=115';
+import {airColor,atmosphereFogRange} from './spherical-atmosphere.js?v=116';
 import {hasAtmosphere} from './atmospheric-flight.js?v=113';
 import {transitionState} from './atmospheric-flight.js?v=113';
 import {proximaAtmosphere} from './proxima-atmospheres.js';

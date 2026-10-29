@@ -266,3 +266,5 @@ body.referenceHUD #boostTimerTrack{width:140px;max-width:50vw;height:14px;margin
 /* Scale each control group independently; retain its bottom/side anchor and drag position. */
 body.referenceHUD #flightPad{transform-origin:bottom left;scale:var(--ship-left-scale,1)}
 body.referenceHUD #flightRight{transform-origin:bottom right;scale:var(--ship-right-scale,1)}
+
+#terrainTransitionFade{position:fixed;inset:0;z-index:96;background:#000;opacity:0;pointer-events:none}

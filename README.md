@@ -1,6 +1,10 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.115**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.116**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.116 close Earth horizon and hidden terrain swaps
+
+A separate near-Earth view uses the bundled Earth map and a blue atmospheric limb. Ground/orbit geometry switches under a short black fade above 4,000m (return below 3,900m), with no globe or backing sphere visible from the ground. One distant terrain mesh extends 60km with fewer than 2,500 vertices and no extra trees or grass. Normal space planet materials remain independent. Automated regression checks cover fade timing, ground visibility, mesh budgets and startup; native GPU appearance and physical-device performance remain unverified in this environment.
 
 ## v0.0.115 planet lighting and world-space clouds
 

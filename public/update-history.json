@@ -1,8 +1,23 @@
 {
-  "currentVersion": "v0.0.113",
+  "currentVersion": "v0.0.114",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 114,
+      "version": "v0.0.114",
+      "date": "2026-10-29",
+      "title": "I unified atmospheric fog and the planet transition",
+      "changes": [
+        "I made the globe and opaque ground shell obey the same distance fog as terrain, so they cannot bypass fog layers.",
+        "I added shared spherical atmospheric extinction and haze to surface and space planet rendering. Lower atmosphere remains visible when looking downward, even after the overhead sky darkens.",
+        "I replaced the early black fog tint and abrupt horizon clearing with continuous altitude-dependent fog ranges and a horizon that fades with the 4,000–5,000m terrain transition.",
+        "I removed the unfogged legacy atmosphere halo and matched haze colors, weather density and physical scale across local and space rendering. Mobile uses fewer atmospheric samples."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 113,
       "version": "v0.0.113",

@@ -1,6 +1,12 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.113**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.114**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.114 shared spherical atmosphere
+
+Terrain, the transition globe and the opaque ground backing now obey local distance fog and share one spherical haze model. It integrates exponential atmospheric density along the view ray using 2–6 samples and the same physical-height conversion in surface and space. This keeps lower-atmosphere haze present when looking down from a dark overhead sky. Fog ranges open continuously with altitude, and horizon clearing follows the 4,000–5,000 m geometry blend. The unfogged legacy halo and black material/fog tint hacks have been removed. Sky light objects retain their existing rendering.
+
+Reference: [Juno's official 1.4 release notes](https://www.simplerockets.com/Releases/View/340106) describe sky/atmosphere scattering, scaled-space lighting and transition fixes. This game's implementation uses a bounded sampling approximation suitable for its existing renderer. Regression tests cover fog bindings on actual transition layers, weather extinction, surface/space optical-depth equivalence, altitude continuity and mobile budgets. Native WebGL visual/device QA remains unavailable in this environment.
 
 ## v0.0.113 nearby Earth transition and stronger reentry
 

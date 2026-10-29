@@ -1,6 +1,14 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.117**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.118**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.118 globe alignment and terrain-owned scenery
+
+Globe rotation now moves surface features opposite the ship's horizontal travel. The entry latitude and source planet rotation are preserved, with no independent Pacific bias; travelled globe geography is carried into space exit. High-altitude entry initializes directly in globe mode. Globe speed reaches 500 m/s above 4,000m, increasing smoothly from the existing 100 m/s cap at 3,500m. Lower-atmosphere speed and landing restrictions remain in place.
+
+The globe loads the same selected texture as the normal planet ball. Earth's duplicate cloud overlay is removed because its image already includes clouds, and the default launch site is placed on land in that map. Non-Earth terrain/air palettes use representative colors sampled from the bundled artwork. Local clouds belong to loaded terrain chunks, drift and fade within those chunks, and reuse the same bounded mesh pool after unloading/respawning. Exoplanets and simulated planets gain decorative alien trees within existing scenery batches; resource/reward behavior is unchanged. The first-person shadow caster is one capsule and still follows the Global Shadow setting. Update logs use neutral past-tense wording.
+
+Regression coverage includes first-frame orbital entry, source texture URLs/orientation, movement direction and exit continuity, a smooth 500 m/s cap, streamed cloud ownership/reuse, alien scenery budgets, capsule geometry and release wording. Native GPU appearance and physical-device FPS remain unverified.
 
 ## v0.0.117 clearer moving globes and body-specific atmosphere colors
 

@@ -1,6 +1,6 @@
-import {atmosphereProfile} from './atmosphere-profiles.js?v=117';
+import {atmosphereProfile} from './atmosphere-profiles.js?v=118';
 import * as T from './vendor/three.module.js';
-import {hasAtmosphere,PLANET_VIEW_RADIUS} from './atmospheric-flight.js?v=117';
+import {hasAtmosphere,PLANET_VIEW_RADIUS} from './atmospheric-flight.js?v=118';
 const bindings=new WeakMap();
 const smooth=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t)};
 export function atmosphereFogRange(height,near=45,far=158){const cover=smooth(450,1500,height);return {near:near*(1-cover)+height*.12*cover,far:far*(1-cover)+Math.max(far,height*.72)*cover}}
@@ -14,7 +14,7 @@ uniform vec3 airCenter;uniform float airRadius;uniform float airMeters;uniform v
 float airSmooth(float a,float b,float x){float t=clamp((x-a)/(b-a),0.,1.);return t*t*(3.-2.*t);}
 float airExtinction(vec3 eye,vec3 point){vec3 ray=point-eye;float distance=length(ray);if(distance<.00001)return 0.;vec3 direction=ray/distance;vec3 offset=eye-airCenter;float outer=airRadius+5000./airMeters;float b=dot(offset,direction);float disc=b*b-dot(offset,offset)+outer*outer;if(disc<=0.)return 0.;float root=sqrt(disc);float start=max(0.,-b-root);float finish=min(distance,-b+root);if(finish<=start)return 0.;float density=0.;for(int i=0;i<6;i++){if(i>=airSamples)break;float u=(float(i)+.5)/float(airSamples);float t=1.-(1.-u)*(1.-u);vec3 p=eye+direction*mix(start,finish,t);float h=max(0.,(length(p-airCenter)-airRadius)*airMeters);density+=(exp(-h/950.)*.00032+exp(-h/65.)*airWeather*.025)*(1.-airSmooth(4200.,5000.,h))*2.*(1.-u);}return 1.-exp(-min(20.,density*(finish-start)*airMeters/float(airSamples)));}
 `;
-export function installAirMaterial(material,uniforms){if(!material||(!material.isMeshStandardMaterial&&!material.isMeshBasicMaterial)||bindings.has(material))return;bindings.set(material,uniforms);material.fog=true;const before=material.onBeforeCompile,key=material.customProgramCacheKey();material.onBeforeCompile=function(shader,renderer){before.call(this,shader,renderer);Object.assign(shader.uniforms,uniforms);shader.vertexShader='varying vec3 airWorldPoint;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <worldpos_vertex>',`#include <worldpos_vertex>
+export function installAirMaterial(material,uniforms){if(!material||material.userData.terrainCloud||(!material.isMeshStandardMaterial&&!material.isMeshBasicMaterial)||bindings.has(material))return;bindings.set(material,uniforms);material.fog=true;const before=material.onBeforeCompile,key=material.customProgramCacheKey();material.onBeforeCompile=function(shader,renderer){before.call(this,shader,renderer);Object.assign(shader.uniforms,uniforms);shader.vertexShader='varying vec3 airWorldPoint;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <worldpos_vertex>',`#include <worldpos_vertex>
 vec4 airVertex=vec4(transformed,1.);
 #ifdef USE_BATCHING
 airVertex=batchingMatrix*airVertex;

@@ -1,4 +1,4 @@
-import {atmosphereSpeedCap,atmosphereAltitude} from './atmospheric-flight.js?v=117';
+import {atmosphereSpeedCap,atmosphereAltitude} from './atmospheric-flight.js?v=118';
 import * as T from './vendor/three.module.js';
 export const C_UNITS=299792.458/100,DEFAULT_MAX_C=150,BOOST_MAX_C=250,BOOST_MULTIPLIER=1.5;
 export const SURFACE_MIN_SPEED=5;

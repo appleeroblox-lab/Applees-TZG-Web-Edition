@@ -1,8 +1,27 @@
 {
-  "currentVersion": "v0.0.117",
+  "currentVersion": "v0.0.118",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 118,
+      "version": "v0.0.118",
+      "date": "2026-10-29",
+      "title": "Corrected globe motion, streamed clouds and alien scenery",
+      "changes": [
+        "Corrected globe travel direction, retained the actual entry latitude and carried travelled globe geography into space exit. Orbital flight now reaches 500 m/s, with a smooth cap increase from 3,500m to 4,000m.",
+        "Opened high-altitude arrivals directly in globe mode, removing the brief ground-view flash and second transition.",
+        "Used the same selected surface texture as each ordinary planet ball. Removed the forced Pacific orientation and duplicate Earth cloud overlay; the default Earth launch site sits on mapped land.",
+        "Matched non-Earth terrain and atmosphere color families to representative colors sampled from the bundled artwork.",
+        "Attached cloud ownership to generated terrain chunks. Clouds drift and fade within their chunks, despawn with unloaded terrain and reuse a fixed mesh pool on newly generated terrain.",
+        "Added low-poly alien trees to exoplanet and simulated-planet scenery batches without adding separate tree draw calls or changing resource rewards.",
+        "Replaced the first-person shadow caster with one capsule, preserving the Global Shadow setting.",
+        "Changed update-log titles and entries to neutral release wording such as Added and Fixed."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 117,
       "version": "v0.0.117",
@@ -38,11 +57,11 @@
       "legacyVersion": 115,
       "version": "v0.0.115",
       "date": "2026-10-29",
-      "title": "I fixed glowing planets and camera-following clouds",
+      "title": "Fixed glowing planets and camera-following clouds",
       "changes": [
-        "I made atmospheric haze follow star lighting and limited its radiance to the existing lit surface brightness, preventing planets from self-glowing in space.",
-        "I removed camera/player offsets from cloud positions. Clouds keep fixed world coordinates and drift only with wind.",
-        "I replaced the compatibility renderer’s screen-following Earth clouds with the same projected world-space cloud positions, keeping day/night tint and weather opacity."
+        "Made atmospheric haze follow star lighting and limited its radiance to the existing lit surface brightness, preventing planets from self-glowing in space.",
+        "Removed camera/player offsets from cloud positions. Clouds keep fixed world coordinates and drift only with wind.",
+        "Replaced the compatibility renderer’s screen-following Earth clouds with the same projected world-space cloud positions, keeping day/night tint and weather opacity."
       ],
       "source": {
         "kind": "current release"
@@ -52,12 +71,12 @@
       "legacyVersion": 114,
       "version": "v0.0.114",
       "date": "2026-10-29",
-      "title": "I unified atmospheric fog and the planet transition",
+      "title": "Unified atmospheric fog and the planet transition",
       "changes": [
-        "I made the globe and opaque ground shell obey the same distance fog as terrain, so they cannot bypass fog layers.",
-        "I added shared spherical atmospheric extinction and haze to surface and space planet rendering. Lower atmosphere remains visible when looking downward, even after the overhead sky darkens.",
-        "I replaced the early black fog tint and abrupt horizon clearing with continuous altitude-dependent fog ranges and a horizon that fades with the 4,000–5,000m terrain transition.",
-        "I removed the unfogged legacy atmosphere halo and matched haze colors, weather density and physical scale across local and space rendering. Mobile uses fewer atmospheric samples."
+        "Made the globe and opaque ground shell obey the same distance fog as terrain, so they cannot bypass fog layers.",
+        "Added shared spherical atmospheric extinction and haze to surface and space planet rendering. Lower atmosphere remains visible when looking downward, even after the overhead sky darkens.",
+        "Replaced the early black fog tint and abrupt horizon clearing with continuous altitude-dependent fog ranges and a horizon that fades with the 4,000–5,000m terrain transition.",
+        "Removed the unfogged legacy atmosphere halo and matched haze colors, weather density and physical scale across local and space rendering. Mobile uses fewer atmospheric samples."
       ],
       "source": {
         "kind": "current release"
@@ -67,12 +86,12 @@
       "legacyVersion": 113,
       "version": "v0.0.113",
       "date": "2026-10-29",
-      "title": "I fixed the nearby Earth transition and intensified reentry",
+      "title": "Fixed the nearby Earth transition and intensified reentry",
       "changes": [
-        "I moved the terrain-to-planet blend to 4,000–5,000m while keeping the sky fade complete by 3,000m.",
-        "I enlarged the near-planet horizon and matched the space boundary so Earth remains close at atmospheric exit. An opaque ground shell seals terrain gaps during the blend.",
-        "I intensified airflow-facing plasma, added a compressed bow shock on desktop Ultra/Ultra+, lengthened fiery streaks and added turbulent ember movement. Low/Medium and mobile retain bounded effects.",
-        "I made reentry shake roughly four times stronger on PC, with stronger mobile shake, while retaining smooth fades and independent camera rotation and zoom."
+        "Moved the terrain-to-planet blend to 4,000–5,000m while keeping the sky fade complete by 3,000m.",
+        "Enlarged the near-planet horizon and matched the space boundary so Earth remains close at atmospheric exit. An opaque ground shell seals terrain gaps during the blend.",
+        "Intensified airflow-facing plasma, added a compressed bow shock on desktop Ultra/Ultra+, lengthened fiery streaks and added turbulent ember movement. Low/Medium and mobile retain bounded effects.",
+        "Made reentry shake roughly four times stronger on PC, with stronger mobile shake, while retaining smooth fades and independent camera rotation and zoom."
       ],
       "source": {
         "kind": "current release"
@@ -82,10 +101,10 @@
       "legacyVersion": 112,
       "version": "v0.0.112",
       "date": "2026-10-29",
-      "title": "I fixed loading stuck at zero",
+      "title": "Fixed loading stuck at zero",
       "changes": [
-        "I let Guest and successful login continue loading immediately while slow account connection checks finish independently. Late account responses cannot replace the selected mode.",
-        "I show manifest loading progress immediately and display a Retry button if the loader itself cannot load, without clearing saved progress."
+        "Let Guest and successful login continue loading immediately while slow account connection checks finish independently. Late account responses cannot replace the selected mode.",
+        "Show manifest loading progress immediately and display a Retry button if the loader itself cannot load, without clearing saved progress."
       ],
       "source": {
         "kind": "current release"
@@ -95,13 +114,13 @@
       "legacyVersion": 111,
       "version": "v0.0.111",
       "date": "2026-10-29",
-      "title": "I extended atmospheres and improved reentry",
+      "title": "Extended atmospheres and improved reentry",
       "changes": [
-        "I extended atmospheric flight to 5,000m, faded the sky by 3,000m and blended terrain into a spherical planet visible from 4,000m.",
-        "I set entry speed to 50 m/s and the upper atmosphere cap to 100 m/s, with a 450 m/s lower maximum and smooth cap transitions. Landing still requires descending below 800m.",
-        "I added orange-red airflow-facing heat shields, animated plasma, sparks and fiery streaks. Reentry peaks at 1,500–1,000m, fades to 800m and causes no damage.",
-        "I smoothed reentry and weaker ascent shake across all ship cameras, preserving rotation and zoom.",
-        "I added subtle heat distortion on High and above, richer Ultra/Ultra+ glow, bounded mobile particle budgets and preserved white space wing trails."
+        "Extended atmospheric flight to 5,000m, faded the sky by 3,000m and blended terrain into a spherical planet visible from 4,000m.",
+        "Set entry speed to 50 m/s and the upper atmosphere cap to 100 m/s, with a 450 m/s lower maximum and smooth cap transitions. Landing still requires descending below 800m.",
+        "Added orange-red airflow-facing heat shields, animated plasma, sparks and fiery streaks. Reentry peaks at 1,500–1,000m, fades to 800m and causes no damage.",
+        "Smoothed reentry and weaker ascent shake across all ship cameras, preserving rotation and zoom.",
+        "Added subtle heat distortion on High and above, richer Ultra/Ultra+ glow, bounded mobile particle budgets and preserved white space wing trails."
       ],
       "source": {
         "kind": "current release"
@@ -111,13 +130,13 @@
       "legacyVersion": 110,
       "version": "v0.0.110",
       "date": "2026-10-28",
-      "title": "I improved graphics and atmospheric flight",
+      "title": "Improved graphics and atmospheric flight",
       "changes": [
-        "I added 2,500m solid-world atmospheres, a 200 m/s upper band and a 450 m/s lower maximum with smooth cap transitions. Entry and exit retain control and momentum.",
-        "I added airflow-facing plasma, wind and subtle camera shake. Plasma peaks at 1,500–1,000m, fades to 800m and stays off below it. Exit effects are weaker, and reentry causes no damage.",
-        "I require atmospheric ships to descend below 800m before Land can engage. Airless landing remains available.",
-        "I added white wingtip trails in space, longer and brighter while boosting, with an independent saved Settings toggle. The ship model is unchanged.",
-        "I added planet micro-relief, sharper map sampling, soft cloud billows, star twinkle, richer black-hole bands and Ultra highlight/shadow improvements, with bounded mobile/Low budgets."
+        "Added 2,500m solid-world atmospheres, a 200 m/s upper band and a 450 m/s lower maximum with smooth cap transitions. Entry and exit retain control and momentum.",
+        "Added airflow-facing plasma, wind and subtle camera shake. Plasma peaks at 1,500–1,000m, fades to 800m and stays off below it. Exit effects are weaker, and reentry causes no damage.",
+        "Require atmospheric ships to descend below 800m before Land can engage. Airless landing remains available.",
+        "Added white wingtip trails in space, longer and brighter while boosting, with an independent saved Settings toggle. The ship model is unchanged.",
+        "Added planet micro-relief, sharper map sampling, soft cloud billows, star twinkle, richer black-hole bands and Ultra highlight/shadow improvements, with bounded mobile/Low budgets."
       ],
       "source": {
         "kind": "current release"
@@ -127,11 +146,11 @@
       "legacyVersion": 109,
       "version": "v0.0.109",
       "date": "2026-10-28",
-      "title": "I made menus compact and fixed portrait controls",
+      "title": "Made menus compact and fixed portrait controls",
       "changes": [
-        "I added separate Menu Size settings for Account, Party, Global Chat, Daily Rewards, Update Logs and Universe Map, with smaller defaults and saved device preferences.",
-        "I separated Run Button Size from Jump Button Size, matched the Gift and Global Chat icons, and spaced Guest, Continue and sign-in actions.",
-        "I gave portrait mode compact HUD and separate steering, thrust and speed-gauge areas, and refresh the canvas after orientation/fullscreen/viewport changes."
+        "Added separate Menu Size settings for Account, Party, Global Chat, Daily Rewards, Update Logs and Universe Map, with smaller defaults and saved device preferences.",
+        "Separated Run Button Size from Jump Button Size, matched the Gift and Global Chat icons, and spaced Guest, Continue and sign-in actions.",
+        "Gave portrait mode compact HUD and separate steering, thrust and speed-gauge areas, and refresh the canvas after orientation/fullscreen/viewport changes."
       ],
       "source": {
         "kind": "current release"
@@ -141,13 +160,13 @@
       "legacyVersion": 108,
       "version": "v0.0.108",
       "date": "2026-10-28",
-      "title": "I improved guest menus, tutorial saves and daily supplies",
+      "title": "Improved guest menus, tutorial saves and daily supplies",
       "changes": [
-        "I save fully completed tutorials and retry interrupted account syncs. Skip leaves the tutorial available for next time. Guest tutorial preferences are remembered on this device.",
-        "I moved the Guest label below the top-right buttons and kept the account button icon-only. Guest account, friends and reward menus explain each feature and close with an X.",
-        "I added public Online/Offline status and refreshed player profiles, plus Guest Mode help.",
-        "I moved Daily Rewards to a gift icon left of Global Chat, with a ready badge and one message sound per available daily reward.",
-        "I centered and compacted the reward menu, added currency/item icons, and added building supplies throughout the week, including 64 TNT on Day 7. Server claims remain atomic and safe to retry."
+        "Save fully completed tutorials and retry interrupted account syncs. Skip leaves the tutorial available for next time. Guest tutorial preferences are remembered on this device.",
+        "Moved the Guest label below the top-right buttons and kept the account button icon-only. Guest account, friends and reward menus explain each feature and close with an X.",
+        "Added public Online/Offline status and refreshed player profiles, plus Guest Mode help.",
+        "Moved Daily Rewards to a gift icon left of Global Chat, with a ready badge and one message sound per available daily reward.",
+        "Centered and compacted the reward menu, added currency/item icons, and added building supplies throughout the week, including 64 TNT on Day 7. Server claims remain atomic and safe to retry."
       ],
       "source": {
         "kind": "current release"
@@ -157,14 +176,14 @@
       "legacyVersion": 107,
       "version": "v0.0.107",
       "date": "2026-10-28",
-      "title": "I added guest play, a beginner guide and account rewards",
+      "title": "Added guest play, a beginner guide and account rewards",
       "changes": [
-        "I added Play as Guest. Guests can explore, fly, land, mine, craft and sell with temporary progress, read Global Chat and view public profiles. Signing in loads account progress without refreshing.",
-        "I added a short PC and mobile tutorial, a Skip option, Replay Tutorial in Settings and optional beginner tips. Account tutorial completion is saved; guest completion lasts only for the current page session.",
-        "I added daily rewards from 100 FP to 500 FP, with 10 RC on Day 7. The cycle repeats after seven claims and refreshes at midnight UTC.",
+        "Added Play as Guest. Guests can explore, fly, land, mine, craft and sell with temporary progress, read Global Chat and view public profiles. Signing in loads account progress without refreshing.",
+        "Added a short PC and mobile tutorial, a Skip option, Replay Tutorial in Settings and optional beginner tips. Account tutorial completion is saved; guest completion lasts only for the current page session.",
+        "Added daily rewards from 100 FP to 500 FP, with 10 RC on Day 7. The cycle repeats after seven claims and refreshes at midnight UTC.",
         "New accounts receive a one-time welcome gift of 250 FP and 5 RC. Existing accounts keep their balances and do not receive this new-account gift.",
-        "I added discovery marks to Universe Map and aggregate player statistics to the developer menu.",
-        "I reduced startup asset preloading and stopped hidden Universe Map thumbnails from requesting textures. All five graphics modes and existing world effects remain available."
+        "Added discovery marks to Universe Map and aggregate player statistics to the developer menu.",
+        "Reduced startup asset preloading and stopped hidden Universe Map thumbnails from requesting textures. All five graphics modes and existing world effects remain available."
       ],
       "source": {
         "kind": "current release"
@@ -174,12 +193,12 @@
       "legacyVersion": 106,
       "version": "v0.0.106",
       "date": "2026-10-28",
-      "title": "I fixed graphics choices and mining sign-in interruptions",
+      "title": "Fixed graphics choices and mining sign-in interruptions",
       "changes": [
-        "I removed screen-edge labels for locked destinations. Their normal labels still appear when they are in view.",
-        "I added a visible Graphics quality dropdown with Low, Medium, High, Ultra and Ultra+. Older cached page layouts are repaired when the current game loads.",
-        "I stopped inventory validation and connection errors from reopening the sign-in screen. Unsaved changes stay pending, and real account/session errors still require sign-in.",
-        "I prepared a server catalogue update for every current solid body and item. Cloud saves from newer bodies still need that database update applied."
+        "Removed screen-edge labels for locked destinations. Their normal labels still appear when they are in view.",
+        "Added a visible Graphics quality dropdown with Low, Medium, High, Ultra and Ultra+. Older cached page layouts are repaired when the current game loads.",
+        "Stopped inventory validation and connection errors from reopening the sign-in screen. Unsaved changes stay pending, and real account/session errors still require sign-in.",
+        "Prepared a server catalogue update for every current solid body and item. Cloud saves from newer bodies still need that database update applied."
       ],
       "source": {
         "kind": "current release"
@@ -189,15 +208,15 @@
       "legacyVersion": 105,
       "version": "v0.0.105",
       "date": "2026-10-28",
-      "title": "I improved graphics, fog and space navigation",
+      "title": "Improved graphics, fog and space navigation",
       "changes": [
-        "I added Ultra and Ultra+ with denser scenery, more clouds and stars, higher resolution budgets, sharper images and higher-quality shadows.",
-        "I fixed empty-space clicks locking invisible bodies.",
-        "I made airless-world fog dark gray and based its fade on distance so it stays steady while looking around.",
-        "I added a 100 RC confirmation before entering Free Camera. Canceling does not spend anything.",
-        "I fixed system-to-system warp prices at 1000 FP plus 5–10 RC depending on the destination’s distance from Sol, including repeat visits. Earth return stays free.",
-        "I made Settings the only menu that pauses the simulation. Other menus and confirmations keep the world running.",
-        "I kept the locked destination label visible across systems, with a screen-edge marker when needed and distance in Ly. Intersystem bearings and distances follow the schematic game map."
+        "Added Ultra and Ultra+ with denser scenery, more clouds and stars, higher resolution budgets, sharper images and higher-quality shadows.",
+        "Fixed empty-space clicks locking invisible bodies.",
+        "Made airless-world fog dark gray and based its fade on distance so it stays steady while looking around.",
+        "Added a 100 RC confirmation before entering Free Camera. Canceling does not spend anything.",
+        "Fixed system-to-system warp prices at 1000 FP plus 5–10 RC depending on the destination’s distance from Sol, including repeat visits. Earth return stays free.",
+        "Made Settings the only menu that pauses the simulation. Other menus and confirmations keep the world running.",
+        "Kept the locked destination label visible across systems, with a screen-edge marker when needed and distance in Ly. Intersystem bearings and distances follow the schematic game map."
       ],
       "source": {
         "kind": "current release"
@@ -207,15 +226,15 @@
       "legacyVersion": 104,
       "version": "v0.0.104",
       "date": "2026-10-27",
-      "title": "I fixed villages, ship collisions and item sounds",
+      "title": "Fixed villages, ship collisions and item sounds",
       "changes": [
-        "I added a village within a short walk of the launch pad and kept existing village changes saved.",
-        "I removed the repeated explosion sound on obstacle contact. The ship now guides itself to nearby clear ground.",
-        "I fixed held resources turning with the world instead of staying in the same position in my hand.",
-        "I replaced the TNT fuse hiss with a short beep every second before the explosion.",
-        "I added TNT damage to ships and a replacement at the current world’s launch pad, while keeping on-foot players in place.",
-        "I matched the launch tower’s collision to its shaft, platforms and arm.",
-        "I stopped menu opening and button clicks from playing the same UI sound twice."
+        "Added a village within a short walk of the launch pad and kept existing village changes saved.",
+        "Removed the repeated explosion sound on obstacle contact. The ship now guides itself to nearby clear ground.",
+        "Fixed held resources turning with the world instead of staying in the same position in my hand.",
+        "Replaced the TNT fuse hiss with a short beep every second before the explosion.",
+        "Added TNT damage to ships and a replacement at the current world’s launch pad, while keeping on-foot players in place.",
+        "Matched the launch tower’s collision to its shaft, platforms and arm.",
+        "Stopped menu opening and button clicks from playing the same UI sound twice."
       ],
       "source": {
         "kind": "current release"
@@ -225,14 +244,14 @@
       "legacyVersion": 103,
       "version": "v0.0.103",
       "date": "2026-10-27",
-      "title": "I polished the release and added phone notification support",
+      "title": "Polished the release and added phone notification support",
       "changes": [
-        "I centered and cleaned up Update Logs on phones and computers.",
-        "I added distance fog to hide terrain edges on airless worlds.",
-        "I fixed the unnecessary exploration error in the account menu.",
-        "I removed saved places from More. Entering free camera now costs 100 RC.",
-        "I added separate phone notification settings: global chat is off by default; party chats and friend requests are on.",
-        "I added a pending friend-request count and message-style request sounds. Closed-game notifications require the push backend and browser permission."
+        "Centered and cleaned up Update Logs on phones and computers.",
+        "Added distance fog to hide terrain edges on airless worlds.",
+        "Fixed the unnecessary exploration error in the account menu.",
+        "Removed saved places from More. Entering free camera now costs 100 RC.",
+        "Added separate phone notification settings: global chat is off by default; party chats and friend requests are on.",
+        "Added a pending friend-request count and message-style request sounds. Closed-game notifications require the push backend and browser permission."
       ],
       "source": {
         "kind": "current release"

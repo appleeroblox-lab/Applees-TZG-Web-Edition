@@ -1,3 +1,4 @@
+import {texturePalette} from './texture-palettes.js?v=118';
 import * as T from './vendor/three.module.js';
 // Gameplay atmosphere choices; fictional/exoplanet palettes are artistic, not measurements.
 const named={
@@ -12,5 +13,5 @@ const named={
  'TRAPPIST-1 f':{air:['#4b455c','#b5abc9','#727280'],rim:'#9c8abb',cloud:'#ded9e8',wind:18,height:240,opacity:.35,width:150},
  'TRAPPIST-1 g':{air:['#535c64','#b4c9d4','#77818a'],rim:'#9bc3d4',cloud:'#e0e9ec',wind:22,height:260,opacity:.4,width:160}
 };
-const generated=new WeakMap();
-export function atmosphereProfile(body){if(!body)return null;if(named[body.name])return named[body.name];if(!body.solid||!(body.fictional||body.hasAtmosphere))return null;if(!generated.has(body)){const base=new T.Color(body.color||'#849bb0'),top=base.clone().multiplyScalar(.42),horizon=base.clone().lerp(new T.Color('#e4dfd6'),.58);generated.set(body,{air:[top.getStyle(),horizon.getStyle(),base.getStyle()],rim:base.clone().lerp(new T.Color('#ffffff'),.25).getStyle(),cloud:horizon.getStyle(),wind:18,height:260,opacity:.3,width:150})}return generated.get(body)}
+const generated=new WeakMap(),matched=new WeakMap();
+export function atmosphereProfile(body){if(!body)return null;if(named[body.name]){const original=named[body.name],art=texturePalette(body);if(body.name==='Earth'||!art)return original;if(!matched.has(body)){const base=new T.Color(art.ground),horizon=base.clone().lerp(new T.Color('#edf0eb'),.64);matched.set(body,{...original,air:[base.clone().multiplyScalar(.45).getStyle(),horizon.getStyle(),art.ground],rim:base.clone().lerp(new T.Color('#ffffff'),.3).getStyle(),cloud:horizon.getStyle()})}return matched.get(body)}if(!body.solid||!(body.fictional||body.hasAtmosphere))return null;if(!generated.has(body)){const base=new T.Color(texturePalette(body)?.ground||body.color||'#849bb0'),top=base.clone().multiplyScalar(.42),horizon=base.clone().lerp(new T.Color('#e4dfd6'),.58);generated.set(body,{air:[top.getStyle(),horizon.getStyle(),base.getStyle()],rim:base.clone().lerp(new T.Color('#ffffff'),.25).getStyle(),cloud:horizon.getStyle(),wind:18,height:260,opacity:.3,width:150})}return generated.get(body)}

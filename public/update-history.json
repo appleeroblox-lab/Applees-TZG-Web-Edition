@@ -1,8 +1,20 @@
 {
-  "currentVersion": "v0.0.135",
+  "currentVersion": "v0.0.136",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 136,
+      "version": "v0.0.136",
+      "date": "2026-10-30",
+      "title": "Effect-gated wind and fading nighttime aurora",
+      "changes": [
+        "Removed continuous altitude-triggered wind; quieter wind plays only while reentry plasma is active.",
+        "Kept background tracks looped independently of the wind effect.",
+        "Hid daytime aurora and added smooth 1.5-second fade-in and fade-out transitions at nightfall and daybreak."
+      ],
+      "source": "GitHub repository update"
+    },
     {
       "legacyVersion": 135,
       "version": "v0.0.135",

@@ -1,8 +1,25 @@
 {
-  "currentVersion": "v0.0.125",
+  "currentVersion": "v0.0.126",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 126,
+      "version": "v0.0.126",
+      "date": "2026-10-30",
+      "title": "Nearby warp protection, world corridor and Center aurora",
+      "changes": [
+        "Rejected warp both near the departure body and when already close to the selected destination. Rechecked before confirmation and payment, including saved viewpoint travel.",
+        "Hid the minimap toggle when no usable solid-body minimap is available.",
+        "Capped every warp at ten seconds while retaining seven-second local journeys.",
+        "Replaced the camera-attached tunnel with a ship-transit corridor using a fixed journey axis, fast travel and four recycled world sections with white neon ribs and edges. Updated compatibility projection.",
+        "Selected chase camera for warp and locked camera/free/orbit mode changes until completion or cancellation.",
+        "Remade the aurora above Center Station as three animated wavy ovals that gradually open into arcs, with green, cyan, blue and magenta bands inspired by the supplied image. Retained pooled textures and geometry."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 125,
       "version": "v0.0.125",

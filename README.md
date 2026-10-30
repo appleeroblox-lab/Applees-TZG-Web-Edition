@@ -1,6 +1,16 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.125**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.126**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.126 nearby warp protection, world corridor and Center aurora
+
+Warp now rejects both unsafe departure clearance and redundant nearby destinations before confirmation and again before payment. Departure clearance is atmospheric boundary plus the greater of 20 units or 20% of body radius. A same-system destination is too near within its atmospheric boundary plus the greater of 100 units or twice its radius. Saved viewpoint confirmation uses the same checks and includes the current position in its quote. Rejection preserves funds and velocity. The minimap toggle is hidden whenever its solid-body map is unavailable.
+
+Local warp remains seven seconds; interstellar duration is `min(10, 7 + log2(1 + displayed Ly))`. Warp selects chase camera and blocks camera-mode, free-mode and orbit changes until completion/cancellation. The interstellar corridor uses a fixed journey axis and separate transit-space floating origin across the universe's system handoff: ship transit advances at 1800 units/s through world sections spaced 460 units apart. Four reused sections create continuous travel without camera attachment or unbounded generation. White neon ribs/edges emphasize speed, while the existing 20–85% tunnel window and beam phases remain. Ship heading stays aligned during the tunnel, then aligns for arrival. Canvas mode projects corridor rings through the actual camera pose.
+
+Aurora bands are now centered above Center Station as wavy concentric ovals, gradually opening into arcs. Green, cyan, blue and magenta veils match the supplied stylized reference. The three bands retain fixed geometry/texture allocations, stay in world space and keep the compact altitude near 4 km.
+
+Tests cover nearby destination/departure denials without payment, exact duration bounds, locked chase mode, minimap availability, fast transit, infinite section reuse and station-centered oval/arc colors and animation. Actual GPU appearance, physical-device layout and FPS remain unverified.
 
 ## v0.0.125 soft natural aurora veils
 

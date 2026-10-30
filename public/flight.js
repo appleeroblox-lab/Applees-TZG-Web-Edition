@@ -26,25 +26,26 @@ export function safeArrival(b,from,bodies,margin){
  }
  return end;
 }
-export function warpDuration(body,system,position){return body.system===system?7:7+3*Math.log2(1+destinationLightYears(body,system,position))}
-export function warpBlocker(flight){return flight.active.find(b=>!['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type)&&flight.pos.distanceTo(b.pos)<atmosphereBoundary(b)+Math.max(clearance*2,b.r*.04))||null}
+export function warpDuration(body,system,position){return body.system===system?7:Math.min(10,7+Math.log2(1+destinationLightYears(body,system,position)))}
+export function warpBlocker(flight){return flight.active.find(b=>!['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type)&&flight.pos.distanceTo(b.pos)<atmosphereBoundary(b)+Math.max(20,b.r*.2))||null}
 export class Flight {
  constructor(bodies){this.bodies=bodies;this.pos=V(30,18,165);this.vel=V();this.q=attitude(this.pos,V());this.system='Sol';this.assist=true;this.gear=false;this.landed=null;this.nav=null;this.event=null;this.throttle=0;this.sensitivity=5;this.rotationSpeed=2;this.input={x:0,y:0,z:0,pitch:0,yaw:0,roll:0,boost:false,brake:false}}
  get active(){return this.bodies.filter(b=>b.system===this.system)}
  nearest(){return this.active.reduce((a,b)=>this.pos.distanceTo(a.pos)-a.r<this.pos.distanceTo(b.pos)-b.r?a:b)}
  cancel(){if(this.surface?.active){this.surface.abort();this.nav=null;this.throttle=0;return}this.nav=null;this.vel.set(0,0,0);this.throttle=0;this.cruiseSpeed=0;this.speedCapHeld=0;for(const b of this.active){if(['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type))continue;const normal=this.pos.clone().sub(b.pos);if(normal.length()<b.r+clearance){if(normal.lengthSq()<.01)normal.set(0,1,0);this.pos.copy(b.pos).addScaledVector(normal.normalize(),b.r+clearance+.01)}}}
  align(b){this.q.copy(attitude(this.pos,b.pos));}
+ warpDenial(b){const blocker=warpBlocker(this);if(blocker)return 'Move farther from '+blocker.name+' before warping';if(b.system===this.system&&this.pos.distanceTo(b.pos)<=atmosphereBoundary(b)+Math.max(100,b.r*2))return 'Already near '+b.name+' · approach instead of warping';return ''}
  navigate(b,mode){
   if(this.surface?.active)return mode==='land'&&this.surface.requestLand();
   if(this.strictSurface&&mode==='land')return false;
   if(mode==='land'&&(!b.solid||b.landable===false))return false;
-  this.lastDenial='';const willWarp=mode==='warp'||b.system!==this.system||this.pos.distanceTo(b.pos)>25000;if(willWarp){const blocker=warpBlocker(this);if(blocker){this.confirmationPending=false;this.lastDenial='Move farther from '+blocker.name+' before warping';return false}}if(this.beforeNavigate&&this.beforeNavigate(b,mode,willWarp)===false)return false;
+  this.lastDenial='';const willWarp=mode==='warp'||b.system!==this.system||this.pos.distanceTo(b.pos)>25000;if(willWarp){const denial=this.warpDenial(b);if(denial){this.confirmationPending=false;this.lastDenial=denial;return false}}if(this.beforeNavigate&&this.beforeNavigate(b,mode,willWarp)===false)return false;
   this.cancel();this.landed=null;
   // Cross-system journeys and distant local journeys stage the requested action after warp.
   if(mode==='warp'||b.system!==this.system||this.pos.distanceTo(b.pos)>25000){
    const margin=b.type==='BLACK HOLE'?b.r*10:Math.max(25,b.r*.8),source=b.system===this.system?this.pos:b.pos.clone().add(V(0,0,1));
    const end=safeArrival(b,source,this.bodies,margin);
-   this.nav={kind:'warp',b,mode,elapsed:0,duration:warpDuration(b,this.system,this.pos),start:this.pos.clone(),end,phase:false,sourceSystem:this.system};
+   this.nav={kind:'warp',b,mode,elapsed:0,duration:warpDuration(b,this.system,this.pos),start:this.pos.clone(),end,phase:false,transitQ:this.q.clone(),sourceSystem:this.system};
   }else this.beginApproach(b,mode);
   return true;
  }
@@ -99,7 +100,7 @@ export class Flight {
    if(n.sourceSystem===n.b.system){const ease=t*t*(3-2*t);this.pos.lerpVectors(n.start,n.end,ease)}
    else if(t<.5){this.pos.copy(n.start).add(V(0,0,-1).applyQuaternion(this.q).multiplyScalar(t*1800))}
    else{if(!n.phase){this.system=n.b.system;n.phase=true}const v=(t-.5)*2,ease=v*v*(3-2*v);const start=n.end.clone().add(n.end.clone().sub(n.b.pos).normalize().multiplyScalar(15000));this.pos.lerpVectors(start,n.end,ease)}
-   if(n.sourceSystem===n.b.system||n.phase)this.q.slerp(attitude(this.pos,n.b.pos),1-Math.exp(-dt*5));
+   if(n.sourceSystem!==n.b.system&&n.transitQ&&t>=.2&&t<.85)this.q.copy(n.transitQ);else if(n.sourceSystem===n.b.system||n.phase)this.q.slerp(attitude(this.pos,n.b.pos),1-Math.exp(-dt*5));
    if(n.elapsed>=n.duration){this.pos.copy(n.end);this.vel.set(0,0,0);this.nav=null;this.event={type:'arrive',b:n.b};if(n.mode==='land'||n.mode==='approach')this.beginApproach(n.b,n.mode)}return;
   }
   const delta=n.end.clone().sub(this.pos),dist=delta.length();

@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
 import {cloudProfile} from './atmosphere-effects.js?v=119';
-import {surfaceHeight} from './surface.js?v=124';
+import {surfaceHeight} from './surface.js?v=126';
 const hash=text=>{let n=2166136261;for(const c of text)n=Math.imul(n^c.charCodeAt(0),16777619);return (n>>>0)/4294967296};
 // Reuse a fixed mesh pool. Owners are terrain chunks, never camera coordinates.
 export class TerrainClouds{

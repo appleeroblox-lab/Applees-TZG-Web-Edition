@@ -23,5 +23,5 @@ export class SurfaceSky{
    if(item.body.texture&&item.body.type!=='STAR')this.loader.load('./textures/'+item.body.texture,map=>{if(generation!==this.generation){map.dispose();return}map.colorSpace=T.SRGBColorSpace;this.maps.set(item.body.id,map);mesh.material.map=map;mesh.material.color.set(0xffffff);mesh.material.needsUpdate=true},undefined,()=>{});
   }
  }
- update(camera){if(this.body!==this.session.body)this.build();this.group.position.copy(camera.position)}
+ update(camera){if(this.body!==this.session.body)this.build();this.group.position.copy(camera.position);const orbit=this.session.planetView?.cover.mode==='orbit';for(const item of this.session.skyBodies){const base=item.skyDistance||6000;item.renderDistance=orbit?240000:base;item.mesh.position.copy(item.direction).multiplyScalar(item.renderDistance);item.mesh.scale.setScalar(item.renderDistance/base)}}
 }

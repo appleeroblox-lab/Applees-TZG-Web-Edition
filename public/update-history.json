@@ -1,8 +1,24 @@
 {
-  "currentVersion": "v0.0.129",
+  "currentVersion": "v0.0.130",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 130,
+      "version": "v0.0.130",
+      "date": "2026-10-30",
+      "title": "Curved Milky Way warp and precise stellar shine",
+      "changes": [
+        "Used a glowing sun inside bodies and the supplied star shine in space, with exact ship and ring occlusion instead of bounding boxes.",
+        "Wrapped the Milky Way continuously around a curved tunnel and aligned the ship and chase camera to its tangent.",
+        "Restored blue warp lines below 20 percent, above 80 percent and during same-system warps.",
+        "Centered entry flames using the unrotated flight model and placed a wider ship-facing shine at the cone tip.",
+        "Extended the globe flight band from 4000 m to 6500 m, giving 2500 m before space."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 129,
       "version": "v0.0.129",

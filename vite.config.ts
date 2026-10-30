@@ -16,7 +16,9 @@ const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 const managedLinux = readExecutionProfile() === "managed-linux";
 
 const localBindingConfig = {
+  name: "applees-tzg-web",
   main: "./worker/index.ts",
+  compatibility_date: "2026-10-30",
   compatibility_flags: ["nodejs_compat"],
   d1_databases: d1
     ? [
@@ -61,6 +63,10 @@ export default defineConfig(async ({ command }) => {
         inspectorPort: false,
         config: {
           ...localBindingConfig,
+          // The public game, including developer tools, uses Supabase. The
+          // placeholder DB only supports the legacy private Sites preview API;
+          // it is not a real database in this Cloudflare account.
+          ...(command === "build" ? { d1_databases: [] } : {}),
           ...(command === "serve"
             ? {
                 services: [

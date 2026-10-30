@@ -1,8 +1,19 @@
 {
-  "currentVersion": "v0.0.133",
+  "currentVersion": "v0.0.134",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 134,
+      "version": "v0.0.134",
+      "date": "2026-10-30",
+      "title": "Looped altitude audio and faster surface sun glow",
+      "changes": [
+        "Kept ground ambience below 1000m and used a looped reentry rumble above it on atmospheric bodies only.",
+        "Moved surface star glow to depth-tested GPU sprites, removing CPU triangle masking and raycasts when looking at the sun."
+      ],
+      "source": "GitHub repository update"
+    },
     {
       "legacyVersion": 133,
       "version": "v0.0.133",

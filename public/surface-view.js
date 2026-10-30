@@ -14,7 +14,7 @@ import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 import * as T from './vendor/three.module.js';
 import {glow} from './visuals.js?v=132';
 import {surfaceHeight,atmosphere} from './surface.js?v=131';
-import {SurfaceSky} from './surface-sky.js?v=130';
+import {SurfaceSky} from './surface-sky.js?v=134';
 import {terrainColor} from './surface-palette.js';
 import {EarthEnvironment} from './earth-environment.js?v=131';
 import {applySurfaceLighting} from './lighting.js?v=110';

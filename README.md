@@ -1,6 +1,12 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.124**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.125**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.125 soft natural aurora veils
+
+Reworked the aurora after reviewing [NASA aurora guidance](https://science.nasa.gov/sun/auroras/) and [ground photographs](https://pwg.gsfc.nasa.gov/istp/outreach/afromground.html). A seeded 512 × 128 RGBA veil replaces repetitive sine stripes, with irregular fine rays, a luminous green lower band, subtle pink/violet accents, uneven heights and fully transparent texture borders. Three gently meandering curtains now remain separated instead of crossing as large flat panels. Existing Earth-only visibility, stronger night intensity and compact height near 4 km remain.
+
+The GPU and Canvas compatibility paths share the same texture artwork. Texture/canvas generation happens once; animation reuses fixed geometry and slowly deforms the veils. Regression coverage checks deterministic texture data, transparent boundaries, partial opacity, non-crossing geometry, compatibility drawing and retained allocations. The texture preview was inspected; actual GPU appearance and physical-device FPS remain unverified.
 
 ## v0.0.124 aurora curtains, staged warp and distant villages
 

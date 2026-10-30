@@ -1,8 +1,24 @@
 {
-  "currentVersion": "v0.0.124",
+  "currentVersion": "v0.0.125",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 125,
+      "version": "v0.0.125",
+      "date": "2026-10-30",
+      "title": "Soft natural aurora veils",
+      "changes": [
+        "Reworked aurora appearance using NASA ground-photo and aurora references: green-dominant light, subtle pink/violet accents, uneven fine rays and soft upper tails.",
+        "Replaced repeating sine stripes with a seeded translucent veil texture whose four edges fade fully away.",
+        "Separated the three gently curved curtains so they no longer intersect as bright flat panels. Retained the compact vertical height near 4 km.",
+        "Shared the same aurora artwork between WebGL and Canvas compatibility rendering, with slow deformation and brightness changes.",
+        "Generated the 512 \u00d7 128 texture once and reused the texture, canvas and bounded geometry during animation."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 124,
       "version": "v0.0.124",

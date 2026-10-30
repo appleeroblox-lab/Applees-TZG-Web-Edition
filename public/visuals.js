@@ -51,7 +51,7 @@ export function makeShip(){
   const halo=new T.Sprite(new T.SpriteMaterial({map:glow,color:0x9ee7ff,transparent:true,blending:T.AdditiveBlending,depthWrite:false}));halo.position.copy(flame.position);halo.scale.setScalar(1.1);halo.visible=false;exhaust.add(halo);engines.push(halo);
  }
  ship.userData.model='TZG Player Ship · uploaded Blender model';
- return {ship,model,gear,flames,engines,verticalFlames,exhaust,ready,padOffset,subjectCenter:new T.Vector3(0,.2775,-.176),contactHeight:4.23,cockpitPosition:new T.Vector3(0,.29,-.12),collision:{halfHull:1.4,nose:-4.5,tail:4.2,halfWing:3.7,wingFront:-.72,wingBack:2.35}};
+ return {ship,model,gear,flames,engines,verticalFlames,exhaust,ready,padOffset,subjectCenter:new T.Vector3(0,.2775,-.176),reentryNose:new T.Vector3(0,-1.02,-4.5),reentryAxis:new T.Vector3(0,0,1),contactHeight:4.23,cockpitPosition:new T.Vector3(0,.29,-.12),collision:{halfHull:1.4,nose:-4.5,tail:4.2,halfWing:3.7,wingFront:-.72,wingBack:2.35}};
 }
 export function makeStars(){const rand=random(317),g=new T.BufferGeometry(),p=[],colors=[];for(let i=0;i<600;i++){const v=new T.Vector3(rand()-.5,rand()-.5,rand()-.5).normalize().multiplyScalar(18000);p.push(...v.toArray());const c=new T.Color().setHSL(rand()<.2?.08:.55+rand()*.12,.15+rand()*.2,.7+rand()*.3);colors.push(c.r,c.g,c.b)}g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setAttribute('color',new T.Float32BufferAttribute(colors,3));return new T.Points(g,new T.PointsMaterial({map:glow,size:7,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:.8,blending:T.AdditiveBlending,depthWrite:false}))}
 

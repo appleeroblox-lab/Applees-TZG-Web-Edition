@@ -1,8 +1,20 @@
 {
-  "currentVersion": "v0.0.131",
+  "currentVersion": "v0.0.132",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 132,
+      "version": "v0.0.132",
+      "date": "2026-10-30",
+      "title": "Precise nose alignment and instant world-space warp fog",
+      "changes": [
+        "Anchored flare and shine directly to the authored ship nose instead of the camera subject center or bounding box.",
+        "Kept the flare on the visible model centerline while allowing shine to face the camera through every direction.",
+        "Showed the complete interstellar tunnel immediately and added fixed world-space glowing fog layers to cover its distant edge."
+      ],
+      "source": "GitHub repository update"
+    },
     {
       "legacyVersion": 131,
       "version": "v0.0.131",

@@ -12,7 +12,7 @@ import {graphicsPolicy} from './graphics-policy.js?v=110';
 import {cloudProfile,applyAtmosphericFog,upperSkyState,setAtmosphereStars} from './atmosphere-effects.js?v=130';
 import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 import * as T from './vendor/three.module.js';
-import {glow} from './visuals.js?v=128';
+import {glow} from './visuals.js?v=132';
 import {surfaceHeight,atmosphere} from './surface.js?v=131';
 import {SurfaceSky} from './surface-sky.js?v=130';
 import {terrainColor} from './surface-palette.js';

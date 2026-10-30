@@ -2,7 +2,7 @@ import * as T from './vendor/three.module.js';
 // Ship-local, symmetric reentry flare follows nose direction, pitch, yaw and roll.
 export class ReentryPlume {
  constructor(rig){
-  this.rig=rig;this.group=new T.Group();this.group.name='Ship-aligned symmetric reentry flare';this.group.visible=false;rig.ship.add(this.group);rig.ship.userData.reentryPlume=this;this.rotation=new T.Quaternion();this.up=new T.Vector3(0,1,0);this.inverse=new T.Quaternion();this.radius=3;
+  this.rig=rig;this.group=new T.Group();this.group.name='Ship-aligned symmetric reentry flare';this.group.visible=false;rig.ship.add(this.group);rig.ship.userData.reentryPlume=this;this.rotation=new T.Quaternion();this.up=new T.Vector3(0,1,0);this.inverse=new T.Quaternion();this.radius=3;this.nose=new T.Vector3();this.axis=new T.Vector3();this.frame=new T.Quaternion();this.modelMatrix=new T.Matrix4();
   const positions=[],uv=[],indices=[],rays=32,steps=10;
   for(let i=0;i<rays;i++)for(let j=0;j<=steps;j++)for(let edge=0;edge<2;edge++){positions.push(i<16?i*2:(i-16)*2+1,j/steps,edge);uv.push(edge,j/steps);if(j<steps){const k=(i*(steps+1)+j)*2;if(edge===0)indices.push(k,k+1,k+2,k+1,k+3,k+2)}}
   const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(positions,3));geo.setAttribute('uv',new T.Float32BufferAttribute(uv,2));geo.setIndex(indices);
@@ -11,7 +11,7 @@ export class ReentryPlume {
 #include <common>
 #include <logdepthbuf_pars_vertex>
 uniform float heat;uniform float time;varying vec2 plumeUV;varying float ray;
-void main(){plumeUV=uv;ray=position.x;float t=position.y;float a=(ray+(position.z-.5)*.85)/32.*6.283185;float phase=ray*2.399;float plumeLength=(1.5+heat*5.5)*(.72+.28*sin(phase)*sin(phase));float radius=.2+pow(t,.48)*(.7+heat*.65);a+=sin(time*8.-t*15.+phase)*t*.09;radius+=sin(t*19.-time*16.+phase)*t*.08;vec3 p=vec3(cos(a)*radius,-1.05+t*plumeLength,sin(a)*radius);gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);
+void main(){plumeUV=uv;ray=position.x;float t=position.y;float a=(ray+(position.z-.5)*.85)/32.*6.283185;float phase=ray*2.399;float plumeLength=(1.5+heat*5.5)*(.72+.28*sin(phase)*sin(phase));float radius=pow(t,.48)*(.7+heat*.65);a+=sin(time*8.-t*15.+phase)*t*.09;radius+=sin(t*19.-time*16.+phase)*t*.08;vec3 p=vec3(cos(a)*radius,t*plumeLength,sin(a)*radius);gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);
 #include <logdepthbuf_vertex>
 }`,fragmentShader:`
 #include <logdepthbuf_pars_fragment>
@@ -26,9 +26,10 @@ float t=plumeUV.y;float edge=pow(max(0.,sin(plumeUV.x*3.141593)),.65);float wave
   this.membrane=new T.Mesh(shellGeometry,this.material.clone());this.membrane.material.uniforms=this.uniforms;this.membrane.material.fragmentShader=this.material.fragmentShader.replace('edge*fade*heat*(.3+.7*waves)','fade*heat*.13*(.6+.4*waves)');this.membrane.frustumCulled=false;this.group.add(this.membrane);
   const map=globalThis.document?.createElementNS?new T.TextureLoader().load('./textures/reentry-shine.png',()=>{}):null;
   if(map)map.colorSpace=T.SRGBColorSpace;
-  this.shine=new T.Mesh(new T.PlaneGeometry(1,1),new T.MeshBasicMaterial({side:T.DoubleSide,map,color:0xffe6c2,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,toneMapped:false,fog:false}));this.shine.name='Ship-facing horizontal reentry shine';this.shine.userData.reentryShine=true;this.shine.rotation.x=-Math.PI/2;this.group.add(this.shine);this.shine.position.y=-1.05;
+  this.shine=new T.Mesh(new T.PlaneGeometry(1,1),new T.MeshBasicMaterial({side:T.DoubleSide,map,color:0xffe6c2,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,toneMapped:false,fog:false}));this.shine.name='Camera-facing reentry nose shine';this.shine.userData.reentryShine=true;this.shine.rotation.x=-Math.PI/2;this.group.add(this.shine);this.shine.position.y=-1.05;
  }
- fit(){const center=this.rig.subjectCenter||new T.Vector3(0,.2775,-.176),shape=this.rig.collision||{halfWing:3.7,nose:-4.5};this.radius=T.MathUtils.clamp(shape.halfWing*.72,1,8);this.group.position.set(center.x,center.y,shape.nose+1.05*this.radius-.35);this.group.rotation.set(Math.PI/2,0,0);this.shine.position.set(0,-1.05,0);}
+ fit(){const shape=this.rig.collision||{halfWing:3.7};this.radius=T.MathUtils.clamp(shape.halfWing*.72,1,8);this.nose.copy(this.rig.reentryNose||new T.Vector3(0,-1.02,-4.5));this.axis.copy(this.rig.reentryAxis||new T.Vector3(0,0,1)).normalize();this.frame.setFromUnitVectors(this.up,this.axis);this.shine.position.set(0,0,0);this.align();}
+ align(){const model=this.rig.model;model.updateMatrix();this.group.position.copy(this.nose).applyMatrix4(model.matrix);this.group.quaternion.copy(model.quaternion).multiply(this.frame);this.group.scale.copy(model.scale).multiplyScalar(this.radius);}
 
- update(heat,time,groundDown,quality='Medium',mobile=false,camera=null){this.uniforms.heat.value=heat;this.uniforms.time.value=time;this.group.visible=heat>.002;if(!this.group.visible)return;this.group.scale.setScalar(this.radius);this.shine.scale.set(4+heat*12,.8+heat*1.8,1);this.shine.material.opacity=Math.min(1,heat*1.2);this.shine.material.color.setRGB(1,.62+heat*.38,.22+heat*.78);this.flare.geometry.setDrawRange(0,(mobile||quality==='Low'?16:32)*10*6);if(camera){this.group.updateWorldMatrix(true,false);const tip=this.shine.getWorldPosition(new T.Vector3()),view=camera.getWorldPosition(new T.Vector3()).sub(tip);view.y=0;if(view.lengthSq()>.000001){const world=new T.Quaternion().setFromAxisAngle(new T.Vector3(0,1,0),Math.atan2(view.x,view.z));this.shine.quaternion.copy(this.group.getWorldQuaternion(this.inverse).invert()).multiply(world)}}}
+ update(heat,time,groundDown,quality='Medium',mobile=false,camera=null){this.uniforms.heat.value=heat;this.uniforms.time.value=time;this.group.visible=heat>.002;if(!this.group.visible)return;this.align();this.shine.scale.set(4+heat*12,.8+heat*1.8,1);this.shine.material.opacity=Math.min(1,heat*1.2);this.shine.material.color.setRGB(1,.62+heat*.38,.22+heat*.78);this.flare.geometry.setDrawRange(0,(mobile||quality==='Low'?16:32)*10*6);if(camera){this.group.updateWorldMatrix(true,false);this.shine.quaternion.copy(this.group.getWorldQuaternion(this.inverse).invert()).multiply(camera.getWorldQuaternion(this.rotation))}}
 }

@@ -1,4 +1,4 @@
-import {ReentryPlume} from './reentry-plume.js?v=131';
+import {ReentryPlume} from './reentry-plume.js?v=132';
 import * as T from './vendor/three.module.js';
 import {entryEffects,hasAtmosphere,atmosphereAltitude} from './atmospheric-flight.js?v=130';
 import {graphicsPolicy} from './graphics-policy.js?v=110';

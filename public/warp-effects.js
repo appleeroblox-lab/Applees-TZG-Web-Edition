@@ -17,13 +17,9 @@ float twist=a+sin(travel*.28+a*2.)*.18;
 vec3 direction=normalize(skyBasis*vec3(cos(twist),sin(twist),-1.-z*8.));
 vec2 skyUV=vec2(atan(direction.z,direction.x)/6.283185+.5,asin(clamp(direction.y,-1.,1.))/3.141593+.5);
 vec3 photo=texture2D(skyMap,skyUV).rgb;
-// Thin longitudinal filaments only: no repeating rings or circular portal.
-float lane=pow(.5+.5*sin(a*139.+sin(a*23.)*2.),48.);
-float pulse=pow(.5+.5*sin(travel*5.+a*17.),12.);
-float wisps=pow(.5+.5*sin(a*21.+sin(travel*.9)*.4),10.)*(.35+.65*pow(.5+.5*sin(travel*2.+a*7.),3.));
-vec3 c=mix(vec3(.008,.018,.06),photo*1.5,hasSky*.8);
-c+=mix(vec3(.04,.25,.95),vec3(.42,.08,.8),.5+.5*sin(a*3.))*wisps*.55;
-c+=mix(vec3(.12,.58,1.),vec3(.96,.99,1.),pulse)*lane*(.3+2.*pulse);
+// Only the current sky panorama, wrapped and softly glowing.
+vec3 glow=texture2D(skyMap,skyUV+vec2(.003,0.)).rgb+texture2D(skyMap,skyUV-vec2(.003,0.)).rgb+texture2D(skyMap,skyUV+vec2(0.,.003)).rgb+texture2D(skyMap,skyUV-vec2(0.,.003)).rgb;
+vec3 c=mix(vec3(.004,.008,.02),photo*1.65+glow*.22,hasSky);
 gl_FragColor=vec4(c*(.3+.7*strength),1.);
 #include <colorspace_fragment>
 }`});this.geometry=new T.CylinderGeometry(72,72,TUNNEL_LENGTH,32,16,true);this.geometry.rotateX(Math.PI/2);this.sections=[];for(let i=-1;i<=2;i++){const mesh=new T.Mesh(this.geometry,this.material);mesh.position.z=-(i+.5)*TUNNEL_LENGTH;mesh.frustumCulled=false;this.group.add(mesh);this.sections.push(mesh)}this.mesh=this.sections[1];this.capGeometry=new T.PlaneGeometry(144,144);this.capMaterial=new T.ShaderMaterial({depthTest:true,depthWrite:true,toneMapped:false,uniforms:this.uniforms,vertexShader:`varying vec2 vUv;

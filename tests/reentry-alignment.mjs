@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import * as T from '../public/vendor/three.module.js';
+import {ReentryPlume} from '../public/reentry-plume.js';
+import {entryEffects} from '../public/atmospheric-flight.js';
+import {ShipFlightEffects} from '../public/ship-flight-effects.js';
+const ship=new T.Group(),model=new T.Group(),scene=new T.Scene();ship.add(model);scene.add(ship);model.add(new T.Mesh(new T.BoxGeometry(8,2,7),new T.MeshStandardMaterial()));
+const rig={ship,model},plume=new ReentryPlume(rig),camera=new T.PerspectiveCamera();plume.fit();const local=plume.group.quaternion.clone();
+for(const angles of [[0,0,0],[.4,.6,.8],[-.7,1.2,-1.1]]){ship.quaternion.setFromEuler(new T.Euler(...angles));plume.update(.8,1,new T.Vector3(0,-1,0),'Low',true,camera);assert(plume.group.quaternion.equals(local),'plume stays fixed in ship space');ship.updateMatrixWorld(true);const flareAxis=new T.Vector3(0,1,0).transformDirection(plume.group.matrixWorld),shipTail=new T.Vector3(0,0,1).applyQuaternion(ship.quaternion);assert(flareAxis.distanceTo(shipTail)<1e-6);const shine=plume.shine.getWorldPosition(new T.Vector3()).applyMatrix4(ship.matrixWorld.clone().invert());assert(shine.z<-3.5,'shine sits ahead of the nose');assert.equal(plume.flare.geometry.drawRange.count,16*10*6)}
+const rays=plume.flare.geometry.attributes.position;assert.equal(rays.getX(0),0);assert.equal(rays.getX(15*22),30,'mobile flares cover both sides of the ship');
+const earth={name:'Earth',solid:true,hasAtmosphere:true};for(const altitude of [1000,2000,4500,5500]){assert(entryEffects(earth,altitude,200,-100).plasma>0);for(const vertical of [0,5,100])assert.equal(entryEffects(earth,altitude,200,vertical).plasma,0)}
+const effects=new ShipFlightEffects(rig,scene);effects.bind();const surface={active:true,launched:true,body:earth,altitude:2000,vel:new T.Vector3(0,-100,0)},flight={vel:new T.Vector3(),q:new T.Quaternion(),pos:new T.Vector3(),active:[]},crew={onFoot:false};effects.update(.5,1,{surface,flight,crew,camera});assert(effects.plume.group.visible);surface.vel.y=100;effects.update(1/60,2,{surface,flight,crew,camera});assert.equal(effects.heat,0);assert(!effects.plume.group.visible,'takeoff immediately disables the whole reentry flare');
+console.log('PASS inward-only heat, immediate takeoff cutoff, ship pitch/yaw/roll alignment, shine ahead of nose and full-ring mobile flare coverage.');

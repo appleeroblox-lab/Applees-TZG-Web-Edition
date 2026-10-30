@@ -11,7 +11,7 @@ export function atmosphereBoundary(body){return body?.solid&&hasAtmosphere(body)
 export function transitionState(altitude){return {terrain:1-smooth(4000,5000,altitude),planet:smooth(4000,5000,altitude),space:smooth(600,3000,altitude)}}
 export const PREENTRY_HEIGHT=6500;
 export function entryEffects(body,altitude,speed,vertical=0){
- if(!hasAtmosphere(body)||altitude>=PREENTRY_HEIGHT||altitude<=800)return {plasma:0,wind:0,shake:0,exit:vertical>1};
+ if(!hasAtmosphere(body)||altitude>=PREENTRY_HEIGHT||altitude<=800||vertical>=-.5)return {plasma:0,wind:0,shake:0,exit:vertical>1};
  const motion=smooth(35,100,speed),exit=vertical>1;
  // Faint upper corona becomes a bright shield deeper in the air, in either direction.
  const upper=altitude>=5000?.12*(1-smooth(5000,PREENTRY_HEIGHT,altitude)):.12+.88*(1-smooth(1500,5000,altitude));

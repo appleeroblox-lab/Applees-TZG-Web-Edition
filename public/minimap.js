@@ -1,13 +1,13 @@
 import * as T from './vendor/three.module.js';
 import {earthBiome,biomeCell,BIOME_SPACING} from './earth-biomes.js?v=122';
 import {surfacePalette} from './surface-palette.js?v=119';
-import {settlementSites,settlementBlocks} from './settlements.js?v=122';
-import {roadRoutes} from './surface-roads.js?v=119';
+import {settlementSites,settlementBlocks,settlementFromId} from './settlements.js?v=124';
+import {roadRoutes} from './surface-roads.js?v=124';
 import {CRAFT_LAYOUT,TRADE_LAYOUT} from './surface-layout.js';
 import {baseSite} from './planet-base-layout.js?v=100';
 const legend=[['village','Village','#ffe08a'],['trade','Trade Center','#ff7378'],['craft','Craft Center','#56caff'],['launch','Launch Pad','#d9efff'],['tower','Tower','#b698ff'],['biome','Biome','#9fef6f']];
 export function mapPoint(x,z,origin,range=300,radius=110){const dx=(x-origin.x)/range*radius,dz=(z-origin.z)/range*radius,length=Math.hypot(dx,dz),edge=length>radius-12,k=edge?(radius-12)/length:1;return {x:128+dx*k,y:128+dz*k,edge,angle:Math.atan2(dz,dx)}}
-export function minimapMarkers(body,economy,origin){if(!body?.solid)return [];const markers=[{kind:'launch',name:'Center Station / Launch Pad',x:0,z:0}];if(body.name==='Earth'){markers.push({kind:'trade',name:'Trade Center',...TRADE_LAYOUT},{kind:'craft',name:'Craft Center',...CRAFT_LAYOUT},{kind:'tower',name:'Tower',x:-32,z:-15});for(let z=-2;z<=2;z++)for(let x=-2;x<=2;x++){const cell=biomeCell(Math.round(origin.x/BIOME_SPACING)+x,Math.round(origin.z/BIOME_SPACING)+z);markers.push({kind:'biome',name:earthBiome(cell.x,cell.z).name,x:cell.x,z:cell.z})}}else{const site=baseSite(body);if(site)markers.push({kind:'craft',name:'Surface Base',x:site.x,z:site.z})}for(const site of settlementSites(body))if(economy?.villages?.has(site.id))markers.push({kind:'village',name:'Village',x:site.x,z:site.z});return markers}
+export function minimapMarkers(body,economy,origin){if(!body?.solid)return [];const markers=[{kind:'launch',name:'Center Station / Launch Pad',x:0,z:0}];if(body.name==='Earth'){markers.push({kind:'trade',name:'Trade Center',...TRADE_LAYOUT},{kind:'craft',name:'Craft Center',...CRAFT_LAYOUT},{kind:'tower',name:'Tower',x:-32,z:-15});for(let z=-2;z<=2;z++)for(let x=-2;x<=2;x++){const cell=biomeCell(Math.round(origin.x/BIOME_SPACING)+x,Math.round(origin.z/BIOME_SPACING)+z);markers.push({kind:'biome',name:earthBiome(cell.x,cell.z).name,x:cell.x,z:cell.z})}}else{const site=baseSite(body);if(site)markers.push({kind:'craft',name:'Surface Base',x:site.x,z:site.z})}for(const id of economy?.villages||[]){const site=settlementFromId(body,id);if(site)markers.push({kind:'village',name:'Village',x:site.x,z:site.z})}return markers}
 export const MAP_CHUNK_SIZE=96;
 export function panMapOrigin(start,dx,dy,width,height,range=MAP_CHUNK_SIZE/2){return {x:start.x-dx/Math.max(1,width)*range*2,z:start.z-dy/Math.max(1,height)*range*2}}
 export function hudRangeTarget(surface,crew,speed=0){return 43+14.5*T.MathUtils.smoothstep(speed,.1,crew.onFoot?2:5)}
@@ -27,17 +27,17 @@ function icon(c,kind,x,y,size=13){const s=size/16;c.save();c.translate(x,y);c.sc
 // cached terrain scrolls in world coordinates instead of jumping at cache boundaries.
 // The roof projection is rebuilt only when world geometry changes. Checks and
 // drawing still happen on every frame, independently of the terrain raster.
-export function mapStructures(body,economy){
- const columns=new Map(),add=p=>{if(p.body!==body.id||['torch','ladder'].includes(p.type))return;const key=p.x+','+p.z,old=columns.get(key);if(!old||old.y<p.y)columns.set(key,{...p,color:economy?.definition?.(p.type)?.color||(/wood|log/.test(p.type)?'#a87950':'#929b9c')})};
+export function mapStructures(body,economy,origin=null,range=Infinity){
+ const columns=new Map(),add=p=>{if(p.body!==body.id||['torch','ladder'].includes(p.type)||origin&&(Math.abs(p.x-origin.x)>range+32||Math.abs(p.z-origin.z)>range+32))return;const key=p.x+','+p.z,old=columns.get(key);if(!old||old.y<p.y)columns.set(key,{...p,color:economy?.definition?.(p.type)?.color||(/wood|log/.test(p.type)?'#a87950':'#929b9c')})};
  for(const p of economy?.placements||[])add(p);
- for(const site of settlementSites(body))if(economy?.villages?.has(site.id)&&!economy?.residentVillages?.has(site.id))for(const p of settlementBlocks(body,site))if(!economy?.removedVillageBlocks?.has(p.id))add(p);
+ for(const id of economy?.villages||[]){if(economy?.residentVillages?.has(id))continue;const site=settlementFromId(body,id);if(!site||origin&&(Math.abs(site.x-origin.x)>range+32||Math.abs(site.z-origin.z)>range+32))continue;for(const p of settlementBlocks(body,site))if(!economy?.removedVillageBlocks?.has(p.id))add(p)}
  return [...columns.values()]
 }
 export class MapRaster{
  constructor(canvas,doc,square=false){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.square=square;this.cache=doc.createElement('canvas');this.cache.width=this.cache.height=256;this.bg=this.cache.getContext('2d');this.frames=0;this.terrainPaints=0;this.hits=[]}
  draw(body,economy,origin,range,player,heading){const c=this.ctx,b=this.bg,rasterRange=Math.max(1,Math.round(range*2)/2),step=8*rasterRange/114,gx=Math.round(origin.x/step),gz=Math.round(origin.z/step),key=body.id+':'+rasterRange+':'+gx+':'+gz;
  if(key!==this.key){this.key=key;this.center={x:gx*step,z:gz*step};this.rasterRange=rasterRange;this.terrainPaints++;for(let z=0;z<32;z++)for(let x=0;x<32;x++){const wx=this.center.x+(x*8-128)*rasterRange/114,wz=this.center.z+(z*8-128)*rasterRange/114;b.fillStyle=body.name==='Earth'?earthBiome(wx,wz).color:surfacePalette(body).ground;b.fillRect(x*8,z*8,8,8);if(((gx+x)*7+(gz+z)*11)%5===0){b.fillStyle='#122d2418';b.fillRect(x*8+2,z*8+2,3,3)}}}
- const geometryKey=[body.id,economy?.placementRevision||0,economy?.placements?.length||0,economy?.villages?.size||0,economy?.residentVillages?.size||0,economy?.removedVillageBlocks?.size||0].join(':');if(geometryKey!==this.geometryKey){this.geometryKey=geometryKey;this.structures=mapStructures(body,economy);this.structureBuilds=(this.structureBuilds||0)+1}
+ const geometryX=Math.round(origin.x/512)*512,geometryZ=Math.round(origin.z/512)*512,geometryRange=Math.ceil(range/256)*256+512,geometryKey=[body.id,geometryX,geometryZ,geometryRange,economy?.placementRevision||0,economy?.placements?.length||0,economy?.villages?.size||0,economy?.residentVillages?.size||0,economy?.removedVillageBlocks?.size||0].join(':');if(geometryKey!==this.geometryKey){this.geometryKey=geometryKey;this.structures=mapStructures(body,economy,{x:geometryX,z:geometryZ},geometryRange);this.structureBuilds=(this.structureBuilds||0)+1}
  this.frames++;this.hits=[];c.setTransform(this.canvas.width/256,0,0,this.canvas.height/256,0,0);c.clearRect(0,0,256,256);c.save();c.beginPath();if(this.square)c.rect(14,14,228,228);else c.arc(128,128,114,0,7);c.clip();const zoom=this.rasterRange/range,dx=128+(this.center.x-origin.x)*114/range-128*zoom,dz=128+(this.center.z-origin.z)*114/range-128*zoom;c.drawImage(this.cache,dx,dz,256*zoom,256*zoom);
  this.drawStructures(body,origin,range);
  const markers=minimapMarkers(body,economy,origin),paint=marker=>{const point=this.square?squareMapPoint(marker.x,marker.z,origin,range):mapPoint(marker.x,marker.z,origin,range,114);if(marker.kind!=='launch'){if(this.square?point.outside:point.edge)return;if(this.square){point.x=point.rawX;point.y=point.rawY}}icon(c,marker.kind,point.x,point.y,marker.kind==='launch'?18:15);this.hits.push({...marker,screenX:point.x,screenY:point.y});if(point.edge&&marker.kind==='launch'){c.save();c.translate(point.x,point.y);c.rotate(point.angle);c.fillStyle='#9fe9ff';c.beginPath();c.moveTo(11,0);c.lineTo(4,-5);c.lineTo(4,5);c.closePath();c.fill();c.restore()}};

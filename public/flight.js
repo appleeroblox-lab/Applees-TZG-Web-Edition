@@ -1,3 +1,4 @@
+import {destinationLightYears} from './warp-pricing.js?v=105';
 import {atmosphereBoundary} from './atmospheric-flight.js?v=119';
 import {rotateShip} from './ship-rotation.js';
 import {holdVelocity} from './speed-control.js?v=119';
@@ -25,6 +26,8 @@ export function safeArrival(b,from,bodies,margin){
  }
  return end;
 }
+export function warpDuration(body,system,position){return body.system===system?7:7+3*Math.log2(1+destinationLightYears(body,system,position))}
+export function warpBlocker(flight){return flight.active.find(b=>!['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type)&&flight.pos.distanceTo(b.pos)<atmosphereBoundary(b)+Math.max(clearance*2,b.r*.04))||null}
 export class Flight {
  constructor(bodies){this.bodies=bodies;this.pos=V(30,18,165);this.vel=V();this.q=attitude(this.pos,V());this.system='Sol';this.assist=true;this.gear=false;this.landed=null;this.nav=null;this.event=null;this.throttle=0;this.sensitivity=5;this.rotationSpeed=2;this.input={x:0,y:0,z:0,pitch:0,yaw:0,roll:0,boost:false,brake:false}}
  get active(){return this.bodies.filter(b=>b.system===this.system)}
@@ -35,13 +38,13 @@ export class Flight {
   if(this.surface?.active)return mode==='land'&&this.surface.requestLand();
   if(this.strictSurface&&mode==='land')return false;
   if(mode==='land'&&(!b.solid||b.landable===false))return false;
-  this.lastDenial='';const willWarp=mode==='warp'||b.system!==this.system||this.pos.distanceTo(b.pos)>25000;if(this.beforeNavigate&&this.beforeNavigate(b,mode,willWarp)===false)return false;
+  this.lastDenial='';const willWarp=mode==='warp'||b.system!==this.system||this.pos.distanceTo(b.pos)>25000;if(willWarp){const blocker=warpBlocker(this);if(blocker){this.confirmationPending=false;this.lastDenial='Move farther from '+blocker.name+' before warping';return false}}if(this.beforeNavigate&&this.beforeNavigate(b,mode,willWarp)===false)return false;
   this.cancel();this.landed=null;
   // Cross-system journeys and distant local journeys stage the requested action after warp.
   if(mode==='warp'||b.system!==this.system||this.pos.distanceTo(b.pos)>25000){
    const margin=b.type==='BLACK HOLE'?b.r*10:Math.max(25,b.r*.8),source=b.system===this.system?this.pos:b.pos.clone().add(V(0,0,1));
    const end=safeArrival(b,source,this.bodies,margin);
-   this.nav={kind:'warp',b,mode,elapsed:0,duration:7,start:this.pos.clone(),end,phase:false,sourceSystem:this.system};
+   this.nav={kind:'warp',b,mode,elapsed:0,duration:warpDuration(b,this.system,this.pos),start:this.pos.clone(),end,phase:false,sourceSystem:this.system};
   }else this.beginApproach(b,mode);
   return true;
  }

@@ -1,6 +1,16 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.123**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.124**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.124 aurora curtains, staged warp and distant villages
+
+Replaced closed aurora rings with three broad undulating curtains near 4 km altitude, with shorter vertical spans and varied natural-color palettes. GPU geometry remains fixed; the Canvas compatibility renderer uses the same colors and deformation. Centered the square map itself and increased the map-specific CSS selector priority so the base width/margin rules cannot override its alignment. Zoom controls remain outside the square.
+
+Warp now rejects departure too near any physical body in the current system before confirmation or payment. Clearance includes atmospheric height plus the greater of 3.3 space units or 4% of body radius. Interstellar duration is `7 + 3 × log2(1 + displayed Ly)` seconds; local warp stays seven seconds. The tunnel opens smoothly between 20–26% and closes between 79–85%, leaving the existing beam visuals before and after it. Local journeys do not use the tunnel. A single reused tunnel mesh and smaller mobile/Low streak budgets bound effect cost; compatibility mode has its own beam/tunnel drawing.
+
+Original villages and their saved identities remain unchanged. Additional villages are deterministically scattered across 1536 m regions beyond the original area; only nearby regions are queried and only nearby villages are resident. The descriptor cache holds at most 256 entries and regenerates evicted sites identically. Discovery, door state and removed blocks survive unloading and saves. Terrain decoration avoids these new village footprints, and distant discovered map roofs are generated only near the current view.
+
+Automated checks cover warp denial without payment or velocity changes, distance-scaled completion, tunnel stages/cancellation in PC/mobile UI, narrow open aurora geometry/palettes and automatic village discovery beyond 30 km with permanent block removal after reload. Physical GPU appearance, CSS layout and device FPS remain unverified.
 
 ## v0.0.123 centered zoom controls and compact circular range
 

@@ -1,4 +1,5 @@
-import {SurfaceMinimap} from './minimap.js?v=123';
+import {WarpTunnel} from './warp-effects.js?v=124';
+import {SurfaceMinimap} from './minimap.js?v=124';
 import {canLandHere,advanceLocalDay} from './atmospheric-flight.js?v=119';
 import {updateSurfaceAir} from './spherical-atmosphere.js?v=119';
 import {surfaceFrame} from './surface-frame.js';
@@ -9,17 +10,17 @@ import {installMenuSizes} from './menu-sizes.js?v=109';
 import {ensureGraphicsControls} from './graphics-controls.js?v=110';
 import {destinationOffset,destinationLightYears} from './warp-pricing.js?v=105';
 import {payFreeCamera,installFreeCameraConfirmation} from './free-camera.js?v=105';
-import {installUpdateLogs} from './update-logs.js?v=123';
+import {installUpdateLogs} from './update-logs.js?v=124';
 import {installScreenshot} from './game-screenshot.js?v=102';
 import {AsteroidBelts} from './asteroid-belts.js?v=105';
-import {SurfaceCollisions} from './surface-collision.js?v=119';
-import {applyShipBlast,ShipRespawnStation} from './ship-respawn.js?v=119';
+import {SurfaceCollisions} from './surface-collision.js?v=124';
+import {applyShipBlast,ShipRespawnStation} from './ship-respawn.js?v=124';
 import {iconButton} from './ui-icons.js?v=91';
-import {surfaceGravity as mapGravity} from './surface.js?v=119';
+import {surfaceGravity as mapGravity} from './surface.js?v=124';
 import {installDeviceSettings} from './device-settings.js?v=110';
 import {installLocalization} from './localization.js?v=91';
 let devicePreferences=null,restoringDevicePreferences=false;
-import {PlayerAccount} from './player-account.js?v=122';
+import {PlayerAccount} from './player-account.js?v=124';
 import {cloudInventory} from './cloud-save.js?v=107';
 import {SupabaseDebugService} from './supabase-debug.js?v=107';
 import {supabaseConfig} from './supabase-config.js?v=61';
@@ -27,7 +28,7 @@ import {installControlSizes} from './control-sizes.js?v=109';
 import {GlobalShadows} from './global-shadows.js?v=120';
 import {biomeWeather,earthBiome,biomeDestination} from './earth-biomes.js?v=122';
 import {installMobileInput} from './mobile-input.js';
-import {GroundWeather} from './ground-weather.js?v=122';
+import {GroundWeather} from './ground-weather.js?v=124';
 import {underWeatherClouds} from './weather-state.js?v=119';
 import {DebugMenu} from './debug-menu.js?v=107';
 import {rotateSubjectOrbit,shipCameraSubject,placeSubjectOrbit,ORBIT_MIN,ORBIT_MAX} from './subject-camera.js';
@@ -37,37 +38,37 @@ import {installTouchButtons} from './touch-buttons.js?v=57';
 import {keyboardCode,pressKeyboardKey,releaseKeyboardKey} from './keyboard-input.js';
 import {rotationSpeed} from './ship-rotation.js';
 import {BodyTransition} from './body-transition.js';
-import {Forestry} from './forestry.js?v=122';
+import {Forestry} from './forestry.js?v=124';
 import {nearbyPlanetUp} from './camera-horizon.js';
 import {updateWarpHUD} from './warp-hud.js';
 import {graphicsPolicy,GRAPHICS_MODES} from './graphics-policy.js?v=110';
 import {TradeUI} from './trade-ui.js';
-import {Building} from './building.js?v=122';
-import {SurfaceStream} from './surface-streaming.js?v=122';
+import {Building} from './building.js?v=124';
+import {SurfaceStream} from './surface-streaming.js?v=124';
 import * as T from './vendor/three.module.js';
 import {bodies,earth,AU} from './catalog.js?v=100';
-import {Flight,V,attitude,clearance} from './flight.js?v=119';
+import {Flight,V,attitude,clearance} from './flight.js?v=124';
 import {TerrainManager,surfacePadding,terrainHeight} from './terrain.js';
-import {CompatibilityRenderer} from './compatibility.js?v=122';
-import {Economy,TRADER} from './economy.js?v=122';
-import {Prospecting} from './prospecting.js?v=122';
+import {CompatibilityRenderer} from './compatibility.js?v=124';
+import {Economy,TRADER} from './economy.js?v=124';
+import {Prospecting} from './prospecting.js?v=124';
 import {InventoryUI} from './inventory-ui.js?v=91';
 import {GameSound} from './sound.js?v=110';
-import {Crew} from './crew.js?v=122';
+import {Crew} from './crew.js?v=124';
 import {setupIcons} from './icons.js';
-import {SurfaceSession,surfaceHeight} from './surface.js?v=119';
-import {SurfaceView} from './surface-view.js?v=122';
-import {Explorer,formatSpeed} from './explorer.js?v=119';
+import {SurfaceSession,surfaceHeight} from './surface.js?v=124';
+import {SurfaceView} from './surface-view.js?v=124';
+import {Explorer,formatSpeed} from './explorer.js?v=124';
 import {TextureCache} from './textures.js?v=110';
-import {updateReferenceHUD} from './reference-hud.js?v=119';
+import {updateReferenceHUD} from './reference-hud.js?v=124';
 import {SystemAtlas} from './atlas-3d.js?v=107';
 import {ShipBoost} from './boost.js';
 import {updateBlackHole} from './black-hole-effects.js?v=110';
 import {holdVelocity,setSpeedCommand} from './speed-control.js?v=119';
 import {skyProfile,illustratedGalaxySky} from './sky-profiles.js';
-import {StellarGlare} from './stellar-glare.js?v=119';
+import {StellarGlare} from './stellar-glare.js?v=124';
 import {PostEffects} from './post-effects.js?v=113';
-import {EarthWeatherFX} from './earth-environment.js?v=122';
+import {EarthWeatherFX} from './earth-environment.js?v=124';
 import {lightingProfile} from './lighting.js?v=110';
 import {resolutionRatio,clampPanel} from './performance.js?v=110';
 import {pickSpaceBody,meaningfulBodyLabel,localMoonFamily,bodyLabelAllowed,labelProjection,labelOccluded} from './body-labels.js?v=106';
@@ -99,7 +100,7 @@ const terrain=new TerrainManager(bodies);let fpsAverage=60,adaptiveResolution=tr
 const textureCache=new TextureCache(bodies,touch?3:5);let textureClock=2,webglLost=false,sky=null;new T.TextureLoader().load(touch?'./textures/milky_way_mobile.jpg':'./textures/milky_way.jpg',map=>{map.colorSpace=T.SRGBColorSpace;milkyMap=map;surfaceView.setSky(map);renderer.skyImage=map.image;sky=new T.Mesh(new T.SphereGeometry(24000,32,20),new T.MeshBasicMaterial({map,side:T.BackSide,color:0xffffff,toneMapped:false,depthWrite:false}));sky.renderOrder=-10;scene.add(sky);activeSkyKey='';stars.visible=false},undefined,()=>toast('Milky Way panorama could not load · reload to retry'));
 // A local reference grid appears on landing. It stays tangent to the surface.
 const landingGrid=new T.GridHelper(24,24,0x79bfd5,0x466373);landingGrid.material.transparent=true;landingGrid.material.opacity=.2;scene.add(landingGrid);
-const warpGeo=new T.BufferGeometry(),warpPositions=new Float32Array(240*6),warpSeeds=[],wrand=random(94);for(let i=0;i<240;i++)warpSeeds.push([wrand()*Math.PI*2,12+wrand()*80,wrand()*450]);warpGeo.setAttribute('position',new T.BufferAttribute(warpPositions,3));const warpLines=new T.LineSegments(warpGeo,new T.LineBasicMaterial({color:0x9de7ff,transparent:true,opacity:.6,depthWrite:false}));warpLines.frustumCulled=false;scene.add(warpLines);
+const warpGeo=new T.BufferGeometry(),warpPositions=new Float32Array(240*6),warpSeeds=[],wrand=random(94);for(let i=0;i<240;i++)warpSeeds.push([wrand()*Math.PI*2,12+wrand()*80,wrand()*450]);warpGeo.setAttribute('position',new T.BufferAttribute(warpPositions,3));const warpLines=new T.LineSegments(warpGeo,new T.LineBasicMaterial({color:0x9de7ff,transparent:true,opacity:.6,depthWrite:false}));warpLines.frustumCulled=false;scene.add(warpLines);const warpTunnel=new WarpTunnel(scene);
 const cameraSubject=V(),cameraUp=V(0,1,0),orbitGround=(x,z)=>surfaceHeight(x,z)+padHeightAt(x,z)+.4;
 const camQ=flight.q.clone(),cameraOffset=V(),shipUp=V(),temp=V(),clock=new T.Clock();let accumulator=0,uiClock=0,saveClock=0,orbitDistance=16;
 let pendingWarp=null,approvedWarp=null;
@@ -134,7 +135,7 @@ function render(){requestAnimationFrame(render);if(document.hidden||window.__tzg
  // Keep the chase camera above ground at touchdown.
  if(flight.landed&&!explorer.enabled){const normal=flight.pos.clone().sub(flight.landed.pos).normalize();const height=camera.position.dot(normal);if(height<.6)camera.position.addScaledVector(normal,.6-height)}
  const thrust=Math.abs(flight.input.z+flight.throttle),moving=!explorer.enabled&&flight.vel.length()>.001,engine=warping?1:moving?Math.max(.35,Math.min(1,flight.vel.length()/55)):0;shipRig.flames.forEach(f=>{f.visible=engine>0;f.scale.z=.05+engine*(flight.input.boost?2.3:1)*(1+Math.sin(performance.now()*.03)*.08);f.material.opacity=.2+engine*.5});shipRig.engines.forEach(e=>{e.visible=engine>0;e.material.opacity=.35+engine*.55});
- updateWarpHUD(flight);if(warping){const t=nav.progress||0;const fov=explorer.fov+Math.sin(t*Math.PI)*18;if(camera.fov!==fov){camera.fov=fov;camera.updateProjectionMatrix()}warpLines.quaternion.copy(camQ);for(let i=0;i<warpSeeds.length;i++){const [a,r,z]=warpSeeds[i],zz=((z+performance.now()*.35)%450)-420,offset=i*6;warpPositions[offset]=Math.cos(a)*r;warpPositions[offset+1]=Math.sin(a)*r;warpPositions[offset+2]=zz;warpPositions[offset+3]=Math.cos(a)*r;warpPositions[offset+4]=Math.sin(a)*r;warpPositions[offset+5]=zz+18+engine*30}warpGeo.attributes.position.needsUpdate=true;flash.style.opacity=0;
+ updateWarpHUD(flight);const tunnelStrength=warpTunnel.update(nav,camera,performance.now()*.001,graphics,touch||compatibility);warpLines.material.opacity=.6*(1-tunnelStrength);warpLines.visible=warping&&tunnelStrength<.999;warpGeo.setDrawRange(0,(touch||graphics==='Low'?80:graphics==='Medium'?140:240)*2);if(warping){const t=nav.progress||0;const fov=explorer.fov+Math.sin(t*Math.PI)*18;if(camera.fov!==fov){camera.fov=fov;camera.updateProjectionMatrix()}warpLines.quaternion.copy(camQ);for(let i=0;i<warpSeeds.length;i++){const [a,r,z]=warpSeeds[i],zz=((z+performance.now()*.35)%450)-420,offset=i*6;warpPositions[offset]=Math.cos(a)*r;warpPositions[offset+1]=Math.sin(a)*r;warpPositions[offset+2]=zz;warpPositions[offset+3]=Math.cos(a)*r;warpPositions[offset+4]=Math.sin(a)*r;warpPositions[offset+5]=zz+18+engine*30}warpGeo.attributes.position.needsUpdate=true;flash.style.opacity=0;
  }else{$('warpOverlay').style.display='none';flash.style.opacity=0;if(camera.fov!==explorer.fov){camera.fov=explorer.fov;camera.updateProjectionMatrix()}}
  landingGrid.visible=!!flight.landed&&!explorer.enabled;if(flight.landed){const b=flight.landed,normal=flight.pos.clone().sub(b.pos).normalize();landingGrid.position.copy(normal).multiplyScalar(-clearance+.02);landingGrid.quaternion.setFromUnitVectors(V(0,1,0),normal)}
  uiClock+=dt;saveClock+=dt;if(uiClock>.08){updateHUD();uiClock=0}if(saveClock>15){save();saveClock=0}if(audio&&audio.state==='running'&&audio.gain){audio.gain.gain.setTargetAtTime(blocked?0:.006+engine*.025,audio.currentTime,.1);audio.osc.frequency.setTargetAtTime(42+engine*55+(flight.input.boost?30:0),audio.currentTime,.1)}if(orbitPaths)orbitPaths.position.copy(solarCenter).sub(flight.pos);if(surface.active)renderSurface(dt,simulationPaused);else{sfx.weather(null,false);building.label.hidden=true;building.preview.visible=false;building.shovel.visible=false;building.heldItem.group.visible=false;building.heldTorchLight.intensity=0;building.torchLights.forEach(l=>l.intensity=0);for(const b of building.blasts)b.group.visible=false;earthWeatherFX.canvas.hidden=true;earthWeatherFX.world.group.visible=false;$('earthWeather').hidden=true;if(ship.parent!==scene)scene.add(ship);stars.visible=true;starDetail.starClock.value=performance.now()*.001;stars.material.opacity=.78;if(sky)sky.visible=true;camera.updateMatrixWorld();asteroidBelts.update(flight,surface,camera,graphics,touch||compatibility,explorer.labels&&labelFilters.asteroids);updateObjectLabels();globalShadows.update(dt,surface,crew,camera);shipFlightFX.update(dt,performance.now()*.001,{flight,surface,crew,camera,quality:graphics,mobile:touch,enabled:shipTrails,paused:simulationPaused,warping});sfx.airflow(0);bodyTransition.setTerrainFade(0);effects.entryHeat=0;effects.render(scene,camera,graphics);glare.update(camera,bodies,flight,surface,[ship]);}
@@ -275,7 +276,7 @@ function cancelWarpConfirmation(){pendingWarp=null;approvedWarp=null;flight.conf
 $('warpCancel').onclick=$('warpDecline').onclick=cancelWarpConfirmation;
 $('warpConfirmDialog').addEventListener('cancel',e=>{e.preventDefault();cancelWarpConfirmation()});
 $('warpConfirm').onclick=()=>{const request=pendingWarp;if(!request)return;pendingWarp=null;closeDialog($('warpConfirmDialog'));flight.confirmationPending=false;request.action()};
-flight.beforeNavigate=(body,mode,willWarp)=>{flight.confirmationPending=false;if(!willWarp)return true;if(approvedWarp!==body){flight.confirmationPending=true;confirmWarp(body,()=>{approvedWarp=body;if(flight.navigate(body,mode))toast('Warp charging · '+body.name);else toast(flight.lastDenial||'Warp unavailable')});return false}approvedWarp=null;const paid=economy.payWarp(body,flight.system,flight.pos);if(!paid.ok){flight.lastDenial=paid.message;return false}resetWarpCamera();sfx.play('warp');return true};
+flight.beforeNavigate=(body,mode,willWarp)=>{flight.confirmationPending=false;if(!willWarp)return true;if(approvedWarp!==body){flight.confirmationPending=true;confirmWarp(body,()=>{approvedWarp=body;const accepted=flight.navigate(body,mode);approvedWarp=null;if(accepted)toast('Warp charging · '+body.name);else toast(flight.lastDenial||'Warp unavailable')});return false}approvedWarp=null;const paid=economy.payWarp(body,flight.system,flight.pos);if(!paid.ok){flight.lastDenial=paid.message;return false}resetWarpCamera();sfx.play('warp');return true};
 function zoomOrbit(delta){orbitDistance=clamp(orbitDistance*Math.exp(delta*.0018),ORBIT_MIN,ORBIT_MAX)}
 $('orbitZoomIn').onclick=()=>zoomOrbit(-120);$('orbitZoomOut').onclick=()=>zoomOrbit(120);
 const pinchPointers=new Map();let pinching=false;

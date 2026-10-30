@@ -15,7 +15,7 @@ const destination=planet('Destination',1000,20),obstacle=planet('Obstacle',500,8
 const {resolutionRatio,clampPanel}=await import('../public/performance.js');
 for(const [w,h,dpr]of [[844,390,3],[2400,1080,4],[390,844,3]])for(const q of ['Low','Medium','High']){const r=resolutionRatio(w,h,dpr,q,true);assert(w*h*r*r<=1100001,'mobile buffer cap')}
 const panel=clampPanel(999,-20,900,100,844,390);assert(panel.x>=8&&panel.y===8&&panel.x+panel.width<=836,'drag bounds');
-const bh=bodies.find(b=>b.type==='BLACK HOLE'),blackholeFlight=new Flight(bodies);blackholeFlight.navigate(bh,'warp');for(let i=0;i<500&&blackholeFlight.nav;i++)blackholeFlight.step(1/60);assert(blackholeFlight.pos.distanceTo(bh.pos)>=bh.r*10,'black hole safe view');assert.equal(blackholeFlight.navigate(bh,'land'),false);
+const bh=bodies.find(b=>b.type==='BLACK HOLE'),blackholeFlight=new Flight(bodies);blackholeFlight.pos.set(0,20000,0);blackholeFlight.navigate(bh,'warp');for(let i=0;i<12000&&blackholeFlight.nav;i++)blackholeFlight.step(1/60);assert(blackholeFlight.pos.distanceTo(bh.pos)>=bh.r*10,'black hole safe view');assert.equal(blackholeFlight.navigate(bh,'land'),false);
 const cloud={...planet('Cloud'),type:'NEBULA',solid:false},nf=new Flight([cloud]);nf.pos.set(0,0,20);nf.vel.set(0,0,-100);nf.assist=false;nf.step(.2);assert(nf.pos.length()<cloud.r,'nebula volume is traversable');
 console.log('PASS: pixel budget, HUD bounds, black-hole safe viewing, traversable nebula.');
 const {Explorer,formatSpeed}=await import('../public/explorer.js?v=100');

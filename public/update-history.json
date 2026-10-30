@@ -1,8 +1,26 @@
 {
-  "currentVersion": "v0.0.123",
+  "currentVersion": "v0.0.124",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 124,
+      "version": "v0.0.124",
+      "date": "2026-10-30",
+      "title": "Aurora curtains, staged interstellar warp and distant villages",
+      "changes": [
+        "Replaced circular aurora walls with three broad flowing curtains near 4000 m, reduced their vertical height and added varied green, cyan, blue, violet and pink/red palettes. Updated the compatibility renderer to match.",
+        "Centered the square map itself in its menu and corrected the CSS specificity that overrode its width and margins. Kept zoom buttons outside on the right.",
+        "Blocked warp near physical bodies before confirmation or payment, preserving velocity and funds when rejected.",
+        "Added an interstellar tunnel that opens after 20% progress, fades closed by 85% and returns to light-beam travel. Local warp retains its beam effect.",
+        "Scaled interstellar journey duration with displayed light-year distance while preserving cancellation and existing arrival behavior.",
+        "Extended village generation beyond the original 2 km area with deterministic sparse world regions, bounded descriptor caching and nearby-only loading. Preserved original village IDs, discovery, doors and removed blocks.",
+        "Limited minimap roof generation to the viewed area and reused effect geometry, with reduced streak counts on mobile and lower graphics."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 123,
       "version": "v0.0.123",

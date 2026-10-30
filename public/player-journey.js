@@ -1,4 +1,4 @@
-import {CRAFTS} from './economy.js?v=126';
+import {CRAFTS} from './economy.js?v=131';
 import {itemVisual} from './item-images.js';
 const $=id=>document.getElementById(id);
 export const DAILY_REWARDS=[

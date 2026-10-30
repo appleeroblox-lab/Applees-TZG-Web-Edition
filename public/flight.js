@@ -26,7 +26,7 @@ export function safeArrival(b,from,bodies,margin){
  }
  return end;
 }
-export function warpDuration(body,system,position){return body.system===system?7:Math.min(10,7+Math.log2(1+destinationLightYears(body,system,position)))}
+export function warpDuration(){return 10}
 export function warpBlocker(flight){return flight.active.find(b=>!['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type)&&flight.pos.distanceTo(b.pos)<atmosphereBoundary(b)+Math.max(20,b.r*.2))||null}
 export class Flight {
  constructor(bodies){this.bodies=bodies;this.pos=V(30,18,165);this.vel=V();this.q=attitude(this.pos,V());this.system='Sol';this.assist=true;this.gear=false;this.landed=null;this.nav=null;this.event=null;this.throttle=0;this.sensitivity=5;this.rotationSpeed=2;this.input={x:0,y:0,z:0,pitch:0,yaw:0,roll:0,boost:false,brake:false}}

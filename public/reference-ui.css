@@ -268,3 +268,5 @@ body.referenceHUD #flightPad{transform-origin:bottom left;scale:var(--ship-left-
 body.referenceHUD #flightRight{transform-origin:bottom right;scale:var(--ship-right-scale,1)}
 
 #terrainTransitionFade{position:fixed;inset:0;z-index:96;background:#000;opacity:0;pointer-events:none}
+
+body.referenceHUD #warpFlash{display:block!important;background:#fff;z-index:50}

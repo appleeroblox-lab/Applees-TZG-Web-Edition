@@ -1,4 +1,4 @@
-import {ReentryPlume} from './reentry-plume.js?v=130';
+import {ReentryPlume} from './reentry-plume.js?v=131';
 import * as T from './vendor/three.module.js';
 import {entryEffects,hasAtmosphere,atmosphereAltitude} from './atmospheric-flight.js?v=130';
 import {graphicsPolicy} from './graphics-policy.js?v=110';
@@ -42,7 +42,7 @@ gl_FragColor=vec4(mix(vec3(1.,.7,.2),vec3(1.,.065,.004),tail),strength*.9);}`});
  if(air.exit||air.plasma===0)this.heat=0;
  this.heat+=(heatTarget-this.heat)*(1-Math.exp(-dt*(heatTarget>this.heat?3:2)));
  if(surface.active&&(!active||height<=800||!hasAtmosphere(surface.body)))this.heat=0;
- this.plume.update(this.heat,time,this.groundDown,quality,mobile,camera);
+ this.plume.update((surface.active?height:Infinity)<3600?this.heat:0,time,this.groundDown,quality,mobile,camera);
  this.uniforms.entryHeat.value=this.heat;this.uniforms.plasmaDetail.value=.8+graphicsPolicy(quality).planetDetail*.25;if(this.glows){this.glows.visible=this.heat>.002;this.glows.geometry.setDrawRange(0,Math.min(this.glows.geometry.attributes.position.count,mobile?16:quality==='Low'?12:quality==='Medium'?24:quality==='High'?40:64));this.glows.material.uniforms.glowSize.value=mobile?Math.min(16,8+graphicsPolicy(quality).planetDetail*2):10+graphicsPolicy(quality).planetDetail*7;}this.uniforms.entryTime.value=time;if(active&&surface.vel.lengthSq()>.01)this.uniforms.entryFlow.value.copy(surface.vel).normalize();// Offset in camera-local axes after every camera mode has placed its base view.
  this.shake+=((paused?0:air.shake)-this.shake)*(1-Math.exp(-dt*7));
  if(!paused&&this.shake>.0001){const amount=this.shake*(mobile?.085:.14);this.shakeOffset.set(Math.sin(time*17)+.32*Math.sin(time*29),.7*Math.sin(time*19+1.7),.2*Math.sin(time*13)).multiplyScalar(amount).applyQuaternion(camera.quaternion);camera.position.add(this.shakeOffset);camera.updateMatrixWorld()}

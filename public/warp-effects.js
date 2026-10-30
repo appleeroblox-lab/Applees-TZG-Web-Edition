@@ -2,6 +2,7 @@ import * as T from './vendor/three.module.js';
 export function warpTunnelStrength(nav){if(nav?.kind!=='warp'||nav.sourceSystem===nav.b.system)return 0;const p=nav.progress||0;return T.MathUtils.smoothstep(p,.2,.24)*(1-T.MathUtils.smoothstep(p,.76,.8))}
 export function tunnelPoint(distance,total=16200,seed=0,out=new T.Vector3()){const u=T.MathUtils.clamp((distance/total-.2)/.6,0,1),envelope=Math.pow(Math.sin(Math.PI*u),4);return out.set(Math.sin(u*Math.PI*2+seed)*700*envelope,Math.sin(u*Math.PI+seed*1.7)*420*envelope,-distance)}
 export function tunnelTangent(distance,total=16200,seed=0,out=new T.Vector3()){return out.copy(tunnelPoint(distance+1,total,seed)).sub(tunnelPoint(distance-1,total,seed)).normalize()}
+export function warpWhiteFade(nav){if(nav?.kind!=='warp'||nav.sourceSystem===nav.b.system)return 0;const p=nav.progress||0;return Math.max(0,1-Math.abs(p-.2)/.055,1-Math.abs(p-.8)/.055)}
 export const TUNNEL_LENGTH=460,TUNNEL_SPEED=1800;
 export class WarpTunnel{
  constructor(scene){this.group=new T.Group();this.group.name='World transit corridor';this.group.visible=false;scene.add(this.group);scene.userData.warpTunnel=this;this.uniforms={time:{value:0},strength:{value:0},skyMap:{value:null},hasSky:{value:0},skyBasis:{value:new T.Matrix3()}};this.material=new T.ShaderMaterial({transparent:false,side:T.BackSide,depthTest:true,depthWrite:true,blending:T.NormalBlending,toneMapped:false,uniforms:this.uniforms,vertexShader:`varying vec2 vUv;
@@ -19,8 +20,9 @@ void main(){
 vec2 skyUV=vec2(fract(vUv.x+time*.018),.5+.46*sin(vUv.y*.16-time*.38));
 vec3 photo=texture2D(skyMap,skyUV).rgb;
 vec3 glow=texture2D(skyMap,skyUV+vec2(.003,0.)).rgb+texture2D(skyMap,skyUV-vec2(.003,0.)).rgb+texture2D(skyMap,skyUV+vec2(0.,.003)).rgb+texture2D(skyMap,skyUV-vec2(0.,.003)).rgb;
-vec3 c=mix(vec3(.004,.008,.02),photo*2.+glow*.3,hasSky);
-gl_FragColor=vec4(c*(.3+.7*strength),1.);
+vec3 c=mix(vec3(.06,.12,.23),vec3(.035,.065,.12)+photo*3.8+glow*.65,hasSky);
+float rim=pow(.5+.5*cos(vUv.x*6.283185*8.+sin(vUv.y*.9-time)*.2),36.);c+=vec3(.65,.85,1.)*rim*1.6;
+vec2 cell=vec2(vUv.x*180.,vUv.y*24.-time*18.);vec2 id=floor(cell);float seed=fract(sin(dot(id,vec2(127.1,311.7)))*43758.5453);vec2 spark=fract(cell)-.5;float star=exp(-spark.x*spark.x*160.-spark.y*spark.y*9.)*step(.965,seed);c+=vec3(1.7,2.2,2.8)*star;gl_FragColor=vec4(c*(.8+.2*strength),1.);
 #include <colorspace_fragment>
 }`});this.geometry=new T.CylinderGeometry(72,72,TUNNEL_LENGTH,32,16,true);this.geometry.rotateX(Math.PI/2);this.sections=[];for(let i=-1;i<=2;i++){const mesh=new T.Mesh(this.geometry.clone(),this.material);mesh.geometry.attributes.position.setUsage(T.DynamicDrawUsage);mesh.geometry.attributes.uv.setUsage(T.DynamicDrawUsage);mesh.position.z=-(i+.5)*TUNNEL_LENGTH;mesh.frustumCulled=false;this.group.add(mesh);this.sections.push(mesh)}this.mesh=this.sections[1];this.capGeometry=new T.PlaneGeometry(144,144);this.capMaterial=new T.ShaderMaterial({depthTest:true,depthWrite:true,toneMapped:false,uniforms:this.uniforms,vertexShader:`varying vec2 vUv;
 #include <common>
@@ -32,9 +34,9 @@ void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.
 #include <logdepthbuf_pars_fragment>
 void main(){
 #include <logdepthbuf_fragment>
-vec2 p=(vUv-.5)*2.;vec3 direction=normalize(skyBasis*vec3(p,-12.));vec2 uv=vec2(atan(direction.z,direction.x)/6.283185+.5,asin(clamp(direction.y,-1.,1.))/3.141593+.5);vec3 c=mix(vec3(.008,.018,.06),texture2D(skyMap,uv).rgb,hasSky);gl_FragColor=vec4(c*(.3+.7*strength),1.);
+vec2 p=(vUv-.5)*2.;vec3 direction=normalize(skyBasis*vec3(p,-12.));vec2 uv=vec2(atan(direction.z,direction.x)/6.283185+.5,asin(clamp(direction.y,-1.,1.))/3.141593+.5);vec3 c=mix(vec3(.08,.15,.28),vec3(.04,.07,.13)+texture2D(skyMap,uv).rgb*3.8,hasSky);float radius=length(p);float rim=exp(-pow((radius-.78)*24.,2.));c+=vec3(1.,1.,1.)*rim*2.4;gl_FragColor=vec4(c*(.8+.2*strength),1.);
 #include <colorspace_fragment>
-}`});this.farCap=new T.Mesh(this.capGeometry,this.capMaterial);this.farCap.position.z=-TUNNEL_LENGTH*3;this.farCap.frustumCulled=false;this.group.add(this.farCap);this.interiorBackground=new T.Color('#02091b');this.hiddenRoots=[];this.transitPosition=new T.Vector3();this.basis=new T.Quaternion();this.forward=new T.Vector3();this.anchor=new T.Vector3();this.orientation=new T.Quaternion();this.localOrientation=new T.Quaternion();this.curveCenter=new T.Vector3();this.curveDirection=new T.Vector3();this.curveSeed=0;this.totalTravel=16200;}
+}`});this.farCap=new T.Mesh(this.capGeometry,this.capMaterial);this.farCap.position.z=-TUNNEL_LENGTH*3;this.farCap.frustumCulled=false;this.group.add(this.farCap);this.interiorBackground=new T.Color('#244671');this.hiddenRoots=[];this.transitPosition=new T.Vector3();this.basis=new T.Quaternion();this.forward=new T.Vector3();this.anchor=new T.Vector3();this.orientation=new T.Quaternion();this.localOrientation=new T.Quaternion();this.curveCenter=new T.Vector3();this.curveDirection=new T.Vector3();this.curveSeed=0;this.totalTravel=16200;}
  // Transit space uses the same floating-origin convention as the main universe:
  // fixed world sections minus the moving ship position. Camera pose is never read.
  update(nav,flight,time,quality='High',mobile=false,skyMap=null){this.uniforms.skyMap.value=skyMap;this.uniforms.hasSky.value=skyMap?1:0;this.active=nav?.kind==='warp';const strength=warpTunnelStrength(nav);this.strength=strength;this.enclosed=strength>.001;this.group.visible=this.enclosed;this.uniforms.time.value=time;this.uniforms.strength.value=strength*(!mobile&&/Ultra/.test(quality)?1:.85);if(!this.active){this.currentNav=null;return strength}

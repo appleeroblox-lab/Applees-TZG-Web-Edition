@@ -1,8 +1,24 @@
 {
-  "currentVersion": "v0.0.127",
+  "currentVersion": "v0.0.128",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
-  "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
+  "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 128,
+      "version": "v0.0.128",
+      "date": "2026-10-30",
+      "title": "Skybox warp, staged reentry and stellar shines",
+      "changes": [
+        "Replaced tunnel circles with stretched current-system skybox textures, flowing cyan and violet filaments, and fast light streaks.",
+        "Added animated ground-facing reentry flares and the supplied horizontal shine, with gradual brightness and size changes during entry and exit.",
+        "Made the globe atmosphere glow around its curved silhouette.",
+        "Replaced the old layered star shines with the supplied eight-point shine, tinted by each star color.",
+        "Raised the active space boost limit from 100c to 200c while retaining the normal 100c limit."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 127,
       "version": "v0.0.127",
@@ -46,7 +62,7 @@
         "Replaced repeating sine stripes with a seeded translucent veil texture whose four edges fade fully away.",
         "Separated the three gently curved curtains so they no longer intersect as bright flat panels. Retained the compact vertical height near 4 km.",
         "Shared the same aurora artwork between WebGL and Canvas compatibility rendering, with slow deformation and brightness changes.",
-        "Generated the 512 \u00d7 128 texture once and reused the texture, canvas and bounded geometry during animation."
+        "Generated the 512 × 128 texture once and reused the texture, canvas and bounded geometry during animation."
       ],
       "source": {
         "kind": "current release"
@@ -76,8 +92,8 @@
       "date": "2026-10-30",
       "title": "Centered map zoom controls and compact circular range",
       "changes": [
-        "Centered the + / \u2212 column in the full space between the square map and the right menu border.",
-        "Set circular minimap coverage to 86 \u00d7 86 m when stationary and 115 \u00d7 115 m while moving, with smooth interpolation at every altitude."
+        "Centered the + / − column in the full space between the square map and the right menu border.",
+        "Set circular minimap coverage to 86 × 86 m when stationary and 115 × 115 m while moving, with smooth interpolation at every altitude."
       ],
       "source": {
         "kind": "current release"
@@ -89,8 +105,8 @@
       "date": "2026-10-30",
       "title": "Live map buildings and natural biome placement",
       "changes": [
-        "Moved + / \u2212 zoom buttons outside the square map, in a separate right-side column.",
-        "Increased movement-based circular map zoom out and capped map coverage at 1966 \u00d7 1966 m.",
+        "Moved + / − zoom buttons outside the square map, in a separate right-side column.",
+        "Increased movement-based circular map zoom out and capped map coverage at 1966 × 1966 m.",
         "Scattered biome centers more widely, varied their outlines and blended across former grid boundaries while retaining the launch-area plains.",
         "Displayed the actual biome name when selecting its icon.",
         "Restricted Gold and Emerald deposits to open village spaces while preserving mineral identities, inventory and mined-state saves.",
@@ -108,7 +124,7 @@
       "title": "Minimap zoom and navigation lock",
       "changes": [
         "Fixed the question-mark button so clicking it again closes the map menu.",
-        "Added right-middle + and \u2212 buttons with smooth bounded map zoom.",
+        "Added right-middle + and − buttons with smooth bounded map zoom.",
         "Added Lock To Navigation to follow the blue player arrow; dragging the map unlocks following.",
         "Added subtle circular minimap zoom out while moving and zoom in while stationary.",
         "Kept map controls responsive while Settings pauses gameplay."
@@ -124,7 +140,7 @@
       "title": "Smooth minimaps and a nonmodal planet map",
       "changes": [
         "Moved coordinates, altitude, biome, planet information and the icon guide into a centered map menu, leaving a smaller circular HUD map and a bottom-right question-mark button.",
-        "Added a square 96 \u00d7 96 m map that pans with mouse or touch, keeps one terrain raster, marks Center Station at the edge and shows place names when selected. Panning does not generate gameplay terrain.",
+        "Added a square 96 × 96 m map that pans with mouse or touch, keeps one terrain raster, marks Center Station at the edge and shows place names when selected. Panning does not generate gameplay terrain.",
         "Kept the map menu nonmodal so gameplay, Settings, Account and other visible controls remain usable. Added an X close button and map-click toggle.",
         "Avoided guest notices and right-side flight/walking controls at different minimap sizes, moving the HUD left when necessary.",
         "Rendered map heading and positions every frame and scrolled cached terrain continuously in world coordinates.",
@@ -210,7 +226,7 @@
       "changes": [
         "Made atmospheric haze follow star lighting and limited its radiance to the existing lit surface brightness, preventing planets from self-glowing in space.",
         "Removed camera/player offsets from cloud positions. Clouds keep fixed world coordinates and drift only with wind.",
-        "Replaced the compatibility renderer\u2019s screen-following Earth clouds with the same projected world-space cloud positions, keeping day/night tint and weather opacity."
+        "Replaced the compatibility renderer’s screen-following Earth clouds with the same projected world-space cloud positions, keeping day/night tint and weather opacity."
       ],
       "source": {
         "kind": "current release"
@@ -224,7 +240,7 @@
       "changes": [
         "Made the globe and opaque ground shell obey the same distance fog as terrain, so they cannot bypass fog layers.",
         "Added shared spherical atmospheric extinction and haze to surface and space planet rendering. Lower atmosphere remains visible when looking downward, even after the overhead sky darkens.",
-        "Replaced the early black fog tint and abrupt horizon clearing with continuous altitude-dependent fog ranges and a horizon that fades with the 4,000\u20135,000m terrain transition.",
+        "Replaced the early black fog tint and abrupt horizon clearing with continuous altitude-dependent fog ranges and a horizon that fades with the 4,000–5,000m terrain transition.",
         "Removed the unfogged legacy atmosphere halo and matched haze colors, weather density and physical scale across local and space rendering. Mobile uses fewer atmospheric samples."
       ],
       "source": {
@@ -237,7 +253,7 @@
       "date": "2026-10-29",
       "title": "Fixed the nearby Earth transition and intensified reentry",
       "changes": [
-        "Moved the terrain-to-planet blend to 4,000\u20135,000m while keeping the sky fade complete by 3,000m.",
+        "Moved the terrain-to-planet blend to 4,000–5,000m while keeping the sky fade complete by 3,000m.",
         "Enlarged the near-planet horizon and matched the space boundary so Earth remains close at atmospheric exit. An opaque ground shell seals terrain gaps during the blend.",
         "Intensified airflow-facing plasma, added a compressed bow shock on desktop Ultra/Ultra+, lengthened fiery streaks and added turbulent ember movement. Low/Medium and mobile retain bounded effects.",
         "Made reentry shake roughly four times stronger on PC, with stronger mobile shake, while retaining smooth fades and independent camera rotation and zoom."
@@ -267,7 +283,7 @@
       "changes": [
         "Extended atmospheric flight to 5,000m, faded the sky by 3,000m and blended terrain into a spherical planet visible from 4,000m.",
         "Set entry speed to 50 m/s and the upper atmosphere cap to 100 m/s, with a 450 m/s lower maximum and smooth cap transitions. Landing still requires descending below 800m.",
-        "Added orange-red airflow-facing heat shields, animated plasma, sparks and fiery streaks. Reentry peaks at 1,500\u20131,000m, fades to 800m and causes no damage.",
+        "Added orange-red airflow-facing heat shields, animated plasma, sparks and fiery streaks. Reentry peaks at 1,500–1,000m, fades to 800m and causes no damage.",
         "Smoothed reentry and weaker ascent shake across all ship cameras, preserving rotation and zoom.",
         "Added subtle heat distortion on High and above, richer Ultra/Ultra+ glow, bounded mobile particle budgets and preserved white space wing trails."
       ],
@@ -282,7 +298,7 @@
       "title": "Improved graphics and atmospheric flight",
       "changes": [
         "Added 2,500m solid-world atmospheres, a 200 m/s upper band and a 450 m/s lower maximum with smooth cap transitions. Entry and exit retain control and momentum.",
-        "Added airflow-facing plasma, wind and subtle camera shake. Plasma peaks at 1,500\u20131,000m, fades to 800m and stays off below it. Exit effects are weaker, and reentry causes no damage.",
+        "Added airflow-facing plasma, wind and subtle camera shake. Plasma peaks at 1,500–1,000m, fades to 800m and stays off below it. Exit effects are weaker, and reentry causes no damage.",
         "Require atmospheric ships to descend below 800m before Land can engage. Airless landing remains available.",
         "Added white wingtip trails in space, longer and brighter while boosting, with an independent saved Settings toggle. The ship model is unchanged.",
         "Added planet micro-relief, sharper map sampling, soft cloud billows, star twinkle, richer black-hole bands and Ultra highlight/shadow improvements, with bounded mobile/Low budgets."
@@ -363,7 +379,7 @@
         "Fixed empty-space clicks locking invisible bodies.",
         "Made airless-world fog dark gray and based its fade on distance so it stays steady while looking around.",
         "Added a 100 RC confirmation before entering Free Camera. Canceling does not spend anything.",
-        "Fixed system-to-system warp prices at 1000 FP plus 5\u201310 RC depending on the destination\u2019s distance from Sol, including repeat visits. Earth return stays free.",
+        "Fixed system-to-system warp prices at 1000 FP plus 5–10 RC depending on the destination’s distance from Sol, including repeat visits. Earth return stays free.",
         "Made Settings the only menu that pauses the simulation. Other menus and confirmations keep the world running.",
         "Kept the locked destination label visible across systems, with a screen-edge marker when needed and distance in Ly. Intersystem bearings and distances follow the schematic game map."
       ],
@@ -381,8 +397,8 @@
         "Removed the repeated explosion sound on obstacle contact. The ship now guides itself to nearby clear ground.",
         "Fixed held resources turning with the world instead of staying in the same position in my hand.",
         "Replaced the TNT fuse hiss with a short beep every second before the explosion.",
-        "Added TNT damage to ships and a replacement at the current world\u2019s launch pad, while keeping on-foot players in place.",
-        "Matched the launch tower\u2019s collision to its shaft, platforms and arm.",
+        "Added TNT damage to ships and a replacement at the current world’s launch pad, while keeping on-foot players in place.",
+        "Matched the launch tower’s collision to its shaft, platforms and arm.",
         "Stopped menu opening and button clicks from playing the same UI sound twice."
       ],
       "source": {
@@ -970,7 +986,7 @@
     {
       "legacyVersion": 59,
       "version": "v0.0.59",
-      "title": "v0.0.59 \u2014 pools, weather and connected roads",
+      "title": "v0.0.59 — pools, weather and connected roads",
       "changes": [
         "Pools start empty and accumulate slowly, with clipped block/preview footprints and stable pool identities. Grass foley is softer; rain/snow blend across biome borders, including storms, with gusts and uneven lightning followed by thunder. Shared terrain-following roads connect the smaller 16 m pad, Earth shops, and village centers; village approaches meet doorsteps, and scenery avoids roads. Existing village edits remain saved."
       ],
@@ -982,7 +998,7 @@
     {
       "legacyVersion": 58,
       "version": "v0.0.58",
-      "title": "v0.0.58 \u2014 World weather, medium biomes and bounded puddle effects",
+      "title": "v0.0.58 — World weather, medium biomes and bounded puddle effects",
       "changes": [
         "Rain, snow and precipitation impacts now occupy fixed world cells around the player/ship. Native graphics renders reusable scene geometry with depth testing and fog; compatibility graphics projects the same time-driven world positions. Camera rotation, zoom and orbit no longer drive particle motion or weather location. Weather remains bounded to nearby cells and stops above the cloud ceiling."
       ],
@@ -994,7 +1010,7 @@
     {
       "legacyVersion": 57,
       "version": "v0.0.57",
-      "title": "v0.0.57 \u2014 Orbit, biome weather, map cost and gameplay audio",
+      "title": "v0.0.57 — Orbit, biome weather, map cost and gameplay audio",
       "changes": [
         "SunRays is removed from settings, storage writes, the client module graph and source manifest; its module is deleted. The older stellar-glare streaks are also removed while the normal stellar glow remains. Space subject-orbit uses a stable world-up frame instead of changing to a nearby planet's surface normal. Orbit dragging remains available during approach autopilot, mode changes clear stale gestures, and lifting one finger after a pinch hands rotation back to the remaining finger. Chase steering retains its existing behavior."
       ],
@@ -1006,7 +1022,7 @@
     {
       "legacyVersion": 56,
       "version": "v0.0.56",
-      "title": "v0.0.56 \u2014 Startup initialization race correction",
+      "title": "v0.0.56 — Startup initialization race correction",
       "changes": [
         "Initialize movement-audio state with the other initial state, and schedule the first render frame only at the end of module initialization after the ship's asynchronous load completes. Previously the module scheduled rendering, awaited ship loading, and only then initialized `wasWalkingAirborne`; a frame during that wait could throw a temporal-dead-zone ReferenceError and leave the loading screen reporting Unable to start."
       ],
@@ -1018,7 +1034,7 @@
     {
       "legacyVersion": 55,
       "version": "v0.0.55",
-      "title": "v0.0.55 \u2014 Biome weather, pool geometry, shadows and surface audio",
+      "title": "v0.0.55 — Biome weather, pool geometry, shadows and surface audio",
       "changes": [
         "All fifteen follow-up requests are represented in this update. Puddle jump effects use a reusable, depth-tested world mesh: circular rings lie on the water plane and the ring/spray footprint stays inside the pool. Reflection cube faces now represent their actual sky directions; the water shader adds a directional reflected Sun highlight. The fallback draws that highlight only where the reflected Sun ray intersects a pool. This remains a lightweight sky reflection, not a full-scene mirror."
       ],
@@ -1030,7 +1046,7 @@
     {
       "legacyVersion": 54,
       "version": "v0.0.54",
-      "title": "v0.0.54 \u2014 Weather interactions, snow materials and mobile controls",
+      "title": "v0.0.54 — Weather interactions, snow materials and mobile controls",
       "changes": [
         "Precipitation now varies its wind direction and speed, checks the uploaded ship's opaque source-part bounds, and respects roofs. Windows retain exterior rain visibility. Reliable nearby ground-impact ripples and drops replace the sparse phase-dependent effect; landing in a rain pool adds a ring and spray. Persistent randomized pool/snow records change with weather episodes, retain harvested depletion, and accumulate on exposed roof surfaces. Ground weather stays visible across a larger bounded range; torches retain a small distant beacon while expensive point lights remain local."
       ],
@@ -1042,7 +1058,7 @@
     {
       "legacyVersion": 53,
       "version": "v0.0.53",
-      "title": "v0.0.53 \u2014 Below-cloud precipitation and lightweight ground accumulation",
+      "title": "v0.0.53 — Below-cloud precipitation and lightweight ground accumulation",
       "changes": [
         "Earth rain, heavy rain and thunderstorms stop above the lowest cloud-base height (222 gameplay meters); rain/snow use terrain/pad/roof impact heights instead of the ship's contact floor. Ground hits add small splash/ripple rings. Existing atmospheric fog remains above the clouds, while rain audio and nearby precipitation stop there. Thunder flashes now illuminate the environment."
       ],
@@ -1054,7 +1070,7 @@
     {
       "legacyVersion": 52,
       "version": "v0.0.52",
-      "title": "v0.0.52 \u2014 Texture-matched Proxima atmospheres and debug window session/size",
+      "title": "v0.0.52 — Texture-matched Proxima atmospheres and debug window session/size",
       "changes": [
         "Proxima b uses a golden sky/haze, and Proxima d uses a warm tan/brown sky/haze, matching the chosen surface artwork. Sky, fog, clouds, exterior atmospheric rim and fill lighting share per-body palettes; both remain landable with Earth-like cloud heights and 800m exits."
       ],
@@ -1066,9 +1082,9 @@
     {
       "legacyVersion": 51,
       "version": "v0.0.51",
-      "title": "v0.0.51 \u2014 Server-authorized nonmodal developer tools",
+      "title": "v0.0.51 — Server-authorized nonmodal developer tools",
       "changes": [
-        "Settings \u2192 Debug Menu opens a floating, draggable window with Close, Debug Console and Developer Panel tabs. The window does not pause gameplay or shield inventory/other controls. Keyboard focus inside developer inputs clears ship movement and prevents game shortcuts. Console includes runtime errors, command feedback and live renderer/location/position/currency/inventory diagnostics, bounded to 150 messages."
+        "Settings → Debug Menu opens a floating, draggable window with Close, Debug Console and Developer Panel tabs. The window does not pause gameplay or shield inventory/other controls. Keyboard focus inside developer inputs clears ship movement and prevents game shortcuts. Console includes runtime errors, command feedback and live renderer/location/position/currency/inventory diagnostics, bounded to 150 messages."
       ],
       "source": {
         "path": "README.md",
@@ -1078,7 +1094,7 @@
     {
       "legacyVersion": 50,
       "version": "v0.0.50",
-      "title": "v0.0.50 \u2014 Proxima b/d atmospheres and readable gas interiors",
+      "title": "v0.0.50 — Proxima b/d atmospheres and readable gas interiors",
       "changes": [
         "Proxima b/d use Earth-like blue skies, drifting clouds, fog, atmospheric rims and 800m gameplay exit heights while retaining solid landing. Atmospheres/terrain remain imagined game representations. Gas interiors use palettes sampled from each selected exterior map, including blue cores/haze for ice giants and Proxima c, brighter diffuse ship lighting, and up to 12 soft animated gas-cloud sprites (4/8/12 by quality). The Canvas fallback shares palettes and world-space cloud motion. Core collision and gas exit rules are unchanged."
       ],
@@ -1090,7 +1106,7 @@
     {
       "legacyVersion": 49,
       "version": "v0.0.49",
-      "title": "v0.0.49 \u2014 Restore direction-steered Chase camera / Proxima landing rules",
+      "title": "v0.0.49 — Restore direction-steered Chase camera / Proxima landing rules",
       "changes": [
         "Chase uses the original camera quaternion and offset again, preserving pitch/yaw/roll and parked crew look rather than forcing a look-at rotation. Orbit retains its ship-centered independent rotation and zoom. Proxima c is represented as a non-landable gas giant; Proxima b and d remain solid landable worlds. Old landed Proxima c saves safely migrate to gas entry."
       ],
@@ -1102,9 +1118,9 @@
     {
       "legacyVersion": 48,
       "version": "v0.0.48",
-      "title": "v0.0.48 \u2014 Ship-centered orbit camera / Planet X gas world",
+      "title": "v0.0.48 — Ship-centered orbit camera / Planet X gas world",
       "changes": [
-        "Zoomable camera mode now orbits the uploaded ship\u2019s visual bounding-box center, with a level horizon, clamped vertical orbit and 6\u2013120m zoom. Mouse/touch drag rotates the view independently of the ship, right-drag is supported without the browser menu, and existing wheel/pinch/zoom buttons change orbit distance. The ship stays centered after surface-ground clearance adjustment and in chase view. Cockpit and on-foot controls are preserved."
+        "Zoomable camera mode now orbits the uploaded ship’s visual bounding-box center, with a level horizon, clamped vertical orbit and 6–120m zoom. Mouse/touch drag rotates the view independently of the ship, right-drag is supported without the browser menu, and existing wheel/pinch/zoom buttons change orbit distance. The ship stays centered after surface-ground clearance adjustment and in chase view. Cockpit and on-foot controls are preserved."
       ],
       "source": {
         "path": "README.md",
@@ -1114,7 +1130,7 @@
     {
       "legacyVersion": 47,
       "version": "v0.0.47",
-      "title": "v0.0.47 \u2014 My Roblox texture selections and added worlds",
+      "title": "v0.0.47 — My Roblox texture selections and added worlds",
       "changes": [
         "All 46 supplied IDs map to locally bundled public Roblox preview PNGs. Original asset delivery returned authentication errors; these images are explicitly preview-resolution copies (up to 420px wide), with their source IDs, dimensions and SHA-256 hashes retained in `roblox-texture-assets.js` and `assets/roblox/texture-download-report.json`. Existing full-size maps remain bundled as historical fallback assets. The Moon selection is a transparent cube-cross atlas: face-local cube-sphere UVs prevent the empty corners appearing as black surface patches, and Canvas/atlas thumbnails use an occupied face."
       ],
@@ -1126,7 +1142,7 @@
     {
       "legacyVersion": 46,
       "version": "v0.0.46",
-      "title": "v0.0.46 \u2014 Mobile building and camera frame cost",
+      "title": "v0.0.46 — Mobile building and camera frame cost",
       "changes": [
         "Building sync retains unchanged special-block meshes, crafting-hall geometry and existing solid-block instance buffers. Player solid blocks now share material batches with village blocks; capacity grows only when needed. Door state changes replace only the door, while connected glass refreshes only changed adjacency. A spatial picking grid narrows aiming/interactions to nearby blocks instead of testing every instance in the visible world. Preview aiming is skipped without a block/shovel equipped; ground probes reuse scratch vectors. Torch candidates are cached and nearest-light selection runs at most about seven times a second. Canvas compatibility graphics now render/cull actual instance transforms."
       ],
@@ -1138,7 +1154,7 @@
     {
       "legacyVersion": 45,
       "version": "v0.0.45",
-      "title": "v0.0.45 \u2014 Upright landing and warp cockpit",
+      "title": "v0.0.45 — Upright landing and warp cockpit",
       "changes": [
         "The new ship parks nose-up again, matching its upright liftoff and guided descent. Its model-specific 4.23m contact offset keeps the two tail nozzles just above the ground; cockpit and exhaust transforms follow the parked pose, and on-foot collision follows the upright footprint. Confirmed/paid warp switches immediately to the actual 3D cockpit; cancellation preserves the camera. Labels are hidden when any sampled part of their on-screen rectangle overlaps opaque cockpit geometry, including back faces visible from inside; transparent windows remain clear. This check applies independently of celestial-body label overlap settings."
       ],
@@ -1150,7 +1166,7 @@
     {
       "legacyVersion": 44,
       "version": "v0.0.44",
-      "title": "v0.0.44 \u2014 Uploaded TZG Player Ship",
+      "title": "v0.0.44 — Uploaded TZG Player Ship",
       "changes": [
         "Replaced the scout rocket with the supplied `TZG_Player_Ship.blend`, retaining its 124 named exterior/interior parts, UVs, six packed textures, tinted glass, luminous displays and cyan engine/cabin lights. The static mesh uses eleven material batches (4,812 triangles). The original Blender file and deterministic export script are retained under `assets/blender/`. Twin gameplay exhaust emitters align with the two rear nozzles; the static model contains no baked flames. Parked and airborne orientations match; the pilot camera sits inside the actual 3D cockpit, and on-foot collision covers the wider hull/wings while preserving a clear exit and boarding access. Compatibility graphics retain material colors; full textures and lighting use WebGL."
       ],
@@ -1162,7 +1178,7 @@
     {
       "legacyVersion": 43,
       "version": "v0.0.43",
-      "title": "v0.0.43 \u2014 Tool tap double-activation fix",
+      "title": "v0.0.43 — Tool tap double-activation fix",
       "changes": [
         "Touch duplicate suppression now follows pointer IDs, tap position and button identity through inventory/hotbar rerenders, including delayed clicks targeted at replacement buttons or ancestors. Touch click events with zero detail are suppressed too. Mouse, pen, keyboard and programmatic activation remain available. Regression tests cover repeated equip/unequip, tool switching, modern and legacy compatibility clicks, simultaneous taps, cancelled/scrolled gestures, disabled buttons and disconnected buttons."
       ],
@@ -1174,7 +1190,7 @@
     {
       "legacyVersion": 42,
       "version": "v0.0.42",
-      "title": "v0.0.42 \u2014 Independent touch UI",
+      "title": "v0.0.42 — Independent touch UI",
       "changes": [
         "Each finger can tap game buttons independently while another finger holds the thumbstick or a flight control. Touch activation tracks pointer IDs, ignores scroll/cancel gestures and suppresses the duplicate native click. Inventory is non-modal for movement input and opening/closing it preserves held movement. Held controls reject pointer takeover; an existing camera drag keeps its original pointer. Mouse and keyboard activation remain native."
       ],
@@ -1186,7 +1202,7 @@
     {
       "legacyVersion": 41,
       "version": "v0.0.41",
-      "title": "v0.0.41 \u2014 Browser right-click interruption",
+      "title": "v0.0.41 — Browser right-click interruption",
       "changes": [
         "Right/middle mouse-down clears held input and cannot start a camera drag. Opening a context menu also releases keys and cancels any captured drag, even without window blur. Native context menus are blocked over the running game view/HUD so they cannot interrupt its canvas; text fields and links retain their normal menus."
       ],
@@ -1198,9 +1214,9 @@
     {
       "legacyVersion": 40,
       "version": "v0.0.40",
-      "title": "v0.0.40 \u2014 PC focus and ship steering",
+      "title": "v0.0.40 — PC focus and ship steering",
       "changes": [
-        "Keyboard input clears on tab/window focus loss, page hiding and page exits; stale auto-repeat events cannot restart a released key. Captured key-up handlers release multi-key combinations independently. A saved 0.25\u20133\u00d7 Ship rotation speed slider is separate from look sensitivity. Space and body flight share normalized rotation rates, slowing default space steering and speeding up body steering. Post-processing uses a single fullscreen triangle, bounded depth/edge sampling, explicit framebuffer clearing, a minimized-window guard and a direct-render fallback on framebuffer failure."
+        "Keyboard input clears on tab/window focus loss, page hiding and page exits; stale auto-repeat events cannot restart a released key. Captured key-up handlers release multi-key combinations independently. A saved 0.25–3× Ship rotation speed slider is separate from look sensitivity. Space and body flight share normalized rotation rates, slowing default space steering and speeding up body steering. Post-processing uses a single fullscreen triangle, bounded depth/edge sampling, explicit framebuffer clearing, a minimized-window guard and a direct-render fallback on framebuffer failure."
       ],
       "source": {
         "path": "README.md",
@@ -1210,7 +1226,7 @@
     {
       "legacyVersion": 39,
       "version": "v0.0.39",
-      "title": "v0.0.39 \u2014 Growing upper atmosphere opening",
+      "title": "v0.0.39 — Growing upper atmosphere opening",
       "changes": [
         "The opening starts wider above the cloud deck, then continuously expands through the remaining ascent. It retains 24% of the body sky tint instead of becoming pure black. Expansion stays strictly above the horizon; lower sky colors, fog and the cloud layer remain unchanged."
       ],
@@ -1222,7 +1238,7 @@
     {
       "legacyVersion": 38,
       "version": "v0.0.38",
-      "title": "v0.0.38 \u2014 Fog and upper sky",
+      "title": "v0.0.38 — Fog and upper sky",
       "changes": [
         "Fog keeps its normal body/weather distance above the cloud deck. Space and stars appear only in a small, smoothly blended cap overhead; the lower sky and horizon keep their atmospheric colors. Earth weather fog remains visible at high altitude while precipitation still fades above the cloud layer."
       ],
@@ -1234,7 +1250,7 @@
     {
       "legacyVersion": 37,
       "version": "v0.0.37",
-      "title": "v0.0.37 \u2014 Atmospheres, light, glass and settlements",
+      "title": "v0.0.37 — Atmospheres, light, glass and settlements",
       "changes": [
         "Sound effects and rain now use Web Audio buffers, pause immediately on blur/hidden/page exit and resume ambient audio only in the foreground. Touching glass blocks omit their shared faces. Placed torches emit wider omnidirectional light; held torches illuminate nearby terrain. Cloud decks stay at a fixed world height so rockets can cross them; upper atmosphere fades toward space, with fades on body entry and exit. Each landable body has two rare deterministic village sites within 1000 m of the launch station, with spaced houses and roads built from recoverable blocks. Village discovery, open doors and TNT/shovel destruction persist in compact saves; nearby village cubes render in batches."
       ],
@@ -1246,7 +1262,7 @@
     {
       "legacyVersion": 36,
       "version": "v0.0.36",
-      "title": "v0.0.36 \u2014 Wood building blocks and cutting audio",
+      "title": "v0.0.36 — Wood building blocks and cutting audio",
       "changes": [
         "Craft 1 LogBlock or 4 WoodPlanks from 1 TreeLog, or buy 64 for 1000 FP. Both support placement, collisions, shovel recovery, saved worlds and first-person holding. LogBlock has bark sides and ringed end grain; WoodPlanks has plank seams and grain. TreeLog now uses a solid capped wooden log model in hand. Saw hits and tree felling have dedicated original sounds, separate from mineral impacts."
       ],
@@ -1258,9 +1274,9 @@
     {
       "legacyVersion": 35,
       "version": "v0.0.35",
-      "title": "v0.0.35 \u2014 Saws and TreeLogs",
+      "title": "v0.0.35 — Saws and TreeLogs",
       "changes": [
-        "Craft or buy Iron, Steel and Diamond Saws (25/50/100 damage). Equip a saw and click a tree trunk within 6 m. Trees have 100 HP and drop 4\u20138 TreeLogs; logs sell for 10 FP + 1 RC each and craft upgraded saws. Trees retain damage/removal through saves and terrain streaming; selling all resource cargo resets trees and minerals together. Centered saw/log inventory images and solid first-person saw models included."
+        "Craft or buy Iron, Steel and Diamond Saws (25/50/100 damage). Equip a saw and click a tree trunk within 6 m. Trees have 100 HP and drop 4–8 TreeLogs; logs sell for 10 FP + 1 RC each and craft upgraded saws. Trees retain damage/removal through saves and terrain streaming; selling all resource cargo resets trees and minerals together. Centered saw/log inventory images and solid first-person saw models included."
       ],
       "source": {
         "path": "README.md",
@@ -1270,7 +1286,7 @@
     {
       "legacyVersion": 34,
       "version": "v0.0.34",
-      "title": "v0.0.34 \u2014 Body flight minimum",
+      "title": "v0.0.34 — Body flight minimum",
       "changes": [
         "Body entry starts at 5 m/s. Airborne body flight cannot stop or boost, and decreasing speed bottoms out at 5 m/s. Launch ramps from 5 to 40 m/s; landing still parks the ship at zero."
       ],
@@ -1284,7 +1300,7 @@
       "version": "v0.0.33",
       "title": "World and gameplay update 33",
       "changes": [
-        "Version 33 adds P Warp, B Boost, Tab Settings and X Stop without a B/brake conflict. Crafting, trading and inventory keep the simulation running while movement input stays blocked. Airborne planet entry transforms the incoming space orientation into the local surface frame, sharing the forward-axis model/thrust convention. The five-second launch countdown leads into a four-second smooth 1\u201340 m/s ramp with steering available; decrease/Stop can interrupt the ramp. Landing descends faster and fully zeros both velocity vectors, retained speed and throttle on touchdown, with an exact parked position hold. Legacy airborne saves convert their old ship axis. Free camera and stable orbit camera stabilize against local planet up near surfaces with a bounded pitch."
+        "Version 33 adds P Warp, B Boost, Tab Settings and X Stop without a B/brake conflict. Crafting, trading and inventory keep the simulation running while movement input stays blocked. Airborne planet entry transforms the incoming space orientation into the local surface frame, sharing the forward-axis model/thrust convention. The five-second launch countdown leads into a four-second smooth 1–40 m/s ramp with steering available; decrease/Stop can interrupt the ramp. Landing descends faster and fully zeros both velocity vectors, retained speed and throttle on touchdown, with an exact parked position hold. Legacy airborne saves convert their old ship axis. Free camera and stable orbit camera stabilize against local planet up near surfaces with a bounded pitch."
       ],
       "source": {
         "path": "README.md",
@@ -1308,7 +1324,7 @@
       "version": "v0.0.31",
       "title": "World and gameplay update 31",
       "changes": [
-        "Version 31 replaces the full-screen blue warp frame with a nonblocking destination title/subtitle and a smoothly animated progress bar directly above the boost bar, plus a left-hand Warp button opposite Boost. Confirmation/payment share the ship-position quote: non-Earth local routes cost 50\u2013300 FP across 0\u201350 AU of game distance; cross-system routes cost 150\u20131000 FP plus 5 RC across 0\u2013200 AU of normalized game-route distance. Separate system scenes have deterministic illustrative pricing anchors, not measured interstellar coordinates. Earth remains free. Physical star contact uses swept collision and restarts at Earth while preserving cargo/currency. Settings now includes Refresh Game, which saves then reloads the page."
+        "Version 31 replaces the full-screen blue warp frame with a nonblocking destination title/subtitle and a smoothly animated progress bar directly above the boost bar, plus a left-hand Warp button opposite Boost. Confirmation/payment share the ship-position quote: non-Earth local routes cost 50–300 FP across 0–50 AU of game distance; cross-system routes cost 150–1000 FP plus 5 RC across 0–200 AU of normalized game-route distance. Separate system scenes have deterministic illustrative pricing anchors, not measured interstellar coordinates. Earth remains free. Physical star contact uses swept collision and restarts at Earth while preserving cargo/currency. Settings now includes Refresh Game, which saves then reloads the page."
       ],
       "source": {
         "path": "README.md",
@@ -1332,7 +1348,7 @@
       "version": "v0.0.29",
       "title": "World and gameplay update 29",
       "changes": [
-        "Version 29 adds a craftable two-cell Door (2 iron + 1 quartz or 120 FP), screen-tap/E toggling within 5 m, saved door state, physical open/closed collision and blocked-swing guards. Gas exits are 340\u2013480 m radially from the core; core contact restarts at Earth without clearing inventory, and the interior Return to Earth shortcut is removed. Look sensitivity now reaches 6\u00d7. Low/Medium/High visibly change cloud count, streamed decoration budgets, resolution and effect passes; mobile budgets stay capped. Space uses brighter neutral fill. Planet Labels Mode saves Overlap or Collision Check (default), with foreground-body occlusion on both space and surface skies. More no longer lists the four legacy panel shortcuts."
+        "Version 29 adds a craftable two-cell Door (2 iron + 1 quartz or 120 FP), screen-tap/E toggling within 5 m, saved door state, physical open/closed collision and blocked-swing guards. Gas exits are 340–480 m radially from the core; core contact restarts at Earth without clearing inventory, and the interior Return to Earth shortcut is removed. Look sensitivity now reaches 6×. Low/Medium/High visibly change cloud count, streamed decoration budgets, resolution and effect passes; mobile budgets stay capped. Space uses brighter neutral fill. Planet Labels Mode saves Overlap or Collision Check (default), with foreground-body occlusion on both space and surface skies. More no longer lists the four legacy panel shortcuts."
       ],
       "source": {
         "path": "README.md",
@@ -1380,7 +1396,7 @@
       "version": "v0.0.25",
       "title": "World and gameplay update 25",
       "changes": [
-        "Version 25 adds Earth distance fog that ends before the nearest streamed terrain edge; a persisted terrain-size setting selects 288\u2013864m across (9\u201381 chunks). It retains the mobile tree budget. Inventory now only contains search, totals, close and scrollable item/name/stack cards; world simulation and Earth time/weather continue behind it while player input remains blocked. Selling uses a separate Earth Trade window. Crafting shares the inventory panel style and uses rendered tool/concrete thumbnails. Sixteen concrete colors replace iron blocks; old carried and placed blocks migrate to gray concrete without quantity loss. One Quartz crafts five blocks; buying 64 costs 1000 FP. Colored blocks retain their color when placed, recovered, saved and restored. Earth Trade/Crafting use small building-front prompts in reach, available by E or tap. Walking/running now use 4/8 metres per second. Tests cover migration, color refunds, image availability, movement, fog/terrain bounds, and active inventory simulation. Browser QA uses the compatibility renderer; native GPU/mobile performance is unmeasured."
+        "Version 25 adds Earth distance fog that ends before the nearest streamed terrain edge; a persisted terrain-size setting selects 288–864m across (9–81 chunks). It retains the mobile tree budget. Inventory now only contains search, totals, close and scrollable item/name/stack cards; world simulation and Earth time/weather continue behind it while player input remains blocked. Selling uses a separate Earth Trade window. Crafting shares the inventory panel style and uses rendered tool/concrete thumbnails. Sixteen concrete colors replace iron blocks; old carried and placed blocks migrate to gray concrete without quantity loss. One Quartz crafts five blocks; buying 64 costs 1000 FP. Colored blocks retain their color when placed, recovered, saved and restored. Earth Trade/Crafting use small building-front prompts in reach, available by E or tap. Walking/running now use 4/8 metres per second. Tests cover migration, color refunds, image availability, movement, fog/terrain bounds, and active inventory simulation. Browser QA uses the compatibility renderer; native GPU/mobile performance is unmeasured."
       ],
       "source": {
         "path": "README.md",
@@ -1428,7 +1444,7 @@
       "version": "v0.0.16",
       "title": "v0.0.16 flight, atlas and menu update",
       "changes": [
-        "Right flight controls are larger: a tall Thrust control, shorter Slower control, and Stop alongside Thrust. Hold or click to change a retained forward speed command; release keeps speed and Slower stops at zero. Normal/boost limits are 150/450 m/s on surfaces and 55/320 game units per second in space. Stop clears the command and velocity. Surface forward follows the Blender rocket\u2019s local nose (+Y after its surface rotation), with no camera dependency. Engine flames pivot exactly at the Blender bell outlet (z=1.56) in both renderers."
+        "Right flight controls are larger: a tall Thrust control, shorter Slower control, and Stop alongside Thrust. Hold or click to change a retained forward speed command; release keeps speed and Slower stops at zero. Normal/boost limits are 150/450 m/s on surfaces and 55/320 game units per second in space. Stop clears the command and velocity. Surface forward follows the Blender rocket’s local nose (+Y after its surface rotation), with no camera dependency. Engine flames pivot exactly at the Blender bell outlet (z=1.56) in both renderers."
       ],
       "source": {
         "path": "README.md",
@@ -1440,7 +1456,7 @@
       "version": "v0.0.15",
       "title": "v0.0.15 control and inventory fixes",
       "changes": [
-        "Cargo uses a dedicated vertically scrolling grid, preserving the scroll position while selecting and equipping. All dialogs use the main blue glass palette. The hotbar contains at most seven items including the pickaxe, with keyboard slots 1\u20137. The inventory toggle is centered above it."
+        "Cargo uses a dedicated vertically scrolling grid, preserving the scroll position while selecting and equipping. All dialogs use the main blue glass palette. The hotbar contains at most seven items including the pickaxe, with keyboard slots 1–7. The inventory toggle is centered above it."
       ],
       "source": {
         "path": "README.md",
@@ -1462,9 +1478,9 @@
     {
       "legacyVersion": 8,
       "version": "v0.0.8",
-      "title": "The Zero Gravity - Web \u2014 Mining Edition 8",
+      "title": "The Zero Gravity - Web — Mining Edition 8",
       "changes": [
-        "Earth retains the pilot ship on Pad 01 and adds a separate trading ship at local (18, 0.55, 13). Leave with F; the trading marker and Earth Trade button show distance. Sell from inventory while on foot within 10 m. - 48 resource types have names, colors, sale values and varying HP (60\u2013300). Each landable body has 24 deterministic deposits with thematic mineral pools. Exoplanet placements and exotic minerals are fictional game content. Deposits show world-positioned name labels, a bar and current/max HP within 48 m on foot. - Pickaxe is slot 1. Click/tap a visible deposit or aim and press R / Swing. Reach is 6 m, each hit deals 25 HP, with a 0.42 s cooldown. Depleted nodes pay exactly one unit, remain depleted across visits/reloads, and cannot be collected twice. The first-person pickaxe animates; other selected resources appear in hand in 3D. - I / Inventory opens the cargo grid. Clicking a card or hotbar slot equips/unequips it. Separate selection buttons support multiple sale stacks, select all and deselect all. Search and name/value/quantity sorting are included. Selling a stack sells its full quantity. FP payout is each unit\u2019s catalog value; every sold unit adds 2 RC. Partial sales retain remaining cargo and depleted nodes. When a sale empties cargo, ALL body deposits respawn and partial HP damage resets. - New accounts start with 0 FP and 0 RC. Earth deposits supply initial funding. Discovery of a new catalog body pays 5 RC once, including arrival or first physical entry; Earth is already discovered. Warping to Earth is always free, including across systems. Other normal warps cost 100 FP. Cross-system warp costs 100 FP + 5 RC. The shared Flight navigation hook also applies to distant approaches, tours and orbit transfers. Bookmarked travel charges the same fee based on its saved coordinate system. Insufficient funds cause no debit or navigation cancellation. Accepted warp charges once; cancelling an already charged warp does not refund it. Manual flight remains free. - Economy saves under `cosmic-economy-v8`: balances, inventory, claimed discoveries, damage, depleted nodes and respawn cycle. New Flight does not wipe inventory or balances, and distant rescue/reset travel charges the Earth return fee. This remains a single-player browser-local game, without multiplayer/account trading. - Kenney CC0 sound assets (Interface, Impact, Sci-fi Sounds) supply UI, equip, swing, hit, break, pickup, sale, discovery, warp, countdown, launch, landing, error and footstep effects. Settings includes a persisted effects toggle and volume. The original Google Actions library limits reuse to Google Actions, so it was excluded. Sounds unlock after a pointer/key gesture; audio pools are bounded. - Tests verify per-body deposits, HP/reach/tool/cooldown, duplicate pickup prevention, inventory equip/selection, full/partial sales, 2 RC/unit, global respawn, one-time discovery, warp charges/denial and safe persistence. Existing flight, terrain, walking and settings/UI regressions are retained. Cloud browser verification uses compatibility graphics; GPU and actual phone audio/motion require device testing."
+        "Earth retains the pilot ship on Pad 01 and adds a separate trading ship at local (18, 0.55, 13). Leave with F; the trading marker and Earth Trade button show distance. Sell from inventory while on foot within 10 m. - 48 resource types have names, colors, sale values and varying HP (60–300). Each landable body has 24 deterministic deposits with thematic mineral pools. Exoplanet placements and exotic minerals are fictional game content. Deposits show world-positioned name labels, a bar and current/max HP within 48 m on foot. - Pickaxe is slot 1. Click/tap a visible deposit or aim and press R / Swing. Reach is 6 m, each hit deals 25 HP, with a 0.42 s cooldown. Depleted nodes pay exactly one unit, remain depleted across visits/reloads, and cannot be collected twice. The first-person pickaxe animates; other selected resources appear in hand in 3D. - I / Inventory opens the cargo grid. Clicking a card or hotbar slot equips/unequips it. Separate selection buttons support multiple sale stacks, select all and deselect all. Search and name/value/quantity sorting are included. Selling a stack sells its full quantity. FP payout is each unit’s catalog value; every sold unit adds 2 RC. Partial sales retain remaining cargo and depleted nodes. When a sale empties cargo, ALL body deposits respawn and partial HP damage resets. - New accounts start with 0 FP and 0 RC. Earth deposits supply initial funding. Discovery of a new catalog body pays 5 RC once, including arrival or first physical entry; Earth is already discovered. Warping to Earth is always free, including across systems. Other normal warps cost 100 FP. Cross-system warp costs 100 FP + 5 RC. The shared Flight navigation hook also applies to distant approaches, tours and orbit transfers. Bookmarked travel charges the same fee based on its saved coordinate system. Insufficient funds cause no debit or navigation cancellation. Accepted warp charges once; cancelling an already charged warp does not refund it. Manual flight remains free. - Economy saves under `cosmic-economy-v8`: balances, inventory, claimed discoveries, damage, depleted nodes and respawn cycle. New Flight does not wipe inventory or balances, and distant rescue/reset travel charges the Earth return fee. This remains a single-player browser-local game, without multiplayer/account trading. - Kenney CC0 sound assets (Interface, Impact, Sci-fi Sounds) supply UI, equip, swing, hit, break, pickup, sale, discovery, warp, countdown, launch, landing, error and footstep effects. Settings includes a persisted effects toggle and volume. The original Google Actions library limits reuse to Google Actions, so it was excluded. Sounds unlock after a pointer/key gesture; audio pools are bounded. - Tests verify per-body deposits, HP/reach/tool/cooldown, duplicate pickup prevention, inventory equip/selection, full/partial sales, 2 RC/unit, global respawn, one-time discovery, warp charges/denial and safe persistence. Existing flight, terrain, walking and settings/UI regressions are retained. Cloud browser verification uses compatibility graphics; GPU and actual phone audio/motion require device testing."
       ],
       "source": {
         "path": "README.md",
@@ -1474,9 +1490,9 @@
     {
       "legacyVersion": 7,
       "version": "v0.0.7",
-      "title": "The Zero Gravity - Web \u2014 Walking Edition 7",
+      "title": "The Zero Gravity - Web — Walking Edition 7",
       "changes": [
-        "Parked camera look is independent from the ship. Drag the canvas or use the right thumbstick before launching; the grounded hull stays still. - Leave a parked ship with F or Leave ship. Walk in first person with WASD / the left stick, look by dragging / the right stick, run with Shift and jump with Space (mobile Jump/Run buttons). Terrain, pad steps, ship and base building contact are checked. Board within 8 m with F / Board ship. Launch is blocked while on foot, and leaving is blocked during countdown or flight. Reset returns the player aboard. - Space and airless surface skies use the photographic 360\u00b0 Milky Way panorama by ESO/S. Brunier (CC BY 4.0), resized into desktop and mobile assets. The 28,000-point background overlay and fallback synthetic star dots are removed. Atmospheric worlds keep their own daytime skies. Other-system scenery remains artistic; this is an Earth-observed sky panorama reused across destinations. - UI icons are local Google Material Design SVG assets, Apache 2.0. Icon-only buttons have accessible labels. No Google font/icon CDN is required at runtime. - Tests cover parked camera separation, leave/board distance and phase guards, walking, jumping, ground/building collision and the existing manual launch/entry behavior. UI smoke checks cover parked drag, first-person controls, launch lock while walking, boarding and loaded icon elements. WebGL is mocked in this suite; browser QA uses the cloud's compatibility renderer. Physical phone sensors and GPU appearance require device testing."
+        "Parked camera look is independent from the ship. Drag the canvas or use the right thumbstick before launching; the grounded hull stays still. - Leave a parked ship with F or Leave ship. Walk in first person with WASD / the left stick, look by dragging / the right stick, run with Shift and jump with Space (mobile Jump/Run buttons). Terrain, pad steps, ship and base building contact are checked. Board within 8 m with F / Board ship. Launch is blocked while on foot, and leaving is blocked during countdown or flight. Reset returns the player aboard. - Space and airless surface skies use the photographic 360° Milky Way panorama by ESO/S. Brunier (CC BY 4.0), resized into desktop and mobile assets. The 28,000-point background overlay and fallback synthetic star dots are removed. Atmospheric worlds keep their own daytime skies. Other-system scenery remains artistic; this is an Earth-observed sky panorama reused across destinations. - UI icons are local Google Material Design SVG assets, Apache 2.0. Icon-only buttons have accessible labels. No Google font/icon CDN is required at runtime. - Tests cover parked camera separation, leave/board distance and phase guards, walking, jumping, ground/building collision and the existing manual launch/entry behavior. UI smoke checks cover parked drag, first-person controls, launch lock while walking, boarding and loaded icon elements. WebGL is mocked in this suite; browser QA uses the cloud's compatibility renderer. Physical phone sensors and GPU appearance require device testing."
       ],
       "source": {
         "path": "README.md",
@@ -1498,7 +1514,7 @@
     {
       "legacyVersion": 5,
       "version": "v0.0.5",
-      "title": "Edition 5 \u2014 terrain, survey and compatibility",
+      "title": "Edition 5 — terrain, survey and compatibility",
       "changes": [
         "Added six deterministic fictional survey systems containing 30 explicitly marked objects (six stars, eighteen planets, six moons). The catalog contains 121 destinations total. Survey system names and positions are invented, with borrowed texture artwork credited as before."
       ],
@@ -1510,7 +1526,7 @@
     {
       "legacyVersion": 4,
       "version": "v0.0.4",
-      "title": "Edition 4 \u2014 planetarium exploration",
+      "title": "Edition 4 — planetarium exploration",
       "changes": [
         "The default experience now uses a free camera, inspired by the navigation patterns described in the official SpaceEngine user manual (https://spaceengine.org/manual/user-manual-0980/). The Zero Gravity - Web remains its own browser sandbox; SpaceEngine code, UI assets and branding are not included."
       ],
@@ -1522,7 +1538,7 @@
     {
       "legacyVersion": 3,
       "version": "v0.0.3",
-      "title": "Edition 3 \u2014 mobile stability, HUD ownership and image assets",
+      "title": "Edition 3 — mobile stability, HUD ownership and image assets",
       "changes": [
         "Settings no longer composites a blurred WebGL scene; 3D redraws are suspended while any dialog is open. Mobile canvas allocation is capped at 1.1 million pixels even at High. A tiny LRU-style image map cache keeps only two maps (Low/mobile) or three (other mobile quality settings) resident, with serial loading and disposal on eviction. Context loss saves the flight and offers a Safe graphics restart. This addresses identified resource pressure; the original crash cannot be confirmed resolved without a real device test."
       ],

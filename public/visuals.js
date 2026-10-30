@@ -24,7 +24,7 @@ function planetTexture(b){
 function glowMap(){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'#ffffff');g.addColorStop(.15,'#ffffffcc');g.addColorStop(.35,'#ffffff33');g.addColorStop(1,'#ffffff00');x.fillStyle=g;x.fillRect(0,0,128,128);return new T.CanvasTexture(c)}
 export const glow=glowMap();
 export function makeWorld(b){
- if(b.type==='STAR'){const color=starShineColor(b),mesh=new T.Mesh(new T.SphereGeometry(b.r,40,24),new T.MeshBasicMaterial({color,toneMapped:false}));mesh.userData.body=b;mesh.userData.neonStar=true;const halo=new T.Sprite(new T.SpriteMaterial({map:glow,color,transparent:true,opacity:.8,blending:T.AdditiveBlending,depthWrite:false}));halo.scale.setScalar(b.r*9);mesh.add(halo);return mesh}
+ if(b.type==='STAR'){const color=starShineColor(b),mesh=new T.Mesh(new T.SphereGeometry(b.r,40,24),new T.MeshBasicMaterial({color,toneMapped:false}));mesh.userData.body=b;mesh.userData.neonStar=true;return mesh}
  if(b.type==='GALAXY')return makeGalaxy(b);
  if(b.type==='BLACK HOLE')return createBlackHole(b);
  if(b.type==='NEBULA'||b.type==='STAR CLUSTER')return makeNebula(b);
@@ -33,7 +33,7 @@ export function makeWorld(b){
  const mesh=new T.Mesh(geometry,new T.MeshStandardMaterial({color:b.color,roughness:b.name==='Earth'?.63:.95,metalness:0,emissive:b.type==='STAR'?b.color:0,emissiveIntensity:b.type==='STAR'?3.5:0}));mesh.userData.body=b;if(b.modelFile)mesh.userData.shapeReady=applySmallBody(mesh,b);
  if(b.solid&&!b.texture){const c=document.createElement('canvas');c.width=512;c.height=256;const x=c.getContext('2d');let seed=0;for(const ch of b.name)seed=(seed*31+ch.charCodeAt(0))>>>0;const rng=random(seed);x.fillStyle=b.color;x.fillRect(0,0,512,256);if(b.type.includes('DWARF')){for(let i=0;i<850;i++){const px=rng()*512,py=rng()*256;x.fillStyle=i%3?'#ffe7ce14':'#31222b22';x.beginPath();x.ellipse(px,py,3+rng()*38,1+rng()*12,rng()*3,0,7);x.fill()}}else{for(let i=0;i<360;i++){x.fillStyle=`rgba(25,28,32,${.03+rng()*.15})`;x.beginPath();x.ellipse(rng()*512,rng()*256,1+rng()*12,1+rng()*6,rng()*3,0,7);x.fill()}}const map=new T.CanvasTexture(c);map.colorSpace=T.SRGBColorSpace;mesh.material.map=map;mesh.material.color.set(0xffffff)}
 
- if(b.type==='STAR'){const halo=new T.Sprite(new T.SpriteMaterial({map:glow,color:starShineColor(b),transparent:true,opacity:.85,blending:T.AdditiveBlending,depthWrite:false}));halo.scale.setScalar(b.r*9);mesh.add(halo)}
+
  if(atmosphereProfile(b)){
   const atmo=new T.Mesh(new T.SphereGeometry(b.r*1.025,56,32),new T.ShaderMaterial({uniforms:{tint:{value:new T.Color(atmosphereProfile(b).rim)},sunsetTint:{value:new T.Color(atmosphereProfile(b).air[1])}},vertexShader:'#include <common>\n#include <logdepthbuf_pars_vertex>\nvarying vec3 n; varying vec3 v; void main(){vec4 p=modelViewMatrix*vec4(position,1.0); n=normalize(normalMatrix*normal);v=normalize(-p.xyz);gl_Position=projectionMatrix*p;\n#include <logdepthbuf_vertex>\n}',fragmentShader:'#include <logdepthbuf_pars_fragment>\nuniform vec3 tint;uniform vec3 sunsetTint;varying vec3 n;varying vec3 v;void main(){\n#include <logdepthbuf_fragment>\nfloat rim=pow(1.0-abs(dot(normalize(n),normalize(v))),3.5);float sun=max(.05,dot(normalize(n),normalize(vec3(-.7,.3,1.0))));vec3 sunset=mix(sunsetTint,tint,smoothstep(.05,.45,sun));gl_FragColor=vec4(sunset,rim*(.1+sun*.65));}',transparent:true,side:T.BackSide,blending:T.AdditiveBlending,depthWrite:false}));mesh.add(atmo)
  }

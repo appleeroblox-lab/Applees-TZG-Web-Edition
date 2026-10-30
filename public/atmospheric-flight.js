@@ -9,11 +9,14 @@ export const PLANET_VIEW_RADIUS=120000;
 // Match the apparent planet size on both sides of the surface/space handoff.
 export function atmosphereBoundary(body){return body?.solid&&hasAtmosphere(body)?body.r*(1+ATMOSPHERE_HEIGHT/PLANET_VIEW_RADIUS):body.r}
 export function transitionState(altitude){return {terrain:1-smooth(4000,5000,altitude),planet:smooth(4000,5000,altitude),space:smooth(600,3000,altitude)}}
+export const PREENTRY_HEIGHT=6500;
 export function entryEffects(body,altitude,speed,vertical=0){
- if(!hasAtmosphere(body)||altitude>=ATMOSPHERE_HEIGHT||altitude<=800)return {plasma:0,wind:0,shake:0,exit:false};
- const motion=smooth(35,100,speed),exit=vertical>1,envelope=smooth(800,1000,altitude)*(1-smooth(1500,5000,altitude));
- const plasma=envelope*motion*(exit?.12:1),wind=motion*(1-smooth(3000,5000,altitude))*(exit?.18:.65);
- return {plasma,wind,shake:plasma*(exit?.35:1),exit}
+ if(!hasAtmosphere(body)||altitude>=PREENTRY_HEIGHT||altitude<=800)return {plasma:0,wind:0,shake:0,exit:vertical>1};
+ const motion=smooth(35,100,speed),exit=vertical>1;
+ // Faint upper corona becomes a bright shield deeper in the air, in either direction.
+ const upper=altitude>=5000?.12*(1-smooth(5000,PREENTRY_HEIGHT,altitude)):.12+.88*(1-smooth(1500,5000,altitude));
+ const plasma=smooth(800,1000,altitude)*upper*motion,wind=motion*(1-smooth(3000,5000,altitude))*(exit?.18:.65);
+ return {plasma,wind,shake:plasma*(exit?.35:1),exit};
 }
 
 // Gas worlds keep their radial interior; normalize its compressed outer shell to the same effect band.

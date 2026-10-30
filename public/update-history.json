@@ -1,8 +1,24 @@
 {
-  "currentVersion": "v0.0.126",
+  "currentVersion": "v0.0.127",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 127,
+      "version": "v0.0.127",
+      "date": "2026-10-30",
+      "title": "Enclosed vortex tunnel and taller aurora rays",
+      "changes": [
+        "Extended the visibly lit aurora rays beyond 250 m by lengthening the veil and softening its upper fade, while preserving Center Station ovals and arc animation.",
+        "Remade the tunnel with opaque blue/violet vortex walls, cyan/white filaments, fast streaks and a glowing closed far portal using the supplied image as reference.",
+        "Excluded exterior planets, sky, stars and glare from the tunnel render pass, with exception-safe restoration after rendering.",
+        "Hid world labels and the target reticle only during the tunnel phase, restoring them after exit or cancellation.",
+        "Matched the enclosed vortex and foreground ship drawing in Canvas compatibility mode; retained pooled corridor geometry and lower graphics budgets."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 126,
       "version": "v0.0.126",

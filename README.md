@@ -1,6 +1,14 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.126**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.127**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.127 enclosed vortex tunnel and taller aurora rays
+
+Lengthened the visibly lit aurora rather than only its transparent mesh. Broader upper falloff and soft tails provide bright rays extending at least 250 m, with the existing station-centered oval/arc animation and colors preserved.
+
+The reference-inspired tunnel now has opaque blue/violet vortex walls, cyan/white filaments, fast streaks and a closed glowing far portal. While inside its existing 20–85% phase, rendering temporarily excludes all exterior scene roots except the ship, corridor, warp streaks and lights. Background/fog and visibility restore in `finally`, including renderer failures. World labels, target reticle and stellar glare are hidden only during this phase, without changing saved label preferences. Warp timing, controls and cancellation remain intact.
+
+Canvas compatibility mode uses an opaque vortex backdrop with projected spiral strands and draws the ship afterward. GPU corridor sections and the far portal reuse fixed geometry. Tests verify isolation/restoration, an opaque far cap, Canvas sky exclusion, label recovery and measurable 250 m+ lit aurora extent. Actual GPU appearance and physical-device FPS remain unverified.
 
 ## v0.0.126 nearby warp protection, world corridor and Center aurora
 

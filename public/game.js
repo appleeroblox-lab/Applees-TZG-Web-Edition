@@ -1,4 +1,4 @@
-import {SurfaceMinimap} from './minimap.js?v=122';
+import {SurfaceMinimap} from './minimap.js?v=123';
 import {canLandHere,advanceLocalDay} from './atmospheric-flight.js?v=119';
 import {updateSurfaceAir} from './spherical-atmosphere.js?v=119';
 import {surfaceFrame} from './surface-frame.js';
@@ -9,7 +9,7 @@ import {installMenuSizes} from './menu-sizes.js?v=109';
 import {ensureGraphicsControls} from './graphics-controls.js?v=110';
 import {destinationOffset,destinationLightYears} from './warp-pricing.js?v=105';
 import {payFreeCamera,installFreeCameraConfirmation} from './free-camera.js?v=105';
-import {installUpdateLogs} from './update-logs.js?v=122';
+import {installUpdateLogs} from './update-logs.js?v=123';
 import {installScreenshot} from './game-screenshot.js?v=102';
 import {AsteroidBelts} from './asteroid-belts.js?v=105';
 import {SurfaceCollisions} from './surface-collision.js?v=119';

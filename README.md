@@ -1,6 +1,12 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.122**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.123**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+
+## v0.0.123 centered zoom controls and compact circular range
+
+The square map and its zoom controls now occupy separate grid columns. The control column extends to the inside right menu border, centering + / − horizontally within that space and vertically beside the map. Circular HUD coverage now eases from 86 × 86 m while stationary to 115 × 115 m while moving, independently of altitude. Expanded-map zoom and navigation lock retain their existing behavior.
+
+PC/mobile minimap regressions cover smooth movement zoom and menu controls; range checks verify both exact limits at ground and orbital altitudes. Physical browser layout and device FPS remain unverified.
 
 ## v0.0.122 live map buildings and natural biome placement
 

@@ -53,7 +53,7 @@ import {CompatibilityRenderer} from './compatibility.js?v=134';
 import {Economy,TRADER} from './economy.js?v=131';
 import {Prospecting} from './prospecting.js?v=131';
 import {InventoryUI} from './inventory-ui.js?v=91';
-import {GameSound,ambienceFor,installAudioSettings} from './sound.js?v=134';
+import {GameSound,ambienceFor,installAudioSettings} from './sound.js?v=135';
 import {Crew} from './crew.js?v=131';
 import {setupIcons} from './icons.js';
 import {SurfaceSession,surfaceHeight} from './surface.js?v=131';

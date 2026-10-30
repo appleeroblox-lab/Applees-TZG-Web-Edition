@@ -11,7 +11,7 @@ export class ReentryPlume {
 #include <common>
 #include <logdepthbuf_pars_vertex>
 uniform float heat;uniform float time;varying vec2 plumeUV;varying float ray;
-void main(){plumeUV=uv;ray=position.x;float t=position.y;float a=(ray+(position.z-.5)*.85)/32.*6.283185;float phase=ray*2.399;float plumeLength=(1.5+heat*5.5)*(.72+.28*sin(phase)*sin(phase));float radius=pow(t,.48)*(.7+heat*.65);a+=sin(time*8.-t*15.+phase)*t*.09;radius+=sin(t*19.-time*16.+phase)*t*.08;vec3 p=vec3(cos(a)*radius,t*plumeLength,sin(a)*radius);gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);
+void main(){plumeUV=uv;ray=position.x;float t=position.y;float a=(ray+(position.z-.5)*.85)/32.*6.283185;float phase=ray*2.399;float plumeLength=(1.5+heat*5.5)*(.72+.28*sin(phase)*sin(phase));float radius=pow(t,.48)*(.7+heat*.65);radius+=sin(t*19.-time*16.+phase)*t*.08;vec3 p=vec3(cos(a)*radius,t*plumeLength,sin(a)*radius);gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);
 #include <logdepthbuf_vertex>
 }`,fragmentShader:`
 #include <logdepthbuf_pars_fragment>

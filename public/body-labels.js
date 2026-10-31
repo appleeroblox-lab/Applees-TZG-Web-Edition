@@ -30,3 +30,6 @@ export function labelOccluded(origin,target,occluders){const delta=target.pos.cl
 
 // Named bodies stay useful; procedural identifiers and fictional survey markers do not need labels.
 export function meaningfulBodyLabel(body){if(!body||body.procedural||body.generated||body.fictional&&body.belt==='oort')return false;return !/^(?:(?:Asteroid\s*Belt|Kuiper\s*Belt|Oort\s*Cloud)\s*[•·:#-]?\s*[a-z0-9]{4,}|Belt\s*asteroid(?:\s*[•·:#-]\s*\w+)?)$/i.test(String(body.name||'').trim())}
+
+export function labelCategory(b){if(['ASTEROID','KUIPER BELT OBJECT','OORT CLOUD OBJECT'].includes(b.type))return 'asteroids';if(b.type==='BLACK HOLE')return 'blackholes';if(b.type==='STAR CLUSTER')return 'clusters';if(b.type==='GALAXY')return 'galaxies';if(b.type==='NEBULA')return 'nebulae';return {Sol:'solar',Proxima:'proxima','TRAPPIST-1':'trappist'}[b.system]||'other'}
+export function labelFilterAllows(body,filters){return meaningfulBodyLabel(body)&&filters[labelCategory(body)]!==false}

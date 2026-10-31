@@ -1,5 +1,5 @@
 {
-  "version": 138,
+  "version": 139,
   "files": [
     "account-gate.js",
     "account-pages.js",
@@ -698,7 +698,7 @@
     "debug-message-logs.js": 96,
     "debug-moderation.js": 119,
     "debug-verified.js": 103,
-    "device-settings.js": 119,
+    "device-settings.js": 139,
     "earth-biomes.js": 122,
     "earth-environment.js": 131,
     "economy.js": 131,
@@ -708,7 +708,7 @@
     "flight.js": 131,
     "forestry.js": 131,
     "friends-ui.js": 103,
-    "game.js": 138,
+    "game.js": 139,
     "gif-gallery.js": 96,
     "ground-weather.js": 131,
     "identity-ui.js": 91,
@@ -760,14 +760,14 @@
     "world-precipitation.js": 131,
     "models/crafting-center-v96.json": 97,
     "account-gate.js": 107,
-    "boot-loader.js": 138,
+    "boot-loader.js": 139,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
     "models/base-venus.json": 100,
     "models/small-phobos.json": 100,
     "models/small-ida.json": 100,
     "models/small-ixion.json": 100,
-    "body-labels.js": 106,
+    "body-labels.js": 139,
     "models/small-belt-4.json": 100,
     "models/small-nereid.json": 100,
     "minor-body-data.js": 100,
@@ -863,13 +863,13 @@
     "surface-palette.js": 119,
     "minimap.js": 131,
     "minimap.css": 127,
-    "index.html": 138,
+    "index.html": 139,
     "warp-effects.js": 132,
     "reentry-plume.js": 133,
     "textures/star-shine.png": 128,
     "textures/reentry-shine.png": 128,
     "reference-ui.css": 131,
-    "settings-appearance.js": 138,
-    "settings-appearance.css": 138
+    "settings-appearance.js": 139,
+    "settings-appearance.css": 139
   }
 }

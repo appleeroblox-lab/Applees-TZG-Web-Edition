@@ -1,0 +1,69 @@
+/* Cyan instrument panel; scoped to settings so the game HUD keeps its theme. */
+body.referenceHUD #settingsDialog[data-appearance]{--settings-line:#24caff;--settings-dark:#032844;width:min(1340px,96vw);height:min(960px,94dvh);max-width:96vw;max-height:94dvh;padding:0!important;border:1px solid var(--settings-line)!important;border-radius:18px;background:linear-gradient(120deg,#063455f5,#02243cf5)!important;color:#effaff;box-shadow:0 0 22px #00bfff42,inset 0 0 18px #10b9ef17;overflow:hidden;font-family:Fredoka,system-ui,sans-serif;}
+#settingsDialog[data-appearance][open],#settingsDialog[data-appearance].fallbackDialog{display:flex!important;flex-direction:column}
+#settingsDialog[data-appearance]::backdrop{background:#00112670;backdrop-filter:blur(4px)}
+body.referenceHUD #settingsDialog[data-appearance]>.dialogHead{flex:none;display:flex;align-items:center;gap:18px;padding:16px 20px;margin:0!important;border-bottom:1px solid #1cb4e65c;background:#03243d80;cursor:default}
+body.referenceHUD #settingsDialog[data-appearance] .dialogHead h2{font-size:clamp(25px,3.1vw,48px)!important;letter-spacing:0;margin:0;line-height:1;font-weight:650;flex:none}
+#settingsDialog[data-appearance] .settingsTabs{display:flex;gap:8px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:thin;padding:2px 0}
+body.referenceHUD #settingsDialog[data-appearance] button,#settingsDialog[data-appearance] select,#settingsDialog[data-appearance] input[type=number],#settingsDialog[data-appearance] a{border:1px solid #29bbf399;border-radius:7px;background:linear-gradient(#09538d,#063b68);color:#f2fbff;box-shadow:inset 0 0 8px #01aaff12;line-height:1.2}
+body.referenceHUD #settingsDialog[data-appearance] .settingsTabs button{display:flex;align-items:center;justify-content:center;gap:10px;flex:1;white-space:nowrap;font-size:16px;padding:15px 16px;min-height:50px}
+#settingsDialog[data-appearance] .settingsTabs img{width:24px;height:24px;object-fit:contain;filter:brightness(0) invert(1)}
+body.referenceHUD #settingsDialog[data-appearance] button[aria-selected=true],#settingsDialog[data-appearance] button[aria-pressed=true]{background:linear-gradient(#0493ff,#006beb);border-color:#32edff;box-shadow:0 0 11px #00bfff9c,inset 0 0 8px #51e6ff70}
+body.referenceHUD #settingsDialog[data-appearance] .dialogHead>button{font-size:28px;width:54px;min-width:44px;height:52px;padding:0;flex:none}
+#settingsDialog[data-appearance] .settingsSubtabs{display:flex;gap:12px;padding:10px 20px 0;flex:none}
+#settingsDialog[data-appearance] .settingsSubtabs button{min-width:150px;padding:10px 22px}
+#settingsDialog[data-appearance] .settingsSubtabs[hidden],#settingsDialog[data-appearance] .settingsSection[hidden],#settingsDialog[data-appearance] [hidden]{display:none!important}
+#settingsDialog[data-appearance] #settingsContent{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:12px 20px;display:block;scrollbar-color:#19afe9 #032843;scrollbar-width:thin;overscroll-behavior:contain}
+#settingsDialog[data-appearance] .settingsSection{border:1px solid #26b8e8;border-radius:8px;margin:0 0 10px;padding:0 18px 10px;background:#022742a8;overflow:hidden;box-shadow:inset 0 0 13px #0aaafc0c;display:flow-root}
+#settingsDialog[data-appearance] .settingsSection h3{margin:0 -18px 6px;padding:10px 16px;font-size:22px;font-weight:600;color:#f4fbff;background:linear-gradient(90deg,#075c95,#064a7e);border-bottom:1px solid #26b8e85c;line-height:1.2}
+body.referenceHUD #settingsDialog[data-appearance] .settingsSectionToggle{border:0;box-shadow:none;background:none;display:flex;align-items:center;gap:18px;padding:0;width:100%;text-align:left;color:inherit;font:inherit}
+#settingsDialog[data-appearance] .settingsSectionToggle::before{content:'▼';font-size:18px}
+#settingsDialog[data-appearance] .settingsCollapsed .settingsSectionToggle::before{content:'▶'}
+#settingsDialog[data-appearance] .settingsCollapsed>:not(h3){display:none!important}
+body.referenceHUD #settingsDialog[data-appearance] label{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;min-height:43px;margin:0;padding:8px 5px;border-bottom:1px solid #168ac82b;font-size:16px;line-height:1.35;break-inside:avoid;color:#eefaff}
+#settingsDialog[data-appearance] label small{flex-basis:100%;font-size:12px;color:#a7d1e9}
+#settingsDialog[data-appearance] label>span{display:flex;align-items:center;gap:14px;max-width:65%}
+#settingsDialog[data-appearance] output{color:#e5faff;font-variant-numeric:tabular-nums;min-width:52px;text-align:right;font-size:15px}
+#settingsDialog[data-appearance] label>input[type=range]{margin-left:auto}
+#settingsDialog[data-appearance] input[type=range]{appearance:none;-webkit-appearance:none;width:clamp(120px,32vw,440px);max-width:58%;height:12px;padding:0;border:1px solid #459ac0;border-radius:20px;background:linear-gradient(to right,#9defff var(--range-progress,50%),#24485e var(--range-progress,50%));touch-action:pan-y;cursor:pointer;box-shadow:inset 0 1px 3px #0005}
+#settingsDialog[data-appearance] label>span input[type=range]{width:240px;max-width:75%}
+#settingsDialog[data-appearance] input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:25px;height:25px;border:0;border-radius:50%;background:#a5f0fa;box-shadow:0 0 8px #00cfff55}
+#settingsDialog[data-appearance] input[type=range]::-moz-range-thumb{width:25px;height:25px;border:0;border-radius:50%;background:#a5f0fa}
+body.referenceHUD #settingsDialog[data-appearance] input[type=checkbox]{appearance:none;-webkit-appearance:none;width:54px!important;height:30px!important;min-width:54px;border:0;border-radius:20px;background:#8cdef0;position:relative;cursor:pointer;transition:background .15s;margin-left:auto}
+#settingsDialog[data-appearance] input[type=checkbox]::after{content:'';position:absolute;width:21px;height:21px;left:5px;top:4px;border-radius:50%;background:#034e78;transition:transform .15s}
+#settingsDialog[data-appearance] input[type=checkbox]:checked{background:#009efa!important}
+#settingsDialog[data-appearance] input[type=checkbox]:checked::after{background:white;transform:translateX(23px)}
+#settingsDialog[data-appearance] select,#settingsDialog[data-appearance] input[type=number]{padding:8px 14px;min-width:120px;max-width:55%}
+#settingsDialog[data-appearance] select option{background:#053356;color:white}
+#settingsDialog[data-appearance] #creatorLinks{border:0;display:flex;gap:8px;flex-wrap:wrap;margin:0;padding:5px 0}
+#settingsDialog[data-appearance] #creatorLinks legend{display:none}
+#settingsDialog[data-appearance] #creatorLinks a{flex:1;min-width:140px;text-align:center;padding:12px;text-decoration:none}
+#settingsDialog[data-appearance] .settingsQualityChoices{display:flex;gap:8px;margin:7px 0}
+#settingsDialog[data-appearance] .settingsQualityChoices button{flex:1;padding:10px}
+#settingsDialog[data-appearance] .settingsKeyRow{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #168ac82b;padding:6px;font-size:16px;min-height:40px}
+#settingsDialog[data-appearance] kbd{font:inherit;color:#e6f7ff;border:1px solid #24b9e9;border-radius:5px;background:#084b7c;text-align:center;width:32%;padding:6px}
+body.referenceHUD #settingsDialog[data-appearance] .settingsFooter{display:flex;align-items:center;gap:12px;flex:none;padding:12px 20px;margin:0;background:#02243d;border-top:1px solid #1cb4e65c}
+body.referenceHUD #settingsDialog[data-appearance] .sessionActions{display:flex;flex:1;gap:10px;margin:0!important}
+body.referenceHUD #settingsDialog[data-appearance] .settingsFooter button{padding:13px 22px;font-size:16px;min-height:46px;width:auto;margin:0}
+body.referenceHUD #settingsDialog[data-appearance] #refreshGame{margin-left:auto;grid-column:auto}
+#settingsDialog[data-appearance] details{padding-top:10px}
+#settingsDialog[data-appearance] summary{padding:10px;color:#c5f7ff;cursor:pointer;font-size:16px}
+#settingsDialog[data-appearance] :focus-visible{outline:2px solid #c4fbff;outline-offset:3px}
+@media(min-width:1050px){#settingsDialog[data-appearance][data-settings-page=game] .settingsSection[data-pages~='game']{column-count:2;column-gap:42px}#settingsDialog[data-appearance][data-settings-page=game] .settingsSection h3{column-span:all}#settingsDialog[data-appearance][data-settings-page=controls] #settingsContent{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start}#settingsDialog[data-appearance][data-settings-page=controls] .settingsSection{margin:0}#settingsDialog[data-appearance][data-settings-page=audio] .settingsSection{column-count:2;column-gap:36px}#settingsDialog[data-appearance][data-settings-page=audio] h3,#settingsDialog[data-appearance][data-settings-page=audio] details{column-span:all}}
+@media(max-width:850px){body.referenceHUD #settingsDialog[data-appearance]>.dialogHead{padding:10px;gap:10px;flex-wrap:wrap}body.referenceHUD #settingsDialog[data-appearance] .dialogHead h2{font-size:30px!important;flex:1}#settingsDialog[data-appearance] .settingsTabs{order:3;flex-basis:100%;gap:6px}body.referenceHUD #settingsDialog[data-appearance] .settingsTabs button{padding:10px 13px;font-size:14px;min-height:42px}#settingsDialog[data-appearance] .settingsTabs img{width:19px;height:19px}#settingsDialog[data-appearance] #settingsContent{padding:10px}#settingsDialog[data-appearance] .settingsSection h3{font-size:19px}body.referenceHUD #settingsDialog[data-appearance] label{font-size:14px}body.referenceHUD #settingsDialog[data-appearance] .settingsFooter{padding:8px;gap:6px}body.referenceHUD #settingsDialog[data-appearance] .settingsFooter button{padding:9px 11px;font-size:13px;min-height:40px}.settingsSubtabs button{min-width:0!important;flex:1}.settingsSubtabs{padding-inline:10px!important}}
+@media(max-width:480px){#settingsDialog[data-appearance] .sessionActions{flex-wrap:wrap!important;gap:5px!important}#settingsDialog[data-appearance] .settingsFooter{flex-wrap:wrap!important}#settingsDialog[data-appearance] #saveBtn{flex:1}#settingsDialog[data-appearance] #refreshGame{margin-left:0!important}#settingsDialog[data-appearance] .settingsSection{padding-inline:10px}#settingsDialog[data-appearance] .settingsSection h3{margin-inline:-10px}#settingsDialog[data-appearance] label>span{max-width:100%}#settingsDialog[data-appearance] input[type=range]{max-width:55%;width:150px}}
+/* Override the earlier compact-dialog and wrapped-button rules. */
+body.referenceHUD #settingsDialog[data-appearance]{width:min(1340px,96vw)!important;height:min(960px,94dvh)!important;position:fixed!important;inset:0!important;margin:auto!important;resize:none!important}
+body.referenceHUD #settingsDialog[data-appearance] .settingsTabs button{white-space:nowrap!important;overflow-wrap:normal!important;flex-shrink:0;min-width:max-content!important}
+body.referenceHUD #settingsDialog[data-appearance] .sessionActions{display:flex!important;flex-wrap:nowrap!important;grid-template-columns:none!important}
+#settingsDialog[data-appearance] label{min-width:0}
+#settingsDialog[data-appearance] .settingsSection label small{column-span:none;max-width:100%;white-space:normal}
+@media(max-width:480px){body.referenceHUD #settingsDialog[data-appearance] .sessionActions{flex-wrap:wrap!important}body.referenceHUD #settingsDialog[data-appearance]{width:97vw!important;height:96dvh!important}}
+body.referenceHUD #settingsDialog[data-appearance] label{flex-wrap:wrap!important}
+#settingsDialog[data-appearance] label small{display:block!important;flex:0 0 100%!important;order:3!important;max-width:100%!important}
+body.referenceHUD #settingsDialog[data-appearance] .sessionActions #refreshGame{margin-left:auto!important}
+body.referenceHUD #settingsDialog[data-appearance] label{height:auto!important;max-height:none!important}
+@media(max-width:480px){body.referenceHUD #settingsDialog[data-appearance] .settingsFooter{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}body.referenceHUD #settingsDialog[data-appearance] .sessionActions{display:contents!important}body.referenceHUD #settingsDialog[data-appearance] .settingsFooter button{width:100%!important}body.referenceHUD #settingsDialog[data-appearance] .sessionActions #refreshGame{grid-column:1/3!important;margin:0!important}}
+body.referenceHUD #settingsDialog[data-appearance] input[type=range]{width:clamp(140px,30vw,460px)!important;max-width:55%!important;min-width:0!important}
+body.referenceHUD #settingsDialog[data-appearance] label>span input[type=range]{width:240px!important;max-width:75%!important}
+body.referenceHUD #settingsDialog[data-appearance] button[aria-pressed="true"]{background:linear-gradient(#0493ff,#006beb)!important;border-color:#32edff!important;box-shadow:0 0 10px #00bfff66!important}

@@ -1,3 +1,4 @@
+import {installSettingsAppearance} from './settings-appearance.js?v=138';
 import {WarpTunnel,warpWhiteFade} from './warp-effects.js?v=132';
 import {SurfaceMinimap} from './minimap.js?v=131';
 import {canLandHere,advanceLocalDay} from './atmospheric-flight.js?v=130';
@@ -369,6 +370,7 @@ installMenuSizes(document);ensureTrailsControl(document).onchange=()=>{shipTrail
 surfaceStream.setGrassAmount($('grassAmount').value);$('terrainDecorations').onchange=()=>surfaceStream.setDecorations($('terrainDecorations').checked);$('grassAmount').oninput=()=>{surfaceStream.setGrassAmount($('grassAmount').value);$('grassAmountValue').textContent=surfaceStream.grassAmount+'%'};
 restoringDevicePreferences=true;try{devicePreferences=installDeviceSettings(document,deviceStorage)}finally{restoringDevicePreferences=false}
 for(const[id,icon]of [['chatToggle','chat'],['friendsBtn','friends'],['accountBtn','account'],['mapBtn','globe'],['menuBtn','more'],['railSearch','search'],['selectTarget','globe'],['addStop','add-friend']]){const node=$(id);if(['chatToggle','friendsBtn','accountBtn','mapBtn','menuBtn'].includes(id)){node.querySelectorAll('.uiIcon,svg').forEach(n=>n.remove());if(id==='mapBtn')node.firstChild?.nodeType===3&&(node.firstChild.nodeValue='')}iconButton(node,icon)}
+installSettingsAppearance(document);
 const localization=installLocalization(document,{storage:deviceStorage});
 
 for(const[id,label,src]of [['walkJump','Jump','jump'],['walkRun','Run','run']]){const button=$(id);button.replaceChildren();button.setAttribute('aria-label',label);button.title=label;const icon=document.createElement('img');icon.src='./icons/ui/'+src+'.svg';icon.alt='';button.append(icon)}

@@ -23,8 +23,8 @@ function planetTexture(b){
 }
 function glowMap(){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'#ffffff');g.addColorStop(.15,'#ffffffcc');g.addColorStop(.35,'#ffffff33');g.addColorStop(1,'#ffffff00');x.fillStyle=g;x.fillRect(0,0,128,128);return new T.CanvasTexture(c)}
 export const glow=glowMap();
-export function makeWorld(b){
- if(b.type==='STAR'){const color=starShineColor(b),mesh=new T.Mesh(new T.SphereGeometry(b.r,40,24),new T.MeshBasicMaterial({color,toneMapped:false}));mesh.userData.body=b;mesh.userData.neonStar=true;return mesh}
+export function makeWorld(b,visualRadius=b.r){
+ if(b.type==='STAR'){const color=starShineColor(b),mesh=new T.Mesh(new T.SphereGeometry(visualRadius,40,24),new T.MeshBasicMaterial({color,toneMapped:false}));mesh.userData.body=b;mesh.userData.neonStar=true;mesh.userData.visualRadius=visualRadius;return mesh}
  if(b.type==='GALAXY')return makeGalaxy(b);
  if(b.type==='BLACK HOLE')return createBlackHole(b);
  if(b.type==='NEBULA'||b.type==='STAR CLUSTER')return makeNebula(b);

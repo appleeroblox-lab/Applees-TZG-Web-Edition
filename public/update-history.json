@@ -11,7 +11,9 @@
       "changes": [
         "Redesigned settings with cyan panels, category tabs, collapsible sections, styled switches and a fixed action footer.",
         "Organized existing world, quality, menu sizing, control and audio settings without replacing their saved values or handlers.",
-        "Added linked graphics preset buttons and a keyboard control reference, with responsive mobile layouts."
+        "Added linked graphics preset buttons and a keyboard control reference, with responsive mobile layouts.",
+        "Corrected switch thumb alignment in both states.",
+        "Embedded Update Logs as a Settings tab with the shared header and footer."
       ],
       "source": "GitHub repository update"
     },

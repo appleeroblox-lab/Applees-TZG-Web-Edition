@@ -11,7 +11,7 @@ import {installMenuSizes} from './menu-sizes.js?v=109';
 import {ensureGraphicsControls} from './graphics-controls.js?v=110';
 import {destinationOffset,destinationLightYears} from './warp-pricing.js?v=105';
 import {payFreeCamera,installFreeCameraConfirmation} from './free-camera.js?v=105';
-import {installUpdateLogs} from './update-logs.js?v=130';
+import {installUpdateLogs} from './update-logs.js?v=138';
 import {installScreenshot} from './game-screenshot.js?v=102';
 import {AsteroidBelts} from './asteroid-belts.js?v=105';
 import {SurfaceCollisions} from './surface-collision.js?v=131';
@@ -197,7 +197,7 @@ function renderPlaces(){$('placesList').replaceChildren();if(!bookmarks.length){
 function persistPlaces(){try{localStorage.setItem('cosmic-places-v4',JSON.stringify(bookmarks))}catch{toast('Could not save this viewpoint')}}
 $('railBookmarks').onclick=()=>{renderPlaces();open('placesDialog')};$('bookmarkBtn').onclick=()=>{bookmarks.push({name:target.name+' · '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),system:flight.system,target:target.id,pos:flight.pos.toArray(),q:flight.q.toArray()});bookmarks=bookmarks.slice(-30);persistPlaces();renderPlaces();toast('Viewpoint saved')};
 installScreenshot($('railPhoto'),{renderFrame:()=>effects.render(surface.active?surfaceView.scene:scene,camera,graphics),name:()=>'The-Zero-Gravity-Web-'+target.name.replace(/[^a-z0-9]/gi,'-')+'.png',toast});
-installUpdateLogs(document,{toggle:[$('updateLogsBtn'),$('settingsUpdateLogs')],open:id=>{clearInputs();closeDialog($('settingsDialog'));const dialog=$(id);if(dialog.show)dialog.show();else dialog.setAttribute('open','')},close:closeDialog});
+const updateLogs=installUpdateLogs(document,{toggle:[$('updateLogsBtn'),$('settingsUpdateLogs')],open:id=>{clearInputs();closeDialog($('settingsDialog'));const dialog=$(id);if(dialog.show)dialog.show();else dialog.setAttribute('open','')},close:closeDialog});
 for(const [name,caption]of [['Earth','Oceans, clouds and a familiar horizon'],['Saturn','The rings of a gas giant'],['Moon','Craters in the sunlight'],['Proxima b','An imagined nearby world'],['Sagittarius A*','At the heart of the Milky Way'],['Carina Nebula','Clouds of gas and distant stars'],['TRAPPIST-1 e','A small world around a red dwarf']]){const b=bodies.find(b=>b.name===name);if(!b)continue;const button=document.createElement('button');const title=document.createElement('strong'),sub=document.createElement('small');title.textContent=name;sub.textContent=caption;button.append(title,sub);button.onclick=()=>{if(surface.active)return toast('Launch and leave the body before starting a tour');closeDialog($('tourDialog'));setTarget(b);if(!explorer.enabled&&!setMode(true,false,()=>button.onclick()))return;if(explorer.beginOrbit(b)===false){sfx.play('error');toast(flight.lastDenial||'Travel unavailable')}syncExplorer()};$('tourList').append(button)}$('tourBtn').onclick=()=>open('tourDialog');
 const orbitPaths=new T.Group(),solarCenter=bodies.find(b=>b.name==='Sun').pos.clone();for(const b of bodies.filter(b=>b.system==='Sol'&&['TERRESTRIAL PLANET','GAS GIANT','ICE GIANT'].includes(b.type))){const r=b.pos.distanceTo(solarCenter),points=[];for(let i=0;i<256;i++){const a=i/256*Math.PI*2;points.push(V(Math.cos(a)*r,0,Math.sin(a)*r))}const g=new T.BufferGeometry().setFromPoints(points);orbitPaths.add(new T.LineLoop(g,new T.LineBasicMaterial({color:0x66839a,transparent:true,opacity:.22,depthWrite:false})))}scene.add(orbitPaths);orbitPaths.visible=false;syncExplorer();
 
@@ -370,7 +370,7 @@ installMenuSizes(document);ensureTrailsControl(document).onchange=()=>{shipTrail
 surfaceStream.setGrassAmount($('grassAmount').value);$('terrainDecorations').onchange=()=>surfaceStream.setDecorations($('terrainDecorations').checked);$('grassAmount').oninput=()=>{surfaceStream.setGrassAmount($('grassAmount').value);$('grassAmountValue').textContent=surfaceStream.grassAmount+'%'};
 restoringDevicePreferences=true;try{devicePreferences=installDeviceSettings(document,deviceStorage)}finally{restoringDevicePreferences=false}
 for(const[id,icon]of [['chatToggle','chat'],['friendsBtn','friends'],['accountBtn','account'],['mapBtn','globe'],['menuBtn','more'],['railSearch','search'],['selectTarget','globe'],['addStop','add-friend']]){const node=$(id);if(['chatToggle','friendsBtn','accountBtn','mapBtn','menuBtn'].includes(id)){node.querySelectorAll('.uiIcon,svg').forEach(n=>n.remove());if(id==='mapBtn')node.firstChild?.nodeType===3&&(node.firstChild.nodeValue='')}iconButton(node,icon)}
-installSettingsAppearance(document);
+installSettingsAppearance(document,{updateLogs,openSettings:()=>open('settingsDialog')});
 const localization=installLocalization(document,{storage:deviceStorage});
 
 for(const[id,label,src]of [['walkJump','Jump','jump'],['walkRun','Run','run']]){const button=$(id);button.replaceChildren();button.setAttribute('aria-label',label);button.title=label;const icon=document.createElement('img');icon.src='./icons/ui/'+src+'.svg';icon.alt='';button.append(icon)}

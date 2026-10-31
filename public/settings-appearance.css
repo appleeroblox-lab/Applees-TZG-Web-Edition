@@ -67,3 +67,14 @@ body.referenceHUD #settingsDialog[data-appearance] label{height:auto!important;m
 body.referenceHUD #settingsDialog[data-appearance] input[type=range]{width:clamp(140px,30vw,460px)!important;max-width:55%!important;min-width:0!important}
 body.referenceHUD #settingsDialog[data-appearance] label>span input[type=range]{width:240px!important;max-width:75%!important}
 body.referenceHUD #settingsDialog[data-appearance] button[aria-pressed="true"]{background:linear-gradient(#0493ff,#006beb)!important;border-color:#32edff!important;box-shadow:0 0 10px #00bfff66!important}
+/* Fixed switch geometry: thumb stays inside the track in either state. */
+body.referenceHUD #settingsDialog[data-appearance] input[type=checkbox]{box-sizing:border-box!important;appearance:none!important;-webkit-appearance:none!important;display:block!important;position:relative!important;width:50px!important;min-width:50px!important;max-width:50px!important;height:28px!important;min-height:28px!important;max-height:28px!important;padding:0!important;border:0!important;border-radius:16px!important;margin:0 0 0 auto!important;transform:none!important;box-shadow:inset 0 1px 3px #001d3955!important;background:#83c9df!important;flex:0 0 50px!important;overflow:hidden!important}
+body.referenceHUD #settingsDialog[data-appearance] input[type=checkbox]::after{box-sizing:border-box!important;content:''!important;display:block!important;position:absolute!important;left:4px!important;top:4px!important;right:auto!important;bottom:auto!important;width:20px!important;height:20px!important;border:0!important;border-radius:50%!important;margin:0!important;padding:0!important;transform:none!important;background:#075179!important;box-shadow:0 1px 3px #001c3f40!important;transition:left .16s ease,background .16s ease!important}
+body.referenceHUD #settingsDialog[data-appearance] input[type=checkbox]:checked{background:#039ff2!important}
+body.referenceHUD #settingsDialog[data-appearance] input[type=checkbox]:checked::after{left:26px!important;background:#f3fcff!important;transform:none!important}
+#settingsDialog[data-appearance] .settingsLogsPage .updateHistoryList{max-height:none;overflow:visible;padding:0}
+#settingsDialog[data-appearance] .settingsLogsPage .updateLogEntry{padding:18px 6px;border-bottom:1px solid #23aff04a}
+#settingsDialog[data-appearance] .settingsLogsPage .updateLogEntry>strong{color:#8fe9ff;font-size:17px}
+#settingsDialog[data-appearance] .settingsLogsPage .updateLogEntry h3{margin:8px 0;padding:0;border:0;background:none;font-size:18px}
+#settingsDialog[data-appearance] .settingsLogsPage ul{padding-left:24px;line-height:1.7;font-size:15px;color:#d8edff}
+#settingsDialog[data-appearance] .settingsLogsPage small{color:#9fc2da}

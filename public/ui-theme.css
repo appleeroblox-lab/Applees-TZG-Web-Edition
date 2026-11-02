@@ -45,3 +45,6 @@ body.referenceHUD #inventoryDialog #inventoryGrid .itemCard{display:flex!importa
 body.referenceHUD #inventoryDialog #inventoryGrid .itemEquip{display:flex!important;flex:1 1 auto!important;align-self:stretch!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;width:100%!important;max-width:none!important;height:auto!important;min-height:128px!important;margin:0!important;padding:8px!important;border-radius:inherit!important;gap:6px!important}
 body.referenceHUD #inventoryDialog #inventoryGrid .itemEquip>.itemThumb{display:block!important;width:min(85%,96px)!important;height:72px!important;max-width:100%!important;max-height:none!important;object-fit:contain!important;margin:0 auto!important}
 body.referenceHUD #inventoryDialog #inventoryGrid .itemEquip>strong{width:100%;text-align:center;overflow-wrap:anywhere}
+
+/* The send artwork is provided by ::before; suppress the legacy arrow glyph. */
+body.referenceHUD #chatPanel #chatForm #chatSend{font-size:0!important}

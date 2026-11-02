@@ -2,7 +2,7 @@ export const INTRO_HOLD_MS=1000,INTRO_FADE_MS=650;
 // The sign-in flow is created behind the fade, only after the studio video ends.
 export function playStartupIntro({doc=document,beforeReveal=()=>{},setTimer=setTimeout,clearTimer=clearTimeout}={}){
  const root=doc.getElementById('startupIntro'),video=doc.getElementById('startupIntroVideo'),tap=doc.getElementById('startupIntroPlay');
- if(!root||!video){beforeReveal();return Promise.resolve()}
+ if(!root||!video){root?.remove();beforeReveal();return Promise.resolve()}
  return new Promise((resolve,reject)=>{
   let finishing=false,handedOff=false,watchdog=null;const timers=new Set(),listeners=[];
   const later=(fn,ms)=>{const id=setTimer(()=>{timers.delete(id);fn()},ms);timers.add(id);return id};

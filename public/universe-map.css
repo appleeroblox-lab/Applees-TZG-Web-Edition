@@ -33,3 +33,23 @@ body.referenceHUD #mapDialog.mapSearching #catalog{display:block!important;z-ind
 body.referenceHUD #mapDialog:not(.mapSearching) #catalog{display:none!important}
 #mapDialog #catalog .orb,#mapDialog #catalog small{display:none!important}
 .atlasSystemFade{display:grid;place-items:center;color:#e4f7ff;font-size:clamp(17px,3vw,26px);text-align:center;padding:24px}
+#mapDialog>.dialogHead{top:5px!important}
+body.referenceHUD #mapDialog #selection{left:auto!important;right:14px!important;top:82px!important;bottom:auto!important;transform:none!important;width:300px!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:10px!important;padding:12px!important;overflow:visible!important}
+body.referenceHUD #mapDialog #selection[hidden]{display:none!important}
+#mapDialog .mapInfoHead{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #e4f7ff88;padding:0 0 8px}
+#mapDialog .mapInfoHead strong{font-size:15px}
+body.referenceHUD #mapDialog #mapInfoClose{position:static;width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important;max-width:30px!important;max-height:30px!important;padding:0!important;display:grid!important;place-items:center}
+#mapDialog .mapSelectedText h2{text-align:center;font-size:23px!important;margin:0 0 8px!important}
+body.referenceHUD #mapDialog #selection .mapSelectedText p{display:-webkit-box!important;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden!important;text-align:center;font-size:12px!important;line-height:1.5!important;margin:0!important;color:#e4f7ff}
+#mapDialog .mapSelectedActions{display:grid!important;grid-template-columns:1fr 1fr;gap:6px;flex:none!important}
+body.referenceHUD #mapDialog .mapSelectedActions button{width:100%!important;height:auto!important;min-height:38px!important;font-size:10px!important;padding:6px!important;white-space:normal!important}
+body.referenceHUD #mapDialog #selection #atlasToolbar{position:static!important;inset:auto!important;display:grid!important;grid-template-columns:1fr 1fr;gap:6px!important;width:100%!important}
+body.referenceHUD #mapDialog #selection #atlasToolbar button{min-width:0!important;width:100%!important;height:auto!important;min-height:34px!important;padding:5px!important;font-size:11px!important;white-space:normal!important}
+body.referenceHUD #mapDialog #atlasPan{grid-column:1/-1}
+#atlasZoomControls{position:absolute;right:74px;top:16px;display:flex;gap:7px;z-index:5}
+#atlasZoomControls button{width:40px!important;height:40px!important;padding:0!important;display:grid!important;place-items:center}
+.atlasModelLabels span{pointer-events:auto;cursor:pointer;padding:2px 3px;touch-action:manipulation}.atlasModelLabels span:focus-visible{outline:2px solid #e4f7ff}
+@media(max-height:550px){body.referenceHUD #mapDialog #selection{top:68px!important;right:10px!important;width:270px!important;gap:5px!important;padding:8px!important}#mapDialog .mapInfoHead{padding-bottom:4px}#mapDialog .mapSelectedText h2{font-size:18px!important;margin-bottom:4px!important}body.referenceHUD #mapDialog #selection .mapSelectedText p{-webkit-line-clamp:2;font-size:10px!important}body.referenceHUD #mapDialog #selection #atlasToolbar button{min-height:28px!important}body.referenceHUD #mapDialog .mapSelectedActions button{min-height:32px!important}}
+@media(max-width:600px){body.referenceHUD #mapDialog #selection{top:auto!important;bottom:8px!important;right:8px!important;width:min(300px,calc(100vw - 16px))!important}#atlasZoomControls{top:13px;right:64px}}
+body.referenceHUD #mapDialog #selection :is(#selectTarget,#addStop),body.referenceHUD #mapDialog #selection #atlasToolbar button{grid-column:auto!important;grid-row:auto!important}
+body.referenceHUD #mapDialog #selection #atlasToolbar #atlasPan{grid-column:1/-1!important}

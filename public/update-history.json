@@ -1,8 +1,21 @@
 {
-  "currentVersion": "v0.0.147",
+  "currentVersion": "v0.0.148",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 148,
+      "version": "v0.0.148",
+      "date": "2026-11-02",
+      "title": "Universe Map quality controls and body information",
+      "changes": [
+        "Restyled the text-only body information panel with body type, radius, gravity and temperature when available; removed visible zoom buttons and narrowed search.",
+        "Added persistent Universe Map quality controls for resolution, body detail, bloom/glow, orbit and skybox resolution, zoom limits, animation speeds, visibility and label size.",
+        "Added an always-accessible Settings button and optional slow parent-relative map orbits without changing gameplay positions.",
+        "Fixed texture loading beyond the first twenty bodies and added procedural rocky fallback maps for bodies without artwork. High quality supports atmosphere glow and star shine."
+      ],
+      "source": "GitHub repository update"
+    },
     {
       "legacyVersion": 147,
       "version": "v0.0.147",

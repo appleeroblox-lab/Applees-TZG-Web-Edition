@@ -1,8 +1,23 @@
 {
-  "currentVersion": "v0.0.151",
+  "currentVersion": "v0.0.152",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 152,
+      "version": "v0.0.152",
+      "date": "2026-11-02",
+      "title": "Sleepy Apple Studios startup video",
+      "changes": [
+        "Added the supplied studio video as the first screen on a black background, using cover cropping rather than fitting the video.",
+        "Waits one second after the video ends, then fades to the existing sign-in flow before loading game sources.",
+        "Includes browser autoplay recovery, tap-to-enable audio and a media-error fallback. Existing menus and sign-in behavior are preserved."
+      ],
+      "source": {
+        "path": "public/startup-intro.js",
+        "kind": "release implementation"
+      }
+    },
     {
       "legacyVersion": 151,
       "version": "v0.0.151",

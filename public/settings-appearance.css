@@ -91,3 +91,13 @@ body.referenceHUD #settingsDialog[data-appearance] input[type=checkbox]:checked:
 #settingsDialog[data-appearance] .settingsTabs{touch-action:pan-x;overscroll-behavior-x:contain}
 #settingsDialog[data-appearance] label{min-width:0;overflow-wrap:anywhere}
 #settingsDialog[data-appearance] select{min-width:0;overflow:hidden;text-overflow:ellipsis}
+
+/* Narrow settings footprint and consistent touch-friendly slider rows. */
+body.referenceHUD #settingsDialog[data-appearance]{width:min(760px,86vw)!important;max-width:calc(100vw - 32px)!important}
+body.referenceHUD #settingsDialog[data-appearance] label.settingsRangeRow{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:7px 12px!important;align-items:center!important}
+body.referenceHUD #settingsDialog[data-appearance] .settingsRangeRow>.settingsRangeTitle{grid-row:1!important;grid-column:1!important;max-width:none!important;display:block!important;font:inherit;min-width:0}
+body.referenceHUD #settingsDialog[data-appearance] .settingsRangeRow>.settingsRangeValue{grid-row:1!important;grid-column:2!important;min-width:0!important;max-width:100%!important;margin:0!important;white-space:nowrap}
+body.referenceHUD #settingsDialog[data-appearance] .settingsRangeRow>input[type=range]{grid-column:1/-1!important;grid-row:2!important;width:100%!important;max-width:100%!important;min-width:0!important;margin:6px 0!important;height:10px!important;min-height:0!important;box-sizing:border-box!important;touch-action:pan-y}
+body.referenceHUD #settingsDialog[data-appearance] .settingsRangeRow>small{grid-column:1/-1!important;grid-row:3!important}
+@media(max-width:850px),(pointer:coarse){body.referenceHUD #settingsDialog[data-appearance]{width:min(620px,84vw)!important;max-width:calc(100vw - 32px)!important}body.referenceHUD #settingsDialog[data-appearance] input[type=range]::-webkit-slider-thumb{width:24px!important;height:24px!important}body.referenceHUD #settingsDialog[data-appearance] input[type=range]::-moz-range-thumb{width:24px!important;height:24px!important}}
+@media(max-width:480px){body.referenceHUD #settingsDialog[data-appearance]{width:88vw!important;max-width:calc(100vw - 28px)!important}}

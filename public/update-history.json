@@ -1,8 +1,24 @@
 {
-  "currentVersion": "v0.0.149",
+  "currentVersion": "v0.0.150",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 150,
+      "version": "v0.0.150",
+      "date": "2026-11-02",
+      "title": "Map controls, distant focus and background audio fixes",
+      "changes": [
+        "Centered and enlarged body-panel controls, shortened Focus, restored the game title inside the map, and aligned search with system selection.",
+        "Added Pan Speed and extended map zoom; camera-relative rendering, logarithmic depth and precision orbit arcs stabilize distant focus and keep far orbits visible.",
+        "Improved label placement, narrowed mobile Settings, and aligned slider titles, values and full-width tracks.",
+        "Environment ambience now loops through Web Audio without an HTML music player and continues while Settings is open."
+      ],
+      "source": {
+        "path": "public/atlas-renderer.js",
+        "kind": "release implementation"
+      }
+    },
     {
       "legacyVersion": 149,
       "version": "v0.0.149",

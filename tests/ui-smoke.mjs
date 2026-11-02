@@ -112,6 +112,7 @@ if(process.argv.includes('--roblox-catalog-only')){
 }
 if(process.argv.includes('--map-search-only')){
  $('mapBtn').onclick();assert($('selection').contains($('atlasToolbar')),'map controls live in selected-body panel');assert($('atlasZoomControls').contains($('atlasZoomIn')));assert($('mapInfoClose'));assert(![...$('systemFilter').options].some(o=>o.value==='All'));
+ assert($('atlasFocus').textContent.startsWith('Focus on '));assert(!document.getElementById('alwaysSettings'));$('universeMapSettingsButton').click();assert.equal($('settingsDialog').dataset.settingsPage,'quality');assert(!$('universeMapSettings').hidden);$('settingsDialog').close();
  $('objectFilter').value='STAR';$('search').value='Moon';$('search').oninput();assert($('mapDialog').classList.contains('mapSearching'));assert($('catalog').textContent.includes('Moon'),'body-name search ignores stale hidden category filters');
  $('search').dispatchEvent(new dom.Event('focus'));assert(!$('mapDialog').classList.contains('mapSearching'),'focus alone never opens results');$('search').oninput();assert($('mapDialog').classList.contains('mapSearching'));$('search').value='';$('search').oninput();assert(!$('mapDialog').classList.contains('mapSearching'));
  assert($('utilityMenu').contains($('helpBtn')));assert($('helpBtn').textContent.includes('Help'));assert(!$('helpBtn').hasAttribute('data-icon-only'),'Help remains a labeled More-menu item');console.log('PASS searched body names, removed All systems, input-only results and labeled Help in More.');process.exit(0)

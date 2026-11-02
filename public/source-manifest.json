@@ -1,5 +1,5 @@
 {
-  "version": 152,
+  "version": 153,
   "files": [
     "account-gate.js",
     "account-pages.js",
@@ -338,6 +338,7 @@
     "star-colors.js",
     "star-size.js",
     "startup-intro.js",
+    "startup-landscape.js",
     "stellar-glare.js",
     "subject-camera.js",
     "supabase-config.js",
@@ -658,6 +659,7 @@
     "spherical-atmosphere.js",
     "star-size.js",
     "startup-intro.js",
+    "startup-landscape.js",
     "stellar-glare.js",
     "style.css",
     "supabase-config.js",
@@ -783,7 +785,7 @@
     "world-precipitation.js": 142,
     "models/crafting-center-v96.json": 97,
     "account-gate.js": 107,
-    "boot-loader.js": 152,
+    "boot-loader.js": 153,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
     "models/base-venus.json": 100,
@@ -834,7 +836,7 @@
     "models/small-itokawa.json": 100,
     "models/small-haumea.json": 100,
     "models/small-dysnomia.json": 100,
-    "site.webmanifest": 100,
+    "site.webmanifest": 153,
     "models/base-ice.json": 100,
     "models/small-gaspra.json": 100,
     "models/small-hiiaka.json": 100,
@@ -886,7 +888,7 @@
     "surface-palette.js": 119,
     "minimap.js": 151,
     "minimap.css": 127,
-    "index.html": 152,
+    "index.html": 153,
     "warp-effects.js": 132,
     "reentry-plume.js": 133,
     "textures/star-shine.png": 128,
@@ -904,7 +906,8 @@
     "fonts/FredokaOne-Regular.ttf": 145,
     "fonts/FredokaOne-LICENSE.txt": 145,
     "map-settings.js": 150,
-    "startup-intro.js": 152,
-    "videos/studio-intro.mp4": 152
+    "startup-intro.js": 153,
+    "videos/studio-intro.mp4": 152,
+    "startup-landscape.js": 153
   }
 }

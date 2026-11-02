@@ -3,10 +3,10 @@ import {parseHTML} from 'linkedom';
 import fs from 'node:fs';
 import {playStartupIntro,INTRO_HOLD_MS,INTRO_FADE_MS} from '../public/startup-intro.js';
 const html=fs.readFileSync('public/index.html','utf8');
-function fixture(play=()=>Promise.resolve()){
+function fixture(play=()=>Promise.resolve(),landscape=null){
  const {document,window}=parseHTML(html),root=document.getElementById('startupIntro'),video=document.getElementById('startupIntroVideo');let now=0,next=0,revealed=0,paused=0;const timers=new Map();
  video.play=play;video.pause=()=>paused++;video.load=()=>{};
- const done=playStartupIntro({doc:document,beforeReveal:()=>revealed++,setTimer(fn,ms){const id=++next;timers.set(id,{fn,at:now+ms});return id},clearTimer(id){timers.delete(id)}});
+ const done=playStartupIntro({doc:document,landscape,beforeReveal:()=>revealed++,setTimer(fn,ms){const id=++next;timers.set(id,{fn,at:now+ms});return id},clearTimer(id){timers.delete(id)}});
  const tick=ms=>{const end=now+ms;for(;;){const entry=[...timers].sort((a,b)=>a[1].at-b[1].at)[0];if(!entry||entry[1].at>end)break;now=entry[1].at;timers.delete(entry[0]);entry[1].fn()}now=end};
  return {document,window,root,video,done,tick,timers,get revealed(){return revealed},get paused(){return paused}};
 }
@@ -18,3 +18,5 @@ assert(html.indexOf('id="startupIntro"')<html.indexOf('id="boot"'),'black video 
 console.log('PASS intro playback gate, one-second hold, fade/reveal, video cleanup, autoplay recovery, tap-to-play and media-error fallback.');
 
 const {document:missingVideo}=parseHTML('<html><body><section id="startupIntro"></section></body></html>');let missingReveal=0;await playStartupIntro({doc:missingVideo,beforeReveal:()=>missingReveal++});assert.equal(missingReveal,1);assert(!missingVideo.getElementById('startupIntro'));
+
+let wide=true,orientationListener,playCount=0;const rotating=fixture(()=>{playCount++;return Promise.resolve()},{isLandscape:()=>wide,onChange(fn){orientationListener=fn;return ()=>orientationListener=null}});rotating.video.currentTime=4.5;wide=false;orientationListener(false);assert.equal(rotating.paused,1,'pause the intro while portrait is covered');wide=true;orientationListener(true);assert.equal(playCount,2);assert.equal(rotating.video.currentTime,4.5,'resume the same video position after rotation');rotating.video.dispatchEvent(new rotating.window.Event('ended'));rotating.tick(INTRO_HOLD_MS+INTRO_FADE_MS);await rotating.done;assert.equal(orientationListener,null);

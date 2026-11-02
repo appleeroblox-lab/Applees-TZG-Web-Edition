@@ -1,0 +1,17 @@
+// Native orientation locking keeps rendering and touch coordinates aligned.
+export function installStartupLandscape({doc=document,win=window}={}){
+ const mobile=!!(win.navigator?.userAgentData?.mobile||win.matchMedia?.('(pointer: coarse)').matches||/Android|iPhone|iPad|iPod/i.test(win.navigator?.userAgent||''));
+ if(!mobile)return {ready:Promise.resolve(),isLandscape:()=>true,onChange:()=>()=>{},dispose(){}};
+ const orientation=win.screen?.orientation,listeners=new Set(),off=[];let disposed=false,last,resolveReady,pendingGesture=null;
+ const ready=new Promise(resolve=>resolveReady=resolve),root=doc.createElement('section'),message=doc.createElement('p'),button=doc.createElement('button'),title=doc.createElement('strong');
+ root.id='startupLandscape';root.setAttribute('aria-label','Landscape orientation');root.style.cssText='position:fixed!important;inset:0!important;z-index:2147483647!important;background:#000!important;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;text-align:center;box-sizing:border-box';
+ title.textContent='Landscape mode';title.style.fontSize='24px';message.textContent='Tap below to start in landscape.';message.style.cssText='max-width:340px;margin:0;line-height:1.5';button.type='button';button.textContent='Enter landscape';button.style.cssText='padding:12px 20px;border:1px solid #fff;border-radius:8px;background:#113c57;color:#fff';root.append(title,message,button);doc.body.append(root);
+ const isLandscape=()=>{const type=orientation?.type;if(type)return type.startsWith('landscape');if(typeof win.orientation==='number')return Math.abs(win.orientation)===90;return Number(win.innerWidth)>=Number(win.innerHeight)};
+ const update=()=>{if(disposed)return;const landscape=isLandscape();root.hidden=landscape;if(landscape)resolveReady();if(last!==landscape){last=landscape;for(const fn of listeners)fn(landscape)}};
+ const listen=(node,event,fn,options)=>{node?.addEventListener?.(event,fn,options);off.push(()=>node?.removeEventListener?.(event,fn,options))};
+ const attempt=async gesture=>{if(disposed)return;button.disabled=true;try{if(gesture&&!doc.fullscreenElement&&!doc.webkitFullscreenElement){const enter=doc.documentElement.requestFullscreen||doc.documentElement.webkitRequestFullscreen;if(enter)try{await enter.call(doc.documentElement)}catch{}}if(orientation?.lock)try{await orientation.lock('landscape')}catch{}update();if(!isLandscape())message.textContent='Turn your phone sideways to continue. This browser could not rotate automatically.'}finally{button.disabled=false}};
+ const request=gesture=>{if(!gesture)return attempt(false);if(!pendingGesture)pendingGesture=attempt(true).finally(()=>{pendingGesture=null});return pendingGesture};
+ button.onclick=()=>request(true);listen(doc,'click',()=>request(true),{once:true,capture:true});listen(win,'resize',update);listen(win,'orientationchange',update);listen(win,'pageshow',update);listen(doc,'visibilitychange',update);listen(orientation,'change',update);listen(doc,'fullscreenchange',update);listen(doc,'webkitfullscreenchange',update);
+ const dispose=()=>{if(disposed)return;disposed=true;for(const remove of off)remove();listeners.clear();root.remove();resolveReady()};listen(win,'tzg-play',dispose,{once:true});listen(win,'pagehide',event=>{if(!event.persisted)dispose()});
+ update();request(false);return {ready,isLandscape,onChange(fn){listeners.add(fn);return ()=>listeners.delete(fn)},dispose};
+}

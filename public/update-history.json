@@ -1,8 +1,23 @@
 {
-  "currentVersion": "v0.0.152",
+  "currentVersion": "v0.0.153",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 153,
+      "version": "v0.0.153",
+      "date": "2026-11-02",
+      "title": "Landscape startup for mobile",
+      "changes": [
+        "Attempts native landscape lock at startup and retries fullscreen plus landscape on the first mobile tap.",
+        "Holds the intro until landscape, pauses/resumes video across rotations, and protects sign-in/loading from portrait presentation.",
+        "Offers manual rotation when native locking is unavailable and adds the landscape preference for installed apps. Desktop startup and existing in-game orientation controls are preserved."
+      ],
+      "source": {
+        "path": "public/startup-landscape.js",
+        "kind": "release implementation"
+      }
+    },
     {
       "legacyVersion": 152,
       "version": "v0.0.152",

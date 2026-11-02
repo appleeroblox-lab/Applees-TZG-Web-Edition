@@ -1,5 +1,5 @@
 {
-  "version": 153,
+  "version": 154,
   "files": [
     "account-gate.js",
     "account-pages.js",
@@ -60,6 +60,7 @@
     "forestry.js",
     "free-camera.js",
     "friends-ui.js",
+    "game-entry-fade.js",
     "game-screenshot.js",
     "game.js",
     "gas-interior.js",
@@ -527,6 +528,7 @@
     "forestry.js",
     "free-camera.js",
     "friends-ui.js",
+    "game-entry-fade.js",
     "game-screenshot.js",
     "game.js",
     "gas-interior.js",
@@ -785,7 +787,7 @@
     "world-precipitation.js": 142,
     "models/crafting-center-v96.json": 97,
     "account-gate.js": 107,
-    "boot-loader.js": 153,
+    "boot-loader.js": 154,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
     "models/base-venus.json": 100,
@@ -888,7 +890,7 @@
     "surface-palette.js": 119,
     "minimap.js": 151,
     "minimap.css": 127,
-    "index.html": 153,
+    "index.html": 154,
     "warp-effects.js": 132,
     "reentry-plume.js": 133,
     "textures/star-shine.png": 128,
@@ -908,6 +910,7 @@
     "map-settings.js": 150,
     "startup-intro.js": 153,
     "videos/studio-intro.mp4": 152,
-    "startup-landscape.js": 153
+    "startup-landscape.js": 153,
+    "game-entry-fade.js": 154
   }
 }

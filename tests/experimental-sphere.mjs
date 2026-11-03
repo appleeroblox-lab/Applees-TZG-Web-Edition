@@ -4,7 +4,7 @@ import {SphereTerrain,SpherePhysics,cubeDirection,tangentFrame,RADIUS} from '../
 import {SphereChunks,tileGeometry} from '../public/experimental/chunks.js';
 import {parseDebugCommand} from '../public/debug-commands.js';
 const terrain=new SphereTerrain(),V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
-assert.equal(RADIUS,2000);const biomes=new Set();let max=-Infinity,min=Infinity;
+assert.equal(RADIUS,2000);for(const up of [V(1,0,0),V(-1,0,0),V(0,1,0),V(0,-1,0),V(0,0,1),V(0,0,-1)]){const q=tangentFrame(up,up);assert(Math.abs(q.length()-1)<1e-9);assert(V(0,1,0).applyQuaternion(q).dot(up)>.999999,'vertical ship landing has a stable tangent frame at all axes')}const biomes=new Set();let max=-Infinity,min=Infinity;
 for(let i=0;i<400;i++){const n=V(Math.sin(i*7.3),Math.cos(i*2.7),Math.sin(i*3.1)).normalize(),h=terrain.height(n);max=Math.max(max,h);min=Math.min(min,h);biomes.add(terrain.biome(n));assert.equal(h,terrain.height(n));assert(terrain.normal(n).dot(n)>.5);assert(terrain.point(n).toArray().every(Number.isFinite));assert(Math.abs(terrain.point(n).length()-terrain.radius(n))<1e-9);const g=new SpherePhysics(terrain).gravity(terrain.point(n));assert(g.dot(n)<0);assert(g.clone().cross(n).length()<1e-9)}
 assert(max>95&&min<0);assert(biomes.size>=5);
 // Every cube edge has a matching edge on another face, including both poles.

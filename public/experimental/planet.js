@@ -3,7 +3,7 @@ import {rotateShip} from '../ship-rotation.js';
 import {ShipBoost} from '../boost.js';
 export const SYSTEM='Experimental System',RADIUS=2000,ATMOSPHERE=1000;
 const V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z),UP=V(0,1,0),clamp=T.MathUtils.clamp;
-export function tangentFrame(up,forward=V(0,0,-1)){const f=forward.clone().addScaledVector(up,-forward.dot(up));if(f.lengthSq()<1e-8)f.set(1,0,0).addScaledVector(up,-up.x);f.normalize();const right=f.clone().cross(up).normalize();return new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(right,up,f.negate()))}
+export function tangentFrame(up,forward=V(0,0,-1)){const f=forward.clone().addScaledVector(up,-forward.dot(up));if(f.lengthSq()<1e-8){f.copy(Math.abs(up.y)<.9?UP:V(1,0,0));f.addScaledVector(up,-f.dot(up))}f.normalize();const right=f.clone().cross(up).normalize();return new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(right,up,f.negate()))}
 export function cubeDirection(face,u,v){return [()=>V(1,v,-u),()=>V(-1,v,u),()=>V(u,1,-v),()=>V(u,-1,v),()=>V(u,v,1),()=>V(-u,v,-1)][face]().normalize()}
 export class SphereTerrain{
  constructor(seed=1){this.seed=seed}

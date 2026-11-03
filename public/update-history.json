@@ -1,8 +1,22 @@
 {
-  "currentVersion": "v0.0.161",
+  "currentVersion": "v0.0.162",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 162,
+      "version": "v0.0.162",
+      "date": "2026-11-03",
+      "title": "Chat options and signup profile polish",
+      "changes": [
+        "Centered the single three-dot options icon in global chat, party messages and party chat details.",
+        "Centered the signup profile image above the Profile Image label and image chooser."
+      ],
+      "source": {
+        "path": "public/ui-theme.css",
+        "kind": "release implementation"
+      }
+    },
     {
       "legacyVersion": 161,
       "version": "v0.0.161",

@@ -1,8 +1,25 @@
 {
-  "currentVersion": "v0.0.156",
+  "currentVersion": "v0.0.157",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 157,
+      "version": "v0.0.157",
+      "date": "2026-11-03",
+      "title": "Sphere Test planetary rework and real WebGL verification",
+      "changes": [
+        "Fixed missing experimental mobile flight controls, stale gear/boost telemetry and WASD incorrectly rotating the on-foot camera.",
+        "Rebuilt experimental terrain as one welded cube-sphere draw with balanced LOD, morph transitions and collision sampled from the actual rendered triangles.",
+        "Added parallel-transported orbital camera orientation, planet-visible space framing, smooth launch/landing attitudes and model-sized hull contact.",
+        "Preserved radial gravity with flight assist in space, circular orbit arrivals, continuous surface/space movement, and free authorized debug warp/return with restored original state.",
+        "Verified native retrograde descent, curved terrain landing, walking, launch, free return and original Globe Mode in real Chromium WebGL fixtures. Original worlds and account data remain unchanged."
+      ],
+      "source": {
+        "path": "public/experimental/runtime.js",
+        "kind": "release implementation"
+      }
+    },
     {
       "legacyVersion": 156,
       "version": "v0.0.156",

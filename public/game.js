@@ -1,4 +1,4 @@
-import {ExperimentalController} from './experimental/bridge.js?v=156';
+import {ExperimentalController} from './experimental/bridge.js?v=157';
 import {installMapSettings,mapSettings} from './map-settings.js?v=150';
 import {installUITheme} from './ui-theme.js?v=151';
 import {starVisualRadius} from './star-size.js?v=140';

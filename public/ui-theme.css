@@ -83,3 +83,8 @@ body.referenceHUD #startupLandscape[open]{display:grid!important;place-items:cen
 @media(prefers-reduced-motion:reduce){#accountGate .accountFieldError{animation:none}.accountPingPong>span{animation-duration:2s}}
 
 body.referenceHUD:has(#accountGate:not([hidden])) :is(#signupPhotoLibrary,#signupavatarCropPanel)[open]{display:block!important}
+
+/* More items use one horizontal row even when the older Find rule is present. */
+body.referenceHUD #utilityMenu #railSearch{flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;overflow:hidden!important;line-height:1!important}
+body.referenceHUD #utilityMenu #railSearch>.previewIcon{position:static!important;display:block!important;flex:0 0 20px!important;width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important;margin:0!important;transform:none!important;align-self:center!important}
+body.referenceHUD #utilityMenu #railSearch>small{display:block!important;line-height:1.2!important;margin:0!important}

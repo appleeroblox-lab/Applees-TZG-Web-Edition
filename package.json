@@ -19,7 +19,7 @@
     "test:v54": "node tests/review-v54.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --review-v54-only",
     "test:touch": "node tests/touch-buttons.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --multi-touch-only",
     "test:ship": "node tests/player-ship.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --ship-cockpit-only && node --experimental-vm-modules tests/ui-smoke.mjs --landing-warp-only && node tests/cockpit-labels.mjs",
-    "test:accounts": "node tests/cloud-save.mjs && node tests/player-account.mjs && node tests/debug-accounts.mjs",
+    "test:accounts": "node tests/cloud-save.mjs && node tests/player-account.mjs && node tests/debug-accounts.mjs && node tests/account-auth-edge.mjs && node tests/account-signup-sql.mjs",
     "test:debug": "node tests/debug-service.mjs && node tests/debug-menu.mjs && node tests/supabase-debug.mjs && node tests/debug-menu-supabase.mjs",
     "test:device-settings": "node tests/device-language.mjs && node tests/language-chat-v84.mjs",
     "test:social": "node tests/file-picker.mjs && node tests/photo-library.mjs && node tests/avatar-crop.mjs && node tests/social-ui.mjs && node tests/live-chat.mjs && node tests/friends-ui.mjs && node tests/social-v77.mjs && node tests/social-v78.mjs && node tests/social-v79.mjs && node tests/social-v80.mjs && node tests/social-v81.mjs && node tests/social-v85.mjs && node tests/interface-v86.mjs",

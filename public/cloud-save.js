@@ -16,7 +16,7 @@ export class CloudSave{
  this.externalRunning=true;clearTimeout(this.timer);
  try{
   if(!this.externalPending){await this.flush();this.externalPending={name,args:{...args,p_expected_revision:this.revision,p_mutation:crypto.randomUUID()},before:structuredClone(this.snapshot())};}
-  const p=this.externalPending;if(p.name!==name||p.args.p_kind!==args.p_kind||p.args.p_body!==args.p_body)throw Error('Retry the pending reward first.');
+  const p=this.externalPending;if(p.name!==name||p.args.p_kind!==args.p_kind||p.args.p_body!==args.p_body||p.args.p_username!==args.p_username)throw Error('Retry the pending account action first.');
   const result=await this.rpc(p.name,p.args);
   if(!this.ready)throw Error('Account changed while confirming reward.');
   if(!Number.isSafeInteger(result?.revision)||result.revision<this.revision||!result.state||!Number.isSafeInteger(result.state.fp)||!Number.isSafeInteger(result.state.rc))throw Error('Server did not confirm this reward.');

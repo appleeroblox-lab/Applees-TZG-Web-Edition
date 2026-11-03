@@ -11,3 +11,10 @@ for(const stage of ['sdk','session','user']){
  release(stage==='sdk'?{createClient:()=>client}:stage==='session'?{data:{session:{}}}:{data:{user:{id:'late-member'}}});await tick();assert(document.querySelector('#accountGate').hidden,'late connection must not reopen the gate');assert(document.querySelector('#accountConnected').hidden,'late member response must not replace guest choice');takePreAuthClient();delete globalThis.__tzgGuest;
 }
 console.log('PASS guest boot bypasses stalled SDK, session refresh and user verification, and ignores late member responses.');
+
+// Signing out of a remembered preloader session must restore the one-page login form.
+{
+ const {document}=parseHTML('<html><body></body></html>');const user={id:'remembered-user'};const client={rpc:async()=>({}),auth:{getSession:async()=>({data:{session:{user}}}),getUser:async()=>({data:{user}}),signOut:async()=>({})}};
+ const boot=authenticateFirst({doc:document,config:{},requestSDK:async()=>({createClient:()=>client})});await tick();assert(document.querySelector('#accountForm').hidden);await document.querySelector('#accountGateLogout').onclick();assert(!document.querySelector('#accountForm').hidden);assert(document.querySelector('#accountConnected').hidden);assert(document.querySelector('#accountForgot').hidden);document.querySelector('#accountGuest').onclick();await boot;takePreAuthClient();delete globalThis.__tzgGuest;
+}
+console.log('PASS remembered-session sign-out restores login fields and keeps recovery hidden until a credential error.');

@@ -1,8 +1,22 @@
 {
-  "currentVersion": "v0.0.160",
+  "currentVersion": "v0.0.161",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 161,
+      "version": "v0.0.161",
+      "date": "2026-11-03",
+      "title": "Signup page layout polish",
+      "changes": [
+        "Kept the first signup page limited to profile image, display name and username.",
+        "Placed password and confirmation alongside the birthday step, followed by birthday confirmation and optional email."
+      ],
+      "source": {
+        "path": "public/account-auth-flow.js",
+        "kind": "release implementation"
+      }
+    },
     {
       "legacyVersion": 160,
       "version": "v0.0.160",

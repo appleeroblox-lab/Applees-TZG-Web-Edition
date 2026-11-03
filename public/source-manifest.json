@@ -1,5 +1,5 @@
 {
-  "version": 160,
+  "version": 161,
   "files": [
     "account-gate.js",
     "account-pages.js",
@@ -715,10 +715,10 @@
     "account-auth-flow.js"
   ],
   "fileVersions": {
-    "account-pages.js": 160,
+    "account-pages.js": 161,
     "atlas-3d.js": 151,
     "atlas-sky.js": 91,
-    "auth-first.js": 160,
+    "auth-first.js": 161,
     "avatar-crop.js": 160,
     "building.js": 142,
     "catalog.js": 119,
@@ -728,7 +728,7 @@
     "chat-phrase-templates.js": 91,
     "chat-phrasebook.js": 91,
     "chat-translation.js": 91,
-    "cloud-save.js": 160,
+    "cloud-save.js": 161,
     "compatibility.js": 142,
     "control-sizes.js": 109,
     "crew.js": 142,
@@ -747,7 +747,7 @@
     "flight.js": 142,
     "forestry.js": 142,
     "friends-ui.js": 160,
-    "game.js": 160,
+    "game.js": 161,
     "gif-gallery.js": 96,
     "ground-weather.js": 142,
     "identity-ui.js": 91,
@@ -760,7 +760,7 @@
     "models.js": 100,
     "night-aurora.js": 136,
     "photo-library.js": 91,
-    "player-account.js": 160,
+    "player-account.js": 161,
     "pool-shape.js": 59,
     "pool-splashes.js": 59,
     "profile-view.js": 160,
@@ -798,8 +798,8 @@
     "weather-precipitation.js": 142,
     "world-precipitation.js": 142,
     "models/crafting-center-v96.json": 97,
-    "account-gate.js": 160,
-    "boot-loader.js": 160,
+    "account-gate.js": 161,
+    "boot-loader.js": 161,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
     "models/base-venus.json": 100,
@@ -861,9 +861,9 @@
     "vendor/html2canvas.LICENSE": 102,
     "game-screenshot.js": 102,
     "vendor/html2canvas.min.js": 102,
-    "update-logs.js": 160,
+    "update-logs.js": 161,
     "legacy-ui.js": 102,
-    "update-history.json": 160,
+    "update-history.json": 161,
     "update-logs.css": 103,
     "mobile-notifications.js": 103,
     "free-camera.js": 105,
@@ -916,7 +916,7 @@
     "atlas-renderer.js": 150,
     "universe-map.css": 150,
     "ui-theme.js": 151,
-    "ui-theme.css": 160,
+    "ui-theme.css": 161,
     "fonts/FredokaOne-Regular.ttf": 145,
     "fonts/FredokaOne-LICENSE.txt": 145,
     "map-settings.js": 150,
@@ -929,6 +929,6 @@
     "experimental/planet.js": 157,
     "experimental/chunks.js": 157,
     "experimental/coordinates.js": 157,
-    "account-auth-flow.js": 160
+    "account-auth-flow.js": 161
   }
 }

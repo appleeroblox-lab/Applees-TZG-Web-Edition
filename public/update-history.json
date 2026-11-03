@@ -1,8 +1,24 @@
 {
-  "currentVersion": "v0.0.155",
+  "currentVersion": "v0.0.156",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 156,
+      "version": "v0.0.156",
+      "date": "2026-11-03",
+      "title": "Developer-only spherical planet experiment",
+      "changes": [
+        "Added an isolated Experimental System and 2 km Sphere Test with continuous cube-sphere terrain, oceans, biomes and bounded PC/mobile LOD chunks.",
+        "Added center-directed gravity, local surface walking/jumping, launch/landing, orbit flight, atmosphere, day/night lighting and the existing ship cameras and warp tunnel.",
+        "Added server-authorized debug travel and diagnostics; experimental travel costs 0 FP/RC, pauses normal progression and restores the previous location.",
+        "Kept the experimental world out of public catalogs, maps, search and normal warp destinations. Original worlds and Globe Mode are unchanged."
+      ],
+      "source": {
+        "path": "public/experimental/runtime.js",
+        "kind": "release implementation"
+      }
+    },
     {
       "legacyVersion": 155,
       "version": "v0.0.155",

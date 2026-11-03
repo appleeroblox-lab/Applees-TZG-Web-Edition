@@ -188,7 +188,7 @@ body.referenceHUD #fatal:not([hidden]){background:linear-gradient(#3b9edeee,#146
 body.referenceHUD #gameTop #brand{background:linear-gradient(135deg,#53b7e9a8,#196da7c9)!important;border:2px solid #a6eaff!important;border-radius:10px!important;box-shadow:inset 0 0 0 2px #d5f4ff30,0 0 12px #27bbff38;display:flex;align-items:center;justify-content:center;text-align:center;gap:9px;color:white;padding:8px 12px}
 body.referenceHUD #gameTop #brand b{color:white;font-weight:600}
 body.referenceHUD #gameTop #brand span{color:white;letter-spacing:0}
-body.referenceHUD .bootProgressRow{position:relative;width:100%;display:block;padding:0}
+body.referenceHUD .bootProgressRow{position:relative;width:min(600px,72%);display:block;padding:0}
 body.referenceHUD .bootProgressTrack{width:100%;margin:0 auto;flex:none}
 body.referenceHUD .loadSpinner{position:absolute;left:-52px;top:50%;transform:translateY(-50%);animation:loadingSpinCentered 1s linear infinite}
 @keyframes loadingSpinCentered{to{transform:translateY(-50%) rotate(360deg)}}
@@ -198,7 +198,7 @@ body.referenceHUD .hotbarSlot>.itemThumb{position:absolute!important;left:50%!im
 body.referenceHUD .hotbarSlot>.mineralIcon,body.referenceHUD .hotbarSlot>.uiIcon{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);margin:0!important}
 body.referenceHUD .itemEquip>.mineralIcon{align-self:center;flex-shrink:0;margin:0 auto 5px}
 @media(max-height:550px){body.referenceHUD .loadSpinner{width:27px;height:27px;left:-37px;border-width:4px}body.referenceHUD #gameTop #brand{padding:5px 9px}}
-@media(max-width:550px) and (orientation:portrait){body.referenceHUD .bootProgressRow{width:86%}body.referenceHUD .loadSpinner{width:25px;height:25px;left:-33px;border-width:4px}}
+@media(max-width:550px) and (orientation:portrait){body.referenceHUD .bootProgressRow{width:72%}body.referenceHUD .loadSpinner{width:25px;height:25px;left:-33px;border-width:4px}}
 /* v18: compact actions, clear menus, and stable map paint. */
 body.referenceHUD #flightRight{grid-template-rows:56px 44px 78px}
 body.referenceHUD #flightRight :is(#forwardPad,#reversePad)>span{font-size:21px;letter-spacing:-3px;line-height:1.1}

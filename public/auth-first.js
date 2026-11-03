@@ -1,5 +1,5 @@
-import {AccountAuthFlow} from './account-auth-flow.js?v=161';
-import {accountGate} from './account-gate.js?v=162';
+import {AccountAuthFlow} from './account-auth-flow.js?v=163';
+import {accountGate} from './account-gate.js?v=163';
 import {supabaseConfig} from './supabase-config.js?v=61';
 let authenticatedClient=null;
 export function takePreAuthClient(){const client=authenticatedClient;authenticatedClient=null;return client}

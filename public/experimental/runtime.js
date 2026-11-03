@@ -31,12 +31,14 @@ export class ExperimentalRuntime{
   const frame=this.cameraReset?this.orbitFrame.reset(up,V(0,0,-1).applyQuaternion(p.q)):this.orbitFrame.update(up);this.cameraUp.copy(up);
   const subject=this.rig.subjectCenter.clone().applyQuaternion(p.q),mode=this.cameras.mode;this.rig.ship.visible=mode!=='cockpit';
   if(mode==='cockpit'){c.position.copy(this.rig.cockpitPosition).applyQuaternion(p.q);c.quaternion.copy(p.q);return}
-  const offset=mode==='orbit'?V(Math.sin(this.orbitYaw)*Math.cos(this.orbitPitch),Math.sin(this.orbitPitch),Math.cos(this.orbitYaw)*Math.cos(this.orbitPitch)).multiplyScalar(this.orbitDistance).applyQuaternion(frame):V(0,5,18).applyQuaternion(p.q).addScaledVector(up,T.MathUtils.lerp(0,30,T.MathUtils.smoothstep(p.altitude,100,1000)));
+  const offset=mode==='orbit'?V(Math.sin(this.orbitYaw)*Math.cos(this.orbitPitch),Math.sin(this.orbitPitch),Math.cos(this.orbitYaw)*Math.cos(this.orbitPitch)).multiplyScalar(this.orbitDistance).applyQuaternion(frame):V(0,5,18).applyQuaternion(p.q);
+  // Add a radial backdrop only when it increases distance; never cancel the chase offset.
+  if(mode==='chase')offset.addScaledVector(up,30*T.MathUtils.smoothstep(p.altitude,100,1000)*T.MathUtils.smoothstep(up.dot(offset.clone().normalize()),0,.2));
   if(this.cameraReset){c.position.copy(offset);this.cameraReset=false}else c.position.lerp(offset,1-Math.exp(-dt*9));
   const safeUp=mode==='chase'?UP.clone().applyQuaternion(p.q):up.clone();const view=subject.clone().sub(c.position).normalize();
   if(Math.abs(view.dot(safeUp))>.98)safeUp.set(0,0,-1).applyQuaternion(frame);
   this.cameras.up.copy(safeUp);c.up.copy(safeUp);c.lookAt(subject);
-  const clear=position=>{const world=position.clone().add(origin),floor=Math.max(RADIUS,this.chunks.sample(world).radius)+1.2;if(world.length()<floor)position.copy(world.setLength(floor)).sub(origin)};
+  const clear=position=>{const groundClear=()=>{const world=position.clone().add(origin),floor=Math.max(RADIUS,this.chunks.sample(world).radius)+1.2;if(world.length()<floor)position.copy(world.setLength(floor)).sub(origin)};groundClear();const minimum=mode==='flyby'?48:5;if(position.distanceTo(subject)<minimum){const side=position.clone().sub(subject);side.addScaledVector(up,-side.dot(up));if(side.lengthSq()<.01)side.set(1,0,0).applyQuaternion(frame);position.copy(subject).add(side.setLength(mode==='flyby'?52:12)).addScaledVector(up,4);groundClear()}};
   this.cameras.apply(c,{dt,subject,origin,velocity:p.velocity,forward:V(0,0,-1).applyQuaternion(p.q),context:this.body,shipRadius:5,clear});
   // Collision correction changes camera position: recenter after, never before it.
   c.lookAt(subject);this.cameras.previousQ.copy(c.quaternion);

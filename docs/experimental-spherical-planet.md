@@ -1,4 +1,4 @@
-# Sphere Test planetary sandbox (v0.0.157)
+# Sphere Test planetary sandbox (v0.0.158)
 
 Open Settings → Debug, authenticate with an existing authorized developer account, choose Developer → Experimental. The separate **Experimental System** contains **Sphere Test** (2,000 m sea-level radius) and its lighting star. It never joins the public body catalog, map, search, routes or paid warp destinations. No account/schema migration is required.
 
@@ -50,3 +50,5 @@ Normal physics, progression ticks and save writes pause while the experiment own
 `npm run test:experimental:webgl` runs an optional real Chromium/WebGL main-game fixture at mobile and desktop sizes. It loads the actual model/shaders/assets, performs native retrograde descent and landing, keyboard walking without view drift, launch/thrust back to space, all debug actions, free return with an empty wallet, and original Earth Globe Mode. Its local HTTP response substitutes offline account/debug gateways only for testing; production authentication is not modified. It records screenshots in the temporary directory (or `TZG_WEBGL_OUTPUT`). Install Playwright/Chromium separately and set `TZG_PLAYWRIGHT_MODULE` and `TZG_CHROMIUM_PATH` if they are outside the project. `TZG_CHROMIUM_ARGS` optionally supplies a JSON array of launch flags.
 
 Real WebGL checks here use headless Chromium/SwiftShader, not a physical mobile GPU or a live developer login. Physical-device FPS and driver-specific behavior remain unmeasured. This is a single-planet development sandbox with scripted stellar lighting, not Juno's complete orbital/N-body engine. Terrain has procedural biome colors, not high-resolution planetary texture maps. Water surface movement is simplified; there is no underwater/swimming simulation. Original mining, buildings, settlements and the flat-world minimap do not run on Sphere Test. They remain available in normal gameplay after return. Experimental terrain/position is not persisted across reloads.
+
+The final v158 camera-clearance guard is covered by the CI camera fixtures, including an opposing radial/chase-offset pose and near-ground orbit correction. The headless WebGL journey runs described above were performed for the v157 rework; the hosted workspace became unavailable before another browser run of this final guard.

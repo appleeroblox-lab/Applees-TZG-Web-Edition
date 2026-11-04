@@ -1,8 +1,23 @@
 {
-  "currentVersion": "v0.0.165",
+  "currentVersion": "v0.0.166",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 166,
+      "version": "v0.0.166",
+      "date": "2026-11-04",
+      "title": "Email verification spacing and readable Credits",
+      "changes": [
+        "Separated email verification fields and Verify/Cancel buttons with comfortable spacing.",
+        "Displayed each credit as Role: Name, with separate Gameplay and Scripter roles.",
+        "Updated the community credit to Meowple Studios."
+      ],
+      "source": {
+        "path": "public/account-pages.js",
+        "kind": "release implementation"
+      }
+    },
     {
       "legacyVersion": 165,
       "version": "v0.0.165",

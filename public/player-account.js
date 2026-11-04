@@ -7,7 +7,7 @@ import {MobileNotifications} from './mobile-notifications.js?v=103';
 import {accountGate} from './account-gate.js?v=163';
 import {takePreAuthClient} from './auth-first.js?v=163';
 import {configureKlipy} from './klipy-client.js?v=96';
-import {AccountPages} from './account-pages.js?v=166';
+import {AccountPages} from './account-pages.js?v=167';
 import {ProfileView} from './profile-view.js?v=160';
 import {MessageEditor} from './message-editor.js?v=160';
 import {setVerifiedName} from './identity-ui.js?v=91';
@@ -15,7 +15,7 @@ import {FriendsUI} from './friends-ui.js?v=160';
 import {AvatarCropEditor} from './avatar-crop.js?v=163';
 import {PhotoLibrary} from './photo-library.js?v=163';
 import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=160';
-import {CloudSave} from './cloud-save.js?v=161';
+import {CloudSave} from './cloud-save.js?v=167';
 const $=id=>document.getElementById(id);
 const escapeError=e=>String(e?.message||'Account service unavailable. Please retry.');
 export class PlayerAccount{

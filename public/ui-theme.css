@@ -97,3 +97,7 @@ body.referenceHUD .accountSubmenu :is(.accountEmailActions,.accountEmailTools)>b
 .accountEmailVerification>[role=status]{margin:0;line-height:1.5;overflow-wrap:anywhere}.accountEmailVerification>[role=status]:empty{display:none}
 /* Keep each role and its name together on an individual, readable line. */
 .creditsRoles>div{display:block;line-height:1.6;padding:9px 0}.creditsRoles dt{display:inline;font-size:13px;text-align:left}.creditsRoles dd{display:inline;margin:0 0 0 6px;font-size:13px;text-align:left}
+
+.accountBirthdayForm{display:grid;gap:14px;margin-top:16px}.accountBirthdayForm p{margin:0;font-size:13px;line-height:1.5}.accountBirthdayForm .birthdaySelects{width:100%;min-width:0}.accountBirthdayForm .birthdaySelects button{min-width:0;width:100%;min-height:40px;padding:8px 5px}.accountBirthdayForm .accountEmailActions button{min-height:38px;padding:8px}.birthdayMutationStatus:empty{display:none}
+
+body.referenceHUD #accountPage-account .accountInfoRow:has(#accountInfoBirthday){display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center}#accountInfoBirthday{grid-column:1;grid-row:2;min-width:0;white-space:normal;overflow-wrap:anywhere}#accountEditBirthday{grid-column:2;grid-row:1 / span 2}

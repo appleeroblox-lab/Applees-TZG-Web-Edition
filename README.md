@@ -1,6 +1,21 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.127**. Start with [START_HERE.md](START_HERE.md) for current hosting, backend status and validation instructions. GitHub Pages serves `public/` after the CI checks pass.
+Current game: **v0.0.168**. Play at [The Zero Gravity – Web](https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html). Hosting: **Cloudflare & GitHub Pages**. Community: **Meowple Studios**.
+
+Start with [START_HERE.md](START_HERE.md) for setup and validation. GitHub Pages serves `public/` after CI passes.
+
+## v0.0.168 system progression and airless Globe Mode
+
+- Airless landable solid bodies, including moons and dwarf planets, now use the existing ship-driven Globe Mode at **2,000 m** and return to space at **4,500 m**. Asteroids keep their previous behavior. Airless globes have no atmosphere rim, clouds, plasma or reentry visuals; the upper flight band keeps the reentry background sound. Atmospheric bodies retain their existing transition heights and effects.
+- The Solar System starts unlocked. Unlock **Proxima Centauri**, then **TRAPPIST-1**, followed by the remaining systems in order. Prices range from **1,000 FP + 250 RC** to **10,000 FP + 2,500 RC**. Both black-hole-containing systems use the maximum price. FP means FlightPoints; this release does not add an FC currency.
+- Locked systems remain viewable in Universe Map. Lock Destination and Add Route open the Unlock System menu. Purchases are account-specific, charged on the server and safe to retry. Unlocking a system is a one-time purchase; normal warp fares still apply.
+- Existing flights in locked systems return to Earth's launch pad when loaded. Balances, inventory and world edits remain intact.
+- Username changes cost **1,000 RC** with the existing 24-hour cooldown. Existing birthday changes cost **300 RC**; adding a missing birthday remains free.
+- Global Chat, Daily Rewards and Minimap buttons match the Party button size. Chat, reward and More icons are larger and centered. Aurora hides beyond **15 km from Center Station**, using the player position when on foot. Neon model parts cast small lights in their part colors, with four reusable nearby lights per scene.
+
+**Required database update:** run [v168-system-progression.sql](docs/sql/v168-system-progression.sql) in the existing Supabase project's SQL Editor after the v167 birthday SQL. The script is safe to rerun. Until it is installed, system purchases are unavailable and paid account changes are blocked to prevent charging an outdated price. This repository update does not automatically apply SQL to the live database.
+
+Validation: `npm run test:v168` covers all eligible airless globes, map purchase actions on PC/mobile, flight recovery, lighting, aurora distance, sequential server purchases, funds, retry/revision handling, account ownership and the new account prices. Existing gameplay, account and UI regressions remain available through the commands in `package.json`. Physical-device FPS is unmeasured.
 
 ## v0.0.127 enclosed vortex tunnel and taller aurora rays
 

@@ -1,6 +1,14 @@
 # The Zero Gravity — Web Edition
 
-Current game version: **v0.0.119** (source/cache revision **119**), 29 October 2026. The default branch is `main`.
+Current game version: **v0.0.168** (source/cache revision **168**), 4 November 2026. The default branch is `main`.
+
+## v0.0.168 setup
+
+Run [docs/sql/v168-system-progression.sql](docs/sql/v168-system-progression.sql) in the existing Supabase SQL Editor after the v167 birthday update. It adds private account-specific system unlocks, ordered prices, atomic purchases and retry protection, and changes username/birthday prices to 1,000/300 RC. No balances or inventories are reset. Live SQL must be installed manually; the client blocks paid account edits until the matching backend is available.
+
+Airless solid bodies use Globe Mode from 2,000 m and exit at 4,500 m; asteroids retain their prior flight behavior. Reentry visuals stay off on airless worlds, while reentry background audio plays in the upper flight band. Locked saved flights return to Earth after account unlocks load.
+
+Run `npm ci --prefix tests --ignore-scripts`, then `npm run test:v168`, `npm test`, `npm run test:accounts` and `npm run test:ui`. See README for the current release. Older sections below are historical setup notes.
 
 ## v0.0.119 database installation
 

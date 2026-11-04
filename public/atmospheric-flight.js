@@ -6,8 +6,11 @@ const smooth=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3
 // Anticipate the upper cap before crossing 800m; no velocity reset at the boundary.
 export function atmosphereSpeedCap(body,altitude,vertical=0){if(!hasAtmosphere(body))return 450;if(body?.solid!==false&&altitude>=3500)return 100+400*smooth(3500,4000,altitude);if(altitude>=800)return 100;return vertical>0?450-350*smooth(600,800,altitude):450}
 export const PLANET_VIEW_RADIUS=120000;
+export function hasGlobeMode(body){return !!body?.solid&&body.landable!==false&&!/ASTEROID/.test(body.type||'')}
+export function globeHeight(body){return hasAtmosphere(body)?4000:2000}
+export function globeExitHeight(body){return hasAtmosphere(body)?ATMOSPHERE_HEIGHT:4500}
 // Match the apparent planet size on both sides of the surface/space handoff.
-export function atmosphereBoundary(body){return body?.solid&&hasAtmosphere(body)?body.r*(1+ATMOSPHERE_HEIGHT/PLANET_VIEW_RADIUS):body.r}
+export function atmosphereBoundary(body){return hasGlobeMode(body)?body.r*(1+globeExitHeight(body)/PLANET_VIEW_RADIUS):body.r}
 export function transitionState(altitude){return {terrain:1-smooth(4000,ATMOSPHERE_HEIGHT,altitude),planet:smooth(4000,ATMOSPHERE_HEIGHT,altitude),space:smooth(600,3000,altitude)}}
 export const PREENTRY_HEIGHT=8000;
 export function entryEffects(body,altitude,speed,vertical=0){

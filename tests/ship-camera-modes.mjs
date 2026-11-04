@@ -25,9 +25,10 @@ for(const surface of [false,true])for(const hz of [12.5,30,60,144])for(const mod
 for(const hz of [12.5,30,60,144])for(const speed of [0,5,50,500,10000,599584.916]){
  const rig=new ShipCameraModes(),cam=new T.PerspectiveCamera(),velocity=V(0,0,-speed),options={dt:1/hz,subject:V(),origin:V(1e12,0,0),velocity,forward:V(0,0,-1),context:'space'};rig.select('flyby');rig.apply(cam,options);assert.equal(rig.interval,5);assert(rig.destination.clone().sub(options.origin).dot(options.forward)>100);let elapsed=0,changes=0;
  for(let i=0;i<hz*12;i++){const anchor=rig.anchor.clone(),shot=rig.shotId,wasMoving=rig.repositioning;options.origin.addScaledVector(velocity,options.dt);rig.apply(cam,options);elapsed+=options.dt;
-  if(rig.shotId!==shot){assert(elapsed>=5-1e-7,'shots only change on timer');elapsed=0;changes++;assert(rig.destination.clone().sub(options.origin).dot(options.forward)>100)}else if(!wasMoving&&!rig.repositioning)assert(rig.anchor.distanceTo(anchor)<1e-6,'fixed world anchor between timed cuts');
+  if(rig.shotId!==shot){assert(elapsed>=5-1e-7,'shots only change on timer');elapsed=0;changes++;assert(rig.destination.clone().sub(options.origin).dot(options.forward)>100)}else if(!wasMoving&&!rig.repositioning&&rig.travelScale===1)assert(rig.anchor.distanceTo(anchor)<.001,'fixed world anchor for slow flybys');
+  assert(cam.position.distanceTo(options.subject)<450,'light-speed framing stays close to ship');
   assert.deepEqual(velocity.toArray(),[0,0,-speed]);cam.updateMatrixWorld();const p=options.subject.clone().project(cam);assert(Math.abs(p.x)<1e-6&&Math.abs(p.y)<1e-6);assert(cam.quaternion.toArray().every(Number.isFinite));
  }assert(changes>=2);assert(!('minimumDistance' in rig));assert(!('maximumDistance' in rig));
 }
 const timed=new ShipCameraModes(),cam=new T.PerspectiveCamera(),args={dt:.1,subject:V(),origin:V(),velocity:V(0,0,-10),forward:V(0,0,-1),context:'space'};timed.interval=2;timed.select('flyby');timed.apply(cam,args);const first=timed.shotId;for(let i=0;i<19;i++)timed.apply(cam,args);assert.equal(timed.shotId,first);timed.apply(cam,args);assert.equal(timed.shotId,first+1);
-console.log('PASS 5-second and custom timed stationary cinematic shots, distant forward spawning, smooth transitions, finite centered tracking through 200c at 12.5/30/60/144Hz and no distance-triggered respawns.');
+console.log('PASS 5-second and custom timed cinematic shots, bounded speed-based forward framing, smooth transitions, finite centered tracking through 200c at 12.5/30/60/144Hz and no distance-triggered respawns.');

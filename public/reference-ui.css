@@ -270,3 +270,8 @@ body.referenceHUD #flightRight{transform-origin:bottom right;scale:var(--ship-ri
 #terrainTransitionFade{position:fixed;inset:0;z-index:96;background:#000;opacity:0;pointer-events:none}
 
 body.referenceHUD #warpFlash{display:block!important;background:#fff;z-index:50}
+
+/* Flight action buttons share the speed track's 22px outer height. */
+body.referenceHUD #flightGauge .speedRow :is(#boostBtn,#gaugeWarpBtn){box-sizing:border-box;flex:0 0 22px;width:22px;height:22px;min-width:22px;min-height:22px;max-height:22px;padding:2px;border-radius:3px;display:grid;place-items:center}
+body.referenceHUD #flightGauge .speedRow :is(#boostBtn,#gaugeWarpBtn)>.uiIcon{width:14px;height:14px;margin:0}
+body.referenceHUD #flightGauge .flightSpeedTrack{box-sizing:border-box;height:22px}

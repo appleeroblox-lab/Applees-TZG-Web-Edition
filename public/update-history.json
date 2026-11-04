@@ -1,8 +1,23 @@
 {
-  "currentVersion": "v0.0.170",
+  "currentVersion": "v0.0.171",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 171,
+      "version": "v0.0.171",
+      "date": "2026-11-05",
+      "title": "Closer cinematic shots and profile banners",
+      "changes": [
+        "Cinematic framing stays near the ship at high speed, with wheel, pinch and button zoom. The sky panorama follows the camera without extra glowing star dots.",
+        "Boost and warp action buttons match the speed bar height, and the boost timer appears only while boost is active.",
+        "Profile covers unlock once for 300 RC. Choose, crop and change a wide 960 \u00d7 320 banner from Account \u2192 Profile; banners appear in the shared player viewer."
+      ],
+      "source": {
+        "path": "public/profile-banner.js",
+        "kind": "release implementation"
+      }
+    },
     {
       "legacyVersion": 170,
       "version": "v0.0.170",

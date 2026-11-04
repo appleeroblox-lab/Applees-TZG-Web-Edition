@@ -6,7 +6,7 @@ import {SurfaceSky} from '../public/surface-sky.js';
 import {audioFixture,flushAudio} from './audio-fakes.mjs';
 const flight={active:[],pos:new T.Vector3()};
 for(const hour of [10,23])for(const altitude of [0,999,1000,1001,6000]){const s={active:true,body:{name:'Earth',solid:true},altitude,earthEnvironment:{hour}};assert.equal(ambienceFor(s,flight),altitude>=1000?'reentry':hour===10?'day':'night')}
-for(const altitude of [0,999,1000,6000]){assert.equal(ambienceFor({active:true,body:{name:'Mars',solid:true},altitude},flight),altitude>=1000?'reentry':'spaceDeep');assert.equal(ambienceFor({active:true,body:{name:'Moon',solid:true},altitude},flight),'spaceDeep')}
+for(const altitude of [0,999,1000,6000]){assert.equal(ambienceFor({active:true,body:{name:'Mars',solid:true},altitude},flight),altitude>=1000?'reentry':'spaceDeep');assert.equal(ambienceFor({active:true,body:{name:'Moon',solid:true},altitude},flight),altitude>=1000?'reentry':'spaceDeep');assert.equal(ambienceFor({active:true,body:{name:'Asteroid',type:'ASTEROID',solid:true},altitude},flight),'spaceDeep')}
 for(const altitude of [0,100,1000,6000])assert.equal(ambienceFor({active:true,body:{name:'Jupiter',type:'GAS GIANT',solid:false},altitude,coreDistance:105,exitDistance:200},flight),'reentry');
 assert.equal(ambienceFor({active:false},flight),'space');
 const fixture=audioFixture();globalThis.localStorage={getItem(){return null},setItem(){}};globalThis.Audio=class{constructor(){this.volume=0}play(){return Promise.resolve()}pause(){}removeAttribute(){}load(){}};const sound=new GameSound();sound.unlock();sound.context.sampleRate=8000;sound.context.createBuffer=(_,length)=>({data:new Float32Array(length),getChannelData(){return this.data}});

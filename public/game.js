@@ -1,36 +1,37 @@
+import {warmShipHull} from './ship-hull-collision.js?v=170';
 import {setSystemLock,unlockPanel} from './system-unlock-ui.js?v=169';
-import {NeonLights} from './neon-lights.js?v=169';
+import {NeonLights} from './neon-lights.js?v=170';
 import {SYSTEM_ORDER,systemLabel,systemUnlockQuote,systemUnlocked,canUnlockSystem} from './system-unlocks.js?v=168';
 import {chatDialog} from './chat-dialog.js?v=169';
-import {ExperimentalController} from './experimental/bridge.js?v=158';
+import {ExperimentalController} from './experimental/bridge.js?v=170';
 import {installMapSettings,mapSettings} from './map-settings.js?v=150';
 import {installUITheme} from './ui-theme.js?v=151';
-import {starVisualRadius} from './star-size.js?v=140';
-import {ShipCameraModes,SHIP_CAMERA_MODES,SHIP_CAMERA_NAMES} from './ship-camera-modes.js?v=143';
+import {starVisualRadius} from './star-size.js?v=170';
+import {ShipCameraModes,SHIP_CAMERA_MODES,SHIP_CAMERA_NAMES} from './ship-camera-modes.js?v=170';
 import {installSettingsAppearance,syncRangeFill} from './settings-appearance.js?v=155';
 import {WarpTunnel,warpWhiteFade} from './warp-effects.js?v=132';
-import {SurfaceMinimap} from './minimap.js?v=168';
+import {SurfaceMinimap} from './minimap.js?v=170';
 import {canLandHere,advanceLocalDay} from './atmospheric-flight.js?v=168';
 import {updateSurfaceAir} from './spherical-atmosphere.js?v=168';
 import {surfaceFrame} from './surface-frame.js';
-import {ShipFlightEffects,ensureTrailsControl} from './ship-flight-effects.js?v=168';
+import {ShipFlightEffects,ensureTrailsControl} from './ship-flight-effects.js?v=170';
 import {applyGraphicsDetail,installStarDetail} from './graphics-detail.js?v=110';
 import {hasAtmosphere,hasGlobeMode,LANDING_MESSAGE} from './atmospheric-flight.js?v=168';
 import {installMenuSizes} from './menu-sizes.js?v=144';
 import {ensureGraphicsControls} from './graphics-controls.js?v=110';
 import {destinationOffset,destinationLightYears} from './warp-pricing.js?v=105';
 import {payFreeCamera,installFreeCameraConfirmation} from './free-camera.js?v=105';
-import {installUpdateLogs} from './update-logs.js?v=169';
+import {installUpdateLogs} from './update-logs.js?v=170';
 import {installScreenshot} from './game-screenshot.js?v=102';
 import {AsteroidBelts} from './asteroid-belts.js?v=105';
-import {SurfaceCollisions} from './surface-collision.js?v=168';
-import {applyShipBlast,ShipRespawnStation} from './ship-respawn.js?v=169';
+import {SurfaceCollisions} from './surface-collision.js?v=170';
+import {applyShipBlast,ShipRespawnStation} from './ship-respawn.js?v=170';
 import {iconButton} from './ui-icons.js?v=91';
-import {surfaceGravity as mapGravity} from './surface.js?v=168';
-import {installDeviceSettings} from './device-settings.js?v=144';
-import {installLocalization} from './localization.js?v=91';
+import {surfaceGravity as mapGravity} from './surface.js?v=170';
+import {installDeviceSettings} from './device-settings.js?v=170';
+import {installLocalization} from './localization.js?v=170';
 let devicePreferences=null,restoringDevicePreferences=false;
-import {PlayerAccount} from './player-account.js?v=169';
+import {PlayerAccount} from './player-account.js?v=170';
 import {cloudInventory} from './cloud-save.js?v=168';
 import {SupabaseDebugService} from './supabase-debug.js?v=156';
 import {supabaseConfig} from './supabase-config.js?v=61';
@@ -38,9 +39,9 @@ import {installControlSizes} from './control-sizes.js?v=109';
 import {GlobalShadows} from './global-shadows.js?v=120';
 import {biomeWeather,earthBiome,biomeDestination} from './earth-biomes.js?v=122';
 import {installMobileInput} from './mobile-input.js';
-import {GroundWeather} from './ground-weather.js?v=168';
-import {underWeatherClouds} from './weather-state.js?v=168';
-import {DebugMenu} from './debug-menu.js?v=169';
+import {GroundWeather} from './ground-weather.js?v=170';
+import {underWeatherClouds} from './weather-state.js?v=170';
+import {DebugMenu} from './debug-menu.js?v=170';
 import {rotateSubjectOrbit,shipCameraSubject,placeSubjectOrbit,ORBIT_MIN,ORBIT_MAX} from './subject-camera.js';
 import {padHeightAt} from './surface-layout.js';
 import {CockpitLabelMask} from './cockpit-labels.js';
@@ -48,40 +49,40 @@ import {installTouchButtons} from './touch-buttons.js?v=57';
 import {keyboardCode,pressKeyboardKey,releaseKeyboardKey} from './keyboard-input.js';
 import {rotationSpeed} from './ship-rotation.js';
 import {BodyTransition} from './body-transition.js';
-import {Forestry} from './forestry.js?v=168';
+import {Forestry} from './forestry.js?v=170';
 import {nearbyPlanetUp,stabilizeCameraHorizon} from './camera-horizon.js?v=140';
 import {updateWarpHUD} from './warp-hud.js';
 import {graphicsPolicy,GRAPHICS_MODES} from './graphics-policy.js?v=110';
 import {TradeUI} from './trade-ui.js';
-import {Building} from './building.js?v=169';
-import {SurfaceStream} from './surface-streaming.js?v=168';
+import {Building} from './building.js?v=170';
+import {SurfaceStream} from './surface-streaming.js?v=170';
 import * as T from './vendor/three.module.js';
 import {bodies,earth,AU} from './catalog.js?v=100';
-import {Flight,V,attitude,clearance} from './flight.js?v=168';
+import {Flight,V,attitude,clearance} from './flight.js?v=170';
 import {TerrainManager,surfacePadding,terrainHeight} from './terrain.js';
-import {CompatibilityRenderer} from './compatibility.js?v=168';
-import {Economy,TRADER} from './economy.js?v=168';
-import {Prospecting} from './prospecting.js?v=169';
+import {CompatibilityRenderer} from './compatibility.js?v=170';
+import {Economy,TRADER} from './economy.js?v=170';
+import {Prospecting} from './prospecting.js?v=170';
 import {InventoryUI} from './inventory-ui.js?v=91';
 import {GameSound,ambienceFor,installAudioSettings} from './sound.js?v=168';
-import {Crew} from './crew.js?v=168';
+import {Crew} from './crew.js?v=170';
 import {setupIcons} from './icons.js';
-import {SurfaceSession,surfaceHeight} from './surface.js?v=168';
-import {SurfaceView} from './surface-view.js?v=169';
-import {Explorer,formatSpeed} from './explorer.js?v=168';
+import {SurfaceSession,surfaceHeight} from './surface.js?v=170';
+import {SurfaceView} from './surface-view.js?v=170';
+import {Explorer,formatSpeed} from './explorer.js?v=170';
 import {TextureCache} from './textures.js?v=110';
-import {updateReferenceHUD} from './reference-hud.js?v=168';
-import {SystemAtlas} from './atlas-3d.js?v=151';
+import {updateReferenceHUD} from './reference-hud.js?v=170';
+import {SystemAtlas} from './atlas-3d.js?v=170';
 import {ShipBoost} from './boost.js';
 import {updateBlackHole} from './black-hole-effects.js?v=110';
 import {holdVelocity,setSpeedCommand} from './speed-control.js?v=168';
 import {skyProfile,illustratedGalaxySky} from './sky-profiles.js';
-import {StellarGlare} from './stellar-glare.js?v=168';
+import {StellarGlare} from './stellar-glare.js?v=170';
 import {PostEffects} from './post-effects.js?v=113';
-import {EarthWeatherFX} from './earth-environment.js?v=168';
+import {EarthWeatherFX} from './earth-environment.js?v=170';
 import {lightingProfile} from './lighting.js?v=110';
 import {resolutionRatio,clampPanel} from './performance.js?v=110';
-import {pickSpaceBody,meaningfulBodyLabel,labelFilterAllows,localMoonFamily,bodyLabelAllowed,labelProjection,labelOccluded} from './body-labels.js?v=139';
+import {pickSpaceBody,meaningfulBodyLabel,labelFilterAllows,localMoonFamily,bodyLabelAllowed,labelProjection,labelOccluded} from './body-labels.js?v=170';
 import {makeWorld,makeShip,makeStars,glow,random} from './visuals.js?v=169';
 const $=id=>document.getElementById(id),touch=matchMedia('(pointer:coarse)').matches,clamp=T.MathUtils.clamp;
 ensureGraphicsControls(document);
@@ -153,7 +154,7 @@ function render(){requestAnimationFrame(render);if(document.hidden||window.__tzg
  minimap.update(dt);fpsAverage=fpsAverage*.96+(1/Math.max(dt,.001))*.04;frameBudgetClock+=dt;if(adaptiveResolution&&!compatibility&&started&&frameBudgetClock>4){if(fpsAverage<25&&renderer.getPixelRatio()>.45)renderer.setPixelRatio(Math.max(.45,renderer.getPixelRatio()*.86));frameBudgetClock=0}if(terrain.current)terrain.clear();const nav=flight.nav,warping=nav?.kind==='warp';document.body.classList.toggle('warping',warping);warpLines.visible=warping;
  if(lastSystem!==flight.system){lastSystem=flight.system;$('location').textContent='● '+flight.system.toUpperCase()+' SYSTEM / FREE FLIGHT';sunlight.color.set(flight.system==='Proxima'?0xffb9a4:0xffecd5)}
  // Floating origin: CPU coordinates retain AU distances; every GPU object is relative to the ship.
- for(const b of bodies){if(b.type==='BLACK HOLE')updateBlackHole(b,performance.now()*.001);b.mesh.visible=!surface.active&&b.system===flight.system&&(b===target||b.type==='STAR'||flight.pos.distanceTo(b.pos)<Math.max(200000,b.r*500));if(b.mesh.visible){b.mesh.position.copy(b.pos).sub(flight.pos);if(b.clouds&&!simulationPaused)b.clouds.rotation.y+=dt*.004;if(b.disk&&!simulationPaused)b.disk.rotation.z+=dt*.08*explorer.timeScale;if((b.solid||/GAS GIANT|ICE GIANT/.test(b.type))&&!simulationPaused)b.mesh.rotation.y+=dt*.0007*explorer.timeScale}}
+ for(const b of bodies){if(b.type==='BLACK HOLE')updateBlackHole(b,performance.now()*.001);b.mesh.visible=!surface.active&&b.system===flight.system&&(b===target||b.type==='STAR'||flight.pos.distanceTo(b.pos)<Math.max(200000,b.r*500));b.mesh.position.copy(b.pos).sub(flight.pos);if(b.mesh.visible){if(b.clouds&&!simulationPaused)b.clouds.rotation.y+=dt*.004;if(b.disk&&!simulationPaused)b.disk.rotation.z+=dt*.08*explorer.timeScale;if((b.solid||/GAS GIANT|ICE GIANT/.test(b.type))&&!simulationPaused)b.mesh.rotation.y+=dt*.0007*explorer.timeScale}}
  const star=bodies.filter(b=>b.system===flight.system&&b.type==='STAR').sort((a,b)=>flight.pos.distanceTo(a.pos)-flight.pos.distanceTo(b.pos))[0];if(star){sunlight.position.copy(star.pos).sub(flight.pos).normalize().multiplyScalar(1000)}
  updateSky();const lighting=lightingProfile(flight.system,star);ambient.intensity=lighting.ambient;sunlight.color.set(lighting.tint);sunlight.intensity=lighting.intensity;ship.position.set(0,0,0);ship.quaternion.copy(flight.q);shipRig.model.rotation.x=0;shipRig.exhaust.rotation.x=0;ship.visible=!explorer.enabled;shipRig.flames.forEach(f=>f.visible=true);for(const f of shipRig.verticalFlames||[])f.visible=false;shipRig.gear.visible=flight.gear;
  if(stableCamera){if(shipCameras.mode==='planet-orbit'){const up=surface.active?V(0,1,0):nearbyPlanetUp(bodies.filter(b=>b.system===flight.system&&(b.solid||/GIANT/.test(b.type))),flight.pos,Infinity);cameraUp.copy(shipCameras.align(camQ,up,dt));stabilizeCameraHorizon(camQ,cameraUp,dt)}else{cameraUp.set(0,1,0);shipCameras.up.copy(cameraUp)}}if(!stableCamera||explorer.enabled)camQ.slerp(flight.q,blocked?1:1-Math.exp(-dt*9));camera.quaternion.copy(camQ);if(cockpit&&!explorer.enabled)cameraOffset.copy(shipRig.cockpitPosition).applyQuaternion(flight.q);else cameraOffset.set(0,explorer.enabled?0:3.4,explorer.enabled?0:stableCamera?orbitDistance:13.5).applyQuaternion(camQ);camera.position.copy(cameraOffset);if(stableCamera&&!explorer.enabled&&!surface.active&&!cockpit){shipCameraSubject(shipRig,cameraSubject);placeSubjectOrbit(camera,camQ,cameraSubject,orbitDistance,{up:cameraUp})}for(const b of bodies){if(b.mesh.visible&&b.lensing)b.lensing.quaternion.copy(camQ)}
@@ -163,7 +164,7 @@ function render(){requestAnimationFrame(render);if(document.hidden||window.__tzg
  updateWarpHUD(flight);const tunnelStrength=warpTunnel.update(nav,flight,performance.now()*.001,graphics,touch||compatibility,milkyMap);if(warpTunnel.enclosed){const turn=warpTunnel.orientation.clone().multiply(camera.quaternion.clone().invert());flight.q.copy(warpTunnel.orientation);ship.quaternion.copy(flight.q);camQ.copy(flight.q);camera.position.applyQuaternion(turn);camera.quaternion.premultiply(turn);camera.updateMatrixWorld()}document.body.classList.toggle('inWarpTunnel',warpTunnel.enclosed);$('cameraBtn').disabled=$('flightCamera').disabled=warping;if($('shipCameraMode'))$('shipCameraMode').disabled=warping;warpLines.material.opacity=.6*(1-tunnelStrength);warpLines.visible=warping&&!warpTunnel.enclosed;warpGeo.setDrawRange(0,(touch||graphics==='Low'?80:graphics==='Medium'?140:240)*2);if(warping){const t=nav.progress||0;const fov=explorer.fov+Math.sin(t*Math.PI)*18;if(camera.fov!==fov){camera.fov=fov;camera.updateProjectionMatrix()}warpLines.quaternion.copy(flight.q);for(let i=0;i<warpSeeds.length;i++){const [a,r,z]=warpSeeds[i],zz=((z+performance.now()*.35)%450)-420,offset=i*6;warpPositions[offset]=Math.cos(a)*r;warpPositions[offset+1]=Math.sin(a)*r;warpPositions[offset+2]=zz;warpPositions[offset+3]=Math.cos(a)*r;warpPositions[offset+4]=Math.sin(a)*r;warpPositions[offset+5]=zz+18+engine*30}warpGeo.attributes.position.needsUpdate=true;flash.style.opacity=warpWhiteFade(nav);
  }else{$('warpOverlay').style.display='none';flash.style.opacity=Math.max(0,Number(flash.style.opacity||0)-dt/.35);if(camera.fov!==explorer.fov){camera.fov=explorer.fov;camera.updateProjectionMatrix()}}
  landingGrid.visible=!!flight.landed&&!explorer.enabled;if(flight.landed){const b=flight.landed,normal=flight.pos.clone().sub(b.pos).normalize();landingGrid.position.copy(normal).multiplyScalar(-clearance+.02);landingGrid.quaternion.setFromUnitVectors(V(0,1,0),normal)}
- uiClock+=dt;saveClock+=dt;if(uiClock>.08){updateHUD();uiClock=0}if(saveClock>15){save();saveClock=0}if(audio&&audio.state==='running'&&audio.gain){audio.gain.gain.setTargetAtTime(blocked||!sfx.enabled?0:(.006+engine*.025)*sfx.volume*sfx.mix.engine,audio.currentTime,.1);audio.osc.frequency.setTargetAtTime(42+engine*55+(flight.input.boost?30:0),audio.currentTime,.1)}if(orbitPaths)orbitPaths.position.copy(solarCenter).sub(flight.pos);if(surface.active)renderSurface(dt,simulationPaused);else{sfx.weather(null,false);building.label.hidden=true;building.preview.visible=false;building.shovel.visible=false;building.heldItem.group.visible=false;building.heldTorchLight.intensity=0;building.torchLights.forEach(l=>l.intensity=0);for(const b of building.blasts)b.group.visible=false;earthWeatherFX.canvas.hidden=true;earthWeatherFX.world.group.visible=false;$('earthWeather').hidden=true;if(ship.parent!==scene)scene.add(ship);stars.visible=true;starDetail.starClock.value=performance.now()*.001;stars.material.opacity=.78;if(sky)sky.visible=true;applyShipCamera(dt);camera.updateMatrixWorld();asteroidBelts.update(flight,surface,camera,graphics,touch||compatibility,explorer.labels&&labelFilters.asteroids);updateObjectLabels();globalShadows.update(dt,surface,crew,camera);shipFlightFX.update(dt,performance.now()*.001,{flight,surface,crew,camera,quality:graphics,mobile:touch,enabled:shipTrails,paused:simulationPaused,warping});sfx.airflow(0);bodyTransition.setTerrainFade(0);effects.entryHeat=0;spaceNeon.update(performance.now()*.001,camera,!warpTunnel.enclosed);warpTunnel.renderInterior(scene,[ship,warpLines],()=>effects.render(scene,camera,graphics));glare.canvas.hidden=!!warpTunnel.enclosed;if(!warpTunnel.enclosed)glare.update(camera,bodies,flight,surface,[ship]);}
+ uiClock+=dt;saveClock+=dt;if(uiClock>.08){updateHUD();uiClock=0}if(saveClock>15){save();saveClock=0}if(audio&&audio.state==='running'&&audio.gain){audio.gain.gain.setTargetAtTime(blocked||!sfx.enabled?0:(.006+engine*.025)*sfx.volume*sfx.mix.engine,audio.currentTime,.1);audio.osc.frequency.setTargetAtTime(42+engine*55+(flight.input.boost?30:0),audio.currentTime,.1)}if(orbitPaths)orbitPaths.position.copy(solarCenter).sub(flight.pos);if(surface.active)renderSurface(dt,simulationPaused);else{sfx.weather(null,false);building.label.hidden=true;building.preview.visible=false;building.shovel.visible=false;building.heldItem.group.visible=false;building.heldTorchLight.intensity=0;building.torchLights.forEach(l=>l.intensity=0);for(const b of building.blasts)b.group.visible=false;earthWeatherFX.canvas.hidden=true;earthWeatherFX.world.group.visible=false;$('earthWeather').hidden=true;if(ship.parent!==scene)scene.add(ship);stars.visible=true;starDetail.starClock.value=performance.now()*.001;stars.material.opacity=.78;if(sky)sky.visible=true;applyShipCamera(dt);camera.updateMatrixWorld();asteroidBelts.update(flight,surface,camera,graphics,touch||compatibility,explorer.labels&&labelFilters.asteroids);updateObjectLabels();globalShadows.update(dt,surface,crew,camera);shipFlightFX.update(dt,performance.now()*.001,{flight,surface,crew,camera,quality:graphics,mobile:touch,enabled:shipTrails&&!explorer.enabled,paused:simulationPaused,warping});sfx.airflow(0);bodyTransition.setTerrainFade(0);effects.entryHeat=0;spaceNeon.update(performance.now()*.001,camera,!warpTunnel.enclosed);warpTunnel.renderInterior(scene,[ship,warpLines],()=>effects.render(scene,camera,graphics));glare.canvas.hidden=!!warpTunnel.enclosed;if(!warpTunnel.enclosed)glare.update(camera,bodies,flight,surface,[ship]);}
 }
 function updateHUD(){updateEconomyHUD();updateSurfaceControls();if(surface.active){updateSurfaceHUD();return}updateExplorerHUD();const n=flight.nav,d=target.system===flight.system?Math.max(0,flight.pos.distanceTo(target.pos)-target.r):Infinity;const range=Number.isFinite(d)?distanceText(d):destinationLightYears(target,flight.system,flight.pos).toFixed(2)+' Ly';$('range').textContent=range;const speed=flight.vel.length();$('speed').innerHTML=(speed*100).toFixed(1)+' <small>km/s</small>';$('speedBar').style.width=clamp(speed/3.2,0,100)+'%';$('eta').textContent=n?.kind==='warp'?Math.max(0,Math.ceil(n.duration-n.elapsed))+' s':n?Math.ceil(flight.pos.distanceTo(n.end)/Math.max(speed,.1))+' s':'—';const near=flight.nearest(),alt=Math.max(0,flight.pos.distanceTo(near.pos)-near.r-clearance);$('altitude').textContent=distanceText(alt);$('nearest').textContent='ABOVE '+near.name.toUpperCase();$('modeText').textContent=paused?'PAUSED':layoutMode?'MOVE HUD':n?.kind==='warp'?'WARP ACTIVE':n?'AUTOPILOT · '+n.mode.toUpperCase():flight.landed?'SURFACE PARKED':flight.assist?'FLIGHT ASSIST':'INERTIAL FLIGHT';$('gearStatus').textContent='LANDING GEAR '+(flight.gear?'DEPLOYED':'RETRACTED');$('gearBtn').classList.toggle('active',flight.gear);$('assistBtn').classList.toggle('active',flight.assist);$('shipStatus').textContent=flight.landed?'TOUCHDOWN':n?.kind==='warp'?'WARP DRIVE':'NOMINAL';$('heading').textContent=String(Math.round((T.MathUtils.radToDeg(new T.Euler().setFromQuaternion(flight.q,'YXZ').y)+360)%360)).padStart(3,'0');$('navInfo').style.display=n?'flex':'none';$('navText').textContent=n?(n.kind==='warp'?'Warp to ':'Guided '+n.mode+' · ')+n.b.name:'';
 
@@ -220,6 +221,7 @@ function startOrbit(){if(flight.nav?.kind==='warp')return toast('Orbit unavailab
 function centerTarget(){if(surface.active)return;if(target.system!==flight.system)return toast('Go to this system first');flight.align(target);camQ.copy(flight.q)}
 function updateExplorerHUD(){updateSurvey();$('renderStats').textContent=(compatibility?'COMPATIBILITY':Math.round(fpsAverage)+' FPS')+' · '+terrain.stats.patches+' terrain tiles';$('exploreSystem').textContent=flight.system.toUpperCase()+' / '+target.name.toUpperCase();$('exploreMotion').textContent=flight.nav?'GO TO · '+target.name:explorer.orbit?'ORBIT · '+explorer.orbit.b.name:explorer.enabled?'FREE CAMERA':'SPACECRAFT';$('exploreSpeed').textContent='Speed '+formatSpeed(explorer.enabled?(explorer.effectiveSpeed||explorer.speed):flight.vel.length());$('exploreRange').textContent=target.system===flight.system?'Distance '+distanceText(Math.max(0,flight.pos.distanceTo(target.pos)-target.r)):'Distance '+destinationLightYears(target,flight.system,flight.pos).toFixed(2)+' Ly';$('orbitBtn').classList.toggle('active',!!explorer.orbit);if(orbitPaths)orbitPaths.visible=explorer.paths&&flight.system==='Sol';}
 const shipCameraSelect=document.createElement('select');shipCameraSelect.id='shipCameraMode';shipCameraSelect.setAttribute('aria-label','Ship camera mode');const cameraLabel=document.createElement('label');cameraLabel.textContent='Ship camera';cameraLabel.append(shipCameraSelect);$('sensitivity').closest('.settingsSection').append(cameraLabel);shipCameraSelect.onchange=e=>selectShipCamera(e.target.value);
+const intervalLabel=document.createElement('label');intervalLabel.textContent='Cinematic Camera Interval';const intervalSelect=document.createElement('select');intervalSelect.id='cinematicCameraInterval';intervalSelect.setAttribute('aria-label','Cinematic Camera Interval');for(const seconds of [1,2,3,5,8,10,15,20,30]){const option=document.createElement('option');option.value=String(seconds);option.textContent=seconds+' seconds';option.selected=seconds===5;intervalSelect.append(option)}intervalSelect.value='5';intervalSelect.onchange=()=>{shipCameras.interval=Number(intervalSelect.value)||5};intervalLabel.append(intervalSelect);cameraLabel.after(intervalLabel);
 for(let i=0;i<SHIP_CAMERA_MODES.length;i++){const option=document.createElement('option');option.value=SHIP_CAMERA_MODES[i];option.textContent=SHIP_CAMERA_NAMES[i];$('cameraMode').append(option);shipCameraSelect.append(option.cloneNode(true))}
 $('cameraMode').onchange=e=>{if(e.target.value==='free')setMode(true);else if(setMode(false))selectShipCamera(e.target.value==='ship'?'chase':e.target.value)};$('modeBtn').onclick=()=>setMode(!explorer.enabled);$('travelScale').oninput=e=>{explorer.exponent=+e.target.value;syncExplorer()};$('orbitBtn').onclick=$('railOrbit').onclick=startOrbit;$('centerBtn').onclick=centerTarget;$('cleanBtn').onclick=$('restoreInterface').onclick=toggleClean;$('railSearch').onclick=()=>{open('mapDialog');$('search').focus()};$('railGo').onclick=()=>navigate('warp');$('railHome').onclick=()=>{setTarget(earth);navigate('warp')};$('fovSlider').oninput=e=>{explorer.fov=+e.target.value;syncExplorer()};$('exposureSlider').oninput=e=>{explorer.exposure=+e.target.value;syncExplorer()};$('labelsCheck').onchange=e=>{explorer.labels=e.target.checked;updateObjectLabels()};$('pathsCheck').onchange=e=>{explorer.paths=e.target.checked;syncExplorer()};$('timeScale').onchange=e=>explorer.timeScale=+e.target.value;
 canvas.addEventListener('wheel',e=>{if(isBlocked())return;if(stableCamera&&!crew.onFoot&&!explorer.enabled){e.preventDefault();zoomOrbit(e.deltaY);return}if(!explorer.enabled)return;e.preventDefault();if(e.ctrlKey){explorer.fov=clamp(explorer.fov+e.deltaY*.015,15,100)}else explorer.changeSpeed(-e.deltaY*.002);syncExplorer()},{passive:false});canvas.addEventListener('dblclick',centerTarget);
@@ -235,12 +237,12 @@ const cockpitLabels=new CockpitLabelMask();
 const labelLayer=document.createElement('div');labelLayer.id='objectLabels';document.body.append(labelLayer);const objectLabels=new Map();
 function updateObjectLabels(){
  labelLayer.hidden=!!warpTunnel.enclosed;if(warpTunnel.enclosed){for(const node of objectLabels.values())node.hidden=true;return}
- const family=localMoonFamily(bodies,flight.pos,flight.system);
+ const family=localMoonFamily(bodies,flight.pos,flight.system),labelOccluders=bodies.filter(b=>b.system===flight.system);
  for(const node of objectLabels.values())node.hidden=true;
  if(!explorer.labels)return;
  const candidates=[];if(cockpit&&!crew.onFoot)cockpitLabels.update(shipRig.model);
  for(const b of surface.active?[]:bodies){
-  if(b===target)continue;if(!bodyLabelAllowed(b,flight.system,family)||!labelFilterAllows(b,labelFilters))continue;if(planetLabelsMode==='collision'&&labelOccluded(flight.pos.clone().add(camera.position),b,bodies.filter(o=>o.system===flight.system)))continue;
+  if(b===target)continue;if(!bodyLabelAllowed(b,flight.system,family)||!labelFilterAllows(b,labelFilters))continue;if(planetLabelsMode==='collision'&&labelOccluded(flight.pos.clone().add(camera.position),b,labelOccluders))continue;
   const relative=b.pos.clone().sub(flight.pos),point=labelProjection(relative,camera,innerWidth,innerHeight);
   if(point){const depth=-relative.clone().applyMatrix4(camera.matrixWorldInverse).z;point.y-=b.r/Math.max(depth,b.r)*innerHeight/(2*Math.tan(camera.fov*Math.PI/360))+10;candidates.push({b,point,distance:flight.pos.distanceTo(b.pos)})}
  }
@@ -249,7 +251,7 @@ function updateObjectLabels(){
  if((!surface.active||cross)&&labelFilterAllows(target,labelFilters)){const point=labelProjection(relative,camera,innerWidth,innerHeight);if(point)candidates.push({b:target,point,distance:relative.length(),locked:true,cross})}
  else if(labelFilterAllows(target,labelFilters)){const item=(surface.skyBodies||[]).find(item=>item.body===target);if(item){const point=labelProjection(item.direction.clone().multiplyScalar(6000).add(camera.position),camera,innerWidth,innerHeight);if(point)candidates.push({b:target,point,distance:item.distance,locked:true})}}
  candidates.sort((a,b)=>(a.b===target?-1:b.b===target?1:0)||((a.b.parent===family?0:1)-(b.b.parent===family?0:1))||a.distance-b.distance);
- for(const {b,point,distance,locked,cross}of candidates.slice(0,Math.max(6,candidates.filter(c=>c.b.parent===family).length+1))){
+ for(const {b,point,distance,locked,cross}of candidates.filter((c,i)=>c.b===target||!c.b.parent&&/PLANET|GIANT|STAR|BLACK HOLE/.test(c.b.type)||i<16)){
   let node=objectLabels.get(b.id);
   if(!node){node=document.createElement('button');node.className='objectLabel';node.onclick=()=>setTarget(b);objectLabels.set(b.id,node);labelLayer.append(node)}
   node.hidden=false;node.classList.toggle('selected',b===target);
@@ -409,7 +411,7 @@ if(cloudAccounts){
 }
 
 // Schedule frames only after every state variable, handler and the ship are ready.
-await shipRig.ready;shipFlightFX.bind();
+await shipRig.ready;warmShipHull(shipRig.model);shipFlightFX.bind();
 requestAnimationFrame(render);
 
 // Device UI preferences are independent of the flight/world save.

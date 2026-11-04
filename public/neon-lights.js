@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
 // Stable local lights. Emissive parts always use the normal scene depth buffer.
-export function neonBrightness(scene){let value=0;for(const light of scene.children){if(!light.visible)continue;if(light.isAmbientLight)value+=light.intensity*.5;else if(light.isHemisphereLight)value+=light.intensity*.35;else if(light.isDirectionalLight)value+=light.intensity*.25}return T.MathUtils.clamp(.18+.82*T.MathUtils.clamp(value,0,1),.18,1)}
+export function neonBrightness(scene){let value=0;for(const light of scene.children){if(!light.visible)continue;if(light.isAmbientLight)value+=light.intensity*.5;else if(light.isHemisphereLight)value+=light.intensity*.35;else if(light.isDirectionalLight)value+=light.intensity*.25}return T.MathUtils.lerp(1,.2,T.MathUtils.clamp(value,0,1))}
 const visibleIn=(object,scene)=>{let root=object;for(let node=object;node;node=node.parent){if(!node.visible)return false;root=node}return root===scene};
 export class NeonLights{
  constructor(scene){this.scene=scene;this.slots=Array.from({length:4},()=>({part:null}));this.lights=this.slots.map(slot=>{const light=slot.light=new T.PointLight(0xffffff,0,7,2);light.name='Small neon part light';light.castShadow=false;scene.add(light);return light});this.nextScan=0;this.candidates=[];this.materials=new Set();this.occluders=[];this.center=new T.Vector3();this.direction=new T.Vector3();this.ray=new T.Raycaster();this.hits=[];this.sphere=new T.Sphere();this.brightness=1;}

@@ -128,3 +128,16 @@ body.referenceHUD :is(#chatPanel,#friendsPanel) .roomInfoOpen::after{width:14px!
 body.referenceHUD #mapDialog #selection :is(#selectTarget,#addStop){position:relative!important;isolation:isolate!important;overflow:hidden!important}
 body.referenceHUD #mapDialog #selection :is(#selectTarget,#addStop)>.systemLockCover{position:absolute!important;inset:0!important;width:auto!important;height:auto!important;display:flex!important;align-items:center!important;justify-content:center!important;pointer-events:none!important}
 body.referenceHUD #mapDialog #selection :is(#selectTarget,#addStop)>.systemLockCover>svg{display:block!important;width:26px!important;height:26px!important;min-width:26px!important;max-width:26px!important;max-height:26px!important;position:static!important;margin:0!important;transform:none!important;color:white!important}
+/* Hide scrollbar artwork while preserving scrolling, wheel and touch gestures. */
+*{scrollbar-width:none!important;-ms-overflow-style:none!important}*::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
+@media(max-width:900px),(max-height:500px){
+ body.referenceHUD #mapDialog #selection{box-sizing:border-box!important;width:min(238px,34vw)!important;min-width:0!important;max-height:calc(100dvh - 66px)!important;padding:6px!important}
+ body.referenceHUD #mapDialog #selection h2{font-size:14px!important;line-height:1.2!important;margin:4px 0!important}
+ body.referenceHUD #mapDialog #selection .mapInfoHead{padding:3px 0!important;min-height:22px!important}
+ body.referenceHUD #mapDialog #selection .mapInfoHead strong{font-size:11px!important}
+ body.referenceHUD #mapDialog #selection :is(#selectTarget,#addStop),body.referenceHUD #mapDialog #selection #atlasToolbar button{min-height:30px!important;height:auto!important;padding:5px!important;font-size:10px!important;line-height:1.2!important}
+ body.referenceHUD #mapDialog #selection #atlasToolbar{gap:4px!important}
+ body.referenceHUD .chatActionDialog.systemUnlockDialog{width:min(300px,calc(100vw - 24px))!important;max-height:calc(100dvh - 24px)!important;padding:12px!important}
+ .systemUnlockDialog>h2{font-size:16px!important;margin-bottom:8px!important}.systemUnlockName{font-size:18px!important}.systemUnlockBadge{width:32px!important;height:32px!important}.systemUnlockBadge svg{width:20px!important;height:20px!important}.systemUnlockPrice{padding:8px!important}.systemUnlockPrice strong{font-size:17px!important}.systemUnlockContent{gap:6px!important}.systemUnlockWallet>div{padding:7px!important}.systemUnlockDialog .messageEditorActions{margin-top:10px!important}.systemUnlockDialog .messageEditorActions button{min-height:34px!important;font-size:12px!important;padding:6px!important}
+ body.referenceHUD .gameSelectionDialog.mapSelectionDialog{box-sizing:border-box;width:min(280px,calc(100vw - 24px))!important;max-height:68dvh!important;padding:12px!important}.mapSelectionDialog h2{font-size:16px!important}.mapSelectionDialog .gameSelectionOptions button{min-height:32px!important;padding:7px!important;font-size:12px!important}
+}

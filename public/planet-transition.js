@@ -1,7 +1,7 @@
 import {atmosphereProfile} from './atmosphere-profiles.js?v=119';
 import * as T from './vendor/three.module.js';
 import {hasAtmosphere,hasGlobeMode,globeHeight,PLANET_VIEW_RADIUS} from './atmospheric-flight.js?v=168';
-import {surfaceHeight} from './surface.js?v=168';
+import {surfaceHeight} from './surface.js?v=170';
 import {surfaceFrame} from './surface-frame.js';
 // Geometry is swapped only after a complete black frame, never dissolved in view.
 export class TerrainViewSwitch{

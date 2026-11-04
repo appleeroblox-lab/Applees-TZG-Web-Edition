@@ -1,6 +1,10 @@
 # The Zero Gravity — Web Edition
 
-Current game version: **v0.0.169** (source/cache revision **169**), 4 November 2026. The default branch is `main`.
+Current game version: **v0.0.170** (source/cache revision **170**), 4 November 2026. The default branch is `main`.
+
+## v0.0.170 setup
+
+No new database migration is required. Cinematic Camera Interval is in Controls (default 5 seconds). Run `npm run test:v170` for fog, hull collisions, star contact, free-camera trails, labels and saved camera timing, followed by the existing gameplay/UI suites.
 
 ## v0.0.168 setup
 

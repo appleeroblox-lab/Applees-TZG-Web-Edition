@@ -5,7 +5,7 @@ import {surfaceFrame} from './surface-frame.js';
 import {padHeightAt} from './surface-layout.js';
 import {holdVelocity} from './speed-control.js?v=168';
 import * as T from './vendor/three.module.js';
-import {V,surfaceAttitude} from './flight.js?v=168';
+import {V,surfaceAttitude} from './flight.js?v=170';
 export const isGasGiant=body=>/GAS GIANT|ICE GIANT/.test(body?.type||'');
 export function gasExitRadius(body){return Math.max(340,Math.min(480,(body?.r||180)*1.2))}
 export const CONTACT=1.39,LAUNCH_SECONDS=5;
@@ -17,7 +17,7 @@ export function atmosphere(body){return atmosphereProfile(body)?.air||null}
 export class SurfaceSession{
  constructor(flight){this.flight=flight;flight.surface=this;this.body=null;this.pos=V();this.vel=V();this.normal=V(0,1,0);this.phase='parked';this.remaining=0;this.elapsed=0;this.event=null;this.launchElapsed=null}
  get active(){return !!this.body} get onGround(){return this.active&&this.body.solid&&this.pos.y<=this.floor+.015} get launched(){return this.active&&['ascent','flying','descending','gas'].includes(this.phase)}
- get floor(){const contact=this.shipRig?.contactHeight??CONTACT;return (this.collisions?this.collisions.floorAt(this.pos.x,this.pos.z,this.pos.y-contact,.7):surfaceHeight(this.pos.x,this.pos.z)+padHeightAt(this.pos.x,this.pos.z))+contact}
+ get floor(){const contact=this.shipRig?.contactHeight??CONTACT;return (this.collisions?this.collisions.floorAt(this.pos.x,this.pos.z,this.pos.y-contact,.7,false):surfaceHeight(this.pos.x,this.pos.z)+padHeightAt(this.pos.x,this.pos.z))+contact}
  get exitHeight(){return exitHeight(this.body)}
  get coreDistance(){return this.active&&!this.body.solid?this.pos.length():0}
  get exitDistance(){return gasExitRadius(this.body)}

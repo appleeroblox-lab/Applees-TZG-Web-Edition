@@ -1,8 +1,9 @@
+import {shipBlocksCrew,shipVerticalHit} from './ship-hull-collision.js?v=170';
 import * as T from './vendor/three.module.js';
 import {TOWER_PARTS} from './launch-tower.js?v=104';
 import {blockBounds} from './door-rules.js';
 import {CRAFT_LAYOUT,TRADE_LAYOUT,isSolidBlock,padHeightAt} from './surface-layout.js';
-import {surfaceHeight} from './surface.js?v=168';
+import {surfaceHeight} from './surface.js?v=170';
 const CELL=8,EPS=.002;
 const box=(x,y,z,hx,hy,hz,kind)=>({min:{x:x-hx,y:y-hy,z:z-hz},max:{x:x+hx,y:y+hy,z:z+hz},kind});
 export function sweepBox(start,end,half,b){let near=0,far=1,axis=null,sign=0;for(const k of ['x','y','z']){const lo=b.min[k]-half[k],hi=b.max[k]+half[k],d=end[k]-start[k];if(Math.abs(d)<1e-10){if(start[k]<=lo||start[k]>=hi)return null;continue}let a=(lo-start[k])/d,c=(hi-start[k])/d,n=-Math.sign(d);if(a>c)[a,c]=[c,a];if(a>=near&&a>=0){near=a;axis=k;sign=n}far=Math.min(far,c);if(near>far)return null}if(!axis||near<0||near>1)return null;const normal=new T.Vector3();normal[axis]=sign;return {t:near,normal,box:b}}
@@ -24,10 +25,10 @@ export class SurfaceCollisions{
  }
  add(b){if(!['x','y','z'].every(k=>Number.isFinite(b.min[k])&&Number.isFinite(b.max[k])))return;this.stats.boxes++;for(let x=Math.floor(b.min.x/CELL);x<=Math.floor(b.max.x/CELL);x++)for(let z=Math.floor(b.min.z/CELL);z<=Math.floor(b.max.z/CELL);z++){const key=x+','+z;if(!this.cells.has(key))this.cells.set(key,[]);this.cells.get(key).push(b)}}
  query(minX,minZ,maxX,maxZ){this.ensure();const out=new Set();for(let x=Math.floor(minX/CELL);x<=Math.floor(maxX/CELL);x++)for(let z=Math.floor(minZ/CELL);z<=Math.floor(maxZ/CELL);z++)for(const b of this.cells.get(x+','+z)||[])out.add(b);for(const m of this.surface.prospecting?.meshes||[])if(m.userData.node){const node=m.userData.node,e=this.surface.prospecting.economy;if(e?.depleted.has(node.id)||node.hp<=0)continue;const r=node.radius;if(m.position.x+r>=minX&&m.position.x-r<=maxX&&m.position.z+r>=minZ&&m.position.z-r<=maxZ)out.add(box(m.position.x,m.position.y,m.position.z,r,r,r,'mineral'))}this.stats.queries++;this.stats.candidates=out.size;return out}
- floorAt(x,z,feet,radius=.25){let y=surfaceHeight(x,z)+padHeightAt(x,z);for(const b of this.query(x-radius,z-radius,x+radius,z+radius))if(x+radius>b.min.x&&x-radius<b.max.x&&z+radius>b.min.z&&z-radius<b.max.z&&b.max.y<=feet+.02)y=Math.max(y,b.max.y);return y}
+ floorAt(x,z,feet,radius=.25,includeShip=true){let y=surfaceHeight(x,z)+padHeightAt(x,z);for(const b of this.query(x-radius,z-radius,x+radius,z+radius))if(x+radius>b.min.x&&x-radius<b.max.x&&z+radius>b.min.z&&z-radius<b.max.z&&b.max.y<=feet+.02)y=Math.max(y,b.max.y);const ship=includeShip?shipVerticalHit(this.surface,x,z,feet+.02,y-.01):null;if(ship!==null)y=Math.max(y,ship);return y}
  blockedCrew(x,z,feet){for(const b of this.query(x-.27,z-.27,x+.27,z+.27))if(x+.27>b.min.x&&x-.27<b.max.x&&z+.27>b.min.z&&z-.27<b.max.z&&feet+1.7>b.min.y+EPS&&feet<b.max.y-EPS&&b.max.y>feet+.65)return true;
-  const s=this.surface;if(s.shipRig){const upright=['parked','countdown'].includes(s.phase),dx=Math.abs(x-s.pos.x),dz=z-s.pos.z;if(feet<s.pos.y+(upright?4.5:1)&&dx<3.95&&dz>(upright?-1.9:-4.75)&&dz<(upright?2.45:4.45)&&feet+1.7>s.pos.y-(upright?4.23:1.2))return true}return false}
- ceiling(x,z,from,to){if(to<=from)return to;let y=to;for(const b of this.query(x-.25,z-.25,x+.25,z+.25))if(x+.25>b.min.x&&x-.25<b.max.x&&z+.25>b.min.z&&z-.25<b.max.z&&from+1.7<=b.min.y+EPS&&to+1.7>b.min.y)y=Math.min(y,b.min.y-1.7-EPS);return y}
+  return shipBlocksCrew(this.surface,x,z,feet)}
+ ceiling(x,z,from,to){if(to<=from)return to;let y=to;const ship=shipVerticalHit(this.surface,x,z,from+1.7,to+1.7);if(ship!==null)y=Math.min(y,ship-1.7-EPS);for(const b of this.query(x-.25,z-.25,x+.25,z+.25))if(x+.25>b.min.x&&x-.25<b.max.x&&z+.25>b.min.z&&z-.25<b.max.z&&from+1.7<=b.min.y+EPS&&to+1.7>b.min.y)y=Math.min(y,b.min.y-1.7-EPS);return y}
  safeLanding(x,z){const contact=this.surface.shipRig?.contactHeight??4.23;
   for(let ring=0;ring<=20;ring++){const count=ring?Math.ceil(2*Math.PI*ring):1;for(let i=0;i<count;i++){const a=i/count*Math.PI*2,px=x+Math.cos(a)*ring*8,pz=z+Math.sin(a)*ring*8,ground=surfaceHeight(px,pz)+padHeightAt(px,pz),radius=5.5;let clear=true;
    for(const b of this.query(px-radius,pz-radius,px+radius,pz+radius))if(px+radius>b.min.x&&px-radius<b.max.x&&pz+radius>b.min.z&&pz-radius<b.max.z&&ground+contact+5>b.min.y&&ground+.05<b.max.y){clear=false;break}

@@ -4,7 +4,7 @@ import {SphereTerrain,SpherePhysics,SYSTEM,RADIUS,ATMOSPHERE,tangentFrame} from 
 import {SphereChunks} from './chunks.js?v=157';
 import {Flight} from '../flight.js';
 import {WarpTunnel,warpWhiteFade} from '../warp-effects.js?v=132';
-import {ShipCameraModes,SHIP_CAMERA_MODES} from '../ship-camera-modes.js?v=143';
+import {ShipCameraModes,SHIP_CAMERA_MODES} from '../ship-camera-modes.js?v=170';
 import {makeShip,makeStars} from '../visuals.js?v=140';
 import {ReentryPlume} from '../reentry-plume.js?v=133';
 import {entryEffects} from '../atmospheric-flight.js?v=142';

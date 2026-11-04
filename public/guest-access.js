@@ -1,4 +1,4 @@
-import {setAvatar} from './social-ui.js?v=169';
+import {setAvatar} from './social-ui.js?v=170';
 import {setVerifiedName} from './identity-ui.js?v=91';
 const $=id=>document.getElementById(id);
 const button=(text,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=text;b.onclick=fn;return b};

@@ -22,6 +22,8 @@ jobs:
         run: npm run test:v168
       - name: UI and neon regressions
         run: npm run test:ui-neon
+      - name: Fog, hull and cinematic regressions
+        run: npm run test:v170
       - name: Gameplay regressions
         run: npm test
       - name: Account regressions

@@ -1,8 +1,18 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.169**. Play at [The Zero Gravity – Web](https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html). Hosting: **Cloudflare & GitHub Pages**. Community: **Meowple Studios**.
+Current game: **v0.0.170**. Play at [The Zero Gravity – Web](https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html). Hosting: **Cloudflare & GitHub Pages**. Community: **Meowple Studios**.
 
 Start with [START_HERE.md](START_HERE.md) for setup and validation. GitHub Pages serves `public/` after CI passes.
+
+## v0.0.170 terrain, camera and collision fixes
+
+- Airless fog fades by horizontal ground distance, preserving the ground directly below at any height and hiding the distant terrain edge.
+- Flyby – Cinematic holds each shot until its timer expires, starts far ahead of the ship and smoothly moves to its next viewpoint. **Cinematic Camera Interval** under Controls defaults to **5 seconds** and saves on the device.
+- Main-body labels no longer compete for only six places. Free camera immediately hides ship trails. Label-family indexing and occluder collection avoid repeated per-body scans.
+- Stars collide at their visible radius. On foot, ship collisions use the actual hull triangles, with real floor and ceiling contacts instead of an enclosing box.
+- Neon lights become dimmer in bright surroundings and stronger in darkness. All scrollbars are hidden while content remains scrollable. Universe Map selection and unlock panels are smaller on mobile.
+
+No new SQL is required. Validation: `npm run test:v170`, `npm test`, `npm run test:ui` and native Chromium PC/mobile layout checks. Physical-device FPS is unmeasured.
 
 ## v0.0.169 map, chat, Credits and neon fixes
 

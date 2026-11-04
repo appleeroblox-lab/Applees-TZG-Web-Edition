@@ -1,8 +1,26 @@
 {
-  "currentVersion": "v0.0.169",
+  "currentVersion": "v0.0.170",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 170,
+      "version": "v0.0.170",
+      "date": "2026-11-04",
+      "title": "Smoother cinematic flights and terrain visibility",
+      "changes": [
+        "Airless terrain uses horizontal distance fog so ground beneath the ship stays visible while distant edges fade.",
+        "Cinematic shots change on a timer, spawn far ahead and use the saved Cinematic Camera Interval setting (5 seconds by default).",
+        "Main planet labels remain eligible beyond the old six-label limit; free camera hides ship trails immediately.",
+        "Star contact uses the visible star radius; on-foot ship contact follows model triangles, including standing on and walking beneath real hull surfaces.",
+        "Neon lights dim in bright environments and brighten smoothly in darkness.",
+        "Scrollbars are hidden while scrolling remains available, and mobile Universe Map selection and unlock panels are smaller."
+      ],
+      "source": {
+        "path": "public/game.js",
+        "kind": "release implementation"
+      }
+    },
     {
       "legacyVersion": 169,
       "version": "v0.0.169",

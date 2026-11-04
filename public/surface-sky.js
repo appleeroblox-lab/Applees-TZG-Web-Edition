@@ -1,4 +1,4 @@
-import {starVisualRadius} from './star-size.js?v=140';
+import {starVisualRadius} from './star-size.js?v=170';
 import {applySmallBody,smallBodyFallback} from './small-body-models.js?v=100';
 import {starShineColor} from './star-colors.js';
 import {bodySphereGeometry} from './texture-geometry.js';

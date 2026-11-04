@@ -1,3 +1,4 @@
+import {collisionRadius} from './star-size.js?v=170';
 import {destinationLightYears} from './warp-pricing.js?v=105';
 import {atmosphereBoundary} from './atmospheric-flight.js?v=168';
 import {rotateShip} from './ship-rotation.js';
@@ -18,16 +19,16 @@ export function surfaceAttitude(b,position){
 }
 export function safeArrival(b,from,bodies,margin){
  const dir=from.clone().sub(b.pos).normalize();if(dir.lengthSq()<.01)dir.set(.3,.2,1).normalize();
- const end=b.pos.clone().addScaledVector(dir,atmosphereBoundary(b)+margin);
+ const end=b.pos.clone().addScaledVector(dir,(b.type==='STAR'?collisionRadius(b,bodies):atmosphereBoundary(b))+margin);
  for(let attempt=0;attempt<6;attempt++)for(const other of bodies){
   if(other===b||other.system!==b.system)continue;
-  const delta=end.clone().sub(other.pos),floor=atmosphereBoundary(other)+clearance+10;
+  const delta=end.clone().sub(other.pos),floor=(other.type==='STAR'?collisionRadius(other,bodies):atmosphereBoundary(other))+clearance+10;
   if(delta.length()<floor)end.copy(other.pos).addScaledVector(delta.lengthSq()?delta.normalize():V(0,1,0),floor);
  }
  return end;
 }
 export function warpDuration(){return 10}
-export function warpBlocker(flight){return flight.active.find(b=>!['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type)&&flight.pos.distanceTo(b.pos)<atmosphereBoundary(b)+Math.max(20,b.r*.2))||null}
+export function warpBlocker(flight){return flight.active.find(b=>!['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type)&&flight.pos.distanceTo(b.pos)<(b.type==='STAR'?collisionRadius(b,flight.bodies):atmosphereBoundary(b))+Math.max(20,b.r*.2))||null}
 export class Flight {
  constructor(bodies){this.bodies=bodies;this.pos=V(30,18,165);this.vel=V();this.q=attitude(this.pos,V());this.system='Sol';this.assist=true;this.gear=false;this.landed=null;this.nav=null;this.event=null;this.throttle=0;this.sensitivity=5;this.rotationSpeed=2;this.input={x:0,y:0,z:0,pitch:0,yaw:0,roll:0,boost:false,brake:false}}
  get active(){return this.bodies.filter(b=>b.system===this.system)}
@@ -77,7 +78,7 @@ export class Flight {
   // Segment/sphere sweep catches fast crossings, not only endpoints inside a world.
   for(const b of this.active){
    if(['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type))continue;
-   const entering=this.allowInterior&&((b.solid&&b.landable!==false)||/GAS GIANT|ICE GIANT/.test(b.type));const floor=(entering?atmosphereBoundary(b):b.r)+(entering?0:(typeof padding==='function'?padding(b):padding)),delta=this.pos.clone().sub(before),length=delta.length();
+   const entering=this.allowInterior&&((b.solid&&b.landable!==false)||/GAS GIANT|ICE GIANT/.test(b.type));const floor=(entering?atmosphereBoundary(b):collisionRadius(b,this.bodies))+(entering?0:(typeof padding==='function'?padding(b):padding)),delta=this.pos.clone().sub(before),length=delta.length();
    let hit=null;
    if(before.distanceTo(b.pos)>floor&&length>0){const ray=new T.Ray(before,delta.clone().normalize());const p=ray.intersectSphere(new T.Sphere(b.pos,floor),V());if(p&&p.distanceTo(before)<=length)hit=p}
    if(this.pos.distanceTo(b.pos)<floor)hit=this.pos.clone();

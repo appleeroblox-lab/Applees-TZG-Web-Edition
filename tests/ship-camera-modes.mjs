@@ -6,8 +6,6 @@ import {bodies} from '../public/catalog.js';
 const V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z),q=new T.Quaternion(),m=new ShipCameraModes();
 let last=m.up.clone();for(let i=0;i<600;i++){const up=V(Math.sin(i*.01),Math.cos(i*.01),0);m.align(q,up,1/60);assert(last.angleTo(m.up)<.06,'planet transport has no discontinuous flips');last.copy(m.up);assert(Math.abs(q.length()-1)<1e-9)}
 for(let i=0;i<500;i++)m.align(q,V(0,-1,0),1/60);assert(m.up.dot(V(0,-1,0))>.999);
-const camera=new T.PerspectiveCamera();camera.position.set(20,10,20);m.select('flyby');m.valid=false;m.blend=0;const subject=V(),origin=V(100000,0,0),velocity=V(0,0,-5),args={dt:1/60,subject,origin,velocity,forward:V(0,0,-1),context:'space'};m.apply(camera,args);const anchor=m.anchor.clone();for(let i=0;i<30;i++){origin.z-=.05;m.apply(camera,args);assert(m.anchor.distanceTo(anchor)<1e-7,'world anchor stays fixed while ship flies past')}
-origin.z-=600;let frames=0;while(frames++<400){m.apply(camera,args);if(!m.repositioning)break}assert(frames<400,'flyby smoothly completes reposition');assert(m.anchor.distanceTo(anchor)>100);const settled=m.anchor.clone();m.apply(camera,args);assert(m.anchor.distanceTo(settled)<1e-7,'new shot holds stationary');
 const snapshot=bodies.map(b=>[b.r,...b.pos.toArray()]);for(const star of bodies.filter(b=>b.type==='STAR'))assert(starVisualRadius(star,bodies)>=star.r);const sun=bodies.find(b=>b.name==='Sun'),jupiter=bodies.find(b=>b.name==='Jupiter');assert(starVisualRadius(sun,bodies)>jupiter.r*1.5);assert.deepEqual(bodies.map(b=>[b.r,...b.pos.toArray()]),snapshot,'star visuals never change catalog geometry/distances');
 console.log('PASS gradual planet-up transport, antipodal alignment, absolute stationary flyby anchors, smooth repeated shots, display-only star sizes and unchanged catalog positions/radii.');
 const transition=new ShipCameraModes(),view=new T.PerspectiveCamera(),options={dt:1/60,subject:V(),origin:V(),velocity:V(),forward:V(0,0,-1),context:'space'};view.position.set(0,0,16);transition.apply(view,options);const start=view.position.clone(),startQ=view.quaternion.clone();transition.select('orbit');const goal=V(16,0,0),goalQ=new T.Quaternion().setFromRotationMatrix(new T.Matrix4().lookAt(goal,V(),V(0,1,0)));view.position.copy(goal);view.quaternion.copy(goalQ);transition.apply(view,options);assert(view.position.equals(start),'transition begins at previous view');assert(view.quaternion.angleTo(startQ)<1e-7);for(let i=0;i<40;i++){const prior=view.position.clone();view.position.copy(goal);view.quaternion.copy(goalQ);transition.apply(view,options);assert(view.position.distanceTo(prior)<5,'camera transition avoids a positional snap')}assert(view.position.distanceTo(goal)<1e-7);assert(view.quaternion.angleTo(goalQ)<1e-7);console.log('PASS camera switches interpolate position/orientation and settle at the requested view.');
@@ -24,33 +22,12 @@ for(const surface of [false,true])for(const hz of [12.5,30,60,144])for(const mod
  }
  assert(cam.position.clone().sub(ship).distanceTo(goal)<1e-6,'switch settles at requested subject offset');
 }
-for(const hz of [12.5,30,60,144])for(const speed of [0,5,50,100,500,1000,10000,599584.916]){
- const rig=new ShipCameraModes(),cam=new T.PerspectiveCamera(),opts={dt:1/hz,subject:V(),origin:V(1e12,0,0),velocity:V(0,0,-speed),forward:V(0,0,-1),context:'space'};
- cam.position.set(0,4,16);rig.select('flyby');rig.apply(cam,opts);
- for(let i=0;i<hz*10;i++){
-  opts.origin.addScaledVector(opts.velocity,opts.dt);rig.apply(cam,opts);
-  assert(cam.position.distanceTo(opts.subject)<=rig.maximumDistance+.001&&cam.position.distanceTo(opts.subject)>=rig.minimumDistance-.001,`flyby cannot strand ship outside shot at ${hz} Hz`);
-  const projected=opts.subject.clone();cam.updateMatrixWorld();projected.project(cam);
-  assert(Math.abs(projected.x)<1e-6&&Math.abs(projected.y)<1e-6,'flyby keeps looking at fast ship');
- }
+for(const hz of [12.5,30,60,144])for(const speed of [0,5,50,500,10000,599584.916]){
+ const rig=new ShipCameraModes(),cam=new T.PerspectiveCamera(),velocity=V(0,0,-speed),options={dt:1/hz,subject:V(),origin:V(1e12,0,0),velocity,forward:V(0,0,-1),context:'space'};rig.select('flyby');rig.apply(cam,options);assert.equal(rig.interval,5);assert(rig.destination.clone().sub(options.origin).dot(options.forward)>100);let elapsed=0,changes=0;
+ for(let i=0;i<hz*12;i++){const anchor=rig.anchor.clone(),shot=rig.shotId,wasMoving=rig.repositioning;options.origin.addScaledVector(velocity,options.dt);rig.apply(cam,options);elapsed+=options.dt;
+  if(rig.shotId!==shot){assert(elapsed>=5-1e-7,'shots only change on timer');elapsed=0;changes++;assert(rig.destination.clone().sub(options.origin).dot(options.forward)>100)}else if(!wasMoving&&!rig.repositioning)assert(rig.anchor.distanceTo(anchor)<1e-6,'fixed world anchor between timed cuts');
+  assert.deepEqual(velocity.toArray(),[0,0,-speed]);cam.updateMatrixWorld();const p=options.subject.clone().project(cam);assert(Math.abs(p.x)<1e-6&&Math.abs(p.y)<1e-6);assert(cam.quaternion.toArray().every(Number.isFinite));
+ }assert(changes>=2);assert(!('minimumDistance' in rig));assert(!('maximumDistance' in rig));
 }
-console.log('PASS moving-subject switches and bounded 200c flyby shots at 12.5/30/60/144 Hz with large floating origins.');
-
-for(const hz of [30,60,144])for(const speed of [5,149896.229,299792.458]){
- const rig=new ShipCameraModes(),cam=new T.PerspectiveCamera(),velocity=V(0,0,-speed),opts={dt:1/hz,subject:V(),origin:V(1e12,0,0),velocity,forward:V(0,0,-1),context:'space'};
- rig.select('flyby');rig.apply(cam,opts);let shots=0,held=0;
- for(let i=0;i<hz*8;i++){
-  const oldAnchor=rig.anchor.clone(),oldShot=rig.shotId,wasMoving=rig.repositioning,position=opts.origin.clone();opts.origin.addScaledVector(velocity,opts.dt);rig.apply(cam,opts);
-  assert.deepEqual(velocity.toArray(),[0,0,-speed],'cinematic never mutates ship velocity');
-  assert(opts.origin.distanceTo(position.clone().addScaledVector(velocity,opts.dt))<1e-6,'ship continues normal motion');
-  if(oldShot===rig.shotId&&!wasMoving&&!rig.repositioning){assert(rig.anchor.distanceTo(oldAnchor)<1e-6,'shot anchor stays fixed even at 100c');held++}
-  if(oldShot!==rig.shotId)shots++;
- }
- if(speed<1000)assert(held>hz,'shots hold world-space positions');if(speed>1000)assert(shots>=2,'high-speed flybys automatically repeat');
-}
-console.log('PASS stationary world-space shots, repeated cinematic transitions and untouched continuous ship movement through 100c.');
-for(const shipRadius of [2,4.5,12])for(const speed of [0,300000]){
- const rig=new ShipCameraModes(),cam=new T.PerspectiveCamera(),opts={dt:.08,subject:V(),origin:V(1e12,0,0),velocity:V(0,0,-speed),forward:V(0,0,-1),context:'space',shipRadius};rig.select('flyby');
- for(let i=0;i<30;i++){opts.origin.addScaledVector(opts.velocity,opts.dt);rig.apply(cam,opts);const distance=cam.position.distanceTo(opts.subject);assert(distance>=rig.minimumDistance-.001&&distance<=rig.maximumDistance+.001,'ship-size distance bounds hold on every frame')}
-}
-console.log('PASS minimum/maximum cinematic clearance across ship sizes and large high-speed frame steps.');
+const timed=new ShipCameraModes(),cam=new T.PerspectiveCamera(),args={dt:.1,subject:V(),origin:V(),velocity:V(0,0,-10),forward:V(0,0,-1),context:'space'};timed.interval=2;timed.select('flyby');timed.apply(cam,args);const first=timed.shotId;for(let i=0;i<19;i++)timed.apply(cam,args);assert.equal(timed.shotId,first);timed.apply(cam,args);assert.equal(timed.shotId,first+1);
+console.log('PASS 5-second and custom timed stationary cinematic shots, distant forward spawning, smooth transitions, finite centered tracking through 200c at 12.5/30/60/144Hz and no distance-triggered respawns.');

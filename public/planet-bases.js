@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {loadBlenderModel} from './models.js?v=168';
+import {loadBlenderModel} from './models.js?v=169';
 import {baseSite} from './planet-base-layout.js?v=100';
 import {surfaceHeight} from './surface.js?v=168';
 function dispose(root){root.traverse(o=>{o.geometry?.dispose();o.material?.dispose()});root.removeFromParent()}

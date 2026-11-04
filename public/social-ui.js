@@ -6,7 +6,7 @@ import {markChatText,chatTranslationAction} from './chat-translation.js?v=91';
 import {emojiButton,closeEmojiPicker} from './emoji-picker.js?v=96';
 import {safeChatImage,prepareGif} from './chat-media.js?v=96';
 import {messageOptions,closeMessageOptions} from './message-options.js?v=160';
-import {chatDialog,closeChatDialogs} from './chat-dialog.js?v=91';
+import {chatDialog,closeChatDialogs} from './chat-dialog.js?v=169';
 import {setVerifiedName} from './identity-ui.js?v=91';
 import {PhotoLibrary} from './photo-library.js?v=91';
 const $=id=>document.getElementById(id);

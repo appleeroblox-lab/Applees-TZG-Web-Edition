@@ -1,6 +1,6 @@
 # The Zero Gravity — Web Edition
 
-Current game version: **v0.0.168** (source/cache revision **168**), 4 November 2026. The default branch is `main`.
+Current game version: **v0.0.169** (source/cache revision **169**), 4 November 2026. The default branch is `main`.
 
 ## v0.0.168 setup
 

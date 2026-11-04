@@ -1,8 +1,17 @@
 # The Zero Gravity — Web Edition
 
-Current game: **v0.0.168**. Play at [The Zero Gravity – Web](https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html). Hosting: **Cloudflare & GitHub Pages**. Community: **Meowple Studios**.
+Current game: **v0.0.169**. Play at [The Zero Gravity – Web](https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html). Hosting: **Cloudflare & GitHub Pages**. Community: **Meowple Studios**.
 
 Start with [START_HERE.md](START_HERE.md) for setup and validation. GitHub Pages serves `public/` after CI passes.
+
+## v0.0.169 map, chat, Credits and neon fixes
+
+- Message More buttons are compact again. Universe Map keeps the original destination button labels and uses a centered medium lock icon over a black cover with **65% transparency**; system names have no extra Locked suffix.
+- The Unlock System menu separates the destination, one-time price, wallet balances and prerequisite information. Unavailable or unaffordable purchases cannot be submitted.
+- Credits displays exactly one role and name per row.
+- Neon meshes use depth testing and stable two-sided rendering. Nearby lights keep stable assignments, fade between sources, reject opaque obstructions and dim smoothly with environmental lighting. The four-light scene budget is preserved.
+
+No new SQL is required for v169. Validation: `npm run test:ui-neon` plus the existing progression, account, gameplay and PC/mobile UI regressions.
 
 ## v0.0.168 system progression and airless Globe Mode
 

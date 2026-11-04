@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {loadBlenderModel} from './models.js?v=168';
+import {loadBlenderModel} from './models.js?v=169';
 import {surfaceHeight} from './surface.js?v=168';
 import {padHeightAt} from './surface-layout.js';
 export const SHIP_STATION={x:12,z:0,range:4};

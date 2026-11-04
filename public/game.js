@@ -1,6 +1,7 @@
-import {NeonLights} from './neon-lights.js?v=168';
+import {setSystemLock,unlockPanel} from './system-unlock-ui.js?v=169';
+import {NeonLights} from './neon-lights.js?v=169';
 import {SYSTEM_ORDER,systemLabel,systemUnlockQuote,systemUnlocked,canUnlockSystem} from './system-unlocks.js?v=168';
-import {chatDialog} from './chat-dialog.js?v=168';
+import {chatDialog} from './chat-dialog.js?v=169';
 import {ExperimentalController} from './experimental/bridge.js?v=158';
 import {installMapSettings,mapSettings} from './map-settings.js?v=150';
 import {installUITheme} from './ui-theme.js?v=151';
@@ -19,17 +20,17 @@ import {installMenuSizes} from './menu-sizes.js?v=144';
 import {ensureGraphicsControls} from './graphics-controls.js?v=110';
 import {destinationOffset,destinationLightYears} from './warp-pricing.js?v=105';
 import {payFreeCamera,installFreeCameraConfirmation} from './free-camera.js?v=105';
-import {installUpdateLogs} from './update-logs.js?v=168';
+import {installUpdateLogs} from './update-logs.js?v=169';
 import {installScreenshot} from './game-screenshot.js?v=102';
 import {AsteroidBelts} from './asteroid-belts.js?v=105';
 import {SurfaceCollisions} from './surface-collision.js?v=168';
-import {applyShipBlast,ShipRespawnStation} from './ship-respawn.js?v=168';
+import {applyShipBlast,ShipRespawnStation} from './ship-respawn.js?v=169';
 import {iconButton} from './ui-icons.js?v=91';
 import {surfaceGravity as mapGravity} from './surface.js?v=168';
 import {installDeviceSettings} from './device-settings.js?v=144';
 import {installLocalization} from './localization.js?v=91';
 let devicePreferences=null,restoringDevicePreferences=false;
-import {PlayerAccount} from './player-account.js?v=168';
+import {PlayerAccount} from './player-account.js?v=169';
 import {cloudInventory} from './cloud-save.js?v=168';
 import {SupabaseDebugService} from './supabase-debug.js?v=156';
 import {supabaseConfig} from './supabase-config.js?v=61';
@@ -39,7 +40,7 @@ import {biomeWeather,earthBiome,biomeDestination} from './earth-biomes.js?v=122'
 import {installMobileInput} from './mobile-input.js';
 import {GroundWeather} from './ground-weather.js?v=168';
 import {underWeatherClouds} from './weather-state.js?v=168';
-import {DebugMenu} from './debug-menu.js?v=160';
+import {DebugMenu} from './debug-menu.js?v=169';
 import {rotateSubjectOrbit,shipCameraSubject,placeSubjectOrbit,ORBIT_MIN,ORBIT_MAX} from './subject-camera.js';
 import {padHeightAt} from './surface-layout.js';
 import {CockpitLabelMask} from './cockpit-labels.js';
@@ -52,7 +53,7 @@ import {nearbyPlanetUp,stabilizeCameraHorizon} from './camera-horizon.js?v=140';
 import {updateWarpHUD} from './warp-hud.js';
 import {graphicsPolicy,GRAPHICS_MODES} from './graphics-policy.js?v=110';
 import {TradeUI} from './trade-ui.js';
-import {Building} from './building.js?v=168';
+import {Building} from './building.js?v=169';
 import {SurfaceStream} from './surface-streaming.js?v=168';
 import * as T from './vendor/three.module.js';
 import {bodies,earth,AU} from './catalog.js?v=100';
@@ -60,13 +61,13 @@ import {Flight,V,attitude,clearance} from './flight.js?v=168';
 import {TerrainManager,surfacePadding,terrainHeight} from './terrain.js';
 import {CompatibilityRenderer} from './compatibility.js?v=168';
 import {Economy,TRADER} from './economy.js?v=168';
-import {Prospecting} from './prospecting.js?v=168';
+import {Prospecting} from './prospecting.js?v=169';
 import {InventoryUI} from './inventory-ui.js?v=91';
 import {GameSound,ambienceFor,installAudioSettings} from './sound.js?v=168';
 import {Crew} from './crew.js?v=168';
 import {setupIcons} from './icons.js';
 import {SurfaceSession,surfaceHeight} from './surface.js?v=168';
-import {SurfaceView} from './surface-view.js?v=168';
+import {SurfaceView} from './surface-view.js?v=169';
 import {Explorer,formatSpeed} from './explorer.js?v=168';
 import {TextureCache} from './textures.js?v=110';
 import {updateReferenceHUD} from './reference-hud.js?v=168';
@@ -81,7 +82,7 @@ import {EarthWeatherFX} from './earth-environment.js?v=168';
 import {lightingProfile} from './lighting.js?v=110';
 import {resolutionRatio,clampPanel} from './performance.js?v=110';
 import {pickSpaceBody,meaningfulBodyLabel,labelFilterAllows,localMoonFamily,bodyLabelAllowed,labelProjection,labelOccluded} from './body-labels.js?v=139';
-import {makeWorld,makeShip,makeStars,glow,random} from './visuals.js?v=168';
+import {makeWorld,makeShip,makeStars,glow,random} from './visuals.js?v=169';
 const $=id=>document.getElementById(id),touch=matchMedia('(pointer:coarse)').matches,clamp=T.MathUtils.clamp;
 ensureGraphicsControls(document);
 let wasWalkingAirborne=false,stepAt=0,lastFootMaterial='grass';
@@ -123,7 +124,7 @@ function requireSystemUnlock(system){if(systemUnlocked(system,unlockedSystems))r
 async function showSystemUnlock(system){
  if(unlockDialogOpen)return;unlockDialogOpen=true;clearInputs();
  const quote=systemUnlockQuote(system),available=canUnlockSystem(system,unlockedSystems);
- try{await chatDialog({title:'Unlock System',text:quote?'Unlock '+systemLabel(system)+' to warp.\nCost: '+quote.fp.toLocaleString()+' FP + '+quote.rc.toLocaleString()+' RC\nYour balance: '+economy.fp.toLocaleString()+' FP + '+economy.rc.toLocaleString()+' RC'+(available?'':'\nUnlock '+systemLabel(quote.previous)+' first.'):'This system is unavailable.',submit:available?'Unlock '+systemLabel(system):'Previous system required',onSubmit:async()=>{
+ try{await chatDialog({title:'Unlock System',className:'systemUnlockDialog',content:unlockPanel({name:systemLabel(system),quote,previous:quote?systemLabel(quote.previous):'',available,fp:economy.fp,rc:economy.rc}),submit:available?'Unlock System':'Previous system required',submitDisabled:!available||!quote||economy.fp<quote.fp||economy.rc<quote.rc,onSubmit:async()=>{
   if(!quote||!canUnlockSystem(system,unlockedSystems))throw Error('Unlock '+systemLabel(quote?.previous||'Proxima')+' first.');
   if(playerAccount?.guest||globalThis.__tzgGuest)throw Error('Sign in to unlock systems and save your progress.');
   if(cloudAccounts){if(!playerAccount?.ready)throw Error('Sign in and load your account first.');if(playerAccount.pricingVersion!==168)throw Error('System unlocks are temporarily unavailable. Please try again later.');const result=await playerAccount.cloud.serverMutation('tzg_system_unlock',{p_system:system},(state,before)=>{economy.fp+=state.fp-before.fp;economy.rc+=state.rc-before.rc;});unlockedSystems=result.systems;}
@@ -197,7 +198,7 @@ $('hudBtn').onclick=()=>open('hudDialog');$('showHudBtn').onclick=$('restoreHudB
 $('layoutBtn').onclick=()=>{layoutMode=!layoutMode;clearInputs();document.body.classList.toggle('layoutMode',layoutMode);$('layoutBtn').classList.toggle('active',layoutMode);toast(layoutMode?'Drag dotted headers or outlined controls. Tap ⠿ when done.':'HUD positions saved');storeLayout()};$('editHudBtn').onclick=()=>{closeDialog($('hudDialog'));if(!layoutMode)$('layoutBtn').click()};$('resetLayoutBtn').onclick=()=>{layouts={};for(const id of draggable)$(id).removeAttribute('style');restoreHUD();storeLayout();toast('HUD layout and visibility reset')};
 
 let tab=target.system,selected=target;window.addEventListener('tzg-discovery-updated',()=>{renderCatalog.signature='';if($('mapDialog').open)renderCatalog()});
-function filtered(){const q=$('search').value.trim().toLowerCase();const kind=$('objectFilter').value||'all';return bodies.filter(b=>(tab==='All'||!!q||b.system===tab||(tab==='Blackholes'&&b.type==='BLACK HOLE'))&&(b.name.toLowerCase().includes(q)||b.aliases?.some(a=>a.toLowerCase().includes(q)))&&(!!q||kind==='all'||(kind==='PLANET'&&['TERRESTRIAL PLANET','GAS GIANT','ICE GIANT','DWARF PLANET','EXOPLANET','SIMULATED PLANET','DWARF PLANET CANDIDATE','EXOPLANET CANDIDATE'].includes(b.type))||(kind==='ASTEROID'&&['ASTEROID','KUIPER BELT OBJECT','OORT CLOUD OBJECT'].includes(b.type))||b.type===kind)).sort((a,b)=>$('catalogSort').value==='name'?a.name.localeCompare(b.name):(a.system===flight.system?flight.pos.distanceTo(a.pos):Infinity)-(b.system===flight.system?flight.pos.distanceTo(b.pos):Infinity))}function selectInfo(){const locked=!systemUnlocked(selected.system,unlockedSystems);for(const id of ['selectTarget','addStop']){$(id).classList.toggle('systemLocked',locked);$(id).setAttribute('aria-label',(id==='selectTarget'?'Lock Destination':'Add Route')+(locked?' · Unlock '+systemLabel(selected.system):''));$(id).title=locked?'Unlock '+systemLabel(selected.system)+' to travel':''}for(const option of $('systemFilter').options)option.textContent=systemLabel(option.value)+(systemUnlocked(option.value,unlockedSystems)?'':' · Locked');$('selection').querySelector('h2').textContent=selected.name;$('atlasFocus').textContent='Focus';$('mapBodyType').textContent=selected.type.toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());$('mapSelectedTemperature').textContent=selected.name==='Earth'?'15°C':Number.isFinite(selected.temperature)?selected.temperature+'°C':'—';$('mapSelectedType').textContent=selected.type;$('mapSelectedSystem').textContent=selected.system===flight.system?'Local System':selected.system;$('mapSelectedDistance').textContent=selected.system===flight.system?distanceText(Math.max(0,flight.pos.distanceTo(selected.pos)-selected.r)):destinationLightYears(selected,flight.system,flight.pos).toFixed(2)+' Ly';$('mapSelectedRadius').textContent=((selected.physicalRadius??selected.r)*100).toLocaleString(undefined,{maximumFractionDigits:1})+' km';$('mapSelectedGravity').textContent=selected.solid?(mapGravity(selected)/9.81).toFixed(2)+' g':'—';const distance=selected.system===flight.system?distanceText(flight.pos.distanceTo(selected.pos)-selected.r):destinationLightYears(selected,flight.system,flight.pos).toFixed(2)+' Ly';$('selection').querySelector('p').textContent=selected.desc||selected.name}
+function filtered(){const q=$('search').value.trim().toLowerCase();const kind=$('objectFilter').value||'all';return bodies.filter(b=>(tab==='All'||!!q||b.system===tab||(tab==='Blackholes'&&b.type==='BLACK HOLE'))&&(b.name.toLowerCase().includes(q)||b.aliases?.some(a=>a.toLowerCase().includes(q)))&&(!!q||kind==='all'||(kind==='PLANET'&&['TERRESTRIAL PLANET','GAS GIANT','ICE GIANT','DWARF PLANET','EXOPLANET','SIMULATED PLANET','DWARF PLANET CANDIDATE','EXOPLANET CANDIDATE'].includes(b.type))||(kind==='ASTEROID'&&['ASTEROID','KUIPER BELT OBJECT','OORT CLOUD OBJECT'].includes(b.type))||b.type===kind)).sort((a,b)=>$('catalogSort').value==='name'?a.name.localeCompare(b.name):(a.system===flight.system?flight.pos.distanceTo(a.pos):Infinity)-(b.system===flight.system?flight.pos.distanceTo(b.pos):Infinity))}function selectInfo(){const locked=!systemUnlocked(selected.system,unlockedSystems);for(const id of ['selectTarget','addStop']){setSystemLock($(id),locked);$(id).setAttribute('aria-label',(id==='selectTarget'?'Lock Destination':'Add Route')+(locked?' · Unlock '+systemLabel(selected.system):''));$(id).title=locked?'Unlock '+systemLabel(selected.system)+' to travel':''}for(const option of $('systemFilter').options)option.textContent=systemLabel(option.value);$('selection').querySelector('h2').textContent=selected.name;$('atlasFocus').textContent='Focus';$('mapBodyType').textContent=selected.type.toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());$('mapSelectedTemperature').textContent=selected.name==='Earth'?'15°C':Number.isFinite(selected.temperature)?selected.temperature+'°C':'—';$('mapSelectedType').textContent=selected.type;$('mapSelectedSystem').textContent=selected.system===flight.system?'Local System':selected.system;$('mapSelectedDistance').textContent=selected.system===flight.system?distanceText(Math.max(0,flight.pos.distanceTo(selected.pos)-selected.r)):destinationLightYears(selected,flight.system,flight.pos).toFixed(2)+' Ly';$('mapSelectedRadius').textContent=((selected.physicalRadius??selected.r)*100).toLocaleString(undefined,{maximumFractionDigits:1})+' km';$('mapSelectedGravity').textContent=selected.solid?(mapGravity(selected)/9.81).toFixed(2)+' g':'—';const distance=selected.system===flight.system?distanceText(flight.pos.distanceTo(selected.pos)-selected.r):destinationLightYears(selected,flight.system,flight.pos).toFixed(2)+' Ly';$('selection').querySelector('p').textContent=selected.desc||selected.name}
 function select(b){$('selection').hidden=false;selected=b;if(tab!==b.system){tab=b.system;$('systemFilter').value=tab;systemAtlas.setSystem(tab)}selectInfo();renderCatalog();drawAtlas();systemAtlas.focus(b)}function renderCatalog(){const rows=filtered(),signature=rows.map(b=>b.id).join('|')+'|'+JSON.stringify(globalThis.tzgPlayerProgress?.worlds||[]);if(renderCatalog.signature===signature){[...$('catalog').children].forEach((button,i)=>button.className=rows[i]===selected?'active':'');return}renderCatalog.signature=signature;systemAtlas.thumbnails.clear();$('catalog').replaceChildren();for(const b of rows){const btn=document.createElement('button');btn.className=b===selected?'active':'';const orb=document.createElement('canvas');orb.className='orb';orb.setAttribute('aria-hidden','true');systemAtlas.thumbnail(b,orb);const text=document.createElement('span'),title=document.createElement('b'),sub=document.createElement('small');title.textContent=b.name+((playerAccount?.rewards?.discoveries.has(b.id)||globalThis.tzgPlayerProgress?.worlds?.includes(b.id))?' · Discovered':'');sub.textContent=(b.fictional?'SIMULATED · ':'')+b.type;text.append(title,sub);btn.append(orb,text);btn.onclick=()=>select(b);$('catalog').append(btn)}}$('systemFilter').onchange=e=>{tab=e.target.value;$('search').value='';selected=bodies.find(b=>b.system===tab)||selected;selectInfo();renderCatalog();drawAtlas()};$('search').addEventListener('focus',()=>{$('mapDialog').classList.remove('mapSearching')});$('search').addEventListener('blur',()=>setTimeout(()=>{$('mapDialog').classList.remove('mapSearching')},150));$('search').oninput=()=>{$('mapDialog').classList.toggle('mapSearching',$('search').value.trim().length>0);renderCatalog();drawAtlas()};document.querySelectorAll('[data-tab]').forEach(btn=>btn.onclick=()=>{tab=btn.dataset.tab;$('systemFilter').value=tab;$('search').value='';document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b===btn));renderCatalog();drawAtlas()});$('selectTarget').onclick=()=>{if(requireSystemUnlock(selected.system))return;setTarget(selected);$('mapDialog').close()};
 for(const option of [...$('systemFilter').options])if(option.value==='All')option.remove();for(const name of [...new Set(bodies.map(b=>b.system))])if(![...$('systemFilter').options].some(o=>o.value===name)){const option=document.createElement('option');option.value=name;option.textContent=name==='All'?'All systems':name;$('systemFilter').append(option)}
 for(const system of ['Sol',...SYSTEM_ORDER]){const option=[...$('systemFilter').options].find(o=>o.value===system);if(option)$('systemFilter').append(option)}

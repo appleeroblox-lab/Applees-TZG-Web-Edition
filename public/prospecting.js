@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {loadBlenderModel} from './models.js?v=168';
+import {loadBlenderModel} from './models.js?v=169';
 import {focusedMineral} from './hud-policy.js';
 export function heldResourcePose(camera){return {position:new T.Vector3(.42,-.34,-.9).applyQuaternion(camera.quaternion).add(camera.position),quaternion:camera.quaternion.clone().multiply(new T.Quaternion().setFromEuler(new T.Euler(.06,.3,-.1)))}}
 import {V} from './flight.js?v=168';

@@ -52,7 +52,8 @@
     "test:universe-map": "node --experimental-vm-modules tests/universe-map-3d.mjs && node tests/menu-sizing.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --map-search-only",
     "test:experimental": "node tests/experimental-sphere.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --experimental-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --experimental-only",
     "test:experimental:webgl": "node tests/experimental-webgl.mjs",
-    "test:v168": "node tests/airless-globe.mjs && node tests/system-unlocks-sql.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --progression-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --progression-only"
+    "test:v168": "node tests/airless-globe.mjs && node tests/system-unlocks-sql.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --progression-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --progression-only",
+    "test:ui-neon": "node tests/ui-neon-v169.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

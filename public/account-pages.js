@@ -1,5 +1,5 @@
-import {AccountBirthday} from './account-birthday.js?v=168';
-import {accountEndpoint,realEmail,shakeField} from './account-auth-flow.js?v=163';
+import {AccountBirthday} from './account-birthday.js?v=169';
+import {accountEndpoint,realEmail,shakeField} from './account-auth-flow.js?v=169';
 import {uiIcon,iconButton} from './ui-icons.js?v=91';
 const $=id=>document.getElementById(id),make=(tag,text)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;return node};
 export class AccountPages{

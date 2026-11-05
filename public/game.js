@@ -1,3 +1,4 @@
+import {Achievements} from './achievements.js';
 import {warmShipHull} from './ship-hull-collision.js?v=170';
 import {setSystemLock,unlockPanel} from './system-unlock-ui.js?v=169';
 import {NeonLights} from './neon-lights.js?v=170';
@@ -407,6 +408,7 @@ $('globalShadow').checked=globalShadow;$('globalShadow').onchange=e=>{globalShad
 
 if(cloudAccounts){
  playerAccount=new PlayerAccount({config:supabaseConfig,notify:toast,applyReward:(fp,rc,items=[])=>{economy.fp+=fp;economy.rc+=rc;for(const item of items)economy.add(item.type,item.qty);updateEconomyHUD();inventoryUI?.render(true)},onGuestStart:()=>{unlockedSystems=[];flightRestored=true;crew.onFoot=false;surface.enter(earth,true);flight.system=earth.system;setTarget(earth,true)},onMemberStart:()=>{crew.onFoot=false;surface.enter(earth,true);},progressSnapshot:()=>[...economy.visited],clearControls:clearInputs,resumeLandscape:landscape,snapshot:()=>cloudInventory(economy),hydrate:async(state,uid)=>{unlockedSystems=[];if(playerAccount)playerAccount.pricingVersion=0;if(uid){try{const unlockState=await playerAccount.rpc('tzg_system_unlock_state');unlockedSystems=unlockState.systems||[];playerAccount.pricingVersion=unlockState.pricingVersion}catch(e){toast('System unlocks are temporarily unavailable. Your inventory and currencies are kept.')}}let world={};if(uid)try{world=JSON.parse(localStorage.getItem('tzg-world-'+uid))||{}}catch{}const onChange=economy.onChange,onBlast=economy.onBlast,onFuseTick=economy.onFuseTick;Object.assign(economy,new Economy(bodies,{...world,fp:state.fp,rc:state.rc,inventory:state.inventory}),{onChange,onBlast,onFuseTick});soundState={fp:economy.fp,rc:economy.rc,items:new Map([...economy.inventory].map(([key,row])=>[key,row.qty]))};inventoryUI?.render(true);if(uid){load();flightRestored=true;setTarget(target,true);updateSurfaceControls();syncExplorer();camQ.copy(flight.q)}updateEconomyHUD()},block:value=>{accountLocked=value;if(value)clearInputs()},onLogout:async()=>{debugMenu.active=false;await debugMenu.api('logout',{}).catch(()=>{})}});
+ new Achievements({account:playerAccount,sound:sfx});
  await playerAccount.init();
 }
 

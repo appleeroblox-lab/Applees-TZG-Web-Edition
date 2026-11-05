@@ -1,13 +1,15 @@
 import {ACHIEVEMENTS,RARITIES} from './achievement-catalog.js?v=174';
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n};
+const rarityOrder=Object.keys(RARITIES);
+const sortedAchievements=[...ACHIEVEMENTS].sort((a,b)=>rarityOrder.indexOf(a.rarity)-rarityOrder.indexOf(b.rarity)||a.id.localeCompare(b.id));
 const progressEvents=new Set(['tzg_player_save','tzg_system_unlock','tzg_social_action','tzg_social_create','tzg_social_group','tzg_social_public_join','tzg_exploration_event']);
 const button=(text,fn)=>{const n=el('button','',text);n.type='button';n.onclick=fn;return n};
 function achievementIcon(a){const n=el('span','achievementIcon');n.setAttribute('aria-hidden','true');n.style.setProperty('--achievement-icon',`url(icons/${['rocket_launch','route','public','pan_tool','settings','gift','achievement','group'][Math.floor((+a.id-1)/10)]}.svg)`);return n}
 export class Achievements{
  constructor({account,sound,anchor=document.querySelector('#gameTop nav')}){
   Object.assign(this,{account,sound,anchor});this.rows=new Map();this.queue=[];this.epoch=0;this.error='';this.playing=false;
-  const css=el('link');css.rel='stylesheet';css.href='./achievements.css?v=174';document.head.append(css);
-  this.trigger=button('',()=>this.root.open?this.close():this.open());this.trigger.id='achievementsBtn';const trophy=el('img','uiIcon');trophy.src='icons/achievement.svg';trophy.alt='';this.trigger.append(trophy);this.trigger.title='Achievements';this.trigger.setAttribute('aria-label','Achievements');this.trigger.setAttribute('aria-haspopup','dialog');this.trigger.setAttribute('aria-expanded','false');document.getElementById('accountBtn').after(this.trigger);
+  const css=el('link');css.rel='stylesheet';css.href='./achievements.css?v=175';document.head.append(css);
+  this.trigger=button('',()=>this.root.open?this.close():this.open());this.trigger.id='achievementsBtn';const trophy=el('img','uiIcon');trophy.src='icons/achievement.svg';trophy.alt='';this.trigger.append(trophy);this.trigger.title='Achievements';this.trigger.setAttribute('aria-label','Achievements');this.trigger.setAttribute('aria-haspopup','dialog');this.trigger.setAttribute('aria-expanded','false');const accountButton=document.getElementById('accountBtn');accountButton.after(this.trigger);this.trigger.className=accountButton.className;const sizeButton=()=>{const box=accountButton.getBoundingClientRect();if(box.width&&box.height){for(const key of ['width','min-width','max-width'])this.trigger.style.setProperty(key,box.width+'px','important');for(const key of ['height','min-height','max-height'])this.trigger.style.setProperty(key,box.height+'px','important')}};this.buttonObserver=new ResizeObserver(sizeButton);this.buttonObserver.observe(accountButton);sizeButton();
   this.root=el('dialog');this.root.id='achievementsMenu';this.root.setAttribute('aria-label','Achievements');
   const head=el('div','achievementHead');head.append(el('h2','','Achievements'));const close=button('×',()=>this.close());close.className='achievementClose';close.setAttribute('aria-label','Close achievements');head.append(close);
   this.summary=el('p','achievementSummary');this.total=el('small','','Lifetime catalog rewards: 100,000 FP · 10,000 RC');this.overall=el('progress');this.overall.max=80;
@@ -46,7 +48,7 @@ export class Achievements{
   const member=this.member(),count=[...this.rows.values()].filter(r=>r.completed_at).length;this.summary.textContent=count+' / 80 completed · '+Math.round(count/80*100)+'%';this.overall.value=count;
   this.status.textContent=!member?'Sign in to earn achievements. Guests can browse only.':this.error||this.trackingError||'All 80 achievements track validated activity. Rewards auto-claim. New activity starts with this update; existing verified milestones count.';this.retry.hidden=!member||!(this.error||this.trackingError);
   const scroll=this.list.scrollTop,query=this.search.value.trim().toLowerCase(),rarity=this.filter.value;this.list.replaceChildren();
-  for(const a of ACHIEVEMENTS){if(query&&!`${a.name} ${a.requirement}`.toLowerCase().includes(query)||rarity!=='All'&&rarity!==a.rarity)continue;
+  for(const a of sortedAchievements){if(query&&!`${a.name} ${a.requirement}`.toLowerCase().includes(query)||rarity!=='All'&&rarity!==a.rarity)continue;
    const row=this.rows.get(a.id),available=!!row?.available,card=el('article','achievementCard');card.dataset.achievement=a.id;card.style.setProperty('--rarity',RARITIES[a.rarity]);
    const icon=achievementIcon(a);icon.setAttribute('aria-hidden','true');const info=el('div','achievementInfo');info.append(el('strong','achievementName',a.name),el('small','achievementRequirement',a.requirement));
    const meta=el('div','achievementMeta');meta.append(el('span','achievementRarity',a.rarity),el('span','achievementRewards',a.fp.toLocaleString()+' FP · '+a.rc.toLocaleString()+' RC'));info.append(meta);
@@ -80,3 +82,4 @@ export class Achievements{
  positionToast(){const toast=this.toast;if(!toast)return;const frame=this.anchor?.getBoundingClientRect(),viewport=window.visualViewport;const top=viewport?.offsetTop||0,height=viewport?.height||innerHeight;toast.style.setProperty('--achievement-top',Math.min(top+height-toast.offsetHeight-8,Math.max(top+8,(frame?.bottom||top)+8))+'px')}
  dismissToast(){clearTimeout(this.toastTimer);cancelAnimationFrame(this.toastFrame);if(this.soundNode){try{this.soundNode.source.stop()}catch{}this.soundNode=null}this.toast?.remove();this.toast=null;this.toastId=null}
 }
+

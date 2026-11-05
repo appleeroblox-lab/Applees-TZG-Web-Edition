@@ -18,3 +18,11 @@ body.referenceHUD .achievementToast[data-ui-surface]{border-color:var(--rarity)!
 body.referenceHUD .achievementToast strong{color:var(--rarity)!important}
 .achievementRarity{background:#041320;border-radius:4px;padding:1px 4px}
 body.referenceHUD .achievementToast,body.referenceHUD .achievementToast[data-ui-surface]{background:#062038!important}
+
+
+/* Keep the modal centered independently of inherited game-menu transforms. */
+body.referenceHUD #achievementsMenu,#achievementsMenu{inset:0!important;margin:auto!important;transform:none!important;translate:none!important;top:0!important;left:0!important;right:0!important;bottom:0!important;width:min(650px,calc(100dvw - 32px));height:min(540px,calc(100dvh - 40px));}
+body.referenceHUD #achievementsBtn,#achievementsBtn{display:grid!important;place-items:center!important;padding:0!important;min-width:0!important;min-height:0!important;flex-shrink:0;box-sizing:border-box;}
+body.referenceHUD #achievementsBtn .uiIcon,#achievementsBtn .uiIcon{display:block!important;position:static!important;inset:auto!important;margin:0!important;transform:none!important;width:60%!important;height:60%!important;object-fit:contain;filter:brightness(0) invert(1)!important;}
+#achievementsMenu .achievementClose{display:grid;place-items:center;padding:0;line-height:1;}
+@media(max-height:500px),(max-width:700px),(pointer:coarse){body.referenceHUD #achievementsMenu,#achievementsMenu{width:min(460px,calc(100dvw - 40px));height:min(430px,calc(100dvh - 48px));max-width:calc(100dvw - var(--achievement-safe-left) - var(--achievement-safe-right) - 32px);max-height:calc(100dvh - var(--achievement-safe-top) - var(--achievement-safe-bottom) - 40px);padding:10px;gap:5px;}#achievementsMenu[open]{gap:5px}.achievementCard{grid-template-columns:28px minmax(0,1fr) 76px;gap:6px;padding:6px}.achievementMeta{gap:3px 8px;margin:3px 0}.achievementCard progress{width:100%}.achievementCount{display:block;margin:2px 0 0}.achievementStatus{line-height:1.25}.achievementHead h2{font-size:16px}}

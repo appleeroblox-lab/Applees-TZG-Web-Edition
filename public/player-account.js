@@ -1,4 +1,4 @@
-import {ProfileBanner} from './profile-banner.js?v=171';
+import {ProfileBanner} from './profile-banner.js?v=173';
 import {AccountAuthFlow,realEmail} from './account-auth-flow.js?v=171';
 import {chatDialog} from './chat-dialog.js?v=169';
 import {GuestAccess} from './guest-access.js?v=171';
@@ -9,7 +9,7 @@ import {accountGate} from './account-gate.js?v=163';
 import {takePreAuthClient} from './auth-first.js?v=171';
 import {configureKlipy} from './klipy-client.js?v=96';
 import {AccountPages} from './account-pages.js?v=171';
-import {ProfileView} from './profile-view.js?v=171';
+import {ProfileView} from './profile-view.js?v=173';
 import {MessageEditor} from './message-editor.js?v=171';
 import {setVerifiedName} from './identity-ui.js?v=91';
 import {FriendsUI} from './friends-ui.js?v=171';

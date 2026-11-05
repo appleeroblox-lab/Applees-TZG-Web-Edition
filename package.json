@@ -55,7 +55,7 @@
     "test:v168": "node tests/airless-globe.mjs && node tests/system-unlocks-sql.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --progression-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --progression-only",
     "test:ui-neon": "node tests/ui-neon-v169.mjs",
     "test:v170": "node tests/gameplay-v170.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --v170-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --v170-only",
-    "test:profile-banners": "node tests/profile-banner-sql.mjs && node tests/profile-banner-ui.mjs"
+    "test:profile-banners": "node tests/profile-banner-sql.mjs && node tests/profile-banner-ui.mjs && node tests/prospecting-visibility.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

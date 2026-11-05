@@ -1,0 +1,6 @@
+import fs from 'node:fs';
+import {fileURLToPath} from 'node:url';
+const root=fileURLToPath(new URL('..',import.meta.url)).replace(/[\\/]$/,'');
+const {bodies}=await import(root+'/public/catalog.js');const {CRAFTS,MINERALS,minerals,TREE_LOG}=await import(root+'/public/economy.js');const {hasAtmosphere,atmosphereBoundary}=await import(root+'/public/atmospheric-flight.js');const {collisionRadius}=await import(root+'/public/star-size.js');const {interstellarCoins}=await import(root+'/public/warp-pricing.js');
+const worlds=bodies.map(b=>({id:b.id,system:b.system,kind:b.type,air:hasAtmosphere(b),landable:!!b.solid&&b.landable!==false,r:b.r,boundary:atmosphereBoundary(b),collision:collisionRadius(b,bodies),pos:b.pos.toArray(),rc:interstellarCoins(b.system),nodes:(b.solid&&b.landable!==false?minerals(b):[]).map(n=>({id:n.id,type:n.type,pos:n.pos.toArray(),hp:n.maxHp,rare:['RARE','EPIC','EXOTIC'].includes(n.rarity)}))}));
+fs.writeFileSync(root+'/supabase/achievement-rules.json',JSON.stringify({worlds,recipes:CRAFTS.map(r=>({id:r.id,ingredients:r.ingredients,output:r.output,tool:r.kind!=='block'})),tools:CRAFTS.filter(r=>r.kind==='pickaxe').map(r=>({id:r.id,damage:r.damage})),resources:[...MINERALS,TREE_LOG].map(r=>({id:r.id,fp:r.fp,rc:r.rc??2}))}));

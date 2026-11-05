@@ -26,6 +26,8 @@ jobs:
         run: npm run test:v170
       - name: Profile banner regressions
         run: npm run test:profile-banners
+      - name: Achievement progress, rewards and replay protection
+        run: node tests/achievements-sql.mjs && node tests/achievement-tracking-sql.mjs && node tests/achievement-tracking-client.mjs
       - name: Gameplay regressions
         run: npm test
       - name: Account regressions

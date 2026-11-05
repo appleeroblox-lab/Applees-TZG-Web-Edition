@@ -13,3 +13,6 @@ body.referenceHUD #achievementsMenu,#achievementsMenu{box-sizing:border-box;posi
 #achievementsMenu progress{display:inline-block;margin:0;height:6px;min-height:0;padding:0;vertical-align:middle}#achievementsMenu>progress{display:block;width:100%;flex:none;margin:1px 0 3px}.achievementIcon::before{content:"";width:72%;height:72%;background:var(--rarity,#fff);mask:var(--achievement-icon) center/contain no-repeat;-webkit-mask:var(--achievement-icon) center/contain no-repeat}
 #achievementsBtn .uiIcon{filter:brightness(0) invert(1)}
 @media(max-height:500px),(max-width:700px){#achievementsMenu .achievementTools input,#achievementsMenu .achievementTools select{height:30px!important;max-height:30px!important;padding:4px 7px!important}}
+/* Preserve rarity accents when the game's dynamic theme marks this top-layer button. */
+body.referenceHUD .achievementToast[data-ui-surface]{border-color:var(--rarity)!important}
+body.referenceHUD .achievementToast strong{color:var(--rarity)!important}

@@ -29,7 +29,7 @@ World Surveyor|Visit 10 unique landable bodies|Epic|475|27|10
 Atmosphere Expert|Land on 10 different atmospheric worlds|Epic|950|55|10
 System Surveyor|Visit every landable body in one public system|Legendary|2700|240|1
 Celestial Pathfinder|Visit 30 distinct landable bodies|Mythic|2400|300|30
-Universal Explorer|Visit all public landable bodies|Cosmic|2700|525|1
+Universal Explorer|Visit all public landable bodies|Cosmic|2700|525|96
 First Mineral|Mine your first resource|Common|212|0|1
 Ore Collector|Mine 250 resource units|Common|318|0|250
 Miner Apprentice|Mine 1000 resource units|Uncommon|261|4|1000
@@ -38,7 +38,7 @@ Rare Find|Mine 50 rare resource units|Rare|1200|50|50
 Industrial Miner|Mine 10000 resource units|Epic|1425|82|10000
 Interstellar Miner|Mine in 3 different public star systems|Epic|1900|110|3
 Mining Tycoon|Mine 50000 resource units|Legendary|3600|320|50000
-Universal Geologist|Collect every currently obtainable mineral type|Celestial|2181|309|1
+Universal Geologist|Collect every currently obtainable mineral type|Celestial|2181|309|48
 Mining Legend|Mine 250000 resource units|Cosmic|3600|700|250000
 First Creation|Craft your first item|Common|424|0|1
 Workshop Beginner|Craft 25 items|Common|106|0|25
@@ -48,7 +48,7 @@ Self-Sufficient|Craft 100 items using self-mined materials|Rare|600|25|100
 Production Expert|Craft 1000 items|Epic|475|27|1000
 Interplanetary Crafter|Craft using resources from 3 planets|Epic|950|55|3
 Master Craftsman|Craft 5000 items|Legendary|900|80|5000
-Recipe Collector|Craft every currently available recipe|Celestial|3272|463|1
+Recipe Collector|Craft every currently available recipe|Celestial|3272|463|31
 Creation Legend|Craft 25000 items|Cosmic|900|175|25000
 First Earnings|Earn 100 FP from gameplay|Common|212|0|100
 First RocketCoin|Earn 1 RC from gameplay|Common|318|0|1

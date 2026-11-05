@@ -22,7 +22,7 @@ await page.evaluate(async()=>{
   if(name==='tzg_achievement_claim'){window.claimCalls++;const ids=window.serverRows.filter(r=>r.completed_at&&!r.claimed_at).map(r=>r.id);let fp=0,rc=0;for(const id of ids){const a=ACHIEVEMENTS.find(a=>a.id===id);fp+=a.fp;rc+=a.rc;window.serverRows.find(r=>r.id===id).claimed_at='now'}return {revision:1,state:{fp:window.wallet.fp+fp,rc:window.wallet.rc+rc,inventory:[]},ids}}
  },applyReward:(fp,rc)=>{window.wallet.fp+=fp;window.wallet.rc+=rc}};
  account.cloud=new CloudSave({rpc:(n,a)=>account.rpc(n,a),userId:'test',snapshot:()=>structuredClone(window.wallet)});account.cloud.hydrate({revision:0});
- window.sound=new GameSound();window.ach=new Achievements({account,sound:window.sound});
+ window.sound=new GameSound();window.ach=new Achievements({account,sound:window.sound});const {installUITheme}=await import('./ui-theme.js');installUITheme();
 });
 for(const size of [{width:1280,height:800},{width:844,height:390},{width:667,height:375}]){
  await page.setViewportSize(size);await page.locator('#achievementsBtn').click();
@@ -42,7 +42,7 @@ await page.waitForSelector('.achievementToastIn');assert.equal(await page.locato
 await page.waitForFunction(()=>wallet.fp===924);assert.equal(await page.evaluate(()=>claimCalls),1);
 await page.evaluate(()=>{const minimap=document.createElement('dialog');minimap.id='achievementTestMinimap';minimap.style='width:100vw;height:100vh;background:#08213a;z-index:2147483647';minimap.textContent='Minimap overlay';document.body.append(minimap);minimap.showModal()});
 await page.waitForTimeout(150);
-const hit=await page.locator('.achievementToast').evaluate(n=>{const r=n.getBoundingClientRect();return {clickable:n.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)),top:r.top,header:document.querySelector('#gameTop nav').getBoundingClientRect().bottom,transform:getComputedStyle(n).transform}});assert(hit.clickable);assert(hit.top>=hit.header+7);
+const hit=await page.locator('.achievementToast').evaluate(n=>{const r=n.getBoundingClientRect();return {clickable:n.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)),top:r.top,header:document.querySelector('#gameTop nav').getBoundingClientRect().bottom,transform:getComputedStyle(n).transform}});assert(hit.clickable);assert(hit.top>=hit.header+7);const toastColors=await page.locator('.achievementToast').evaluate(n=>[getComputedStyle(n).borderTopColor,getComputedStyle(n.querySelector('strong')).color]);assert.deepEqual(toastColors,['rgb(169, 176, 188)','rgb(169, 176, 188)']);
 await page.screenshot({path:'/tmp/tzg-achievement-toast-minimap.png'});
 await page.locator('.achievementToast').click();await page.waitForSelector('.achievementFocus');assert.equal(await page.locator('.achievementFocus').getAttribute('data-achievement'),'061');assert.equal(await page.locator('.achievementToast span span').textContent(),'First Friend');
 await page.locator('.achievementToast').click();await page.locator('.achievementClose').click();await page.evaluate(()=>document.querySelector('#achievementTestMinimap').close());

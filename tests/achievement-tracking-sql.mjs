@@ -4,6 +4,7 @@ for(const file of (await fs.readdir('supabase/migrations')).filter(f=>!f.include
 
 await db.exec(await fs.readFile('docs/sql/v168-system-progression.sql','utf8'));
 await db.exec(await fs.readFile('supabase/migrations/20261105122716_achievements.sql','utf8'));
+await db.exec(await fs.readFile('supabase/migrations/20261105172454_achievements_profile_totals.sql','utf8'));
 
 
 await db.exec(await fs.readFile('supabase/migrations/20261105134834_achievements_tracking.sql','utf8')).catch(e=>{throw Error(e.message+' at '+e.position+' '+(e.where||''))});
@@ -86,3 +87,4 @@ await login();const all=await rpc('tzg_achievement_state');assert.equal(all.filt
 wallet=await rpc('tzg_player_load');const allPaid=await rpc('tzg_achievement_claim',[wallet.revision,crypto.randomUUID()]);assert.equal(allPaid.fp+claim.fp,100000);assert.equal(allPaid.rc+claim.rc,10000);const noMore=await rpc('tzg_achievement_claim',[allPaid.revision,crypto.randomUUID()]);assert.equal(noMore.fp,0);assert.equal(noMore.rc,0);
 await db.exec('reset role;set role anon');for(const name of ['tzg_achievement_tracker_start','tzg_achievement_observe'])await assert.rejects(rpc(name,name.endsWith('start')?[crypto.randomUUID()]:[run,seq+1,sample,{type:'sample'}]),/permission/);await db.exec('reset role;set role authenticated');for(const table of ['achievement_rules','achievement_totals','achievement_origins','achievement_node_state','achievement_runs','achievement_explosives'])await assert.rejects(db.query('select * from tzg_private.'+table),/permission/);
 await db.close();console.log('PASS all 80 thresholds and exact lifetime payout; warp payment/duration/replay/interstellar, boost budget, live party co-presence and complete catalog idempotence');console.log('PASS tracked gameplay: launch/flight/landing, replay rejection, no arbitrary counters, mineral HP/tool/proximity/depletion, recipe consumption/provenance, verified sale earnings, save replay, idle exclusion and auto-claim loop protection');
+

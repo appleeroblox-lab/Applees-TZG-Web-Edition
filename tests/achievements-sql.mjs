@@ -4,6 +4,7 @@ for(const file of (await fs.readdir('supabase/migrations')).filter(f=>!f.include
 
 await db.exec(await fs.readFile('docs/sql/v168-system-progression.sql','utf8'));
 await db.exec(await fs.readFile('supabase/migrations/20261105122716_achievements.sql','utf8'));
+await db.exec(await fs.readFile('supabase/migrations/20261105172454_achievements_profile_totals.sql','utf8'));
 
 const a=crypto.randomUUID(),b=crypto.randomUUID(),sa=crypto.randomUUID(),sb=crypto.randomUUID();
 for(const [id,name] of [[a,'achieve_a'],[b,'achieve_b']])await db.query('insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values($1,$2,now(),$3)',[id,name+'@example.test',JSON.stringify({username:name,display_name:name})]);
@@ -25,8 +26,9 @@ await assert.rejects(rpc('tzg_achievement_claim',[wallet.revision,crypto.randomU
 const again=await rpc('tzg_achievement_claim',[claim.revision,crypto.randomUUID()]);assert.equal(again.fp,0);assert.equal(again.state.fp,claim.state.fp);
 await assert.rejects(rpc('tzg_achievement_claim',[claim.revision,crypto.randomUUID(),'forged']),/Invalid/);
 for(const table of ['achievement_catalog','achievement_progress','achievement_days','achievement_mutations'])await assert.rejects(db.query('select * from tzg_private.'+table),/permission/);
-await login(b,sb);await rpc('tzg_player_session_start');wallet=await rpc('tzg_player_load');rows=await rpc('tzg_achievement_state');assert(!rows.find(r=>r.id==='061').completed_at,'progress belongs to account');
-await db.exec('reset role;set role anon');await assert.rejects(rpc('tzg_achievement_state'),/permission/);await assert.rejects(rpc('tzg_achievement_claim',[0,crypto.randomUUID()]),/permission/);
+await login(b,sb);await rpc('tzg_player_session_start');wallet=await rpc('tzg_player_load');rows=await rpc('tzg_achievement_state');assert(!rows.find(r=>r.id==='061').completed_at,'progress belongs to account');assert.equal((await rpc('tzg_profile_banner',['achieve_a'])).achievements_unlocked,2,'Other members see actual unlocked count without banner purchase');
+await db.exec('reset role;set role anon');assert.equal((await rpc('tzg_profile_banner',['achieve_a'])).achievements_unlocked,2,'Guests see public unlocked count');assert.equal(await rpc('tzg_profile_banner',['__missing__']),null);await assert.rejects(rpc('tzg_achievement_state'),/permission/);await assert.rejects(rpc('tzg_achievement_claim',[0,crypto.randomUUID()]),/permission/);
 await db.exec('reset role');const totals=(await db.query('select count(*)::int n,sum(fp)::int fp,sum(rc)::int rc from tzg_private.achievement_catalog')).rows[0];assert.deepEqual(totals,{n:80,fp:100000,rc:10000});
 await login();await db.exec('reset role');await db.query('delete from auth.sessions where id=$1',[sa]);await login();await assert.rejects(rpc('tzg_achievement_state'),/session|sign|log/i);
 await db.close();console.log('PASS: catalog totals, server milestones, notice consumption, claims/retries/stale revisions, no duplicate payout, ownership, guest denial, private-table permissions and revoked sessions');
+

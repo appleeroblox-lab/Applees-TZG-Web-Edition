@@ -59,7 +59,7 @@ SQL tests cover real representative validated events, node HP/cooldowns/tool own
 
 Browser tests cover 1280×800, 844×390 and 667×375, menu toggle/close, list scrolling/search/filter, rarity colors, auto-claims, top-layer hit-testing above a modal minimap fixture, click-to-focus, queue timing, actual MP3 Web Audio playback, mute and reduced motion. Client tracking tests preserve original method behavior and verify successful-action wiring, baseline ordering, payment-before-warp tracking, replay-safe lost-response retries and guest exclusion.
 
-Also run `node tests/cloud-save.mjs`, `node tests/profile-banner-sql.mjs`, targeted ESLint, `git diff --check` and `npm run build`. Repository-wide lint/type checks have existing unrelated failures, including Deno imports/globals in push-dispatch and vite.config.ts’s r2 type; they remain outside this change.
+The validation workflow also runs the achievement SQL and client replay tests. Also run `node tests/cloud-save.mjs`, `node tests/profile-banner-sql.mjs`, targeted ESLint, `git diff --check` and `npm run build`. Repository-wide lint/type checks have existing unrelated failures, including Deno imports/globals in push-dispatch and vite.config.ts’s r2 type; they remain outside this change.
 
 ## Changed files
 

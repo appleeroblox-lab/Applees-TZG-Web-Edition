@@ -31,9 +31,16 @@ for(const size of [{width:1280,height:800},{width:844,height:390},{width:667,hei
  await page.locator('.achievementList').evaluate(n=>{n.scrollTop=n.scrollHeight});assert(await page.locator('.achievementList').evaluate(n=>n.scrollTop>0));
  await page.locator('.achievementTools input').fill('warp');assert((await page.locator('.achievementCard').count())>0);await page.locator('.achievementTools input').fill('');
  await page.locator('.achievementTools select').selectOption('Cosmic');assert.equal(await page.locator('.achievementCard').count(),8);await page.locator('.achievementTools select').selectOption('All');
+ const contrast=await page.locator('.achievementRarity').evaluateAll(nodes=>{const light=css=>{const rgb=css.match(/[\d.]+/g).slice(0,3).map(Number).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4});return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2]};return nodes.every(n=>{const s=getComputedStyle(n),a=light(s.color),b=light(s.backgroundColor);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05)>=4.5})});assert(contrast,'Rarity labels retain readable contrast');
  const colors=await page.locator('.achievementCard').first().evaluate(n=>[getComputedStyle(n).borderTopColor,getComputedStyle(n.querySelector('.achievementRarity')).color]);assert.equal(colors[0],colors[1]);
  await page.screenshot({path:'/tmp/tzg-achievements-'+size.width+'.png'});await page.locator('.achievementClose').click();
  await page.locator('#achievementsBtn').click();const toggle=await page.locator('#achievementsBtn').boundingBox();await page.mouse.click(toggle.x+toggle.width/2,toggle.y+toggle.height/2);assert.equal(await page.locator('#achievementsMenu').evaluate(n=>n.open),false);
+}
+await page.setViewportSize({width:667,height:375});
+for(const side of ['left','right']){
+ await page.locator('#achievementsBtn').click();await page.locator('#achievementsMenu').evaluate((n,side)=>n.style.setProperty('--achievement-safe-'+side,'44px'),side);
+ const r=await page.locator('#achievementsMenu').boundingBox();assert(r.x>=(side==='left'?44:0));assert(r.x+r.width<=667-(side==='right'?44:0));
+ await page.locator('.achievementClose').click();await page.locator('#achievementsMenu').evaluate((n,side)=>n.style.removeProperty('--achievement-safe-'+side),side);
 }
 await page.setViewportSize({width:844,height:390});
 await page.evaluate(()=>{account.guest=false;account.ready=true;account.loadedId='test';window.dispatchEvent(new Event('tzg-signed-in'));});
@@ -42,7 +49,7 @@ await page.waitForSelector('.achievementToastIn');assert.equal(await page.locato
 await page.waitForFunction(()=>wallet.fp===924);assert.equal(await page.evaluate(()=>claimCalls),1);
 await page.evaluate(()=>{const minimap=document.createElement('dialog');minimap.id='achievementTestMinimap';minimap.style='width:100vw;height:100vh;background:#08213a;z-index:2147483647';minimap.textContent='Minimap overlay';document.body.append(minimap);minimap.showModal()});
 await page.waitForTimeout(150);
-const hit=await page.locator('.achievementToast').evaluate(n=>{const r=n.getBoundingClientRect();return {clickable:n.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)),top:r.top,header:document.querySelector('#gameTop nav').getBoundingClientRect().bottom,transform:getComputedStyle(n).transform}});assert(hit.clickable);assert(hit.top>=hit.header+7);const toastColors=await page.locator('.achievementToast').evaluate(n=>[getComputedStyle(n).borderTopColor,getComputedStyle(n.querySelector('strong')).color]);assert.deepEqual(toastColors,['rgb(169, 176, 188)','rgb(169, 176, 188)']);
+const hit=await page.locator('.achievementToast').evaluate(n=>{const r=n.getBoundingClientRect();return {clickable:n.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)),top:r.top,header:document.querySelector('#gameTop nav').getBoundingClientRect().bottom,transform:getComputedStyle(n).transform}});assert(hit.clickable);assert(hit.top>=hit.header+7);const toastColors=await page.locator('.achievementToast').evaluate(n=>[getComputedStyle(n).borderTopColor,getComputedStyle(n.querySelector('strong')).color]);assert.deepEqual(toastColors,['rgb(169, 176, 188)','rgb(169, 176, 188)']);assert.equal(await page.locator('.achievementToast').evaluate(n=>getComputedStyle(n).backgroundColor),'rgb(6, 32, 56)');
 await page.screenshot({path:'/tmp/tzg-achievement-toast-minimap.png'});
 await page.locator('.achievementToast').click();await page.waitForSelector('.achievementFocus');assert.equal(await page.locator('.achievementFocus').getAttribute('data-achievement'),'061');assert.equal(await page.locator('.achievementToast span span').textContent(),'First Friend');
 await page.locator('.achievementToast').click();await page.locator('.achievementClose').click();await page.evaluate(()=>document.querySelector('#achievementTestMinimap').close());

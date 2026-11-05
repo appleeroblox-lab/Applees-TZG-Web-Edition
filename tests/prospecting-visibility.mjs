@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {parseHTML} from 'linkedom';
+import * as T from '../public/vendor/three.module.js';
+import {Prospecting} from '../public/prospecting.js';
+const {document}=parseHTML('<html><body></body></html>');Object.assign(globalThis,{document,innerWidth:844,innerHeight:390,fetch:undefined});
+const node={id:'ore',name:'Rock',radius:1,color:'#abcdef',pos:new T.Vector3(0,0,-4),hp:100,maxHp:100};
+const economy={cycle:0,nodes:()=>[node],canSell:()=>false,toolKind:null,held:null,swing:0};const surface={active:false,body:{id:'Earth',name:'Earth'}},crew={onFoot:false,eye:()=>new T.Vector3(0,1.6,0)},view={scene:new T.Scene()},p=new Prospecting(economy,surface,crew,view),camera=new T.PerspectiveCamera(60,844/390,.1,100);camera.position.y=1.6;camera.updateMatrixWorld();
+assert(p.layer.hidden,'space startup hides the entire unpositioned prompt layer');p.sync();assert([...p.labels.values()].every(v=>v.label.hidden));assert(p.tradeLabel.hidden,'trade prompt starts hidden before first surface frame');
+p.update(camera,0);assert(p.layer.hidden);surface.active=true;p.update(camera,0);assert(p.layer.hidden,'aboard ship keeps mineral UI hidden');crew.onFoot=true;p.update(camera,0);assert(!p.layer.hidden);assert(!p.labels.get('ore').label.hidden,'focused nearby mineral remains usable on foot');assert(p.labels.get('ore').label.style.left,'visible prompt is positioned');
+surface.active=false;p.update(camera,0);assert(p.layer.hidden,'surface exit or direct space respawn hides all surface labels');p.key='';p.sync();assert(p.layer.hidden);assert([...p.labels.values()].every(v=>v.label.hidden),'rebuilding ore after a save/sale cannot leak labels into space');
+console.log('PASS mineral/trade prompts hidden at startup, aboard ship, space respawn and resource rebuild; focused on-foot labels remain positioned and visible.');

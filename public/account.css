@@ -190,15 +190,14 @@ body.referenceHUD #banneravatarCropPanel{position:fixed;inset:0!important;transf
 @media(max-height:450px){body.referenceHUD #banneravatarCropPanel{width:min(380px,calc(100vw - 24px));padding:10px}#banneravatarCropPanel p{margin:5px 0}#banneravatarCropPanel label{margin:7px 0}}
 
 #chatPlayerProfile .profileIdentity{display:flex;align-items:center;gap:12px;margin:0 0 14px;position:relative}#chatPlayerProfile.hasBanner .profileIdentity{margin-top:-28px}#chatPlayerProfile .profileIdentityText{display:flex;flex-direction:column;gap:5px;min-width:0;padding-top:8px}#chatPlayerProfile.hasBanner .profileIdentityText{padding-top:30px}body.referenceHUD #chatPlayerProfile .profileIdentity #chatProfileAvatar{display:block;flex:0 0 64px;width:64px;height:64px;margin:0!important}#chatPlayerProfile :is(#chatProfileName,#chatProfileBio){color:#fff!important;opacity:1}#chatPlayerProfile #chatProfileUsername{color:#d3edff;font-size:12px}#chatPlayerProfile #chatProfileOnline{color:#d3edff;font-size:11px}#chatPlayerProfile #chatProfileName{font-size:17px;line-height:1.25;overflow-wrap:anywhere}#chatPlayerProfile #chatProfileJoined{color:#d3edff;opacity:1}
-/* Banners are profile backgrounds, underneath identity and profile details. */
-body.referenceHUD #accountPage-profile{position:relative;isolation:isolate;border-radius:10px;padding:12px;box-sizing:border-box}
-body.referenceHUD #accountPage-profile .accountBannerSection{position:static;margin:0 0 12px}
-body.referenceHUD #accountPage-profile>.accountBannerSection>.profileBannerCover,body.referenceHUD #chatPlayerProfile.sharedPlayerProfile>.profileBannerCover{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;margin:0;border:0;border-radius:inherit;background:none;pointer-events:none;z-index:-1;overflow:hidden}
-body.referenceHUD :is(#accountPage-profile,#chatPlayerProfile.sharedPlayerProfile) .profileBannerCover>img{width:100%;height:100%;object-fit:cover;object-position:center;opacity:.7}
-body.referenceHUD :is(#accountPage-profile,#chatPlayerProfile.sharedPlayerProfile) .profileBannerCover::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#062b4859,#062b48b3);pointer-events:none}
-body.referenceHUD :is(#accountPage-profile,#chatPlayerProfile.sharedPlayerProfile) .profileBannerCover:has(>img[hidden]){display:none}
+/* Discord-style covers belong only to the identity header. */
+body.referenceHUD :is(#accountPage-profile,#chatPlayerProfile) .profileBannerHeader{position:relative;isolation:isolate;overflow:hidden;border-radius:10px;box-sizing:border-box;padding:14px;min-height:116px;gap:12px;background:#134e7566;text-shadow:0 1px 3px #05243ccc}
+body.referenceHUD :is(#accountPage-profile,#chatPlayerProfile) .profileBannerHeader>.profileBannerCover{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;margin:0;border:0;border-radius:inherit;background:none;pointer-events:none;z-index:-1}
+body.referenceHUD :is(#accountPage-profile,#chatPlayerProfile) .profileBannerCover>img{width:100%;height:100%;object-fit:cover;object-position:center;opacity:.85}
+body.referenceHUD :is(#accountPage-profile,#chatPlayerProfile) .profileBannerCover::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#062b4880,#062b4840);pointer-events:none}
+body.referenceHUD :is(#accountPage-profile,#chatPlayerProfile) .profileBannerCover:has(>img[hidden]){display:none}
 body.referenceHUD #accountPage-profile .bannerPlaceholder{display:none}
-body.referenceHUD #chatPlayerProfile.sharedPlayerProfile{isolation:isolate}
-body.referenceHUD #chatPlayerProfile.sharedPlayerProfile .profileIdentity,body.referenceHUD #chatPlayerProfile.sharedPlayerProfile.hasBanner .profileIdentity{margin-top:0}
+body.referenceHUD #chatPlayerProfile .profileBannerHeader{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+body.referenceHUD #chatPlayerProfile.sharedPlayerProfile .profileIdentity,body.referenceHUD #chatPlayerProfile.sharedPlayerProfile.hasBanner .profileIdentity{margin:0;flex:1 1 175px}
 body.referenceHUD #chatPlayerProfile.sharedPlayerProfile .profileIdentityText,body.referenceHUD #chatPlayerProfile.sharedPlayerProfile.hasBanner .profileIdentityText{padding-top:0}
-body.referenceHUD #accountPage-profile :is(.accountProfileHead,.accountBannerSection),body.referenceHUD #chatPlayerProfile.sharedPlayerProfile :is(.profileIdentity,.chatHead,dl){text-shadow:0 1px 3px #05243ccc}
+#chatPlayerProfile .profileJoinedCard{display:flex;flex-direction:column;gap:5px;border:1px solid #d5f3ff66;border-radius:8px;padding:7px;font-size:11px;background:#0c38594d}#chatPlayerProfile .profileJoinedCard small{font-size:10px;opacity:.85}#chatPlayerProfile .profileJoinedCard #chatProfileJoined{margin:0;white-space:normal;font-size:11px}

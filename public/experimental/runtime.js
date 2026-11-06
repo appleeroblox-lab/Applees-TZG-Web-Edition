@@ -1,5 +1,5 @@
 import {OnFootCamera,corridorFraction} from '../on-foot-camera.js?v=180';
-import {CapsuleCharacter} from '../capsule-character.js?v=180';
+import {CapsuleCharacter} from '../capsule-character.js?v=181';
 import {PlanetFrame} from './coordinates.js?v=157';
 import * as T from '../vendor/three.module.js';
 import {SphereTerrain,SpherePhysics,SYSTEM,RADIUS,ATMOSPHERE,tangentFrame} from './planet.js?v=157';
@@ -30,7 +30,7 @@ export class ExperimentalRuntime{
  clearFootCamera(a,b,origin){let fraction=corridorFraction(a,b,point=>point.length()<this.physics.floor(point.clone().normalize(),.2).radius);const distance=a.distanceTo(b);if(distance>.001){this.rig.model.updateWorldMatrix(true,true);const ray=new T.Raycaster(a.clone().sub(origin),b.clone().sub(a).normalize(),.05,distance),hit=ray.intersectObject(this.rig.model,true).find(h=>h.object.visible);if(hit)fraction=Math.min(fraction,Math.max(0,(hit.distance-.25)/distance))}return fraction;}
  updateCamera(dt,origin,up){
   const p=this.physics,c=this.camera;c.aspect=(this.renderer.domElement?.clientWidth||innerWidth)/(this.renderer.domElement?.clientHeight||innerHeight);c.fov=60;c.updateProjectionMatrix();
-  if(p.onFoot){const foot=this.onFootCamera,feet=p.walker.position.clone().addScaledVector(up,-1.7),view=p.walker.q.clone().multiply(new T.Quaternion().setFromAxisAngle(V(1,0,0),p.walker.pitch));foot.apply(c,{dt,feet,view,up,clear:(a,b)=>this.clearFootCamera(a,b,origin)});c.position.sub(origin);const motion=p.walker.velocity.clone().projectOnPlane(up),rotation=foot.face(dt,view,motion,up);this.capsule.update({feet:feet.sub(origin),rotation,time:this.elapsed,moving:motion.length()>.1,running:motion.length()>6,vertical:p.walker.velocity.dot(up),grounded:p.walker.position.length()<=p.floor(up,1.7).radius+.05,visible:!foot.firstPerson});this.rig.ship.visible=true;return}
+  if(p.onFoot){const foot=this.onFootCamera,feet=p.walker.position.clone().addScaledVector(up,-1.7),view=p.walker.q.clone().multiply(new T.Quaternion().setFromAxisAngle(V(1,0,0),p.walker.pitch));foot.apply(c,{dt,feet,view,up,clear:(a,b)=>this.clearFootCamera(a,b,origin)});c.position.sub(origin);const motion=p.walker.velocity.clone().projectOnPlane(up),rotation=foot.face(dt,view,motion,up);this.capsule.update({groundPoint:up.clone().multiplyScalar(p.floor(up,0).radius).sub(origin),up,feet:feet.sub(origin),rotation,time:this.elapsed,moving:motion.length()>.1,running:motion.length()>6,vertical:p.walker.velocity.dot(up),grounded:p.walker.position.length()<=p.floor(up,1.7).radius+.05,visible:!foot.firstPerson});this.rig.ship.visible=true;return}
   this.capsule.group.visible=false;this.onFootCamera.valid=false;
   const frame=this.cameraReset?this.orbitFrame.reset(up,V(0,0,-1).applyQuaternion(p.q)):this.orbitFrame.update(up);this.cameraUp.copy(up);
   const subject=this.rig.subjectCenter.clone().applyQuaternion(p.q),mode=this.cameras.mode;this.rig.ship.visible=mode!=='cockpit';

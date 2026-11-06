@@ -1,8 +1,23 @@
 {
-  "currentVersion": "v0.0.180",
+  "currentVersion": "v0.0.181",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 181,
+      "version": "v0.0.181",
+      "date": "2026-11-06",
+      "title": "Mobile drag zoom, character poses, ground shadow and TNT prompt",
+      "changes": [
+        "Added a small independent vertical-drag zoom control for simultaneous mobile movement and camera use.",
+        "Adjusted capsule proportions and leg overlap, replaced airborne leg scaling with jump/fall poses and raised both hands while falling.",
+        "Added a ground contact shadow and enlarged the third-person pickaxe while preserving its palm grip.",
+        "Added an Ignite TNT button above inventory when holding a torch within the existing five-metre ignition range."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 180,
       "version": "v0.0.180",

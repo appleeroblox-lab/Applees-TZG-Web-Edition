@@ -31,6 +31,6 @@ body.referenceHUD #walkTouch #walkRun{width:var(--run-size,48px)!important;heigh
 @media(max-width:350px) and (orientation:portrait){body.referenceHUD #gameTop nav button{width:27px!important;min-width:27px!important}body.referenceHUD #gameTop nav{gap:3px!important}body.referenceHUD #gameTop :is(#chatToggle,#dailyRewardsOpen){width:30px!important;min-width:30px!important}body.referenceHUD #flightPad{scale:min(var(--ship-left-scale,1),1)}body.referenceHUD #flightRight{scale:min(var(--ship-right-scale,1),1)}}
 @media(max-height:620px) and (orientation:portrait){body.referenceHUD #vitals,body.referenceHUD.onFoot #vitals{top:162px!important}body.referenceHUD #flightGauge{bottom:170px!important}.vitalRow{height:18px!important}.statusTrack,.altitudeTrack,.tempTrack{height:18px!important}body.referenceHUD #earthWeather{display:none}}
 
-/* Public profile uses its own wide landscape dimensions, independent of Account Size. */
-body.referenceHUD #chatPlayerProfile.sharedPlayerProfile{width:min(960px,56vw)!important;min-width:min(540px,calc(100vw - 24px));max-width:calc(100vw - 24px)!important;max-height:min(520px,78dvh)!important;height:fit-content;box-sizing:border-box;overflow:auto;padding:10px}
-@media(orientation:portrait){body.referenceHUD #chatPlayerProfile.sharedPlayerProfile{width:calc(100vw - 24px)!important;min-width:0;max-height:calc(100dvh - 40px)!important}}
+/* Public profile shares the Party & Friends width and size setting. */
+body.referenceHUD #chatPlayerProfile.sharedPlayerProfile{width:min(calc(500px * var(--party-menu-scale,.85)),calc(100vw - 24px))!important;min-width:0;max-width:calc(100vw - 24px)!important;max-height:min(520px,78dvh)!important;height:fit-content;box-sizing:border-box;overflow:auto;padding:10px}
+@media(orientation:portrait){body.referenceHUD #chatPlayerProfile.sharedPlayerProfile{max-height:calc(100dvh - 40px)!important}}

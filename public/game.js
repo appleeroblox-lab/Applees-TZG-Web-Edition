@@ -34,7 +34,7 @@ import {surfaceGravity as mapGravity} from './surface.js?v=170';
 import {installDeviceSettings} from './device-settings.js?v=170';
 import {installLocalization} from './localization.js?v=170';
 let devicePreferences=null,restoringDevicePreferences=false;
-import {PlayerAccount} from './player-account.js?v=175';
+import {PlayerAccount} from './player-account.js?v=176';
 import {cloudInventory} from './cloud-save.js?v=171';
 import {SupabaseDebugService} from './supabase-debug.js?v=156';
 import {supabaseConfig} from './supabase-config.js?v=61';
@@ -44,7 +44,7 @@ import {biomeWeather,earthBiome,biomeDestination} from './earth-biomes.js?v=122'
 import {installMobileInput} from './mobile-input.js';
 import {GroundWeather} from './ground-weather.js?v=170';
 import {underWeatherClouds} from './weather-state.js?v=170';
-import {DebugMenu} from './debug-menu.js?v=171';
+import {DebugMenu} from './debug-menu.js?v=176';
 import {rotateSubjectOrbit,shipCameraSubject,placeSubjectOrbit,ORBIT_MIN,ORBIT_MAX} from './subject-camera.js';
 import {padHeightAt} from './surface-layout.js';
 import {CockpitLabelMask} from './cockpit-labels.js';
@@ -441,4 +441,5 @@ function updateBeginnerExperience(dt){if(!started||accountLocked||document.hidde
 function syncMainActionSizes(){const party=$('friendsBtn');if(!party?.offsetWidth)return;document.documentElement.style.setProperty('--party-button-width',party.offsetWidth+'px');document.documentElement.style.setProperty('--party-button-height',party.offsetHeight+'px');document.documentElement.style.setProperty('--main-icon-size',Math.max(26,Math.min(34,Math.min(party.offsetWidth,party.offsetHeight)*.72))+'px')}
 if(typeof ResizeObserver==='function')new ResizeObserver(syncMainActionSizes).observe($('friendsBtn'));requestAnimationFrame(syncMainActionSizes);addEventListener('resize',syncMainActionSizes);
 experimental=new ExperimentalController({canvas:$('space'),authorized:()=>!!debugMenu?.active&&(!debugMenu.authorization?.expires||Date.now()<debugMenu.authorization.expires),authorize:()=>debugMenu.api('command',{command:'experimental heartbeat'}),ensure:()=>{if(!started)throw Error('Press Play before entering the experimental scene.');if(compatibility)throw Error('The spherical experiment requires WebGL; original compatibility gameplay remains available.');if(flight.nav?.kind==='warp')throw Error('Finish the current warp first.');closeDialog($('mapDialog'));},capture:()=>({system:flight.system,pos:flight.pos.clone(),velocity:flight.vel.clone(),q:flight.q.clone(),mode:shipCameras.mode,target,camQ:camQ.clone(),throttle:flight.throttle,gear:flight.gear,assist:flight.assist,cruiseSpeed:flight.cruiseSpeed}),restore:state=>{flight.system=state.system;flight.pos.copy(state.pos);flight.vel.copy(state.velocity);flight.q.copy(state.q);flight.throttle=state.throttle;flight.gear=state.gear;flight.assist=state.assist;flight.cruiseSpeed=state.cruiseSpeed;camQ.copy(state.camQ);setTarget(state.target,true);clock.getDelta();accumulator=0;updateSurfaceControls();syncExplorer();syncThrottle();updateHUD();toast('Previous system and location restored. Experimental travel cost 0 FP / 0 RC.');},clear:clearInputs,notify:toast,blocked:()=>isBlocked()||!!debugMenu?.typing(),sensitivity:()=>flight.sensitivity,input:()=>({keys,move,look,pad,rotationSpeed:flight.rotationSpeed}),settings:()=>open('settingsDialog'),runtime:{renderer,effects,departure:()=>effects.render(surface.active?surfaceView.scene:scene,camera,graphics),sound:sfx,sky:()=>milkyMap,quality:()=>graphics,mobile:touch}});
+
 

@@ -1,7 +1,7 @@
 import{DebugVerified}from'./debug-verified.js?v=171';
 import {DebugMessageLogs} from './debug-message-logs.js?v=96';
 import {setVerifiedName} from './identity-ui.js?v=91';
-import {DebugModeration} from './debug-moderation.js?v=171';
+import {DebugModeration} from './debug-moderation.js?v=176';
 const $=id=>document.getElementById(id);
 export class DebugMenu{
  constructor({closeSettings,clearInputs,snapshot,execute,authorization=null,request=(...args)=>fetch(...args)}){this.authorization=authorization;this.snapshot=snapshot;this.execute=execute;this.request=request;this.logs=[];this.active=false;this.revision=0;this.elapsed=0;this.drag=null;this.resizeDrag=null;this.pageKey=Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
@@ -33,3 +33,4 @@ export class DebugMenu{
  async loadStatistics(){if(!this.active||!this.supabase||this.loadingStatistics)return;this.loadingStatistics=true;const revision=this.revision;try{const data=await this.api('statistics');if(!this.active||revision!==this.revision)return;const labels={unique_visitors:'Unique browser visitors',registered_accounts:'Registered accounts',active_players:'Active players',daily_active_players:'Daily active players (UTC)',total_sessions:'Gameplay sessions',guest_sessions:'Guest sessions',registered_sessions:'Registered sessions',average_session_seconds:'Average session seconds'};this.statisticsText.replaceChildren();for(const [key,label]of Object.entries(labels)){const line=document.createElement('p');line.textContent=label+': '+(data[key]??0);this.statisticsText.append(line)}}catch(e){if(revision===this.revision)this.statisticsText.textContent=e.message}finally{this.loadingStatistics=false}}
  async run(text){if(!this.active||this.running)return;this.running=true;const rev=this.revision;$('debugCommandStatus').textContent='Running…';try{const result=await this.api('command',{command:text});if(rev!==this.revision||!this.active)return;const message=await this.execute(result.command);if(rev!==this.revision||!this.active)return;$('debugCommandStatus').textContent=message;this.log('info',message);this.refresh()}catch(e){if(rev!==this.revision)return;$('debugCommandStatus').textContent=e.message;this.log('error',e.message);if(e.status===401){this.active=false;await this.open()}}finally{this.running=false}}
 }
+

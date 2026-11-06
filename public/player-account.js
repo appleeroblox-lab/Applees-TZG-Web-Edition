@@ -9,7 +9,7 @@ import {accountGate} from './account-gate.js?v=163';
 import {takePreAuthClient} from './auth-first.js?v=171';
 import {configureKlipy} from './klipy-client.js?v=96';
 import {AccountPages} from './account-pages.js?v=171';
-import {ProfileView} from './profile-view.js?v=175';
+import {ProfileView} from './profile-view.js?v=176';
 import {MessageEditor} from './message-editor.js?v=171';
 import {setVerifiedName} from './identity-ui.js?v=91';
 import {FriendsUI} from './friends-ui.js?v=171';
@@ -75,4 +75,5 @@ export class PlayerAccount{
  accountChanged(){this.notifications?.disconnect();this.ready=false;this.needsReload=true;this.cloud?.dispose();this.chat.stop();this.loadedId=null;this.error(Error('Account changed in another tab. Reload to load the correct account.'))}
  async logout(){if(this.busy)return;this.busy=true;try{if(this.cloud?.ready&&!this.needsReload)await this.cloud.flush();await this.onLogout?.();try{await this.rpc('tzg_player_session_end')}catch{}await this.notifications?.disconnect();this.loadedId=null;const {error}=await this.client.auth.signOut({scope:'local'});if(error)throw error;this.cloud?.dispose();this.chat.stop();this.ready=false;location.reload()}catch(e){this.error(e)}finally{this.busy=false}}
 }
+
 

@@ -1,5 +1,5 @@
 {
-  "version": 175,
+  "version": 176,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -498,7 +498,8 @@
     "weather-precipitation.js",
     "weather-state.js",
     "wood-models.js",
-    "world-precipitation.js"
+    "world-precipitation.js",
+    "last-online.js"
   ],
   "versionedFiles": [
     "account-auth-flow.js",
@@ -734,7 +735,8 @@
     "water-reflection.js",
     "weather-precipitation.js",
     "weather-state.js",
-    "world-precipitation.js"
+    "world-precipitation.js",
+    "last-online.js"
   ],
   "fileVersions": {
     "account-pages.js": 171,
@@ -755,9 +757,9 @@
     "control-sizes.js": 109,
     "crew.js": 170,
     "debug-commands.js": 156,
-    "debug-menu.js": 171,
+    "debug-menu.js": 176,
     "debug-message-logs.js": 96,
-    "debug-moderation.js": 171,
+    "debug-moderation.js": 176,
     "debug-verified.js": 171,
     "device-settings.js": 170,
     "earth-biomes.js": 122,
@@ -769,7 +771,7 @@
     "flight.js": 170,
     "forestry.js": 170,
     "friends-ui.js": 171,
-    "game.js": 175,
+    "game.js": 176,
     "gif-gallery.js": 96,
     "ground-weather.js": 170,
     "identity-ui.js": 91,
@@ -782,10 +784,10 @@
     "models.js": 169,
     "night-aurora.js": 168,
     "photo-library.js": 163,
-    "player-account.js": 175,
+    "player-account.js": 176,
     "pool-shape.js": 59,
     "pool-splashes.js": 59,
-    "profile-view.js": 175,
+    "profile-view.js": 176,
     "prospecting.js": 173,
     "reference-hud.js": 171,
     "selection-menu.js": 170,
@@ -821,7 +823,7 @@
     "world-precipitation.js": 170,
     "models/crafting-center-v96.json": 97,
     "account-gate.js": 163,
-    "boot-loader.js": 175,
+    "boot-loader.js": 176,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
     "models/base-venus.json": 100,
@@ -962,6 +964,7 @@
     "achievement-catalog.js": 174,
     "achievement-tracking.js": 174,
     "achievements.js": 175,
-    "achievements.css": 175
+    "achievements.css": 175,
+    "last-online.js": 176
   }
 }

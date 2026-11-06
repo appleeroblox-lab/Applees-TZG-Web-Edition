@@ -1,5 +1,5 @@
 {
-  "version": 179,
+  "version": 180,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -763,7 +763,7 @@
     "cloud-save.js": 171,
     "compatibility.js": 171,
     "control-sizes.js": 109,
-    "crew.js": 178,
+    "crew.js": 180,
     "debug-commands.js": 156,
     "debug-menu.js": 177,
     "debug-message-logs.js": 96,
@@ -779,7 +779,7 @@
     "flight.js": 170,
     "forestry.js": 170,
     "friends-ui.js": 177,
-    "game.js": 179,
+    "game.js": 180,
     "gif-gallery.js": 96,
     "ground-weather.js": 170,
     "identity-ui.js": 91,
@@ -831,7 +831,7 @@
     "world-precipitation.js": 170,
     "models/crafting-center-v96.json": 97,
     "account-gate.js": 163,
-    "boot-loader.js": 179,
+    "boot-loader.js": 180,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
     "models/base-venus.json": 100,
@@ -887,7 +887,7 @@
     "models/small-gaspra.json": 100,
     "models/small-hiiaka.json": 100,
     "rain-shelter.js": 100,
-    "global-shadows.js": 120,
+    "global-shadows.js": 180,
     "install-game.js": 169,
     "terrain-patches.js": 170,
     "vendor/html2canvas.LICENSE": 102,
@@ -956,8 +956,8 @@
     "videos/studio-intro.mp4": 152,
     "startup-landscape.js": 164,
     "game-entry-fade.js": 154,
-    "experimental/bridge.js": 179,
-    "experimental/runtime.js": 179,
+    "experimental/bridge.js": 180,
+    "experimental/runtime.js": 180,
     "experimental/planet.js": 157,
     "experimental/chunks.js": 157,
     "experimental/coordinates.js": 157,
@@ -974,9 +974,9 @@
     "achievements.js": 175,
     "achievements.css": 175,
     "last-online.js": 176,
-    "capsule-character.js": 179,
+    "capsule-character.js": 180,
     "on-foot-controls.js": 179,
-    "on-foot-camera.js": 178,
-    "character-grip.js": 179
+    "on-foot-camera.js": 180,
+    "character-grip.js": 180
   }
 }

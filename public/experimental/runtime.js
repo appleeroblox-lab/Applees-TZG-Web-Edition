@@ -1,5 +1,5 @@
-import {OnFootCamera,corridorFraction} from '../on-foot-camera.js?v=178';
-import {CapsuleCharacter} from '../capsule-character.js?v=179';
+import {OnFootCamera,corridorFraction} from '../on-foot-camera.js?v=180';
+import {CapsuleCharacter} from '../capsule-character.js?v=180';
 import {PlanetFrame} from './coordinates.js?v=157';
 import * as T from '../vendor/three.module.js';
 import {SphereTerrain,SpherePhysics,SYSTEM,RADIUS,ATMOSPHERE,tangentFrame} from './planet.js?v=157';

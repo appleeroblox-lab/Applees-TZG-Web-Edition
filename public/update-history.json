@@ -1,8 +1,22 @@
 {
-  "currentVersion": "v0.0.179",
+  "currentVersion": "v0.0.180",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 180,
+      "version": "v0.0.180",
+      "date": "2026-11-06",
+      "title": "Character proportions, hand-driven tools, shadows and responsive following",
+      "changes": [
+        "Balanced the capsule with a taller body and shorter connected legs; breathing translates the torso without changing its scale.",
+        "Moved the tool grip toward the palm edge and made action swings originate from the hand, with pickaxe cutting-plane alignment.",
+        "Removed the duplicate third-person shadow caster and eliminated delayed camera translation; character and camera share interpolated walking positions."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 179,
       "version": "v0.0.179",

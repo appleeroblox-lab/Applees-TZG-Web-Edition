@@ -31,3 +31,5 @@ for(const id of ['moveStick','walkRun','walkJump']){
  touchEvent('touchcancel',[touch(21,canvas,130,110),touch(22,canvas,250,100)]);held.onpointerup();touchEvent('touchend',[touch(20,held,0,0)]);controlsCamera.distance=6;
 }
 console.log('PASS native touch camera swipe/pinch while thumbstick, Run or Jump stays held');
+
+const follow=new OnFootCamera(),followCam=new T.PerspectiveCamera();for(let i=0;i<100;i++){const feet=V(i*.07,0,0);follow.apply(followCam,{dt:1/144,feet,view:new T.Quaternion()});assert(Math.abs(followCam.position.x-feet.x)<1e-8,'camera translation never trails behind avatar')}console.log('PASS no positional follow lag at high frame rate');

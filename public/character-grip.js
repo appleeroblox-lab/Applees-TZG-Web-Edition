@@ -5,9 +5,9 @@ export function gripPose(kind,swing=0){
  if(kind==='resource'){point.set(0,0,.12)}
  else if(kind==='tree-log'){point.set(0,0,.3)}
  else if(kind==='snow-ball'){point.set(0,0,.6)}
- else if(kind==='pickaxe'){point.set(0,-.22,0);rotation.set(-.15-swing*.95,0,-.10)}
+ else if(kind==='pickaxe'){point.set(0,-.22,0);rotation.set(0,Math.PI/2,-.10)}
  else if(kind==='shovel'){point.set(0,.24,0);rotation.set(-.12,0,.08)}
- else if(kind==='saw'){point.set(-.28,-.01,.0175);rotation.set(-swing*.5,Math.PI/2,0)}
+ else if(kind==='saw'){point.set(-.28,-.01,.0175);rotation.set(0,Math.PI/2,0)}
  else if(kind==='torch'){point.set(0,-.18,0)}
  else if(kind==='ladder'){point.set(.35,0,0)}
  return {point,rotation:new T.Quaternion().setFromEuler(rotation)};

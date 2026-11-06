@@ -57,7 +57,7 @@
     "test:ui-neon": "node tests/ui-neon-v169.mjs",
     "test:v170": "node tests/gameplay-v170.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --v170-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --v170-only",
     "test:profile-banners": "node tests/profile-banner-sql.mjs && node tests/profile-banner-ui.mjs && node tests/prospecting-visibility.mjs",
-    "test:on-foot": "node tests/on-foot-camera.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --on-foot-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --on-foot-only"
+    "test:on-foot": "node tests/character-grip.mjs && node tests/on-foot-camera.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --on-foot-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --on-foot-only"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

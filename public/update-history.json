@@ -1,8 +1,22 @@
 {
-  "currentVersion": "v0.0.178",
+  "currentVersion": "v0.0.179",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 179,
+      "version": "v0.0.179",
+      "date": "2026-11-06",
+      "title": "Capsule proportions, held-tool grips and simultaneous mobile controls",
+      "changes": [
+        "Shortened the capsule, connected animated legs to the body and added a simple line mouth.",
+        "Attached held tools and resources to the right palm using authored grip points, including upright pickaxe carry and grip-centered swings.",
+        "Added native multi-touch camera routing so swipe and pinch gestures remain independent of held movement, Run and Jump controls."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 178,
       "version": "v0.0.178",

@@ -34,7 +34,7 @@ import {surfaceGravity as mapGravity} from './surface.js?v=170';
 import {installDeviceSettings} from './device-settings.js?v=170';
 import {installLocalization} from './localization.js?v=170';
 let devicePreferences=null,restoringDevicePreferences=false;
-import {PlayerAccount} from './player-account.js?v=176';
+import {PlayerAccount} from './player-account.js?v=177';
 import {cloudInventory} from './cloud-save.js?v=171';
 import {SupabaseDebugService} from './supabase-debug.js?v=156';
 import {supabaseConfig} from './supabase-config.js?v=61';
@@ -44,7 +44,7 @@ import {biomeWeather,earthBiome,biomeDestination} from './earth-biomes.js?v=122'
 import {installMobileInput} from './mobile-input.js';
 import {GroundWeather} from './ground-weather.js?v=170';
 import {underWeatherClouds} from './weather-state.js?v=170';
-import {DebugMenu} from './debug-menu.js?v=176';
+import {DebugMenu} from './debug-menu.js?v=177';
 import {rotateSubjectOrbit,shipCameraSubject,placeSubjectOrbit,ORBIT_MIN,ORBIT_MAX} from './subject-camera.js';
 import {padHeightAt} from './surface-layout.js';
 import {CockpitLabelMask} from './cockpit-labels.js';

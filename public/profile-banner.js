@@ -1,4 +1,4 @@
-import {AvatarCropEditor} from './avatar-crop.js?v=171';
+import {AvatarCropEditor} from './avatar-crop.js?v=177';
 import {PhotoLibrary} from './photo-library.js?v=163';
 import {chatDialog} from './chat-dialog.js?v=169';
 const $=id=>document.getElementById(id);

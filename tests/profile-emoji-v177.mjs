@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {parseHTML} from 'linkedom';
+import {emojiButton,closeEmojiPicker} from '../public/emoji-picker.js';
+const {document,window}=parseHTML('<html><body><textarea></textarea></body></html>');Object.assign(globalThis,{document,window});
+const input=document.querySelector('textarea');input.value='Hi ';input.maxLength=200;input.selectionStart=input.selectionEnd=3;input.focus=()=>{};input.setSelectionRange=()=>{};
+let searchFocused=false;window.HTMLElement.prototype.focus=function(){if(this.matches('input'))searchFocused=true};
+const button=emojiButton(input,{hideGif:true});document.body.append(button);button.onclick();
+assert(!searchFocused,'opening must not focus search or summon keyboard');
+assert(document.querySelectorAll('.emojiGrid button').length<=35,'opening work is bounded');
+await new Promise(r=>setTimeout(r,250));assert(document.querySelectorAll('.emojiGrid button').length>200,'all emojis become available');
+const search=document.querySelector('.emojiPickerHead input');search.value='rocket';search.oninput();await new Promise(r=>setTimeout(r,140));assert.equal(document.querySelectorAll('.emojiGrid button').length,1);document.querySelector('.emojiGrid button').onclick();assert.equal(input.value,'Hi 🚀');assert(!document.querySelector('.emojiPicker'));
+button.onclick();closeEmojiPicker();await new Promise(r=>setTimeout(r,50));assert(!document.querySelector('.emojiPicker'),'closing cancels pending render');console.log('PASS no autofocus, bounded initial rendering, complete categories, search, insertion and cancellation');

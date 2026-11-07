@@ -519,7 +519,8 @@
     "icons/ui/update-warp.png",
     "menu-motion.js",
     "update-icons.js",
-    "world-label-depth.js"
+    "world-label-depth.js",
+    "leave-game.js"
   ],
   "versionedFiles": [
     "account-auth-flow.js",
@@ -779,7 +780,8 @@
     "menu-motion.js",
     "responsive-ui.css",
     "update-icons.js",
-    "world-label-depth.js"
+    "world-label-depth.js",
+    "leave-game.js"
   ],
   "fileVersions": {
     "account-pages.js": 182,
@@ -1028,6 +1030,7 @@
     "icons/ui/update-warp.png": 182,
     "menu-motion.js": 182,
     "update-icons.js": 182,
-    "world-label-depth.js": 182
+    "world-label-depth.js": 182,
+    "leave-game.js": 182
   }
 }

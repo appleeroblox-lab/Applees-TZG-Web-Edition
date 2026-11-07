@@ -1,3 +1,4 @@
+import {installLeaveGame} from './leave-game.js?v=182';
 import {WorldLabelDepth} from './world-label-depth.js?v=182';
 import {installUpdateIcons} from './update-icons.js?v=182';
 import {menuMotion,menuVisible} from './menu-motion.js?v=182';
@@ -399,7 +400,7 @@ $('atlasFit').onclick=()=>systemAtlas.fit(true);$('atlasFocus').onclick=()=>syst
 $('freeSpeed').oninput=e=>{explorer.exponent=+e.target.value;syncExplorer()};
 $('graphicsPreset').onchange=e=>{if(!GRAPHICS_MODES.includes(e.target.value))return;graphics=e.target.value;applyGraphics();save()};
 $('graphicsSlider').oninput=e=>{graphics=GRAPHICS_MODES[clamp(Math.round(+e.target.value),0,4)];applyGraphics();save()};
-$('resumeGame').onclick=()=>{paused=false;closeDialog($('settingsDialog'));clock.getDelta()};$('restartGame').onclick=()=>{paused=false;resetFlight();closeDialog($('settingsDialog'))};$('leaveGame').onclick=()=>{save();closeDialog($('settingsDialog'));clearInputs();started=false;paused=false;try{window.close()}catch{}setTimeout(()=>{if(!window.closed)location.replace(new URL('exit.html',location.href).href)},180)};
+$('resumeGame').onclick=()=>{paused=false;closeDialog($('settingsDialog'));clock.getDelta()};$('restartGame').onclick=()=>{paused=false;resetFlight();closeDialog($('settingsDialog'))};installLeaveGame($('leaveGame'),{save,flush:async()=>{if(playerAccount?.ready&&!playerAccount.guest)await playerAccount.cloud?.flush()},onLeave:()=>{closeDialog($('settingsDialog'));clearInputs();started=false;paused=false},notify:toast});
 
 $('utilityMenu').addEventListener('click',e=>{if(e.target.closest('button')){$('utilityMenu').hidden=true;$('menuBtn').setAttribute('aria-expanded','false')}});
 

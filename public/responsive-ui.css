@@ -47,3 +47,4 @@ button[data-icon-only]>img,body.referenceHUD #walkJump>.uiIcon,body.referenceHUD
 body.referenceHUD #walkTouch :is(#walkJump,#walkRun){background:rgba(42,151,204,.35)!important}
 
 body.referenceHUD #walkTouch :is(#walkJump,#walkRun){padding:0!important}
+.imageViewer .imageViewerBar button[aria-label="Download image"]{width:auto!important;min-width:96px;max-width:none;font-size:14px;border-radius:8px;padding:6px 12px;white-space:nowrap}

@@ -12,7 +12,8 @@
       "changes": [
         "Replaced the original Daily Rewards image instead of adding a second icon, and removed duplicate legacy icon elements.",
         "Preserved the supplied artwork colors against legacy monochrome filters.",
-        "Kept the Download label inside its image-viewer button and retained save-before-exit protection."
+        "Kept the Download label inside its image-viewer button and retained save-before-exit protection.",
+        "Enabled full stored-profile image viewing in guest profile previews as well as signed-in profiles."
       ]
     },
     {

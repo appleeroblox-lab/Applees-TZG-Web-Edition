@@ -1,8 +1,20 @@
 {
-  "currentVersion": "v0.0.182",
+  "currentVersion": "v0.0.183",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 183,
+      "version": "v0.0.183",
+      "date": "2026-11-07",
+      "title": "Single supplied icons and readable image downloads",
+      "source": "Live UI verification and reported duplicate Daily Rewards icon",
+      "changes": [
+        "Replaced the original Daily Rewards image instead of adding a second icon, and removed duplicate legacy icon elements.",
+        "Preserved the supplied artwork colors against legacy monochrome filters.",
+        "Kept the Download label inside its image-viewer button and retained save-before-exit protection."
+      ]
+    },
     {
       "legacyVersion": 182,
       "version": "v0.0.182",

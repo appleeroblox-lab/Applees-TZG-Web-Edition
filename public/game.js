@@ -1,6 +1,6 @@
 import {installLeaveGame} from './leave-game.js?v=182';
 import {WorldLabelDepth} from './world-label-depth.js?v=182';
-import {installUpdateIcons} from './update-icons.js?v=182';
+import {installUpdateIcons} from './update-icons.js?v=183';
 import {menuMotion,menuVisible} from './menu-motion.js?v=182';
 import {CockpitLook} from './cockpit-look.js?v=182';
 import {installTNTIgnitePrompt} from './tnt-ignite-prompt.js?v=181';

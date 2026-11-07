@@ -1,7 +1,7 @@
 import {expiredMessage,nextMessageExpiry} from './chat-lifetime.js?v=96';
 import{messageContent}from'./message-content.js?v=91';
 import {uiIcon,iconButton,relativeTime,messageTime} from './ui-icons.js?v=91';
-import {enableImageViewer,closeImageViewer} from './image-viewer.js?v=182';
+import {enableImageViewer,closeImageViewer} from './image-viewer.js?v=184';
 import {markChatText,chatTranslationAction} from './chat-translation.js?v=170';
 import {emojiButton,closeEmojiPicker} from './emoji-picker.js?v=182';
 import {safeChatImage,prepareGif} from './chat-media.js?v=96';

@@ -1,9 +1,9 @@
 import {showMenu,hideMenu,menuVisible} from './menu-motion.js?v=182';
-import {AvatarCropEditor} from './avatar-crop.js?v=182';
+import {AvatarCropEditor} from './avatar-crop.js?v=184';
 import {expiredMessage,nextMessageExpiry} from './chat-lifetime.js?v=96';
 import{messageContent}from'./message-content.js?v=91';
 import {uiIcon,iconButton,relativeTime,messageTime} from './ui-icons.js?v=91';
-import {enableImageViewer} from './image-viewer.js?v=182';
+import {enableImageViewer} from './image-viewer.js?v=184';
 import {voicePlayer,disposeVoicePlayers,holdVoiceButton} from './voice-player.js?v=91';
 import {markChatText,chatTranslationAction} from './chat-translation.js?v=170';
 import {emojiButton,closeEmojiPicker} from './emoji-picker.js?v=182';
@@ -13,7 +13,7 @@ import {chatDialog} from './chat-dialog.js?v=169';
 import {setVerifiedName} from './identity-ui.js?v=91';
 import {VoiceRecorder,safeVoice} from './voice-message.js?v=91';
 import {PhotoLibrary} from './photo-library.js?v=182';
-import {setAvatar,prepareAvatar,loadAvatarSource} from './social-ui.js?v=182';
+import {setAvatar,prepareAvatar,loadAvatarSource} from './social-ui.js?v=184';
 const el=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n};
 const photo=safeChatImage;
 export class FriendsUI{

@@ -1,7 +1,7 @@
 // Only named controls use the supplied artwork. HUD status images are explicit
 // exceptions to the button-only 85% sizing rule, retaining their original size.
 export function installUpdateIcons(doc=document){
- const mappings=[['#achievementsBtn','achievement'],['#dailyRewardsOpen','daily-rewards'],['[data-account-page="security"]','security'],['[data-account-page="data"]','database'],['#gaugeWarpBtn,#warpBtn','warp'],['#boostBtn','boost'],['[data-icon="report"],.reportButton,#debugReportsTab','report']];
+ const mappings=[['#minimapToggle','minimap'],['#walkRun','run'],['#walkJump','jump'],['#achievementsBtn','achievement'],['#dailyRewardsOpen','daily-rewards'],['[data-account-page="security"]','security'],['[data-account-page="data"]','database'],['#gaugeWarpBtn,#warpBtn','warp'],['#boostBtn','boost'],['[data-icon="report"],.reportButton,#debugReportsTab','report']];
  const apply=()=>{for(const [selector,name] of mappings)for(const button of doc.querySelectorAll(selector)){
   const source='icons/ui/update-'+name+'.png';let image=button.querySelector('img');if(button.dataset.updateIcon===name&&image?.getAttribute('src')===source&&button.querySelectorAll('img,svg').length===1)continue;button.dataset.updateIcon=name;
   const label=button.getAttribute('aria-label')||button.textContent.trim()||button.title;button.setAttribute('aria-label',label);button.title||=label;

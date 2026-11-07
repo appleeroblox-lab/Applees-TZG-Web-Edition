@@ -1,14 +1,14 @@
 import {TerrainClouds} from './terrain-clouds.js?v=170';
 import {biomeColor} from './earth-biomes.js?v=122';
 import {PlanetTransition} from './planet-transition.js?v=170';
-import {installCloudDetail} from './graphics-detail.js?v=110';
+import {installCloudDetail} from './graphics-detail.js?v=182';
 import {TOWER_PARTS} from './launch-tower.js?v=104';
 import {PlanetBases} from './planet-bases.js?v=170';
 import {addTerrainDetail,terrainMaterial} from './terrain-detail.js?v=122';
 import {NightAurora} from './night-aurora.js?v=168';
 import {createSurfaceRoads} from './surface-roads.js?v=170';
 import {buildGasInterior,gasCloudPosition} from './gas-interior.js?v=105';
-import {graphicsPolicy} from './graphics-policy.js?v=110';
+import {graphicsPolicy} from './graphics-policy.js?v=182';
 import {cloudProfile,applyAtmosphericFog,upperSkyState,setAtmosphereStars} from './atmosphere-effects.js?v=170';
 import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 import * as T from './vendor/three.module.js';

@@ -34,3 +34,16 @@ body.referenceHUD #walkTouch #walkRun{width:var(--run-size,48px)!important;heigh
 /* Public profile shares the Party & Friends width and size setting. */
 body.referenceHUD #chatPlayerProfile.sharedPlayerProfile{width:min(calc(500px * var(--party-menu-scale,.85)),calc(100vw - 24px))!important;min-width:0;max-width:calc(100vw - 24px)!important;max-height:min(520px,78dvh)!important;height:fit-content;box-sizing:border-box;overflow:auto;padding:10px}
 @media(orientation:portrait){body.referenceHUD #chatPlayerProfile.sharedPlayerProfile{max-height:calc(100dvh - 40px)!important}}
+
+/* v182: icon-only controls retain their existing outer dimensions. */
+body.onFoot #flightCamera,body.onFoot #cameraBtn{display:none!important}
+#walkJump,#walkRun{background:rgba(42,151,204,.35)!important}
+button>img.uiIcon,button>img.previewIcon{object-fit:contain!important;object-position:center;flex-shrink:0;max-width:85%!important;max-height:85%!important}
+button.iconOnly>img,button[aria-label]>img:is(.uiIcon,.previewIcon):only-child{width:85%!important;height:85%!important;margin:auto!important;display:block!important;object-fit:contain!important}
+.emojiOpen{display:inline-flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;padding:0!important;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif!important;font-size:1.7em!important}
+.imageViewerBar{display:flex;gap:8px;align-items:center}.imageViewerHint{flex:1;min-width:0}
+
+button[data-icon-only]>img,body.referenceHUD #walkJump>.uiIcon,body.referenceHUD #walkRun>.uiIcon{width:85%!important;height:85%!important;object-fit:contain!important;margin:auto!important}
+body.referenceHUD #walkTouch :is(#walkJump,#walkRun){background:rgba(42,151,204,.35)!important}
+
+body.referenceHUD #walkTouch :is(#walkJump,#walkRun){padding:0!important}

@@ -1,0 +1,14 @@
+import * as T from './vendor/three.module.js';
+// DOM billboards share a depth policy with opaque scene geometry. Cached mesh
+// lists and bounding-sphere rejection keep ray work proportional to visible labels.
+export class WorldLabelDepth{
+ constructor(){this.entries=[];this.proxies=new WeakMap();this.material=new T.MeshBasicMaterial({side:T.DoubleSide});this.ray=new T.Raycaster();this.delta=new T.Vector3();this.sphere=new T.Sphere();this.hit=new T.Vector3();this.scene=null;this.nextScan=0;this.frame=0}
+ begin(scene,camera,time,revision=0){this.camera=camera;this.frame++;if(this.scene===scene&&this.revision===revision&&time<this.nextScan)return;this.scene=scene;this.revision=revision;this.nextScan=time+.35;this.entries=[];scene.traverseVisible(mesh=>{if(!mesh.isMesh||!mesh.geometry||mesh.userData.labelNonSolid)return;const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material];if(!materials.some(m=>m&&m.visible!==false&&m.colorWrite!==false&&m.depthWrite!==false&&(!m.transparent||m.opacity>=.9)&&!(m.transmission>.1)&&!m.isShaderMaterial))return;this.entries.push({mesh,frame:-1})})}
+ blocked(point,ignore=null){const camera=this.camera;if(!camera)return false;this.delta.copy(point).sub(camera.position);const distance=this.delta.length();if(distance<.03)return false;this.ray.set(camera.position,this.delta.multiplyScalar(1/distance));this.ray.near=Math.max(.025,camera.near||.025);this.ray.far=distance-.08;for(const entry of this.entries){const mesh=entry.mesh;let skip=false,root=mesh;for(let n=mesh;n;n=n.parent){root=n;if(n.visible===false||n===ignore){skip=true;break}}if(skip||root!==this.scene)continue;
+  if(!mesh.geometry.boundingBox)mesh.geometry.computeBoundingBox();if(entry.frame!==this.frame){mesh.updateWorldMatrix(true,false);if(mesh.isInstancedMesh){if(!mesh.boundingSphere)mesh.computeBoundingSphere();entry.sphere=(entry.sphere||new T.Sphere()).copy(mesh.boundingSphere)}else{if(!mesh.geometry.boundingSphere)mesh.geometry.computeBoundingSphere();entry.sphere=(entry.sphere||new T.Sphere()).copy(mesh.geometry.boundingSphere)}entry.sphere.applyMatrix4(mesh.matrixWorld);entry.frame=this.frame}
+  if(!this.ray.ray.intersectsSphere(entry.sphere))continue;if(!entry.sphere.containsPoint(camera.position)){const near=this.ray.ray.intersectSphere(entry.sphere,this.hit);if(!near||near.distanceTo(camera.position)>this.ray.far)continue;}
+  let proxy=mesh;if(!mesh.isInstancedMesh){proxy=this.proxies.get(mesh);if(!proxy){proxy=new T.Mesh(mesh.geometry,this.material);proxy.matrixAutoUpdate=false;this.proxies.set(mesh,proxy)}proxy.geometry=mesh.geometry;proxy.matrixWorld.copy(mesh.matrixWorld)}
+  if(this.ray.intersectObject(proxy,false).length)return true;
+ }return false}
+}
+export function worldLabelBlocked(camera,point,ignore){return camera.userData.labelDepth?.blocked(point,ignore)||false}

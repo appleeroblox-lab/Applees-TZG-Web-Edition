@@ -1,5 +1,5 @@
 import {openChoiceMenu} from './selection-menu.js?v=170';
-import {ageOn} from './account-auth-flow.js?v=177';
+import {ageOn} from './account-auth-flow.js?v=182';
 const el=(tag,text)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;return node};
 export function validAccountBirthday(date,today=new Date()){
  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return false;const d=new Date(date+'T00:00:00Z');if(!Number.isFinite(+d)||d.toISOString().slice(0,10)!==date)return false;const age=ageOn(date,today),cutoff=new Date(today);cutoff.setUTCFullYear(cutoff.getUTCFullYear()-125);return date>=cutoff.toISOString().slice(0,10)&&date<=today.toISOString().slice(0,10)&&date>='1900-01-01'&&age>=0&&age<=125;

@@ -5,7 +5,7 @@ import {onSurfaceRoad} from './surface-roads.js?v=170';
 import {settlementContains} from './settlements.js?v=170';
 import {biomeColor,biomeWeather} from './earth-biomes.js?v=122';
 import {sceneryPoints} from './tree-data.js?v=170';
-import {graphicsPolicy} from './graphics-policy.js?v=110';
+import {graphicsPolicy} from './graphics-policy.js?v=182';
 import {PAD_RADIUS,PAD_SIGN} from './surface-layout.js';
 import * as T from './vendor/three.module.js';
 import {surfaceHeight} from './surface.js?v=170';
@@ -13,7 +13,7 @@ import {terrainColor} from './surface-palette.js';
 export const CHUNK_SIZE=96;
 export function chunkKey(x,z){return Math.floor((x+48)/96)+','+Math.floor((z+48)/96)}
 export function terrainFog(radius=2){const far=radius*CHUNK_SIZE*.82;return {near:far*.3,far}}
-export function sceneryBudget(quality='Medium',mobile=false,compatibility=false){const p=graphicsPolicy(quality),cap=mobile||compatibility;return {count:cap?p.mobileScenery:p.scenery,distance:cap?Math.min(p.sceneryDistance,quality==='Low'||quality==='Medium'?100:Math.min(150,85+p.mobileScenery*5)):p.sceneryDistance}}
+export function sceneryBudget(quality='Medium',mobile=false,compatibility=false){const p=graphicsPolicy(quality),cap=mobile||compatibility||quality==='Ultra+';return {count:cap?p.mobileScenery:p.scenery,distance:cap?Math.min(p.sceneryDistance,quality==='Low'||quality==='Medium'?100:Math.min(150,85+p.mobileScenery*5)):p.sceneryDistance}}
 // Reuse primitive templates; each nearby chunk becomes one colored scenery mesh.
 const templates={trunk:new T.CylinderGeometry(.2,.3,4,5).toNonIndexed(),broad:new T.DodecahedronGeometry(2.3,0),leaves:new T.ConeGeometry(2,6,5).toNonIndexed(),rock:new T.DodecahedronGeometry(1,0),pole:new T.CylinderGeometry(.08,.08,3,5).toNonIndexed(),panel:new T.BoxGeometry(5,.12,3).toNonIndexed()};
 function disposeChunk(g){g.traverse(o=>{o.geometry?.dispose();o.material?.dispose()})}

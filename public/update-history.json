@@ -1,8 +1,22 @@
 {
-  "currentVersion": "v0.0.181",
+  "currentVersion": "v0.0.182",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 182,
+      "version": "v0.0.182",
+      "date": "2026-11-07",
+      "title": "Cockpit free look, smooth menus and graphics fixes",
+      "changes": [
+        "Independent 180° cockpit free look, stable seat camera, smoother capsule poses and optimized high quality rendering.",
+        "Depth-aware world labels, transparent-window neon visibility and smoother atmospheric effects.",
+        "Image download, 5 MB upload limit, group photo crop and clickable player photos.",
+        "Supplied button artwork, consistent icon fitting, mobile button transparency and simplified minimap controls.",
+        "Animated Settings, Account, Party, Achievements and expanded Minimap; graceful webpage exit; updated target and location labels."
+      ],
+      "source": "User-requested camera, graphics, media and UI update"
+    },
     {
       "legacyVersion": 181,
       "version": "v0.0.181",

@@ -141,3 +141,10 @@ body.referenceHUD #mapDialog #selection :is(#selectTarget,#addStop)>.systemLockC
  .systemUnlockDialog>h2{font-size:16px!important;margin-bottom:8px!important}.systemUnlockName{font-size:18px!important}.systemUnlockBadge{width:32px!important;height:32px!important}.systemUnlockBadge svg{width:20px!important;height:20px!important}.systemUnlockPrice{padding:8px!important}.systemUnlockPrice strong{font-size:17px!important}.systemUnlockContent{gap:6px!important}.systemUnlockWallet>div{padding:7px!important}.systemUnlockDialog .messageEditorActions{margin-top:10px!important}.systemUnlockDialog .messageEditorActions button{min-height:34px!important;font-size:12px!important;padding:6px!important}
  body.referenceHUD .gameSelectionDialog.mapSelectionDialog{box-sizing:border-box;width:min(280px,calc(100vw - 24px))!important;max-height:68dvh!important;padding:12px!important}.mapSelectionDialog h2{font-size:16px!important}.mapSelectionDialog .gameSelectionOptions button{min-height:32px!important;padding:7px!important;font-size:12px!important}
 }
+
+/* Supplied icon artwork fits the existing buttons, never avatars or media. */
+body.referenceHUD button[data-icon-only]>img:is(.uiIcon,.previewIcon),body.referenceHUD button.iconOnly>img:is(.uiIcon,.previewIcon){width:85%!important;height:85%!important;max-width:85%!important;max-height:85%!important;object-fit:contain!important;margin:auto!important}
+
+body.referenceHUD #gameTop nav button>img.previewIcon,body.referenceHUD :is(#chatToggle,#dailyRewardsOpen,#achievementsBtn,#gaugeWarpBtn,#boostBtn)>img:is(.uiIcon,.previewIcon){width:85%!important;height:85%!important;max-width:85%!important;max-height:85%!important;object-fit:contain!important;margin:auto!important}
+body.referenceHUD img[src*="icons/ui/update-"]{filter:none!important;mix-blend-mode:normal!important}
+body.referenceHUD #gameTop nav button:has(>img.previewIcon),body.referenceHUD :is(#dailyRewardsOpen,#achievementsBtn,#gaugeWarpBtn,#boostBtn).iconOnly{padding:0!important}

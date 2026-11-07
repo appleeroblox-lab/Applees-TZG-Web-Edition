@@ -1,4 +1,4 @@
-import {graphicsPolicy} from './graphics-policy.js?v=110';
+import {graphicsPolicy} from './graphics-policy.js?v=182';
 import * as T from './vendor/three.module.js';
 export class GlobalShadows{
  constructor(renderer,scenes,lights){this.renderer=renderer;this.scenes=scenes;this.lights=lights;this.seen=new WeakSet();this.time=0;this.pendingScan=true;this.character=new T.Group();this.character.name='First person shadow caster';const mat=new T.MeshStandardMaterial({colorWrite:false,depthWrite:false});const capsule=new T.Mesh(new T.CapsuleGeometry(.28,1.1,4,8),mat);capsule.name='First person capsule shadow';capsule.position.y=.83;capsule.castShadow=true;this.character.add(capsule);scenes[1].add(this.character);for(const [i,l]of lights.entries()){scenes[i].add(l.target);l.shadow.camera.left=l.shadow.camera.bottom=-42;l.shadow.camera.right=l.shadow.camera.top=42;l.shadow.camera.near=.5;l.shadow.camera.far=2200;l.shadow.bias=-.00025;l.shadow.normalBias=.025;l.shadow.camera.updateProjectionMatrix()}this.enabled=false}

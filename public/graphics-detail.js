@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {graphicsPolicy} from './graphics-policy.js?v=110';
+import {graphicsPolicy} from './graphics-policy.js?v=182';
 // Reuses authored maps; procedural micro-relief adds no texture downloads or geometry.
 export function installPlanetDetail(material,body){if(material.userData.planetDetail)return;const uniforms={planetDetail:{value:0},planetRadius:{value:Math.max(.01,body.r)}};material.userData.planetDetail=uniforms;const before=material.onBeforeCompile,key=material.customProgramCacheKey();material.onBeforeCompile=(s,r)=>{before.call(material,s,r);Object.assign(s.uniforms,uniforms);s.vertexShader='varying vec3 vPlanetLocal;\n'+s.vertexShader;s.vertexShader=s.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvPlanetLocal=position;');s.fragmentShader='varying vec3 vPlanetLocal;uniform float planetDetail;uniform float planetRadius;\n'+s.fragmentShader;s.fragmentShader=s.fragmentShader.replace('#include <normal_fragment_maps>',`#include <normal_fragment_maps>
  if(planetDetail>0.){vec3 p=vPlanetLocal/planetRadius;vec3 relief=vec3(sin(p.y*141.)*cos(p.z*97.),sin(p.z*133.)*cos(p.x*121.),sin(p.x*153.)*cos(p.y*113.));normal=normalize(normal+relief*planetDetail*.035);}`)};material.customProgramCacheKey=()=>key+'-planet-relief';material.needsUpdate=true}

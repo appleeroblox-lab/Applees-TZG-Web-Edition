@@ -8,7 +8,8 @@ import {applyAtmosphericFog,AIRLESS_FOG_COLOR} from '../public/atmosphere-effect
 import {sceneryBudget} from '../public/surface-streaming.js';
 import {parseDebugCommand} from '../public/debug-commands.js';
 const policies=['High','Ultra','Ultra+'].map(graphicsPolicy);assert.equal(GRAPHICS_MODES.length,5);
-for(let i=1;i<policies.length;i++)for(const field of ['clouds','scenery','sceneryDistance','stars','grass','mobileGrass','shadowSize','mobileShadowSize','sharpness'])assert(policies[i][field]>policies[i-1][field],field+' increases with Ultra tiers');
+for(let i=1;i<policies.length;i++)for(const field of ['clouds','sceneryDistance','stars','grass','mobileGrass','shadowSize','mobileShadowSize','sharpness'])assert(policies[i][field]>policies[i-1][field],field+' increases with Ultra tiers');
+assert.equal(graphicsPolicy('Ultra+').scenery,graphicsPolicy('Ultra+').mobileScenery,'Ultra+ tree counts match mobile');assert.deepEqual(sceneryBudget('Ultra+',false),sceneryBudget('Ultra+',true),'Ultra+ visible scenery budget matches across devices');
 for(const mobile of [false,true]){let last=0;for(const quality of ['High','Ultra','Ultra+']){const ratio=resolutionRatio(1280,720,3,quality,mobile);assert(ratio>last);last=ratio;assert(sceneryBudget(quality,mobile).count>0)}}
 assert.equal(parseDebugCommand('graphics ultra+').value,'ultra+');
 const target={id:'Proxima b',system:'Proxima',r:60,pos:new T.Vector3(72000,0,0)},walletPosition=new T.Vector3();

@@ -8,7 +8,7 @@ export function updateReferenceHUD({surface,crew,flight,boostSelected,explorer,s
  $('flightPad').hidden=!flying;$('flightRight').hidden=!flying;$('flightGauge').hidden=foot||(free&&flight.nav?.kind!=='warp');$('gaugeWarpBtn').hidden=active||foot||free;$('gaugeWarpBtn').disabled=!!flight.nav;
  $('surfaceLaunchBtn').hidden=!parked||foot||free;$('surfaceLandBtn').hidden=!flying||!canLandHere(surface);$('surfaceAbortBtn').hidden=surface.phase!=='countdown'&&surface.phase!=='descending';
  $('exitShipBtn').hidden=!active||(foot?!crew.canBoard:!parked);$('mineBtn').hidden=!foot;
- $('locationCaption').lastChild.textContent=active?' Current Celestial Body':' Current Location';$('bodyName').textContent=active?surface.body.name:'Deep Space';
+ $('locationCaption').textContent='🌍 Current Celestial Body 🌍';$('locationCaption').setAttribute('translate','no');$('bodyName').textContent=active?surface.body.name:'Deep Space';
  const temperature={Earth:15,Venus:464,Mars:-63,Moon:-20,Mercury:167,Io:-143,Europa:-160,Titan:-179,Ganymede:-163,Callisto:-139,Triton:-235,Pluto:-229}[surface.body?.name]??-270;
  $('temperatureValue').textContent=temperature+'°C';$('tempNeedle').style.left=Math.min(96,Math.max(2,(temperature+270)/734*100))+'%';
  const progress=globalThis.tzgPlayerProgress||{level:1,level_xp:0,required_xp:100};const xpText='Lv. '+progress.level+' · '+Number(progress.level_xp).toLocaleString()+' / '+(progress.required_xp??'MAX')+' XP';if($('pilotStatus').textContent!==xpText)$('pilotStatus').textContent=xpText;$('pilotStatus').style.setProperty('--xp-fill',Math.min(100,progress.required_xp?progress.level_xp/progress.required_xp*100:100)+'%');

@@ -1,5 +1,5 @@
 import {mapSettings} from './map-settings.js?v=150';
-import {AtlasRenderer,atlasBodyRadius} from './atlas-renderer.js?v=150';
+import {AtlasRenderer,atlasBodyRadius} from './atlas-renderer.js?v=182';
 import {meaningfulBodyLabel} from './body-labels.js?v=170';
 import {drawMapSky} from './atlas-sky.js?v=91';
 import {starShineColor} from './star-colors.js';

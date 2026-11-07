@@ -9,7 +9,7 @@ export class NeonLights{
   this.scene.traverseVisible(mesh=>{
    if(!mesh.isMesh||!mesh.geometry)return;
    const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material];
-   if(materials.some(m=>m&&m.visible!==false&&m.depthWrite!==false&&m.colorWrite!==false&&(!m.transparent||m.opacity>=.9)&&!m.isShaderMaterial)){
+   if(materials.some(m=>m&&m.visible!==false&&m.depthWrite!==false&&m.colorWrite!==false&&(!m.transparent||m.opacity>=.9)&&!(m.transmission>.1)&&!m.isShaderMaterial)){
     if(mesh.isInstancedMesh){if(!mesh.boundingSphere)mesh.computeBoundingSphere();this.sphere.copy(mesh.boundingSphere)}else{if(!mesh.geometry.boundingSphere)mesh.geometry.computeBoundingSphere();this.sphere.copy(mesh.geometry.boundingSphere)}this.sphere.applyMatrix4(mesh.matrixWorld);
     if(this.sphere.center.distanceTo(camera.position)<this.sphere.radius+32)this.occluders.push(mesh);
    }
@@ -22,12 +22,13 @@ export class NeonLights{
    const points=mesh.userData.neonPoints?.length?mesh.userData.neonPoints:[mesh.geometry.boundingSphere.center];
    points.forEach((point,index)=>{mesh.localToWorld(this.center.copy(point));const distance=this.center.distanceToSquared(camera.position),key=mesh.uuid+':'+index;if(distance<900)this.candidates.push({mesh,material,point,key,distance,rank:distance*(held.has(key)?.65:1),blocked:false,nextRay:0})});
   });
-  this.candidates.sort((a,b)=>a.rank-b.rank);this.candidates.length=Math.min(4,this.candidates.length);
+  this.candidates.sort((a,b)=>a.rank-b.rank);// A hidden nearby source must not occupy all four slots ahead of a visible cabin light.
+  this.candidates=this.candidates.slice(0,24).filter(part=>!this.blocked(part,camera)).slice(0,4);
  }
  blocked(part,camera){
   part.mesh.localToWorld(this.center.copy(part.point));this.direction.copy(this.center).sub(camera.position);const distance=this.direction.length();if(distance<.1)return false;
   this.ray.set(camera.position,this.direction.divideScalar(distance));this.ray.near=.04;this.ray.far=Math.max(.04,distance-.06);this.hits.length=0;this.ray.intersectObjects(this.occluders,false,this.hits);
-  return this.hits.some(hit=>hit.object!==part.mesh&&visibleIn(hit.object,this.scene));
+  return this.hits.some(hit=>{if(hit.object===part.mesh||!visibleIn(hit.object,this.scene))return false;const m=Array.isArray(hit.object.material)?hit.object.material[hit.face?.materialIndex||0]:hit.object.material;return m&&m.visible!==false&&m.depthWrite!==false&&m.colorWrite!==false&&(!m.transparent||m.opacity>=.9)&&!(m.transmission>.1)});
  }
  update(time,camera,enabled=true){
   const dt=this.lastTime===undefined?1/60:Math.min(.1,Math.max(0,time-this.lastTime));this.lastTime=time;
@@ -40,7 +41,7 @@ export class NeonLights{
   for(const slot of this.slots)if(!slot.part&&desired.size){const part=desired.values().next().value;slot.part=part;desired.delete(part.key)}
   let matricesUpdated=false;
   for(const slot of this.slots){const {part,light}=slot;if(!part){light.intensity=0;continue}const visible=visibleIn(part.mesh,this.scene);if(!visible){light.intensity=0;continue}part.mesh.localToWorld(light.position.copy(part.point));
-   if(time>=part.nextRay){if(!matricesUpdated){for(const object of this.occluders)object.updateWorldMatrix(true,false);matricesUpdated=true}part.nextRay=time+.1;part.blocked=this.blocked(part,camera)}
+   if(time>=part.nextRay){part.mesh.updateWorldMatrix(true,false);for(const object of this.occluders)object.updateWorldMatrix(true,false);part.nextRay=time+.15;part.blocked=this.blocked(part,camera)}
    const selected=this.candidates.some(p=>p.key===part.key),distance=light.position.distanceTo(camera.position),fade=1-T.MathUtils.smoothstep(distance,20,30),target=selected&&!part.blocked?1.8*this.brightness*fade:0;
    light.intensity=part.blocked?0:T.MathUtils.lerp(light.intensity,target,blend);
    light.color.copy(part.material.color);if(part.material.map&&part.material.userData.fallbackColor)light.color.set(part.material.userData.fallbackColor);

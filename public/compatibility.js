@@ -4,7 +4,7 @@ import {GlobeRaster} from './globe-raster.js?v=168';
 import {earthBiome} from './earth-biomes.js?v=122';
 import {gasInteriorProfile,gasCloudPosition} from './gas-interior.js?v=105';
 import {drawBodyMap} from './texture-geometry.js';
-import {graphicsPolicy} from './graphics-policy.js?v=110';
+import {graphicsPolicy} from './graphics-policy.js?v=182';
 import {atmosphere} from './surface.js?v=170';
 import {cloudProfile,cloudPosition} from './atmosphere-effects.js?v=170';
 import {PAD_RADIUS} from './surface-layout.js';

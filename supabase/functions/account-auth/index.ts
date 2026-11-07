@@ -5,7 +5,7 @@ export function createHandler({env=name=>Deno.env.get(name),fetcher=fetch}={}){
  const url=env('SUPABASE_URL'),service=env('SUPABASE_SERVICE_ROLE_KEY'),anon=env('SUPABASE_ANON_KEY');
  const internal=email=>typeof email==='string'&&email.endsWith('@'+INTERNAL_DOMAIN);
  return async req=>{
- const origin=req.headers.get('origin'),allowed=(env('TZG_ALLOWED_ORIGINS')||'https://appleeroblox-lab.github.io').split(',').map(s=>s.trim());
+ const origin=req.headers.get('origin'),allowed=[...new Set(['https://appleeroblox-lab.github.io','https://applees-tzg-web-edition.space',...(env('TZG_ALLOWED_ORIGINS')||'').split(',').map(s=>s.trim()).filter(Boolean)])];
  const headers={'Content-Type':'application/json','Cache-Control':'no-store','Access-Control-Allow-Origin':allowed.includes(origin)?origin:allowed[0],'Access-Control-Allow-Headers':'authorization,apikey,content-type,x-client-info','Access-Control-Allow-Methods':'POST,OPTIONS','Vary':'Origin'};
  const reply=(data,status=200)=>new Response(JSON.stringify(data),{status,headers});
  if(origin&&!allowed.includes(origin))return reply({error:'Origin is not allowed.'},403);

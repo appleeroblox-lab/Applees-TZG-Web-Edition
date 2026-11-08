@@ -1,6 +1,6 @@
-import {AvatarCropEditor} from './avatar-crop.js?v=186';
-import {PhotoLibrary} from './photo-library.js?v=186';
-import {chatDialog} from './chat-dialog.js?v=169';
+import {AvatarCropEditor} from './avatar-crop.js?v=187';
+import {PhotoLibrary} from './photo-library.js?v=187';
+import {chatDialog} from './chat-dialog.js?v=187';
 const $=id=>document.getElementById(id);
 export function setBanner(node,value){const safe=typeof value==='string'&&value.length<=180000&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(value);node.hidden=!safe;if(safe){node.src=value;node.onerror=()=>{node.hidden=true;node.removeAttribute('src')}}else node.removeAttribute('src');node.alt='Profile banner'}
 export class ProfileBanner{

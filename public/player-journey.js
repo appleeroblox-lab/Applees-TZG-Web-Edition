@@ -1,4 +1,4 @@
-import {showMenu,closeMenuDialog} from './menu-motion.js?v=186';
+import {showMenu,closeMenuDialog} from './menu-motion.js?v=187';
 import {CRAFTS} from './economy.js?v=170';
 import {itemVisual} from './item-images.js';
 const $=id=>document.getElementById(id);

@@ -1,4 +1,4 @@
-import {showMenu,menuMotion} from './menu-motion.js?v=186';
+import {showMenu,menuMotion} from './menu-motion.js?v=187';
 import {FilePickerGuard} from './file-picker.js?v=163';
 const imageFile=file=>(file.type||'').startsWith('image/')||/\.(jpe?g|png|webp|gif|bmp|avif|heic|heif|tiff?|ico|svg)$/i.test(file.name||'');
 // A visible, unfiltered file input uses Android's document browser instead of

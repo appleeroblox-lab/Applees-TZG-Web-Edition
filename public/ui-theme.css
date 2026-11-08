@@ -176,3 +176,6 @@ body.referenceHUD #flightRight #shipPowerActions :is(#boostBtn,#gaugeWarpBtn)>im
 body.referenceHUD #gameTop :is(#chatToggle,#dailyRewardsOpen){height:var(--title-button-height,48px)!important;min-height:var(--title-button-height,48px)!important;max-height:var(--title-button-height,48px)!important}
 #orbitZoom{display:none!important}
 @media(max-height:550px){body.referenceHUD #flightRight #shipPowerActions{height:42px}body.referenceHUD #flightRight #shipPowerActions :is(#boostBtn,#gaugeWarpBtn){flex-basis:42px!important;width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;max-width:42px!important;max-height:42px!important}}
+
+body.referenceHUD #flightGauge{width:min(210px,calc(100vw - 40px))!important}
+#boostCooldownOverlay{inset:auto 0 0!important}

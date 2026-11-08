@@ -1,4 +1,4 @@
-import {showMenu,hideMenu,menuVisible} from './menu-motion.js?v=186';
+import {showMenu,hideMenu,menuVisible} from './menu-motion.js?v=187';
 import * as T from './vendor/three.module.js';
 import {earthBiome,biomeCell,BIOME_SPACING} from './earth-biomes.js?v=122';
 import {surfacePalette} from './surface-palette.js?v=119';

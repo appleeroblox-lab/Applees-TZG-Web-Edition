@@ -1,15 +1,15 @@
-import {showMenu,hideMenu,menuVisible,animateMessage} from './menu-motion.js?v=186';
+import {showMenu,hideMenu,menuVisible,animateMessage} from './menu-motion.js?v=187';
 import {expiredMessage,nextMessageExpiry} from './chat-lifetime.js?v=96';
 import{messageContent}from'./message-content.js?v=91';
 import {uiIcon,iconButton,relativeTime,messageTime} from './ui-icons.js?v=91';
 import {enableImageViewer,closeImageViewer} from './image-viewer.js?v=184';
-import {markChatText,chatTranslationAction} from './chat-translation.js?v=186';
-import {emojiButton,closeEmojiPicker} from './emoji-picker.js?v=186';
+import {markChatText,chatTranslationAction} from './chat-translation.js?v=187';
+import {emojiButton,closeEmojiPicker} from './emoji-picker.js?v=187';
 import {safeChatImage,prepareGif} from './chat-media.js?v=96';
 import {messageOptions,closeMessageOptions} from './message-options.js?v=182';
-import {chatDialog,closeChatDialogs} from './chat-dialog.js?v=169';
+import {chatDialog,closeChatDialogs} from './chat-dialog.js?v=187';
 import {setVerifiedName} from './identity-ui.js?v=91';
-import {PhotoLibrary} from './photo-library.js?v=186';
+import {PhotoLibrary} from './photo-library.js?v=187';
 const $=id=>document.getElementById(id);
 export const APPEAL_URL='https://discord.gg/rPdRRHSkmw';
 export const DEFAULT_AVATAR='icons/default-profile.svg';
@@ -44,7 +44,7 @@ export class GlobalChat{
 
  openReports(){this.reportId=null;$('chatConversation').hidden=true;$('chatReportPanel').hidden=false;$('chatReportPicker').hidden=false;$('chatReportForm').hidden=true;const list=$('chatReportList');list.replaceChildren();for(const msg of [...this.messages.values()].reverse()){if(msg.own)continue;const button=document.createElement('button');button.type='button';button.className='chatReportChoice';button.dataset.messageId=String(msg.id);button.textContent=(msg.display_name||'Explorer')+': '+msg.body;button.onclick=()=>{this.reportId=msg.id;$('chatReportPicker').hidden=true;$('chatReportForm').hidden=false;$('chatReportTarget').textContent='Reporting '+(msg.display_name||'Explorer');$('chatReportEvidence').textContent=msg.body;$('chatReportReason').value=''};list.append(button)}if(!list.children.length)list.textContent='No other players’ messages are available to report.'}
  closeReports(){this.reportId=null;$('chatReportPanel').hidden=true;$('chatReportForm').hidden=true;$('chatConversation').hidden=false}
- async openProfile(message){this.account.profileView?.close();this.profileUsername=null;this.account.profileView?.actions.replaceChildren();$('chatProfileFriend').disabled=true;const request=this.profileRequest=(this.profileRequest||0)+1;$('chatPlayerProfile').hidden=false;$('chatProfileStatus').textContent='Loading profile…';for(const id of ['chatProfileName','chatProfileUsername','chatProfileBio','chatProfileJoined','chatProfileOnline'])$(id).textContent='';setAvatar($('chatProfileAvatar'),null);try{const profile=await this.account.rpc('tzg_chat_profile',{p_message:message});if(request!==this.profileRequest)return;if(this.account.profileView){await this.account.profileView.open(profile);return}setVerifiedName($('chatProfileName'),profile.display_name,profile.verified);this.profileUsername=profile.username;$('chatProfileFriend').disabled=false;$('chatProfileOnline').textContent=profile.online?'● Online':'○ Offline';$('chatProfileUsername').textContent=profile.username?'@'+profile.username:'Unavailable';$('chatProfileBio').textContent=profile.bio||'No bio yet.';$('chatProfileJoined').textContent=profile.joined_at?new Date(profile.joined_at).toLocaleDateString():'Unavailable';setAvatar($('chatProfileAvatar'),profile.avatar);$('chatProfileStatus').textContent=''}catch(e){if(request===this.profileRequest)$('chatProfileStatus').textContent=e.message}}
+ async openProfile(message){this.account.profileView?.close();this.profileUsername=null;this.account.profileView?.actions.replaceChildren();$('chatProfileFriend').disabled=true;const request=this.profileRequest=(this.profileRequest||0)+1;showMenu($('chatPlayerProfile'));$('chatProfileStatus').textContent='Loading profile…';for(const id of ['chatProfileName','chatProfileUsername','chatProfileBio','chatProfileJoined','chatProfileOnline'])$(id).textContent='';setAvatar($('chatProfileAvatar'),null);try{const profile=await this.account.rpc('tzg_chat_profile',{p_message:message});if(request!==this.profileRequest)return;if(this.account.profileView){await this.account.profileView.open(profile);return}setVerifiedName($('chatProfileName'),profile.display_name,profile.verified);this.profileUsername=profile.username;$('chatProfileFriend').disabled=false;$('chatProfileOnline').textContent=profile.online?'● Online':'○ Offline';$('chatProfileUsername').textContent=profile.username?'@'+profile.username:'Unavailable';$('chatProfileBio').textContent=profile.bio||'No bio yet.';$('chatProfileJoined').textContent=profile.joined_at?new Date(profile.joined_at).toLocaleDateString():'Unavailable';setAvatar($('chatProfileAvatar'),profile.avatar);$('chatProfileStatus').textContent=''}catch(e){if(request===this.profileRequest)$('chatProfileStatus').textContent=e.message}}
  resetHistory(){this.epoch=(this.epoch||0)+1;this.unread=0;$('chatUnread').hidden=true;this.messages.clear();this.nodes.clear();$('chatMessages').replaceChildren();this.after='0';this.joining=this.join().catch(e=>{$('chatStatus').textContent=e.message})}
  async join(){const epoch=this.epoch;try{const result=await this.account.rpc('tzg_chat_join');if(epoch===this.epoch)this.after=String(result.after)}catch(e){if(e.code==='PGRST202'){$('chatStatus').textContent='Chat setup needs the latest SQL.';this.chatUnavailable=true}else throw e}}
  unlockSound(){try{this.audio??=new (globalThis.AudioContext||globalThis.webkitAudioContext)();this.audio.resume().catch(()=>{})}catch{}}

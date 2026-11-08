@@ -1,8 +1,21 @@
 {
-  "currentVersion": "v0.0.186",
+  "currentVersion": "v0.0.187",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 187,
+      "version": "v0.0.187",
+      "date": "2026-11-08",
+      "title": "Animated action menus and black restart transitions",
+      "source": "Requested dialog, speed bar and restart fade updates",
+      "changes": [
+        "Animated Credits, Help, Route, inventory, crafting, trade and purchase confirmations.",
+        "Animated group details, profile viewers and account edit/security/session/birthday/delete/deactivate menus.",
+        "Shortened the speed bar and made the Boost overlay recede from top to bottom.",
+        "Faded to black before resetting after star/core contact or Restart, with a repeated-trigger guard."
+      ]
+    },
     {
       "legacyVersion": 186,
       "version": "v0.0.186",

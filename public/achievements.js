@@ -1,4 +1,4 @@
-import {showMenu,closeMenuDialog,menuVisible} from './menu-motion.js?v=186';
+import {showMenu,closeMenuDialog,menuVisible} from './menu-motion.js?v=187';
 import {ACHIEVEMENTS,RARITIES} from './achievement-catalog.js?v=174';
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n};
 const rarityOrder=Object.keys(RARITIES);

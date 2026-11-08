@@ -13,6 +13,6 @@ export function menuMotion(node,visible,finish=()=>{},axis='y'){
 }
 export function showMenu(node,axis='y'){menuMotion(node,true,()=>{},axis)}
 export function hideMenu(node,axis='y'){if(node.hidden)return;menuMotion(node,false,()=>{node.hidden=true},axis)}
-export function closeMenuDialog(node){if(!node.open&&!node.hasAttribute('open'))return;menuMotion(node,false,()=>node.close())}
+export function closeMenuDialog(node,after=()=>{}){if(!node.open&&!node.hasAttribute('open')){after();return}menuMotion(node,false,()=>{if(node.close)node.close();else node.removeAttribute('open');after()})}
 
 export function animateMessage(node){if(!node.animate||globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;node.animate([{translate:node.classList.contains('ownMessage')?'28px 0':'-28px 0',opacity:0},{translate:'0 0',opacity:1}],{duration:220,easing:'cubic-bezier(.22,.7,.25,1)'})}

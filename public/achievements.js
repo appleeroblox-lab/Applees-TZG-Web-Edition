@@ -1,4 +1,4 @@
-import {showMenu,closeMenuDialog,menuVisible} from './menu-motion.js?v=185';
+import {showMenu,closeMenuDialog,menuVisible} from './menu-motion.js?v=186';
 import {ACHIEVEMENTS,RARITIES} from './achievement-catalog.js?v=174';
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n};
 const rarityOrder=Object.keys(RARITIES);
@@ -9,7 +9,7 @@ function achievementIcon(a){const n=el('span','achievementIcon');n.setAttribute(
 export class Achievements{
  constructor({account,sound,anchor=document.querySelector('#gameTop nav')}){
   Object.assign(this,{account,sound,anchor});this.rows=new Map();this.queue=[];this.epoch=0;this.error='';this.playing=false;
-  const css=el('link');css.rel='stylesheet';css.href='./achievements.css?v=175';document.head.append(css);
+  const css=el('link');css.rel='stylesheet';css.href='./achievements.css?v=186';document.head.append(css);
   this.trigger=button('',()=>menuVisible(this.root)?this.close():this.open());this.trigger.id='achievementsBtn';const trophy=el('img','uiIcon');trophy.src='icons/achievement.svg';trophy.alt='';this.trigger.append(trophy);this.trigger.title='Achievements';this.trigger.setAttribute('aria-label','Achievements');this.trigger.setAttribute('aria-haspopup','dialog');this.trigger.setAttribute('aria-expanded','false');const accountButton=document.getElementById('accountBtn');accountButton.after(this.trigger);this.trigger.className=accountButton.className;const sizeButton=()=>{const box=accountButton.getBoundingClientRect();if(box.width&&box.height){for(const key of ['width','min-width','max-width'])this.trigger.style.setProperty(key,box.width+'px','important');for(const key of ['height','min-height','max-height'])this.trigger.style.setProperty(key,box.height+'px','important')}};this.buttonObserver=new ResizeObserver(sizeButton);this.buttonObserver.observe(accountButton);sizeButton();
   this.root=el('dialog');this.root.id='achievementsMenu';this.root.setAttribute('aria-label','Achievements');
   const head=el('div','achievementHead');head.append(el('h2','','Achievements'));const close=button('×',()=>this.close());close.className='achievementClose';close.setAttribute('aria-label','Close achievements');head.append(close);

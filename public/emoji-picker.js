@@ -1,4 +1,4 @@
-import {showMenu,menuMotion} from './menu-motion.js?v=185';
+import {showMenu,menuMotion} from './menu-motion.js?v=186';
 import {uiIcon} from './ui-icons.js?v=91';
 import {gifGallery} from './gif-gallery.js?v=96';
 const groups={Smileys:'😀 😃 😄 😁 😆 😅 😂 🤣 😊 🙂 🙃 😉 😍 🥰 😘 😋 😛 😜 🤪 😎 🤩 🥳 😇 🤔 🤨 😐 😑 😶 🙄 😏 😒 😔 😞 😢 😭 😤 😠 😡 🤯 😳 🥺 😱 😴 🤤 🤮 🤧 🤒 🤕 💀 👻 👽 🤖 💩',People:'👋 🤚 ✋ 🖖 👌 🤌 ✌️ 🤞 🤟 🤘 🤙 👈 👉 👆 👇 👍 👎 👊 ✊ 🤝 🙌 👏 👐 🙏 💪 🫶 👀 🧠 🧑 👩 👨 👶 🧑‍🚀 👩‍🚀 👨‍🚀',Nature:'🐶 🐱 🐭 🐹 🐰 🦊 🐻 🐼 🐨 🐯 🦁 🐸 🐵 🐧 🐦 🐣 🦋 🐝 🐢 🦖 🐉 🌲 🌴 🌵 🌱 🌻 🌹 🍀 🍁 🍄 🌍 🌎 🌏 🌕 🌙 ⭐ 🌟 ✨ ☀️ 🌤️ ☁️ 🌧️ ⛈️ 🌈 ❄️ 🔥 💧 🌊',Food:'🍎 🍌 🍇 🍉 🍓 🍒 🍑 🥭 🍍 🥥 🥑 🥕 🌽 🍔 🍟 🍕 🌭 🥪 🌮 🍜 🍣 🍚 🍙 🍪 🍩 🎂 🍰 🍫 🍿 🍦 ☕ 🧋 🥤',Activities:'⚽ 🏀 🏈 ⚾ 🎾 🏐 🎱 🏓 🏸 🏊 🚴 🏆 🥇 🥈 🥉 🎯 🎮 🕹️ 🎲 🎨 🎤 🎧 🎵 🎶 🎸 🎹 🎬 🎉 🎊 🎁 🎈',Travel:'🚀 🛸 🛰️ ✈️ 🚁 🚗 🚕 🚌 🚑 🚒 🚓 🚂 🚆 🚢 ⛵ 🛶 🏠 🏡 🏰 🗼 🗽 🏝️ 🏜️ 🌋 🗻 🏕️ 🌌 🪐 ☄️',Objects:'💡 🔦 🕯️ 📱 💻 ⌨️ 🖥️ 📷 📸 📹 📺 ⏰ 🧭 🔭 🔬 🧪 🧲 ⚙️ 🔧 🔨 ⛏️ 💎 💰 🪙 📦 📚 ✏️ 📝 📌 🔑 🔒 🔓 🛡️',Symbols:'❤️ 🧡 💛 💚 💙 💜 🖤 🤍 🤎 💔 💕 💞 💖 💯 ✅ ❌ ❗ ❓ ⚠️ 🚫 ♻️ 🔴 🟠 🟡 🟢 🔵 🟣 ⚪ ⚫ ➕ ➖ ✖️ ➗ ♾️ 🆕 🆗 🆒 🆘'};

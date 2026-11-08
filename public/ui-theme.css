@@ -167,3 +167,12 @@ body.referenceHUD #messageEditor textarea{box-sizing:border-box;width:100%;min-h
 body.referenceHUD #messageEditor .messageEditorActions{display:flex;flex-wrap:wrap;gap:5px}
 body.referenceHUD #messageEditor .messageEditorActions button{font-size:11px;min-height:28px;padding:4px 7px}
 body.referenceHUD #achievementsMenu{z-index:110}
+
+/* v186: ship power controls travel with the existing right control scale. */
+body.referenceHUD #flightRight #shipPowerActions{position:absolute;bottom:calc(100% + 8px);right:0;display:flex;justify-content:flex-end;gap:8px;width:100%;height:48px;pointer-events:auto}
+body.referenceHUD #flightRight #shipPowerActions :is(#boostBtn,#gaugeWarpBtn){position:relative;box-sizing:border-box;flex:0 0 48px!important;width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;max-width:48px!important;max-height:48px!important;padding:0!important;display:grid!important;place-items:center;border-radius:10px!important;overflow:hidden}
+body.referenceHUD #flightRight #shipPowerActions :is(#boostBtn,#gaugeWarpBtn)[hidden]{display:none!important}
+body.referenceHUD #flightRight #shipPowerActions :is(#boostBtn,#gaugeWarpBtn)>img{width:85%!important;height:85%!important;max-width:85%!important;max-height:85%!important;object-fit:contain!important;margin:auto!important;grid-area:1/1}
+body.referenceHUD #gameTop :is(#chatToggle,#dailyRewardsOpen){height:var(--title-button-height,48px)!important;min-height:var(--title-button-height,48px)!important;max-height:var(--title-button-height,48px)!important}
+#orbitZoom{display:none!important}
+@media(max-height:550px){body.referenceHUD #flightRight #shipPowerActions{height:42px}body.referenceHUD #flightRight #shipPowerActions :is(#boostBtn,#gaugeWarpBtn){flex-basis:42px!important;width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;max-width:42px!important;max-height:42px!important}}

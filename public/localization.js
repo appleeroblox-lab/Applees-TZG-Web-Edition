@@ -1,4 +1,4 @@
-import {openChoiceMenu,installSelectionMenus} from './selection-menu.js?v=170';
+import {openChoiceMenu,installSelectionMenus} from './selection-menu.js?v=186';
 import {LANGUAGE_CODES,MYANMAR_UI} from './ui-languages.js?v=91';
 import {OFFLINE_UI} from './ui-offline-translations.js?v=91';
 import {UI_STRINGS} from './ui-strings.js?v=91';

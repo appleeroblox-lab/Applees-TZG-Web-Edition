@@ -1,3 +1,4 @@
+import {showMenu,menuMotion} from './menu-motion.js?v=186';
 import {FilePickerGuard} from './file-picker.js?v=163';
 const imageFile=file=>(file.type||'').startsWith('image/')||/\.(jpe?g|png|webp|gif|bmp|avif|heic|heif|tiff?|ico|svg)$/i.test(file.name||'');
 // A visible, unfiltered file input uses Android's document browser instead of
@@ -10,9 +11,9 @@ export class PhotoLibrary{
  }
  dispose(){this.close();this.guard.dispose();this.input.removeEventListener('input',this.onInput);this.input.removeEventListener('change',this.onInput);this.root.remove()}
  message(text){this.status.textContent=text;this.onStatus(text)}
- open(){this.clear();this.selection=null;this.retry.hidden=true;this.input.value='';this.input.disabled=false;this.root.hidden=false;this.root.inert=false;try{this.root.showModal?this.root.showModal():this.root.setAttribute('open','')}catch{this.root.setAttribute('open','')}this.message('Choose a JPG, PNG or another supported image (up to 5 MB).')}
+ open(){this.clear();this.selection=null;this.retry.hidden=true;this.input.value='';this.input.disabled=false;this.root.hidden=false;this.root.inert=false;try{this.root.showModal?this.root.showModal():this.root.setAttribute('open','')}catch{this.root.setAttribute('open','')}showMenu(this.root);this.message('Choose a JPG, PNG or another supported image (up to 5 MB).')}
  receive(){const files=Array.from(this.input.files||[]);if(!files.length)return;const key=this.guard.sequence+'|'+files.map(f=>[f.name,f.size,f.lastModified].join(':')).join('|');if(key===this.lastSelection)return;this.clear();this.lastSelection=key;const images=files.filter(imageFile).filter(f=>f.size<=5*1024*1024).slice(0,8);if(!images.length){this.message('No supported image under 5 MB selected. Browse files again.');return}this.message(files.some(f=>f.size>5*1024*1024)?'Images over 5 MB were skipped. Tap a valid photo to crop.':images.length+' photo(s) selected. Tap a photo to crop.');for(const file of images){const button=document.createElement('button'),img=document.createElement('img'),name=document.createElement('span');button.type='button';img.alt='Selected photo preview';img.loading='lazy';img.decoding='async';try{const url=URL.createObjectURL(file);this.urls.push(url);img.src=url}catch{}img.onerror=()=>{img.hidden=true};name.textContent=file.name||'Photo';button.append(img,name);button.onclick=()=>this.choose(file);this.grid.append(button)}if(images.length===1)this.choose(images[0])}
  choose(file){this.selection=file;this.retry.hidden=false;this.close(false);for(const url of this.urls)URL.revokeObjectURL(url);this.urls=[];this.grid.replaceChildren();this.onChoose(file)}
  clear(){for(const url of this.urls)URL.revokeObjectURL(url);this.urls=[];this.grid.replaceChildren();this.lastSelection=null}
- close(clear=true){this.root.hidden=true;if(this.root.close)this.root.close();else this.root.removeAttribute('open');if(clear){this.clear();this.selection=null}}
+ close(clear=true){this.root.inert=true;if(this.root.open||this.root.hasAttribute('open'))menuMotion(this.root,false,()=>{this.root.hidden=true;if(this.root.close)this.root.close();else this.root.removeAttribute('open')});else this.root.hidden=true;if(clear){this.clear();this.selection=null}}
 }

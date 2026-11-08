@@ -1,8 +1,22 @@
 {
-  "currentVersion": "v0.0.185",
+  "currentVersion": "v0.0.186",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 186,
+      "version": "v0.0.186",
+      "date": "2026-11-08",
+      "title": "Animated menus and relocated ship power controls",
+      "source": "Requested control placement and menu/message transitions",
+      "changes": [
+        "Moved medium-size Boost and Warp buttons above the right ship controls.",
+        "Matched chat and Daily Rewards button height to the game title; hid the obsolete orbit zoom buttons.",
+        "Removed the CSS override that prevented Achievements motion.",
+        "Animated the message editor and image picker from below, and body information from the right.",
+        "Added scale transitions to selection menus and one-time side animations to new global, guest and party messages."
+      ]
+    },
     {
       "legacyVersion": 185,
       "version": "v0.0.185",

@@ -1,4 +1,4 @@
-import {AccountAuthFlow} from './account-auth-flow.js?v=184';
+import {AccountAuthFlow} from './account-auth-flow.js?v=185';
 import {accountGate} from './account-gate.js?v=163';
 import {supabaseConfig} from './supabase-config.js?v=61';
 let authenticatedClient=null;

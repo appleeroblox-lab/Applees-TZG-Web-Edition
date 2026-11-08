@@ -1,8 +1,23 @@
 {
-  "currentVersion": "v0.0.184",
+  "currentVersion": "v0.0.185",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 185,
+      "version": "v0.0.185",
+      "date": "2026-11-08",
+      "title": "Compact flight HUD and animated chat",
+      "source": "Requested flight controls, sidebar icons and chat animation fixes",
+      "changes": [
+        "Changed the Universe Map action label to Set Target.",
+        "Removed legacy Security/Data pseudo-icons and used the supplied sidebar and Report artwork.",
+        "Matched Boost/Warp button height to the speed bar, fitted icons to 85%, and placed speed endpoints inside the bar.",
+        "Hid engine hold text and added a 0.65-transparent Boost timer/cooldown overlay.",
+        "Animated Achievements, emoji pickers and Global Chat, including guest chat.",
+        "Moved message editing to a smaller independent overlay above chat."
+      ]
+    },
     {
       "legacyVersion": 184,
       "version": "v0.0.184",

@@ -1,8 +1,8 @@
 import {enableImageViewer} from './image-viewer.js?v=184';
 import {formatLastOnline} from './last-online.js?v=176';
-import {setBanner} from './profile-banner.js?v=184';
+import {setBanner} from './profile-banner.js?v=185';
 import {chatDialog} from './chat-dialog.js?v=169';
-import {setAvatar} from './social-ui.js?v=184';
+import {setAvatar} from './social-ui.js?v=185';
 import {setVerifiedName} from './identity-ui.js?v=91';
 const $=id=>document.getElementById(id);
 export class ProfileView{

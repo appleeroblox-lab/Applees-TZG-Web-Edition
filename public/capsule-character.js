@@ -2,7 +2,7 @@ import * as T from './vendor/three.module.js';
 // Local -Z faces forward; leg pivots overlap the body throughout their animation.
 export class CapsuleCharacter{
  constructor(){
-  this.group=new T.Group();this.group.name='On-foot capsule character';
+  this.scratch={delta:new T.Vector3(),up:new T.Vector3(),inverse:new T.Quaternion(),normal:new T.Vector3(0,0,1)};this.group=new T.Group();this.group.name='On-foot capsule character';
   this.torso=new T.Group();this.torso.name='Breathing torso';this.group.add(this.torso);
   const white=new T.MeshStandardMaterial({color:0xf7f4ff,roughness:.42}),black=new T.MeshStandardMaterial({color:0x171321,roughness:.6});
   this.body=new T.Mesh(new T.CapsuleGeometry(.34,.54,6,14),white);this.body.position.y=.87;this.torso.add(this.body);
@@ -19,13 +19,13 @@ export class CapsuleCharacter{
  }
  update({feet,rotation,time,moving=false,running=false,vertical=0,grounded=true,holding=false,action=0,tool=null,groundPoint=null,up=new T.Vector3(0,1,0),visible=true}){
   this.group.visible=visible;if(!visible)return;this.group.position.copy(feet);this.group.quaternion.copy(rotation);
-  const floor=groundPoint||feet,altitude=Math.max(0,feet.clone().sub(floor).dot(up));this.group.updateWorldMatrix(true,false);this.shadow.position.copy(this.group.worldToLocal(floor.clone().addScaledVector(up,.018)));const localUp=up.clone().applyQuaternion(rotation.clone().invert());this.shadow.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),localUp);this.shadow.material.opacity=Math.max(0,.65-altitude*.12);this.shadow.scale.setScalar(1+Math.min(altitude,3)*.12);
+  const floor=groundPoint||feet,s=this.scratch,altitude=Math.max(0,s.delta.copy(feet).sub(floor).dot(up));s.inverse.copy(rotation).invert();this.shadow.position.copy(floor).sub(feet).addScaledVector(up,.018).applyQuaternion(s.inverse);const localUp=s.up.copy(up).applyQuaternion(s.inverse);this.shadow.quaternion.setFromUnitVectors(s.normal,localUp);this.shadow.material.opacity=Math.max(0,.65-altitude*.12);this.shadow.scale.setScalar(1+Math.min(altitude,3)*.12);
   const dt=this.lastTime===undefined?1/60:Math.min(.1,Math.max(0,time-this.lastTime));this.lastTime=time;const blend=this.poseReady?1-Math.exp(-dt*16):1;this.poseReady=true;
   const cycle=time*(running?15:10),stride=moving&&grounded?Math.sin(cycle)*(running?.42:.30):0;
   if(this.wasGrounded===false&&grounded)this.landing=.045;this.wasGrounded=grounded;this.landing=(this.landing||0)*Math.exp(-dt*12);
   this.torso.position.y=Math.sin(time*2.5)*.012+(moving&&grounded?Math.abs(Math.sin(cycle))*.018:0)-(this.landing||0);
   this.legs.forEach((leg,i)=>{leg.scale.y=1;const x=grounded?stride*(i?1:-1):vertical>0?-.50+(i?.15:-.15):Math.sin(time*7+i*Math.PI)*.25+.22;leg.rotation.x=T.MathUtils.lerp(leg.rotation.x,x,blend);leg.rotation.z=T.MathUtils.lerp(leg.rotation.z,grounded?0:(i?1:-1)*.10,blend);});
-  this.hands.forEach((h,i)=>{const previous=h.position.clone(),previousRotation=h.rotation.clone();h.position.z=holding&&i===1?-.12:-stride*.4*(i?1:-1);h.position.y=.76+(grounded?0:.09);h.rotation.set(0,0,0);if(holding&&i===1){h.position.y+=action*.08;h.position.z-=action*(tool==='saw'?.20:.10);h.rotation.x=-action*(tool==='saw'?.25:1.05)}if(!grounded&&vertical<=0){h.position.y=1.35+Math.sin(time*5+i)*.025;h.position.z=0;h.rotation.x=-.65;h.rotation.z=(i?1:-1)*-.35}h.position.lerpVectors(previous,h.position,blend);h.rotation.x=T.MathUtils.lerp(previousRotation.x,h.rotation.x,blend);h.rotation.z=T.MathUtils.lerp(previousRotation.z,h.rotation.z,blend)});
+  this.hands.forEach((h,i)=>{const px=h.position.x,py=h.position.y,pz=h.position.z,rx=h.rotation.x,rz=h.rotation.z;h.position.z=holding&&i===1?-.12:-stride*.4*(i?1:-1);h.position.y=.76+(grounded?0:.09);h.rotation.set(0,0,0);if(holding&&i===1){h.position.y+=action*.08;h.position.z-=action*(tool==='saw'?.20:.10);h.rotation.x=-action*(tool==='saw'?.25:1.05)}if(!grounded&&vertical<=0){h.position.y=1.35+Math.sin(time*5+i)*.025;h.position.z=0;h.rotation.x=-.65;h.rotation.z=(i?1:-1)*-.35}h.position.set(T.MathUtils.lerp(px,h.position.x,blend),T.MathUtils.lerp(py,h.position.y,blend),T.MathUtils.lerp(pz,h.position.z,blend));h.rotation.x=T.MathUtils.lerp(rx,h.rotation.x,blend);h.rotation.z=T.MathUtils.lerp(rz,h.rotation.z,blend)});
   const blink=time%4.7>4.56?.08:1;this.eyes.forEach(e=>e.scale.y=blink);
  }
  dispose(){const geometries=new Set(),materials=new Set();

@@ -55,7 +55,7 @@ import {biomeWeather,earthBiome,biomeDestination} from './earth-biomes.js?v=122'
 import {installMobileInput} from './mobile-input.js';
 import {GroundWeather} from './ground-weather.js?v=170';
 import {underWeatherClouds} from './weather-state.js?v=170';
-import {DebugMenu} from './debug-menu.js?v=187';
+import {DebugMenu} from './debug-menu.js?v=188';
 import {rotateSubjectOrbit,shipCameraSubject,placeSubjectOrbit,ORBIT_MIN,ORBIT_MAX} from './subject-camera.js';
 import {padHeightAt} from './surface-layout.js';
 import {installTouchButtons} from './touch-buttons.js?v=57';

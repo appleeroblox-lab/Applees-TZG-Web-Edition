@@ -1,8 +1,23 @@
 {
-  "currentVersion": "v0.0.190",
+  "currentVersion": "v0.0.191",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 191,
+      "version": "v0.0.191",
+      "date": "2026-11-11",
+      "title": "Stellar effects, larger celestial visuals and rotating Earth skies",
+      "changes": [
+        "Added supplied depth-tested, camera-facing Glow and Shine images to stars in flight, planetary skies and the 3D Universe Map. Shine responds instantly to horizontal and vertical camera movement at 12% rotation.",
+        "Increased visual star and black-hole sizes while preserving catalog radii, collisions, orbits and travel mechanics.",
+        "Loop the existing black-hole background throughout black-hole systems and fade through the existing audio mixer when leaving.",
+        "Earth stars and Milky Way rotate continuously with the existing day/night clock without moving Earth or changing independent Sun/Moon motion. Shared small textures replace the WebGL canvas glare pass."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 190,
       "version": "v0.0.190",

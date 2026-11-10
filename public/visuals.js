@@ -2,6 +2,7 @@ import {atmosphereProfile} from './atmosphere-profiles.js?v=119';
 import {applySmallBody,smallBodyFallback} from './small-body-models.js?v=100';
 import {bodySphereGeometry} from './texture-geometry.js';
 import {createBlackHole} from './black-hole-effects.js?v=110';
+import {attachStarEffects,STAR_RENDER_SCALE,BLACK_HOLE_RENDER_SCALE} from './star-effects.js?v=191';
 import {starShineColor} from './star-colors.js';
 import * as T from './vendor/three.module.js';
 import {loadBlenderModel} from './models.js?v=169';
@@ -24,9 +25,9 @@ function planetTexture(b){
 function glowMap(){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'#ffffff');g.addColorStop(.15,'#ffffffcc');g.addColorStop(.35,'#ffffff33');g.addColorStop(1,'#ffffff00');x.fillStyle=g;x.fillRect(0,0,128,128);return new T.CanvasTexture(c)}
 export const glow=glowMap();
 export function makeWorld(b,visualRadius=b.r){
- if(b.type==='STAR'){const color=starShineColor(b),mesh=new T.Mesh(new T.SphereGeometry(visualRadius,40,24),new T.MeshBasicMaterial({color,toneMapped:false}));mesh.userData.body=b;mesh.userData.neonStar=true;mesh.userData.visualRadius=visualRadius;return mesh}
+ if(b.type==='STAR'){const color=starShineColor(b),mesh=new T.Mesh(new T.SphereGeometry(visualRadius*STAR_RENDER_SCALE,40,24),new T.MeshBasicMaterial({color,toneMapped:false}));mesh.userData.body=b;mesh.userData.neonStar=true;mesh.userData.visualRadius=visualRadius;mesh.userData.renderRadius=visualRadius*STAR_RENDER_SCALE;attachStarEffects(mesh,mesh.userData.renderRadius,color);return mesh}
  if(b.type==='GALAXY')return makeGalaxy(b);
- if(b.type==='BLACK HOLE')return createBlackHole(b);
+ if(b.type==='BLACK HOLE'){const mesh=createBlackHole(b);mesh.scale.setScalar(BLACK_HOLE_RENDER_SCALE);return mesh;}
  if(b.type==='NEBULA'||b.type==='STAR CLUSTER')return makeNebula(b);
  const geometry=b.modelFile?smallBodyFallback(b):bodySphereGeometry(b);
 

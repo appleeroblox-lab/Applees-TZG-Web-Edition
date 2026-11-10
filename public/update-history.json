@@ -1,8 +1,22 @@
 {
-  "currentVersion": "v0.0.191",
+  "currentVersion": "v0.0.192",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 192,
+      "version": "v0.0.192",
+      "date": "2026-11-11",
+      "title": "Subtle stellar effects and visible camera-reactive Shine",
+      "changes": [
+        "Unified star effects in WebGL, compatibility gameplay and the Universe Map fallback: one shared Glow/Shine pair, persistent camera-reactive rotation at 12%, Shine twice the Glow dimensions and depth-aware foreground masking.",
+        "Reduced Glow/Shine intensity to 12%/8%, reduced map star emission and kept original star surfaces independent from spectral effect tints. Bounded cached tints support mobile compatibility rendering.",
+        "Reduced only the Universe Map Sun size. Preserved larger gameplay stars/black holes, existing orbit positions, Earth-only sky rotation and continuous black-hole background audio."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 191,
       "version": "v0.0.191",

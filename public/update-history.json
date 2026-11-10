@@ -1,8 +1,21 @@
 {
-  "currentVersion": "v0.0.189",
+  "currentVersion": "v0.0.190",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 190,
+      "version": "v0.0.190",
+      "date": "2026-11-10",
+      "title": "Surface and center-area performance",
+      "source": "Reported Earth, center and body-interior lag",
+      "changes": [
+        "Bounded mobile surface shadow refreshes in ship mode and on foot with stable cached lighting.",
+        "Scanned shadow casters only in the active scene and reduced repeated discovery scans.",
+        "Reused neon occlusion results and staggered checks near detailed buildings.",
+        "Avoided repeated terrain-height samples and hidden mineral-label projections while piloting."
+      ]
+    },
     {
       "legacyVersion": 189,
       "version": "v0.0.189",

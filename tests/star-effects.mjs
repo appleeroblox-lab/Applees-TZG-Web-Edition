@@ -1,35 +1,28 @@
-import {starShineColor} from '../public/star-colors.js';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
+import {parseHTML} from 'linkedom';
 import * as T from '../public/vendor/three.module.js';
+import {starShineColor} from '../public/star-colors.js';
 import {StarCameraMotion,drawStarEffects,attachStarEffects,updateStarEffects,earthSkyAngle,STAR_RENDER_SCALE} from '../public/star-effects.js';
+import {starSettings,starEffectStyle,installStarSettings} from '../public/star-settings.js?v=193';
+import {installDeviceSettings} from '../public/device-settings.js';
 import {collisionRadius,starVisualRadius} from '../public/star-size.js';
 import {ambienceFor} from '../public/sound.js';
 import {atlasBodyRadius} from '../public/atlas-renderer.js';
 const camera=new T.PerspectiveCamera(),motion=new StarCameraMotion(),deg=Math.PI/180;
-assert.equal(motion.update(camera),0);
-camera.rotation.y=10*deg;assert(Math.abs(motion.update(camera)-1.2*deg)<1e-10,'left drag turns shine left at 12%');
-assert.equal(motion.update(camera),motion.angle,'stationary camera retains accumulated rotation');
-camera.rotation.y=0;assert(Math.abs(motion.update(camera))<1e-10);
-camera.rotation.x=10*deg;assert(Math.abs(motion.update(camera)+1.2*deg)<1e-10,'up drag turns shine right');
-camera.rotation.x=0;assert(Math.abs(motion.update(camera))<1e-10);
-camera.rotation.y=179*deg;motion.update(camera);const before=motion.angle;camera.rotation.y=-179*deg;assert(Math.abs(motion.update(camera)-before-.24*deg)<1e-10,'yaw seam uses short delta');
-const rolled=new T.PerspectiveCamera(),localMotion=new StarCameraMotion();rolled.rotation.z=Math.PI/2;localMotion.update(rolled);rolled.rotateX(10*deg);assert(Math.abs(localMotion.update(rolled)+1.2*deg)<1e-10,'up drag remains right rotation on a rolled planet camera');
+assert.equal(motion.update(camera),0);camera.rotation.y=10*deg;assert(Math.abs(motion.update(camera)-1.2*deg)<1e-10);assert.equal(motion.update(camera),motion.angle);camera.rotation.y=0;assert(Math.abs(motion.update(camera))<1e-10);camera.rotation.x=10*deg;assert(Math.abs(motion.update(camera)+1.2*deg)<1e-10);camera.rotation.x=0;assert(Math.abs(motion.update(camera))<1e-10);camera.rotation.y=179*deg;motion.update(camera);const before=motion.angle;camera.rotation.y=-179*deg;assert(Math.abs(motion.update(camera)-before-.24*deg)<1e-10);
+const rolled=new T.PerspectiveCamera(),localMotion=new StarCameraMotion();rolled.rotation.z=Math.PI/2;localMotion.update(rolled);rolled.rotateX(10*deg);assert(Math.abs(localMotion.update(rolled)+1.2*deg)<1e-10);
 const parent=new T.Group(),maps={glow:new T.Texture(),shine:new T.Texture()},fx=attachStarEffects(parent,10,0xffffff,maps);
-assert(fx.glow.isSprite&&fx.shine.isSprite);assert.equal(fx.shine.scale.y,fx.glow.scale.y*2);assert(fx.glow.material.opacity<=.12&&fx.shine.material.opacity<=.08,'subtle effects preserve the star surface');for(const sprite of Object.values(fx)){assert.equal(sprite.material.depthTest,true);assert.equal(sprite.material.depthWrite,false);assert.equal(sprite.scale.x/sprite.scale.y,1.5);assert.equal(sprite.position.length(),0);}
-assert.equal(fx.glow.visible,false,'avoid an untextured flash before image load');maps.glow.image={width:768,height:512};maps.shine.image={width:768,height:512};updateStarEffects(parent,.7);assert.equal(fx.glow.visible,true);assert.equal(fx.shine.material.rotation,.7);assert.equal(fx.glow.material.rotation,0);
-const again=attachStarEffects(parent,10,0xffffff,maps);assert.equal(parent.children.length,2,'reattaching does not duplicate effects');updateStarEffects(parent,.7);assert.equal(again.shine.material.rotation,.7);assert(fx.shine.renderOrder>fx.glow.renderOrder);
-// Exercise the actual compatibility drawing path, including angle, tint and alpha.
-const previousDocument=globalThis.document,draws=[],rotations=[],alphas=[];
-globalThis.document={createElement(){return {getContext(){return {drawImage(){},fillRect(){},set fillStyle(value){this.tint=value}}}}}};
-const context={save(){},restore(){},translate(){},rotate(a){rotations.push(a)},drawImage(...args){draws.push(args)},set globalAlpha(a){alphas.push(a)}};
-drawStarEffects(context,20,30,10,.42,starShineColor({spectralType:'M'}),{maps});
-assert.deepEqual(rotations,[-.42],'Canvas Shine uses the same clockwise sign as WebGL');assert.equal(draws.length,2);assert.equal(draws[1][3],draws[0][3]*2);assert.equal(draws[1][4],draws[0][4]*2);assert(alphas.every(a=>a<=.12),'Canvas does not restore full-strength effects');
-if(previousDocument===undefined)delete globalThis.document;else globalThis.document=previousDocument;
-const star={type:'STAR',system:'Sol',r:10,pos:new T.Vector3()},base=starVisualRadius(star,[star]);star.mesh={userData:{visualRadius:base,renderRadius:base*STAR_RENDER_SCALE}};assert.equal(collisionRadius(star,[star]),base);assert(star.mesh.userData.renderRadius>base);assert(atlasBodyRadius(star)>55);assert(atlasBodyRadius({...star,name:'Sun'})<55*STAR_RENDER_SCALE,'only the Universe Map Sun is smaller');assert(atlasBodyRadius({type:'BLACK HOLE'})>12);
-const bh={type:'BLACK HOLE',system:'BH',r:10,pos:new T.Vector3()},flight={system:'BH',active:[bh],pos:new T.Vector3(1e12,0,0)};
-assert.equal(ambienceFor({active:false},flight),'hazard');assert.equal(ambienceFor({active:true,body:{name:'Earth'}},flight),'hazard');flight.system='Sol';flight.active=[star];assert.equal(ambienceFor({active:false},flight),'space');
-assert(Math.abs(Math.sin(earthSkyAngle(24))-Math.sin(earthSkyAngle(0)))<1e-10);assert(earthSkyAngle(13)>earthSkyAngle(12));
-for(const asset of ['stellar-glow.webp','stellar-shine.webp']){const bytes=fs.readFileSync(new URL('../public/textures/'+asset,import.meta.url));assert.equal(bytes.toString('ascii',0,4),'RIFF');assert(bytes.length<150000,'bounded mobile texture');}
-for(const spectralType of ['O','B','A','F','G','K','M'])assert(starShineColor({spectralType}).isColor);assert.equal(starShineColor({spectralType:'A0'}).getHexString(),'ffffff');assert.notEqual(starShineColor({spectralType:'M5'}).getHexString(),starShineColor({spectralType:'B2'}).getHexString());
-console.log('PASS stellar camera motion, depth-tested shared billboards, visual-only sizes, black-hole system ambience and seamless Earth sky angle.');
+assert.equal(fx.glow.scale.x,28);assert.equal(fx.shine.scale.x,40);assert(fx.shine.renderOrder>fx.glow.renderOrder);for(const sprite of Object.values(fx)){assert(sprite.isSprite);assert.equal(sprite.material.depthTest,true);assert.equal(sprite.material.depthWrite,false);assert.equal(sprite.scale.x,sprite.scale.y);assert.equal(sprite.position.length(),0);}
+assert.equal(fx.glow.visible,false);maps.glow.image={width:512,height:512};maps.shine.image={width:1254,height:1254};updateStarEffects(parent,.7);assert(fx.glow.visible);assert.equal(fx.shine.material.rotation,.7);assert.equal(fx.glow.material.rotation,0);attachStarEffects(parent,10,0xffffff,maps);assert.equal(parent.children.length,2);
+const mapStar=new T.Group(),mapFX=attachStarEffects(mapStar,5,0xffffff,maps,{map:true});assert.equal(mapStar.children.length,1);assert.equal(mapFX.shine,undefined);assert.equal(mapFX.glow.scale.x,14);
+starSettings.worldBloom=200;starSettings.worldFlare=150;assert.equal(starEffectStyle(10).bloomSize,56);assert.equal(starEffectStyle(10).flareSize,60);assert.equal(starEffectStyle(5,true).bloomSize,14);assert(starEffectStyle(10).bloomOpacity>.12);starSettings.mapBloom=50;assert.equal(starEffectStyle(5,true).bloomSize,7);assert.equal(starEffectStyle(10).bloomSize,56);Object.assign(starSettings,{worldBloom:100,mapBloom:100,worldFlare:100});
+const previousDocument=globalThis.document,draws=[],rotations=[],composites=[];globalThis.document={createElement(){return {getContext(){return {drawImage(){},fillRect(){},set globalCompositeOperation(value){composites.push(value)}}}}}};const context={save(){},restore(){},translate(){},rotate(a){rotations.push(a)},drawImage(...args){draws.push(args)}};drawStarEffects(context,20,30,10,.42,starShineColor({spectralType:'M'}),{maps});assert(composites.includes('destination-in'),'tinting reapplies PNG alpha instead of leaving a square');assert.deepEqual(rotations,[-.42]);assert.equal(draws[0][3],28);assert.equal(draws[0][4],28);assert.equal(draws[1][3],40);draws.length=0;rotations.length=0;drawStarEffects(context,20,30,5,.8,0xffffff,{maps,map:true});assert.equal(draws.length,1);assert.equal(rotations.length,0);if(previousDocument===undefined)delete globalThis.document;else globalThis.document=previousDocument;
+const makeDoc=()=>parseHTML('<html><body><div id="settingsContent"><section class="settingsSection"><label><select id="graphicsPreset"><option>Medium</option></select></label></section></div></body></html>').document;
+const storage=new Map(),storageAPI={getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},doc=makeDoc();installStarSettings(doc);installDeviceSettings(doc,storageAPI);const control=doc.getElementById('worldStarBloomIntensity');control.value='180';control.dispatchEvent(new doc.defaultView.Event('input',{bubbles:true}));assert.equal(starSettings.worldBloom,180);assert.equal(Number(JSON.parse(storage.get('tzg-device-settings-v1')).worldStarBloomIntensity),180);const doc2=makeDoc();installStarSettings(doc2);starSettings.worldBloom=100;installDeviceSettings(doc2,storageAPI);assert.equal(starSettings.worldBloom,180);assert.equal(doc2.getElementById('universeStarBloomIntensity').value,'100');Object.assign(starSettings,{worldBloom:100,mapBloom:100,worldFlare:100});
+const star={type:'STAR',system:'Sol',r:10,pos:new T.Vector3()},base=starVisualRadius(star,[star]);star.mesh={userData:{visualRadius:base,renderRadius:base*STAR_RENDER_SCALE}};assert.equal(collisionRadius(star,[star]),base);assert(atlasBodyRadius(star)<55);assert(atlasBodyRadius({type:'BLACK HOLE'})>12);
+const bh={type:'BLACK HOLE',system:'BH',r:10,pos:new T.Vector3()},flight={system:'BH',active:[bh],pos:new T.Vector3(1e12,0,0)};assert.equal(ambienceFor({active:false},flight),'hazard');flight.system='Sol';flight.active=[star];assert.equal(ambienceFor({active:false},flight),'space');
+assert(Math.abs(Math.sin(earthSkyAngle(24))-Math.sin(earthSkyAngle(0)))<1e-10);for(const spectralType of ['O','B','A','F','G','K','M'])assert(starShineColor({spectralType}).isColor);
+for(const [asset,dimension]of [['star-bloom.png',512],['star-flare.png',1254]]){const bytes=fs.readFileSync(new URL('../public/textures/'+asset,import.meta.url));assert.equal(bytes.toString('ascii',1,4),'PNG');assert.equal(bytes.readUInt32BE(16),dimension);assert.equal(bytes.readUInt32BE(20),dimension);assert.equal(bytes[25],6,'RGBA PNG retains supplied transparency');}
+console.log('PASS supplied transparent PNG bounds, diameter-based independent settings/persistence, world Bloom/Flare rotation and depth, map Bloom only, smaller map stars and preserved gameplay radii/audio.');

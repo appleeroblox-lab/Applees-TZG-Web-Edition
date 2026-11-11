@@ -1,8 +1,23 @@
 {
-  "currentVersion": "v0.0.192",
+  "currentVersion": "v0.0.193",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 193,
+      "version": "v0.0.193",
+      "date": "2026-11-12",
+      "title": "Transparent PNG star billboards, independent intensities and global Earth time",
+      "changes": [
+        "Replaced old stellar assets with the supplied transparent Bloom and four-ray Flare PNGs. World stars use both, with spectral tint and immediate 12% camera-reactive Flare rotation; the smaller Universe Map stars use Bloom only.",
+        "Added saved World Star Bloom, Universe Map Star Bloom and World Star Flare intensity sliders. At 100%, full PNG width and height use the final requested formulas: Bloom = 1.4 times star diameter, Flare = 2 times star diameter. Bloom size and brightness scale independently by renderer.",
+        "Earth time advances away from Earth. Globe Mode freezes local day/night lighting while the global clock continues; atmospheric surface return synchronizes to current time. Only atmospheric Earth skies rotate around the Sun arc; Space, Globe and other planets do not rotate their skies.",
+        "Preserved world star/black-hole sizes, collisions, orbital positions and black-hole background audio. Shared textures and bounded alpha-preserving tint caches support PC and mobile."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 192,
       "version": "v0.0.192",

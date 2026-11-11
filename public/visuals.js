@@ -2,7 +2,7 @@ import {atmosphereProfile} from './atmosphere-profiles.js?v=119';
 import {applySmallBody,smallBodyFallback} from './small-body-models.js?v=100';
 import {bodySphereGeometry} from './texture-geometry.js';
 import {createBlackHole} from './black-hole-effects.js?v=110';
-import {attachStarEffects,STAR_RENDER_SCALE,BLACK_HOLE_RENDER_SCALE} from './star-effects.js?v=192';
+import {attachStarEffects,STAR_RENDER_SCALE,BLACK_HOLE_RENDER_SCALE} from './star-effects.js?v=193';
 import {starShineColor} from './star-colors.js';
 import * as T from './vendor/three.module.js';
 import {loadBlenderModel} from './models.js?v=169';

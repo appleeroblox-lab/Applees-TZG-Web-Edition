@@ -1,4 +1,4 @@
-import {attachStarEffects,updateStarEffects,StarCameraMotion,STAR_RENDER_SCALE} from './star-effects.js?v=192';
+import {attachStarEffects,updateStarEffects,StarCameraMotion,STAR_RENDER_SCALE} from './star-effects.js?v=193';
 import {starVisualRadius} from './star-size.js?v=170';
 import {applySmallBody,smallBodyFallback} from './small-body-models.js?v=100';
 import {starShineColor} from './star-colors.js';
@@ -26,5 +26,5 @@ export class SurfaceSky{
    if(item.body.texture&&item.body.type!=='STAR')this.loader.load('./textures/'+item.body.texture,map=>{if(generation!==this.generation){map.dispose();return}map.colorSpace=T.SRGBColorSpace;this.maps.set(item.body.id,map);mesh.material.map=map;mesh.material.color.set(0xffffff);mesh.material.needsUpdate=true},undefined,()=>{});
   }
  }
- update(camera){if(this.body!==this.session.body)this.build();const angle=this.motion.update(camera);this.group.position.copy(camera.position);const orbit=this.session.planetView?.cover.mode==='orbit';for(const item of this.session.skyBodies){const base=item.skyDistance||6000;item.renderDistance=orbit?240000:base;item.mesh.position.copy(item.direction).multiplyScalar(item.renderDistance);item.mesh.scale.setScalar(item.renderDistance/base);updateStarEffects(item.mesh,angle)}}
+ update(camera){if(this.body!==this.session.body)this.build();const angle=this.motion.update(camera);this.group.position.copy(camera.position);const orbit=this.session.planetView?.cover.mode==='orbit';for(const item of this.session.skyBodies){const base=item.skyDistance||6000;item.renderDistance=orbit?240000:base;item.mesh.position.copy(item.direction).multiplyScalar(item.renderDistance);item.mesh.scale.setScalar(item.renderDistance/base);updateStarEffects(item.mesh,angle);if(this.session.earthEnvironment){const fx=item.mesh.userData.starEffects;if(fx){const fade=1-this.session.earthEnvironment.cloud*.8;fx.glow.material.opacity*=fade;if(fx.shine)fx.shine.material.opacity*=fade;}}}}
 }

@@ -1,3 +1,4 @@
+import {temporalNavigationAllowed} from './proto-data.js?v=195';
 import {collisionRadius} from './star-size.js?v=170';
 import {destinationLightYears} from './warp-pricing.js?v=105';
 import {atmosphereBoundary} from './atmospheric-flight.js?v=168';
@@ -37,6 +38,7 @@ export class Flight {
  align(b){this.q.copy(attitude(this.pos,b.pos));}
  warpDenial(b){const blocker=warpBlocker(this);if(blocker)return 'Move farther from '+blocker.name+' before warping';if(b.system===this.system&&this.pos.distanceTo(b.pos)<=atmosphereBoundary(b)+Math.max(100,b.r*2))return 'Already near '+b.name+' · approach instead of warping';return ''}
  navigate(b,mode){
+  if(!temporalNavigationAllowed(this.system,b)){this.lastDenial='Interstellar travel is unavailable across time. Use the wormhole.';return false;}
   if(this.surface?.active)return mode==='land'&&this.surface.requestLand();
   if(this.strictSurface&&mode==='land')return false;
   if(mode==='land'&&(!b.solid||b.landable===false))return false;

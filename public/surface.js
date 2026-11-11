@@ -11,7 +11,7 @@ export function gasExitRadius(body){return Math.max(340,Math.min(480,(body?.r||1
 export const CONTACT=1.39,LAUNCH_SECONDS=5;
 // Gameplay meters: compressed transition heights, not physical atmosphere boundaries.
 export function exitHeight(body){if(hasAtmosphere(body)||hasGlobeMode(body))return globeExitHeight(body);return Math.round(T.MathUtils.clamp((body?.r||10)*5,100,650))}
-export function surfaceGravity(body){return {Earth:9.81,Moon:1.62,Mars:3.71,Mercury:3.7,Venus:8.87,Io:1.8,Europa:1.315,Ganymede:1.43,Callisto:1.24,Titan:1.35,Triton:.779,Pluto:.62}[body?.name]??1.5}
+export function surfaceGravity(body){return {Earth:9.81,Moon:1.62,Mars:3.71,Mercury:3.7,Venus:8.87,Io:1.8,Europa:1.315,Ganymede:1.43,Callisto:1.24,Titan:1.35,Triton:.779,Pluto:.62}[body?.terrainBase||body?.name]??1.5}
 export function surfaceHeight(x,z){const r=Math.hypot(x,z),fade=T.MathUtils.smoothstep(r,140,700);return fade*(22+Math.sin(x*.0028)*Math.cos(z*.0034)*24+Math.sin(x*.007+z*.004)*8)}
 export function atmosphere(body){return atmosphereProfile(body)?.air||null}
 export class SurfaceSession{

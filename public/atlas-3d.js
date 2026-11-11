@@ -8,6 +8,7 @@ import {drawBodyMap} from './texture-geometry.js';
 import * as T from './vendor/three.module.js';
 const V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
 export function systemLayout(bodies,system){
+ bodies=bodies.filter(b=>!b.hiddenSystem);
  if(system==='All'){const systems=[...new Set(bodies.map(b=>b.system))],cols=Math.ceil(Math.sqrt(systems.length));return systems.flatMap((key,i)=>systemLayout(bodies,key).filter(row=>row.b.system===key).map(row=>({b:row.b,pos:row.pos.clone().multiplyScalar(.4).add(V((i%cols-(cols-1)/2)*500,0,(Math.floor(i/cols)-(Math.ceil(systems.length/cols)-1)/2)*500))})));}
  const list=bodies.filter(b=>b.system===system||(system==='Blackholes'&&b.type==='BLACK HOLE')),star=list.find(b=>b.type==='STAR'),origin=star?.pos||V(),positions=new Map();
  const primary=list.filter(b=>!b.parent&&b!==star).sort((a,b)=>a.pos.distanceTo(origin)-b.pos.distanceTo(origin)||a.id.localeCompare(b.id));

@@ -1,4 +1,4 @@
-import {attachStarEffects,updateStarEffects,StarCameraMotion,STAR_RENDER_SCALE} from './star-effects.js?v=193';
+import {attachStarEffects,updateStarEffects,StarCameraMotion,STAR_RENDER_SCALE} from './star-effects.js?v=194';
 import {starVisualRadius} from './star-size.js?v=170';
 import {applySmallBody,smallBodyFallback} from './small-body-models.js?v=100';
 import {starShineColor} from './star-colors.js';

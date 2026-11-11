@@ -1,4 +1,4 @@
-import {drawStarEffects,StarCameraMotion} from './star-effects.js?v=193';
+import {drawStarEffects,StarCameraMotion} from './star-effects.js?v=194';
 import {starShineColor} from './star-colors.js';
 import * as T from './vendor/three.module.js';
 import {surfaceHeight} from './surface.js?v=170';

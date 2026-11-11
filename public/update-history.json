@@ -1,8 +1,23 @@
 {
-  "currentVersion": "v0.0.193",
+  "currentVersion": "v0.0.194",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 194,
+      "version": "v0.0.194",
+      "date": "2026-11-12",
+      "title": "Brighter stellar billboards, neon map stars and sky seam filtering",
+      "changes": [
+        "100% Bloom and Flare now use 3.2 times their previous dimensions. Independent world and map settings remain available.",
+        "Increased Bloom and Flare brightness with bounded opacity, and raised instant camera-reactive Flare rotation from 12% to 65%.",
+        "Universe Map star surfaces are fully self-lit with spectral color and Bloom only.",
+        "Wrapped sky longitude with linear base-level filtering to avoid dark mip seams, including rotating atmospheric skies."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 193,
       "version": "v0.0.193",

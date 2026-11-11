@@ -1,8 +1,8 @@
-import {starEffectStyle} from './star-settings.js?v=193';
+import {starEffectStyle} from './star-settings.js?v=194';
 import * as T from './vendor/three.module.js';
 export const STAR_RENDER_SCALE=1.3,BLACK_HOLE_RENDER_SCALE=1.35;
-export const SHINE_RESPONSE=.12;
-export const STAR_GLOW_SIZE=2.8,STAR_SHINE_SIZE=4,STAR_GLOW_OPACITY=.12,STAR_SHINE_OPACITY=.08;
+export const SHINE_RESPONSE=.65;
+export const STAR_GLOW_SIZE=8.96,STAR_SHINE_SIZE=12.8,STAR_GLOW_OPACITY=.46,STAR_SHINE_OPACITY=.24;
 let textures;
 // Supplied RGBA PNGs are shared; additive blending retains alpha and scene depth.
 export function stellarTextures(){

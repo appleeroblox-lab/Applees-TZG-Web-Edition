@@ -1,4 +1,4 @@
-import {installStarSettings} from './star-settings.js?v=193';
+import {installStarSettings} from './star-settings.js?v=194';
 import {GRAPHICS_MODES} from './graphics-policy.js?v=182';
 export function ensureGraphicsControls(doc){
  const slider=doc.getElementById('graphicsSlider');if(slider){slider.max='4';slider.closest('label')?.setAttribute('hidden','')}

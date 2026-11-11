@@ -1,4 +1,4 @@
-import {drawStarEffects,StarCameraMotion} from './star-effects.js?v=193';
+import {drawStarEffects,StarCameraMotion} from './star-effects.js?v=194';
 import {airlessFogRange} from './atmosphere-effects.js?v=170';
 import {atmosphereProfile} from './atmosphere-profiles.js?v=119';
 import {GlobeRaster} from './globe-raster.js?v=168';

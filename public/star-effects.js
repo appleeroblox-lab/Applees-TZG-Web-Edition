@@ -1,5 +1,9 @@
+import {PRICE_AU} from './warp-pricing.js';
 import {starEffectStyle} from './star-settings.js?v=194';
 import * as T from './vendor/three.module.js';
+export function stellarDistanceScale(distance){return Math.max(1,(Number(distance)||0)/PRICE_AU);}
+// Rebase remote stars inside the camera clip range, preserving angular size and physics.
+export function positionRemoteStar(body,origin,camera){const delta=body.pos.clone().sub(origin),distance=delta.length(),scale=Math.min(1,camera.far*.45/Math.max(1,distance));body.mesh.position.copy(delta).multiplyScalar(scale);body.mesh.scale.setScalar(scale);body.mesh.frustumCulled=false;body.mesh.userData.starDistanceScale=stellarDistanceScale(distance);return scale;}
 export const STAR_RENDER_SCALE=1.3,BLACK_HOLE_RENDER_SCALE=1.35;
 export const SHINE_RESPONSE=.65;
 export const STAR_GLOW_SIZE=8.96,STAR_SHINE_SIZE=12.8,STAR_GLOW_OPACITY=.46,STAR_SHINE_OPACITY=.24;
@@ -13,7 +17,7 @@ export function attachStarEffects(parent,radius,color=0xffffff,maps=stellarTextu
  if(parent.userData.starEffects){const old=parent.userData.starEffects;for(const sprite of Object.values(old)){parent.remove(sprite);sprite.material.dispose();}}
  parent.userData.starEffectRadius=radius;parent.userData.starEffectMap=map;const effects={};for(const [kind,size,order,opacity] of [['glow',STAR_GLOW_SIZE,10,STAR_GLOW_OPACITY],['shine',STAR_SHINE_SIZE,11,STAR_SHINE_OPACITY]]){
   if(map&&kind==='shine')continue;const sprite=new T.Sprite(new T.SpriteMaterial({map:maps[kind],color,transparent:true,opacity,blending:T.AdditiveBlending,depthTest:true,depthWrite:false,toneMapped:false,fog:false}));
-  if(kind==='shine'){sprite.center.set(.5009754112,.4982196748);const world=new T.Vector3(),eye=new T.Vector3();sprite.onBeforeRender=(_renderer,_scene,camera)=>{parent.getWorldPosition(world);camera.getWorldPosition(eye);const offset=Math.min(radius*1.01,eye.distanceTo(world)*.5);eye.sub(world).normalize().multiplyScalar(offset).add(world);sprite.position.copy(parent.worldToLocal(eye));sprite.updateMatrixWorld(true);};}
+  if(kind==='shine'){sprite.center.set(.5009754112,.4982196748);const world=new T.Vector3(),eye=new T.Vector3();sprite.onBeforeRender=(_renderer,_scene,camera)=>{parent.getWorldPosition(world);camera.getWorldPosition(eye);const offset=Math.min(radius*parent.getWorldScale(new T.Vector3()).length()/Math.sqrt(3)*1.01,eye.distanceTo(world)*.5);eye.sub(world).normalize().multiplyScalar(offset).add(world);sprite.position.copy(parent.worldToLocal(eye));sprite.updateMatrixWorld(true);};}
   sprite.visible=!!maps[kind].image;sprite.name=kind==='glow'?'Star Bloom':'Star Flare';sprite.scale.set(radius*size,radius*size,1);sprite.renderOrder=order;sprite.userData.stellarEffect=kind;parent.add(sprite);effects[kind]=sprite;
  }
  parent.userData.starEffects=effects;updateStarEffects(parent,0);return effects;
@@ -24,16 +28,16 @@ export class StarCameraMotion{
  update(camera){camera.getWorldQuaternion(this.current);if(this.ready){this.delta.copy(this.previous).invert().multiply(this.current);this.turn.setFromQuaternion(this.delta,'YXZ');this.angle+=SHINE_RESPONSE*(this.turn.y-this.turn.x);}this.previous.copy(this.current);this.ready=true;return this.angle;}
 
 }
-export function updateStarEffects(parent,angle){const fx=parent.userData.starEffects;if(!fx)return;const style=starEffectStyle(parent.userData.starEffectRadius,parent.userData.starEffectMap);fx.glow.visible=!!fx.glow.material.map?.image&&style.bloomSize>0;fx.glow.scale.set(style.bloomSize,style.bloomSize,1);fx.glow.material.opacity=style.bloomOpacity;fx.glow.material.rotation=0;if(fx.shine){fx.shine.visible=!!fx.shine.material.map?.image&&style.flareSize>0;fx.shine.scale.set(style.flareSize,style.flareSize,1);fx.shine.material.opacity=style.flareOpacity;fx.shine.material.rotation=angle;}}
+export function updateStarEffects(parent,angle){const fx=parent.userData.starEffects;if(!fx)return;const style=starEffectStyle(parent.userData.starEffectRadius,parent.userData.starEffectMap);fx.glow.visible=!!fx.glow.material.map?.image&&style.bloomSize>0;const gain=parent.userData.starEffectMap?1:parent.userData.starDistanceScale||1;fx.glow.scale.set(style.bloomSize*gain,style.bloomSize*gain,1);fx.glow.material.opacity=style.bloomOpacity;fx.glow.material.rotation=0;if(fx.shine){fx.shine.visible=!!fx.shine.material.map?.image&&style.flareSize>0;fx.shine.scale.set(style.flareSize*gain,style.flareSize*gain,1);fx.shine.material.opacity=style.flareOpacity;fx.shine.material.rotation=angle;}}
 // Same angle and direction as the existing day/night clock; only sky texture coordinates rotate.
 export function earthSkyAngle(hour){return (hour-6)/24*Math.PI*2;}
 
 // Canvas renderers use exactly the same pair, tint, rotation and size ratio as WebGL.
 const canvasTints=new Map();
-export function drawStarEffects(ctx,x,y,radius,angle,color=0xffffff,{shine=true,opacity=1,maps=stellarTextures(),map=false}={}){
+export function drawStarEffects(ctx,x,y,radius,angle,color=0xffffff,{shine=true,opacity=1,maps=stellarTextures(),map=false,distanceScale=1}={}){
  const tint=color?.isColor?color:new T.Color(color),key=tint.getHexString(),style=starEffectStyle(radius,map);
- for(const [kind,size,alpha] of [['glow',style.bloomSize,style.bloomOpacity],['shine',style.flareSize,style.flareOpacity]]){
-  if(size<=0||kind==='shine'&&(!shine||map))continue;const source=maps[kind].image;if(!source?.width)continue;
+ for(const [kind,baseSize,alpha] of [['glow',style.bloomSize,style.bloomOpacity],['shine',style.flareSize,style.flareOpacity]]){
+  const size=baseSize*(map?1:distanceScale);if(size<=0||kind==='shine'&&(!shine||map))continue;const source=maps[kind].image;if(!source?.width)continue;
   const cacheKey=kind+key;let image=canvasTints.get(cacheKey);
   if(!image){image=document.createElement('canvas');image.width=Math.min(384,source.width);image.height=Math.max(1,Math.round(source.height*image.width/source.width));const paint=image.getContext('2d');paint.drawImage(source,0,0,image.width,image.height);paint.globalCompositeOperation='multiply';paint.fillStyle=tint.getStyle();paint.fillRect(0,0,image.width,image.height);paint.globalCompositeOperation='destination-in';paint.drawImage(source,0,0,image.width,image.height);canvasTints.set(cacheKey,image);if(canvasTints.size>32)canvasTints.delete(canvasTints.keys().next().value);}
   ctx.save();ctx.translate(x,y);if(kind==='shine')ctx.rotate(-angle);ctx.globalCompositeOperation='screen';ctx.globalAlpha=alpha*opacity;ctx.drawImage(image,-size*(kind==='shine'?.5009754112:.5),-size*(kind==='shine'?.5017803252:.5),size,size);ctx.restore();

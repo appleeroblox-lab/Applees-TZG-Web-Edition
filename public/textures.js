@@ -5,7 +5,7 @@ export class TextureCache {
  update(position,system){
   const nearby=this.bodies.filter(b=>b.system===system&&b.texture&&b.type!=='STAR').sort((a,b)=>(position.distanceTo(a.pos)-a.r)-(position.distanceTo(b.pos)-b.r));
   this.wanted=new Set([...new Set(nearby.map(b=>b.texture))].slice(0,this.max));
-  for(const [key,map] of this.cache)if(!this.wanted.has(key)){for(const b of this.bodies)if(b.mesh?.material.map===map){b.mesh.material.map=null;b.mesh.material.color.set(b.color);b.mesh.material.needsUpdate=true}map.dispose();this.cache.delete(key)}
+  for(const [key,map] of this.cache)if(!this.wanted.has(key)){for(const b of this.bodies)if(b.mesh?.material?.map===map){b.mesh.material.map=null;b.mesh.material.color.set(b.color);b.mesh.material.needsUpdate=true}map.dispose();this.cache.delete(key)}
   for(const b of nearby){const map=this.cache.get(b.texture);if(map&&b.mesh.material.map!==map){b.mesh.material.map=map;b.mesh.material.color.set(0xffffff);b.mesh.material.needsUpdate=true}}
   this.pump();
  }

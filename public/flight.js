@@ -29,12 +29,12 @@ export function safeArrival(b,from,bodies,margin){
  return end;
 }
 export function warpDuration(){return 10}
-export function warpBlocker(flight){return flight.active.find(b=>!['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type)&&flight.pos.distanceTo(b.pos)<(b.type==='STAR'?collisionRadius(b,flight.bodies):atmosphereBoundary(b))+Math.max(20,b.r*.2))||null}
+export function warpBlocker(flight){return flight.active.find(b=>!['NEBULA','STAR CLUSTER','GALAXY','WORMHOLE'].includes(b.type)&&flight.pos.distanceTo(b.pos)<(b.type==='STAR'?collisionRadius(b,flight.bodies):atmosphereBoundary(b))+Math.max(20,b.r*.2))||null}
 export class Flight {
  constructor(bodies){this.bodies=bodies;this.pos=V(30,18,165);this.vel=V();this.q=attitude(this.pos,V());this.system='Sol';this.assist=true;this.gear=false;this.landed=null;this.nav=null;this.event=null;this.throttle=0;this.sensitivity=5;this.rotationSpeed=2;this.input={x:0,y:0,z:0,pitch:0,yaw:0,roll:0,boost:false,brake:false}}
  get active(){return this.bodies.filter(b=>b.system===this.system)}
  nearest(){return this.active.reduce((a,b)=>this.pos.distanceTo(a.pos)-a.r<this.pos.distanceTo(b.pos)-b.r?a:b)}
- cancel(){if(this.surface?.active){this.surface.abort();this.nav=null;this.throttle=0;return}this.nav=null;this.vel.set(0,0,0);this.throttle=0;this.cruiseSpeed=0;this.speedCapHeld=0;for(const b of this.active){if(['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type))continue;const normal=this.pos.clone().sub(b.pos);if(normal.length()<b.r+clearance){if(normal.lengthSq()<.01)normal.set(0,1,0);this.pos.copy(b.pos).addScaledVector(normal.normalize(),b.r+clearance+.01)}}}
+ cancel(){if(this.surface?.active){this.surface.abort();this.nav=null;this.throttle=0;return}this.nav=null;this.vel.set(0,0,0);this.throttle=0;this.cruiseSpeed=0;this.speedCapHeld=0;for(const b of this.active){if(['NEBULA','STAR CLUSTER','GALAXY','WORMHOLE'].includes(b.type))continue;const normal=this.pos.clone().sub(b.pos);if(normal.length()<b.r+clearance){if(normal.lengthSq()<.01)normal.set(0,1,0);this.pos.copy(b.pos).addScaledVector(normal.normalize(),b.r+clearance+.01)}}}
  align(b){this.q.copy(attitude(this.pos,b.pos));}
  warpDenial(b){const blocker=warpBlocker(this);if(blocker)return 'Move farther from '+blocker.name+' before warping';if(b.system===this.system&&this.pos.distanceTo(b.pos)<=atmosphereBoundary(b)+Math.max(100,b.r*2))return 'Already near '+b.name+' · approach instead of warping';return ''}
  navigate(b,mode){
@@ -79,7 +79,7 @@ export class Flight {
  collide(before,padding=clearance){
   // Segment/sphere sweep catches fast crossings, not only endpoints inside a world.
   for(const b of this.active){
-   if(['NEBULA','STAR CLUSTER','GALAXY'].includes(b.type))continue;
+   if(['NEBULA','STAR CLUSTER','GALAXY','WORMHOLE'].includes(b.type))continue;
    const entering=this.allowInterior&&((b.solid&&b.landable!==false)||/GAS GIANT|ICE GIANT/.test(b.type));const floor=(entering?atmosphereBoundary(b):collisionRadius(b,this.bodies))+(entering?0:(typeof padding==='function'?padding(b):padding)),delta=this.pos.clone().sub(before),length=delta.length();
    let hit=null;
    if(before.distanceTo(b.pos)>floor&&length>0){const ray=new T.Ray(before,delta.clone().normalize());const p=ray.intersectSphere(new T.Sphere(b.pos,floor),V());if(p&&p.distanceTo(before)<=length)hit=p}

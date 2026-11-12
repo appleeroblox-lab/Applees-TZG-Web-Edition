@@ -7,8 +7,8 @@ void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.
 #include <logdepthbuf_vertex>
 }`;
 export class WormholeVisual{
- constructor(){this.group=new T.Group();this.group.name='Temporal wormhole';this.core=new T.Mesh(new T.SphereGeometry(WORMHOLE_RADIUS,40,24),new T.MeshBasicMaterial({color:0x000000,toneMapped:false,fog:false}));this.group.add(this.core);this.uniforms={sky:{value:null},hasSky:{value:0},time:{value:0},basis:{value:new T.Matrix3()}};
- this.ring=new T.Mesh(new T.PlaneGeometry(WORMHOLE_RADIUS*6,WORMHOLE_RADIUS*6),new T.ShaderMaterial({uniforms:this.uniforms,vertexShader:vertex,transparent:true,depthWrite:false,toneMapped:false,side:T.DoubleSide,fragmentShader:`varying vec2 vUv;uniform sampler2D sky;uniform float hasSky;uniform float time;uniform mat3 basis;
+ constructor(radius=WORMHOLE_RADIUS){this.group=new T.Group();this.group.name='Temporal wormhole';this.core=new T.Mesh(new T.SphereGeometry(radius,40,24),new T.MeshBasicMaterial({color:0x000000,toneMapped:false,fog:false}));this.group.add(this.core);this.uniforms={sky:{value:null},hasSky:{value:0},time:{value:0},basis:{value:new T.Matrix3()}};
+ this.ring=new T.Mesh(new T.PlaneGeometry(radius*6,radius*6),new T.ShaderMaterial({uniforms:this.uniforms,vertexShader:vertex,transparent:true,depthWrite:false,toneMapped:false,side:T.DoubleSide,fragmentShader:`varying vec2 vUv;uniform sampler2D sky;uniform float hasSky;uniform float time;uniform mat3 basis;
 
 #include <common>
 #include <logdepthbuf_pars_fragment>
@@ -20,8 +20,9 @@ vec2 p=(vUv-.5)*6.;float r=length(p);if(r<.98||r>2.9)discard;float a=atan(p.y,p.
  update(camera,texture,time){this.ring.quaternion.copy(camera.quaternion);this.uniforms.sky.value=texture;this.uniforms.hasSky.value=texture?1:0;this.uniforms.time.value=time;this.uniforms.basis.value.setFromMatrix4(new T.Matrix4().makeRotationFromQuaternion(camera.quaternion));}
  dispose(){for(const mesh of [this.core,this.ring]){mesh.geometry.dispose();mesh.material.dispose()}this.group.removeFromParent()}
 }
-export function createProtoDust(){return new T.Mesh(new T.SphereGeometry(21000,32,20),new T.ShaderMaterial({side:T.BackSide,transparent:true,depthWrite:false,depthTest:false,toneMapped:false,uniforms:{strength:{value:1},offset:{value:new T.Vector3()}},vertexShader:'varying vec3 direction;void main(){direction=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:`varying vec3 direction;uniform float strength;uniform vec3 offset;
- float hash(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}float noise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x),mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x),mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y),f.z);}
- void main(){vec3 d=normalize(direction);vec3 p=d*5.+offset;float n=noise(p)*.55+noise(p*2.1)*.28+noise(p*4.3)*.17;float band=exp(-pow((d.y+.1*sin(d.x*4.))/ .25,2.));float clouds=smoothstep(.3,.78,n)*band;vec3 tint=mix(vec3(.22,.12,.055),vec3(.68,.43,.15),n);gl_FragColor=vec4(tint,clouds*.48*strength);
- #include <colorspace_fragment>
- }`}));}
+let dustTexture;
+export function createProtoDust({radius=45000000,count=64}={}){
+ if(!dustTexture){const size=64,data=new Uint8Array(size*size*4);for(let y=0;y<size;y++)for(let x=0;x<size;x++){const px=(x+.5)/size*2-1,py=(y+.5)/size*2-1,r=px*px+py*py,i=(y*size+x)*4,n=.65+.35*Math.sin(x*.21+Math.sin(y*.34))*Math.cos(y*.19);data[i]=data[i+1]=data[i+2]=255;data[i+3]=Math.round(Math.pow(Math.max(0,1-r),2)*n*100);}dustTexture=new T.DataTexture(data,size,size,T.RGBAFormat);dustTexture.needsUpdate=true;dustTexture.magFilter=T.LinearFilter;dustTexture.minFilter=T.LinearFilter;}
+ const group=new T.Group();group.name='Proto world-space dust clouds';group.userData.radius=radius;
+ for(let i=0;i<count;i++){const a=i*2.399963,r=radius*(.08+.92*Math.sqrt((i+.5)/count)),cloud=new T.Sprite(new T.SpriteMaterial({map:dustTexture,color:i%3===0?0x9d793e:0x705236,transparent:true,opacity:.25+(i%5)*.035,depthTest:true,depthWrite:false,toneMapped:false,fog:false}));cloud.position.set(Math.cos(a)*r,Math.sin(i*1.73)*radius*.035,Math.sin(a)*r);const size=radius*(.1+(i%7)*.018);cloud.scale.set(size,size*(.4+(i%3)*.2),1);cloud.material.rotation=i*.73;cloud.userData.worldCloud=true;group.add(cloud);}return group;
+}

@@ -25,13 +25,17 @@ function planetTexture(b){
 function glowMap(){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'#ffffff');g.addColorStop(.15,'#ffffffcc');g.addColorStop(.35,'#ffffff33');g.addColorStop(1,'#ffffff00');x.fillStyle=g;x.fillRect(0,0,128,128);return new T.CanvasTexture(c)}
 export const glow=glowMap();
 export function makeWorld(b,visualRadius=b.r){
- if(b.type==='STAR'){const color=b.color||'#ffffff',mesh=new T.Mesh(new T.SphereGeometry(visualRadius*STAR_RENDER_SCALE,40,24),new T.MeshBasicMaterial({color,toneMapped:false}));mesh.userData.body=b;mesh.userData.neonStar=true;mesh.userData.visualRadius=visualRadius;mesh.userData.renderRadius=visualRadius*STAR_RENDER_SCALE;attachStarEffects(mesh,mesh.userData.renderRadius,starShineColor(b));return mesh}
+ if(b.type==='STAR'){const color=starShineColor(b),mesh=new T.Mesh(new T.SphereGeometry(visualRadius*STAR_RENDER_SCALE,40,24),new T.MeshBasicMaterial({color,toneMapped:false}));mesh.userData.body=b;mesh.userData.neonStar=true;mesh.userData.visualRadius=visualRadius;mesh.userData.renderRadius=visualRadius*STAR_RENDER_SCALE;attachStarEffects(mesh,mesh.userData.renderRadius,starShineColor(b));return mesh}
  if(b.type==='GALAXY')return makeGalaxy(b);
  if(b.type==='BLACK HOLE'){const mesh=createBlackHole(b);mesh.scale.setScalar(BLACK_HOLE_RENDER_SCALE);return mesh;}
  if(b.type==='NEBULA'||b.type==='STAR CLUSTER')return makeNebula(b);
  const geometry=b.modelFile?smallBodyFallback(b):bodySphereGeometry(b);
 
- const mesh=new T.Mesh(geometry,new T.MeshStandardMaterial({color:b.color,roughness:b.name==='Earth'?.63:.95,metalness:0,emissive:b.type==='STAR'?b.color:0,emissiveIntensity:b.type==='STAR'?3.5:0}));mesh.userData.body=b;if(b.modelFile)mesh.userData.shapeReady=applySmallBody(mesh,b);
+ const mesh=new T.Mesh(geometry,new T.MeshStandardMaterial({color:b.color,roughness:b.name==='Earth'?.63:.95,metalness:0,emissive:b.type==='STAR'?b.color:0,emissiveIntensity:b.type==='STAR'?3.5:0}));mesh.userData.body=b;if(b.volcanic){mesh.material.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>
+#ifdef USE_MAP
+vec3 lavaPixel=texture2D(map,vMapUv).rgb;float molten=smoothstep(.12,.45,lavaPixel.r-lavaPixel.g*1.5);totalEmissiveRadiance+=vec3(1.4,.12,.004)*molten*${b.volcanic.toFixed(2)};
+#endif
+`)};mesh.material.customProgramCacheKey=()=> 'proto-lava-'+b.volcanic;}if(b.modelFile)mesh.userData.shapeReady=applySmallBody(mesh,b);
  if(b.solid&&!b.texture){const c=document.createElement('canvas');c.width=512;c.height=256;const x=c.getContext('2d');let seed=0;for(const ch of b.name)seed=(seed*31+ch.charCodeAt(0))>>>0;const rng=random(seed);x.fillStyle=b.color;x.fillRect(0,0,512,256);if(b.type.includes('DWARF')){for(let i=0;i<850;i++){const px=rng()*512,py=rng()*256;x.fillStyle=i%3?'#ffe7ce14':'#31222b22';x.beginPath();x.ellipse(px,py,3+rng()*38,1+rng()*12,rng()*3,0,7);x.fill()}}else{for(let i=0;i<360;i++){x.fillStyle=`rgba(25,28,32,${.03+rng()*.15})`;x.beginPath();x.ellipse(rng()*512,rng()*256,1+rng()*12,1+rng()*6,rng()*3,0,7);x.fill()}}const map=new T.CanvasTexture(c);map.colorSpace=T.SRGBColorSpace;mesh.material.map=map;mesh.material.color.set(0xffffff)}
 
 

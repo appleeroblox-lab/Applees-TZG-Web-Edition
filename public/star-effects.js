@@ -13,6 +13,7 @@ export function attachStarEffects(parent,radius,color=0xffffff,maps=stellarTextu
  if(parent.userData.starEffects){const old=parent.userData.starEffects;for(const sprite of Object.values(old)){parent.remove(sprite);sprite.material.dispose();}}
  parent.userData.starEffectRadius=radius;parent.userData.starEffectMap=map;const effects={};for(const [kind,size,order,opacity] of [['glow',STAR_GLOW_SIZE,10,STAR_GLOW_OPACITY],['shine',STAR_SHINE_SIZE,11,STAR_SHINE_OPACITY]]){
   if(map&&kind==='shine')continue;const sprite=new T.Sprite(new T.SpriteMaterial({map:maps[kind],color,transparent:true,opacity,blending:T.AdditiveBlending,depthTest:true,depthWrite:false,toneMapped:false,fog:false}));
+  if(kind==='shine'){sprite.center.set(.5009754112,.4982196748);const world=new T.Vector3(),eye=new T.Vector3();sprite.onBeforeRender=(_renderer,_scene,camera)=>{parent.getWorldPosition(world);camera.getWorldPosition(eye);const offset=Math.min(radius*1.01,eye.distanceTo(world)*.5);eye.sub(world).normalize().multiplyScalar(offset).add(world);sprite.position.copy(parent.worldToLocal(eye));sprite.updateMatrixWorld(true);};}
   sprite.visible=!!maps[kind].image;sprite.name=kind==='glow'?'Star Bloom':'Star Flare';sprite.scale.set(radius*size,radius*size,1);sprite.renderOrder=order;sprite.userData.stellarEffect=kind;parent.add(sprite);effects[kind]=sprite;
  }
  parent.userData.starEffects=effects;updateStarEffects(parent,0);return effects;
@@ -35,6 +36,6 @@ export function drawStarEffects(ctx,x,y,radius,angle,color=0xffffff,{shine=true,
   if(size<=0||kind==='shine'&&(!shine||map))continue;const source=maps[kind].image;if(!source?.width)continue;
   const cacheKey=kind+key;let image=canvasTints.get(cacheKey);
   if(!image){image=document.createElement('canvas');image.width=Math.min(384,source.width);image.height=Math.max(1,Math.round(source.height*image.width/source.width));const paint=image.getContext('2d');paint.drawImage(source,0,0,image.width,image.height);paint.globalCompositeOperation='multiply';paint.fillStyle=tint.getStyle();paint.fillRect(0,0,image.width,image.height);paint.globalCompositeOperation='destination-in';paint.drawImage(source,0,0,image.width,image.height);canvasTints.set(cacheKey,image);if(canvasTints.size>32)canvasTints.delete(canvasTints.keys().next().value);}
-  ctx.save();ctx.translate(x,y);if(kind==='shine')ctx.rotate(-angle);ctx.globalCompositeOperation='screen';ctx.globalAlpha=alpha*opacity;ctx.drawImage(image,-size*.5,-size*.5,size,size);ctx.restore();
+  ctx.save();ctx.translate(x,y);if(kind==='shine')ctx.rotate(-angle);ctx.globalCompositeOperation='screen';ctx.globalAlpha=alpha*opacity;ctx.drawImage(image,-size*(kind==='shine'?.5009754112:.5),-size*(kind==='shine'?.5017803252:.5),size,size);ctx.restore();
  }
 }

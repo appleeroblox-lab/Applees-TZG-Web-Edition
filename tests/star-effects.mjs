@@ -29,3 +29,6 @@ for(const [asset,dimension]of [['star-bloom.png',512],['star-flare.png',1254]]){
 console.log('PASS supplied transparent PNG bounds, diameter-based independent settings/persistence, world Bloom/Flare rotation and depth, map Bloom only, smaller map stars and preserved gameplay radii/audio.');
 
 const sky=configureSkyTexture(new T.Texture());assert.equal(sky.wrapS,T.RepeatWrapping);assert.equal(sky.wrapT,T.ClampToEdgeWrapping);assert.equal(sky.generateMipmaps,false);assert.equal(sky.minFilter,T.LinearFilter);
+
+// Flare core stays on the projected star center for moved/rotated parents and cameras.
+parent.position.set(4,-3,-10);parent.rotation.set(.2,.7,-.3);parent.updateMatrixWorld(true);camera.position.set(9,2,90);camera.lookAt(parent.position);camera.updateMatrixWorld(true);const flare=parent.userData.starEffects.shine;flare.onBeforeRender(null,null,camera);const starProjection=parent.getWorldPosition(new T.Vector3()).project(camera),flareProjection=flare.getWorldPosition(new T.Vector3()).project(camera);assert(Math.abs(starProjection.x-flareProjection.x)<1e-10);assert(Math.abs(starProjection.y-flareProjection.y)<1e-10);assert(flare.getWorldPosition(new T.Vector3()).distanceTo(camera.position)<parent.getWorldPosition(new T.Vector3()).distanceTo(camera.position));assert.equal(flare.center.x,.5009754112);

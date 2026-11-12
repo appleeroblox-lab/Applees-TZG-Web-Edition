@@ -22,7 +22,7 @@ export function safeArrival(b,from,bodies,margin){
  const dir=from.clone().sub(b.pos).normalize();if(dir.lengthSq()<.01)dir.set(.3,.2,1).normalize();
  const end=b.pos.clone().addScaledVector(dir,(b.type==='STAR'?collisionRadius(b,bodies):atmosphereBoundary(b))+margin);
  for(let attempt=0;attempt<6;attempt++)for(const other of bodies){
-  if(other===b||other.system!==b.system)continue;
+  if(other===b||other.system!==b.system||['NEBULA','STAR CLUSTER','GALAXY','WORMHOLE'].includes(other.type))continue;
   const delta=end.clone().sub(other.pos),floor=(other.type==='STAR'?collisionRadius(other,bodies):atmosphereBoundary(other))+clearance+10;
   if(delta.length()<floor)end.copy(other.pos).addScaledVector(delta.lengthSq()?delta.normalize():V(0,1,0),floor);
  }
@@ -85,7 +85,7 @@ export class Flight {
    if(before.distanceTo(b.pos)>floor&&length>0){const ray=new T.Ray(before,delta.clone().normalize());const p=ray.intersectSphere(new T.Sphere(b.pos,floor),V());if(p&&p.distanceTo(before)<=length)hit=p}
    if(this.pos.distanceTo(b.pos)<floor)hit=this.pos.clone();
    if(!hit)continue;
-   if(b.type==='STAR'){this.nav=null;this.vel.set(0,0,0);this.throttle=0;this.cruiseSpeed=0;this.event={type:'starContact',b};return}
+   if(b.type==='STAR'||b.type==='BLACK HOLE'){this.nav=null;this.vel.set(0,0,0);this.throttle=0;this.cruiseSpeed=0;this.event={type:b.type==='BLACK HOLE'?'blackHoleContact':'starContact',b};return}
    const normal=hit.sub(b.pos).normalize();if(normal.lengthSq()<.1)normal.set(0,1,0);
    if(entering){this.nav=null;this.event={type:'enter',b,normal};return}
    this.pos.copy(b.pos).addScaledVector(normal,floor+.002);
@@ -110,7 +110,7 @@ export class Flight {
   this.q.slerp(n.mode==='land'&&dist<20?surfaceAttitude(n.b,this.pos):attitude(this.pos,n.b.pos),1-Math.exp(-dt*3));
   if(dist<.04){this.pos.copy(n.end);if(n.mode==='land')this.park(n.b);else{this.nav=null;this.vel.set(0,0,0);this.event={type:'arrive',b:n.b}}return}
   const dir=delta.normalize();let waypoint=null;
-  for(const b of this.active){if(b===n.b)continue;const p=new T.Ray(this.pos,dir).intersectSphere(new T.Sphere(b.pos,b.r+10),V());if(p&&p.distanceTo(this.pos)<dist){const radial=this.pos.clone().sub(b.pos).normalize(),side=V().crossVectors(radial,dir);if(side.lengthSq()<.01)side.set(0,1,0);waypoint=b.pos.clone().addScaledVector(radial,b.r+30).addScaledVector(side.normalize(),b.r*1.7);break}}
+  for(const b of this.active){if(b===n.b||['NEBULA','STAR CLUSTER','GALAXY','WORMHOLE'].includes(b.type))continue;const p=new T.Ray(this.pos,dir).intersectSphere(new T.Sphere(b.pos,b.r+10),V());if(p&&p.distanceTo(this.pos)<dist){const radial=this.pos.clone().sub(b.pos).normalize(),side=V().crossVectors(radial,dir);if(side.lengthSq()<.01)side.set(0,1,0);waypoint=b.pos.clone().addScaledVector(radial,b.r+30).addScaledVector(side.normalize(),b.r*1.7);break}}
   const direction=waypoint?waypoint.sub(this.pos).normalize():dir;
   const max=n.mode==='land'?Math.min(35,Math.max(.2,dist*1.2)):Math.min(1500,Math.max(.5,dist*1.5));
   this.vel.copy(direction).multiplyScalar(Math.min(max,dist/dt));const before=this.pos.clone();this.pos.addScaledVector(this.vel,dt);

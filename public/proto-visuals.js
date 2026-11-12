@@ -16,7 +16,7 @@ export class WormholeVisual{
 #include <logdepthbuf_fragment>
 vec2 p=(vUv-.5)*6.;float r=length(p);if(r<.98||r>2.9)discard;float a=atan(p.y,p.x);float bend=1.25/max(.13,r-0.8);vec2 warped=vec2(cos(a+bend*.18),sin(a+bend*.18))* (r-bend*.14);vec3 d=normalize(basis*vec3(warped,-1.6));vec2 uv=vec2(atan(d.z,d.x)/6.283185+.5,asin(clamp(d.y,-1.,1.))/3.141593+.5);vec3 photo=texture2D(sky,uv).rgb;float rim=exp(-pow((r-1.09)*16.,2.));float outer=exp(-pow((r-1.5)*3.,2.));vec3 color=photo*(1.6+outer*2.8)+vec3(.48,.66,1.)*rim*.85;float alpha=smoothstep(.98,1.03,r)*(1.-smoothstep(2.,2.9,r));gl_FragColor=vec4(mix(vec3(.08,.12,.22),color,hasSky),alpha);
  #include <colorspace_fragment>
- }`}));this.ring.renderOrder=6;this.group.add(this.ring);}
+ }`}));this.ring.renderOrder=1000;this.group.add(this.ring);}
  update(camera,texture,time){this.ring.quaternion.copy(camera.quaternion);this.uniforms.sky.value=texture;this.uniforms.hasSky.value=texture?1:0;this.uniforms.time.value=time;this.uniforms.basis.value.setFromMatrix4(new T.Matrix4().makeRotationFromQuaternion(camera.quaternion));}
  dispose(){for(const mesh of [this.core,this.ring]){mesh.geometry.dispose();mesh.material.dispose()}this.group.removeFromParent()}
 }

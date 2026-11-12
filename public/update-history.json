@@ -1,8 +1,20 @@
 {
-  "currentVersion": "v0.0.199",
+  "currentVersion": "v0.0.200",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 200,
+      "version": "v0.0.200",
+      "date": "2026-11-12",
+      "title": "Capture tools and early planet names",
+      "source": "Repository release v200",
+      "changes": [
+        "Renamed primordial Mercury, Venus and the gas and ice giants to Early; Proto Earth stays unchanged and Proto Theia is now Theia.",
+        "Added System Video Recorder to More with Show GUIs / Hide GUIs options, a draggable Stop control, an elapsed timer, a screen border excluded from captures and automatic saving at the 1-minute limit.",
+        "Added matching Screenshot Method choices and close buttons to both capture menus."
+      ]
+    },
     {
       "legacyVersion": 199,
       "version": "v0.0.199",

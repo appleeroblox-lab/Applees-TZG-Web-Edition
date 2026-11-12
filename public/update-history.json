@@ -1,8 +1,27 @@
 {
-  "currentVersion": "v0.0.194",
+  "currentVersion": "v0.0.199",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 199,
+      "version": "v0.0.199",
+      "date": "2026-11-12",
+      "title": "Proto Solar System and the Orion wormhole",
+      "changes": [
+        "Travel through the wormhole at the center of Orion Nebula to the Proto Solar System, 4.3 billion years ago. The entrance is visible on the Universe Map; the developer-only shortcut has been removed.",
+        "Explore Proto Mercury, Venus, Earth, Theia, Mars, Jupiter, Saturn, Uranus and Neptune, with volcanic terrain, primordial dust and large non-landable asteroid debris.",
+        "Proto Earth has a brown-orange atmosphere, day and night without clouds or a Moon. Earth and Theia can be seen from each other.",
+        "The past has its own Universe Map. Local warps now show a confirmation and normal prices; Proto Earth and the return wormhole are free. The Orion entrance uses the normal warp price.",
+        "Return through the distant wormhole to the present beyond Neptune. Time travel includes departure, a curved tunnel and arrival scenes; the exit shrinks away after two seconds.",
+        "Proto flights save and resume on the current account. Center launch pads are available on landable Proto worlds.",
+        "Wormhole labels hide during transit, and cockpit glass now masks the wormhole horizon while keeping its transparency.",
+        "Black-hole contact restarts the flight. Airless worlds gain wider low-altitude ground coverage, and nebulae and star clusters are much larger and denser."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 194,
       "version": "v0.0.194",

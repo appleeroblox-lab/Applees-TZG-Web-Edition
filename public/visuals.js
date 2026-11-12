@@ -26,6 +26,7 @@ function glowMap(){const c=document.createElement('canvas');c.width=c.height=128
 export const glow=glowMap();
 export function makeWorld(b,visualRadius=b.r){
  if(b.type==='STAR'){const color=starShineColor(b),mesh=new T.Mesh(new T.SphereGeometry(visualRadius*STAR_RENDER_SCALE,40,24),new T.MeshBasicMaterial({color,toneMapped:false}));mesh.userData.body=b;mesh.userData.neonStar=true;mesh.userData.visualRadius=visualRadius;mesh.userData.renderRadius=visualRadius*STAR_RENDER_SCALE;attachStarEffects(mesh,mesh.userData.renderRadius,starShineColor(b));return mesh}
+ if(b.type==='WORMHOLE'){const group=new T.Group();group.userData.body=b;return group;}
  if(b.type==='GALAXY')return makeGalaxy(b);
  if(b.type==='BLACK HOLE'){const mesh=createBlackHole(b);mesh.scale.setScalar(BLACK_HOLE_RENDER_SCALE);return mesh;}
  if(b.type==='NEBULA'||b.type==='STAR CLUSTER')return makeNebula(b);
@@ -63,8 +64,8 @@ export function makeStars(){const rand=random(317),g=new T.BufferGeometry(),p=[]
 function makeNebula(b){
  const root=new T.Mesh(new T.SphereGeometry(b.r,12,8),new T.MeshBasicMaterial({color:0x8d79b7,transparent:true,opacity:.015,depthWrite:false}));root.userData.body=b;
  const rand=random([...b.name].reduce((s,c)=>s+c.charCodeAt(0),10));
- if(b.type==='NEBULA')for(let i=0;i<18;i++){const sprite=new T.Sprite(new T.SpriteMaterial({map:glow,color:new T.Color().setHSL(.64+rand()*.34,.5,.52),transparent:true,opacity:.1,blending:T.AdditiveBlending,depthWrite:false}));sprite.position.set((rand()-.5)*b.r*4,(rand()-.5)*b.r*2,(rand()-.5)*b.r*2);sprite.scale.set(b.r*(2+rand()*3),b.r*(1+rand()*2),1);root.add(sprite)}
- const g=new T.BufferGeometry(),points=[];for(let i=0;i<(b.type==='NEBULA'?400:1800);i++){const v=new T.Vector3(rand()-.5,rand()-.5,rand()-.5).normalize().multiplyScalar(rand()**1.8*b.r*2);points.push(...v.toArray())}g.setAttribute('position',new T.Float32BufferAttribute(points,3));root.add(new T.Points(g,new T.PointsMaterial({color:0xd1e3ff,size:1.6,sizeAttenuation:false,transparent:true,opacity:.8,depthWrite:false})));return root;
+ if(b.type==='NEBULA')for(let i=0;i<64;i++){const sprite=new T.Sprite(new T.SpriteMaterial({map:glow,color:new T.Color().setHSL(.64+rand()*.34,.5,.52),transparent:true,opacity:.1,blending:T.AdditiveBlending,depthWrite:false}));sprite.position.set((rand()-.5)*b.r*4,(rand()-.5)*b.r*2,(rand()-.5)*b.r*2);sprite.scale.set(b.r*(2+rand()*3),b.r*(1+rand()*2),1);root.add(sprite)}
+ const g=new T.BufferGeometry(),points=[];for(let i=0;i<(b.type==='NEBULA'?2200:7000);i++){const v=new T.Vector3(rand()-.5,rand()-.5,rand()-.5).normalize().multiplyScalar(rand()**1.8*b.r*2);points.push(...v.toArray())}g.setAttribute('position',new T.Float32BufferAttribute(points,3));root.add(new T.Points(g,new T.PointsMaterial({color:0xd1e3ff,size:1.6,sizeAttenuation:false,transparent:true,opacity:.8,depthWrite:false})));return root;
 }
 
 function makeGalaxy(b){const group=new T.Group(),points=[],colors=[],rand=random(b.name.length*89);for(let i=0;i<6000;i++){const r=Math.pow(rand(),.7)*b.r,a=i%3*Math.PI*2/3+r/b.r*7+rand()*.5;points.push(Math.cos(a)*r,(rand()-.5)*b.r*.05,Math.sin(a)*r*.6);const c=new T.Color().setHSL(.59+rand()*.08,.2,.5+rand()*.5);colors.push(c.r,c.g,c.b)}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(points,3));g.setAttribute('color',new T.Float32BufferAttribute(colors,3));group.add(new T.Points(g,new T.PointsMaterial({vertexColors:true,size:20,map:glow,transparent:true,opacity:.8,blending:T.AdditiveBlending,depthWrite:false})));group.material=new T.MeshBasicMaterial({color:b.color});group.userData.body=b;return group}

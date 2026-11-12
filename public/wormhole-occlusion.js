@@ -1,4 +1,5 @@
 import * as T from './vendor/three.module.js';
-const original=new WeakMap();
-// Cockpit cameras see the inside faces of opaque hull panels. Keep real glass clear.
-export function cockpitHullDepth(ship,enabled){ship.traverse(object=>{if(!object.isMesh)return;for(const material of Array.isArray(object.material)?object.material:[object.material]){if(!material||material.transparent&&material.opacity<.99||!material.depthWrite)continue;if(!original.has(material))original.set(material,material.side);const side=enabled?T.DoubleSide:original.get(material);if(material.side!==side){material.side=side;material.needsUpdate=true;}}});}
+const original=new WeakMap(),orders=new WeakMap();
+// Opaque interior panels and transparent canopy glass mask the lens, not the opaque sky.
+// Glass draws after ordinary transparent space effects and before the portal and writes depth, retaining its tint/alpha.
+export function cockpitHullDepth(ship,enabled){ship.traverse(object=>{if(!object.isMesh)return;for(const material of Array.isArray(object.material)?object.material:[object.material]){if(!material||material.isShaderMaterial)continue;const glass=material.transparent&&material.opacity<.99&&/glass|canopy|window/i.test(object.name+' '+material.name);if(!glass&&!material.depthWrite)continue;if(!original.has(material))original.set(material,{side:material.side,depthWrite:material.depthWrite});const saved=original.get(material),side=enabled?T.DoubleSide:saved.side,depthWrite=enabled&&glass?true:saved.depthWrite;if(material.side!==side||material.depthWrite!==depthWrite){material.side=side;material.depthWrite=depthWrite;material.needsUpdate=true;}if(glass){if(!orders.has(object))orders.set(object,object.renderOrder);object.renderOrder=enabled?999:orders.get(object);}}});}

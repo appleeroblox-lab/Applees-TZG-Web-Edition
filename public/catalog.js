@@ -1,3 +1,4 @@
+import {wormholeDestination} from './proto-data.js?v=199';
 import {installMinorBodies} from './minor-body-data.js?v=100';
 import {robloxTextureAssets} from './roblox-texture-assets.js';
 import {surfacePalette} from './surface-palette.js';
@@ -41,7 +42,7 @@ for(const [i,name] of ['Sagittarius A*','M87*','Cygnus X-1','V404 Cygni'].entrie
  body(name,'BLACK HOLE',220+i*100,'#ffb366',[i*1500000,0,-i*700000],{system:'Blackholes',solid:false,desc:'A known black hole. Disk, lensing halo, size and placement are artistic approximations. Use Approach for a safe viewing distance.'});
 }
 for(const [i,name] of ['Orion Nebula','Carina Nebula','Crab Nebula','Pleiades Cluster','Omega Centauri'].entries()){
- body(name,i>2?'STAR CLUSTER':'NEBULA',450,'#bd8df5',[Math.cos(i*2.39996)*3600000,Math.sin(i*1.7)*1200000,Math.sin(i*2.39996)*3600000],{system:'Nebulae',solid:false,desc:'A real astronomical destination shown as a stylized volume of gas and stars, not a telescope photograph.'});
+ body(name,i>2?'STAR CLUSTER':'NEBULA',i>2?180000+(i-3)*70000:120000+i*30000,'#bd8df5',[Math.cos(i*2.39996)*3600000,Math.sin(i*1.7)*1200000,Math.sin(i*2.39996)*3600000],{system:'Nebulae',solid:false,desc:'A real astronomical destination shown as a stylized volume of gas and stars, not a telescope photograph.'});
 }
 const trappist=bodies.find(b=>b.name==='TRAPPIST-1');trappist.system='TRAPPIST-1';trappist.pos.set(0,0,0);trappist.r=840;
 for(const [i,letter] of ['b','c','d','e','f','g','h'].entries())body('TRAPPIST-1 '+letter,'EXOPLANET',40+i*5,['#ae775e','#c6aa79','#98a9c3'][i%3],[16000+i*7000,0,-i*3000],{system:'TRAPPIST-1',texture:'exo'+[5,6,7][i%3]+'.png',desc:'A known TRAPPIST-1 planet. The borrowed game texture is an imagined surface, not an observed map.'});
@@ -105,3 +106,6 @@ installMinorBodies(bodies,AU);
 
 // Requested ring artwork; ordinary body textures remain unchanged.
 for(const b of bodies){if(['Quaoar','Haumea'].includes(b.name)){b.rings=true;b.ringProfile={count:1,color:'#999b9e',inner:1.65,outer:1.86}}if(b.name==='Proxima c'){b.rings=true;b.ringProfile={count:10,color:'#b4e6ff'}}}
+
+// The public entrance shares the center of Orion Nebula.
+bodies.push(wormholeDestination(bodies));

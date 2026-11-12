@@ -8,7 +8,7 @@ void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.
 }`;
 export class WormholeVisual{
  constructor(radius=WORMHOLE_RADIUS){this.group=new T.Group();this.group.name='Temporal wormhole';this.core=new T.Mesh(new T.SphereGeometry(radius,40,24),new T.MeshBasicMaterial({color:0x000000,toneMapped:false,fog:false}));this.group.add(this.core);this.uniforms={sky:{value:null},hasSky:{value:0},time:{value:0},basis:{value:new T.Matrix3()}};
- this.ring=new T.Mesh(new T.PlaneGeometry(radius*6,radius*6),new T.ShaderMaterial({uniforms:this.uniforms,vertexShader:vertex,transparent:true,depthWrite:false,toneMapped:false,side:T.DoubleSide,fragmentShader:`varying vec2 vUv;uniform sampler2D sky;uniform float hasSky;uniform float time;uniform mat3 basis;
+ this.ring=new T.Mesh(new T.PlaneGeometry(radius*6,radius*6),new T.ShaderMaterial({uniforms:this.uniforms,vertexShader:vertex,transparent:true,depthTest:true,depthWrite:false,toneMapped:false,side:T.DoubleSide,fragmentShader:`varying vec2 vUv;uniform sampler2D sky;uniform float hasSky;uniform float time;uniform mat3 basis;
 
 #include <common>
 #include <logdepthbuf_pars_fragment>

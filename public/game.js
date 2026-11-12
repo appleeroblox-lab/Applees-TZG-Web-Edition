@@ -262,18 +262,19 @@ function updateObjectLabels(){
  if(!explorer.labels)return;
  const candidates=[];
  for(const b of surface.active?[]:bodies){
+  if(b.type==='WORMHOLE'&&b.system===flight.system){const relative=b.pos.clone().sub(flight.pos),point=labelProjection(relative,camera,innerWidth,innerHeight);if(point){const depth=-relative.clone().applyMatrix4(camera.matrixWorldInverse).z;point.y=Math.max(24,point.y-b.r*3/Math.max(depth,b.r)*innerHeight/(2*Math.tan(camera.fov*Math.PI/360))-12);candidates.push({b,point,distance:flight.pos.distanceTo(b.pos)})}continue;}
   if(b===target)continue;if(!bodyLabelAllowed(b,flight.system,family)||!labelFilterAllows(b,labelFilters))continue;if(labelOccluded(flight.pos.clone().add(camera.position),b,labelOccluders))continue;
   const relative=b.pos.clone().sub(flight.pos),point=labelProjection(relative,camera,innerWidth,innerHeight);
   if(point){const depth=-relative.clone().applyMatrix4(camera.matrixWorldInverse).z;point.y-=b.r/Math.max(depth,b.r)*innerHeight/(2*Math.tan(camera.fov*Math.PI/360))+10;candidates.push({b,point,distance:flight.pos.distanceTo(b.pos)})}
  }
  if(surface.active)for(const item of surface.skyBodies||[]){if(item.body===target)continue;const localBodies=(surface.skyBodies||[]).map(o=>({id:o.body.id,pos:o.direction.clone().multiplyScalar(6000).add(camera.position),r:o.radius})),localTarget=localBodies.find(o=>o.id===item.body.id);if(localTarget&&labelOccluded(camera.position,localTarget,localBodies))continue;if(!meaningfulBodyLabel(item.body)||item.direction.y<=0||!labelFilterAllows(item.body,labelFilters))continue;const point=labelProjection(item.direction.clone().multiplyScalar(6000).add(camera.position),camera,innerWidth,innerHeight);if(point){const depth=-item.direction.clone().applyQuaternion(camera.quaternion.clone().invert()).z;point.y-=item.radius/6000/Math.max(.01,depth)*innerHeight/(2*Math.tan(camera.fov*Math.PI/360))+10;candidates.push({b:item.body,point,distance:item.distance})}}
  const cross=target.system!==flight.system,relative=destinationOffset(target,flight.system,flight.pos);
- if((!surface.active||cross)&&labelFilterAllows(target,labelFilters)){const point=labelProjection(relative,camera,innerWidth,innerHeight);if(point)candidates.push({b:target,point,distance:relative.length(),locked:true,cross})}
- else if(labelFilterAllows(target,labelFilters)){const item=(surface.skyBodies||[]).find(item=>item.body===target);if(item){const point=labelProjection(item.direction.clone().multiplyScalar(6000).add(camera.position),camera,innerWidth,innerHeight);if(point)candidates.push({b:target,point,distance:item.distance,locked:true})}}
- candidates.sort((a,b)=>(a.b===target?-1:b.b===target?1:0)||((a.b.parent===family?0:1)-(b.b.parent===family?0:1))||a.distance-b.distance);
- for(const {b,point,distance,locked,cross}of candidates.filter((c,i)=>c.b===target||!c.b.parent&&/PLANET|GIANT|STAR|BLACK HOLE/.test(c.b.type)||i<16)){
+ if(target.type!=='WORMHOLE'&&(!surface.active||cross)&&labelFilterAllows(target,labelFilters)){const point=labelProjection(relative,camera,innerWidth,innerHeight);if(point)candidates.push({b:target,point,distance:relative.length(),locked:true,cross})}
+ else if(target.type!=='WORMHOLE'&&labelFilterAllows(target,labelFilters)){const item=(surface.skyBodies||[]).find(item=>item.body===target);if(item){const point=labelProjection(item.direction.clone().multiplyScalar(6000).add(camera.position),camera,innerWidth,innerHeight);if(point)candidates.push({b:target,point,distance:item.distance,locked:true})}}
+ candidates.sort((a,b)=>(a.b.type==='WORMHOLE'?-1:b.b.type==='WORMHOLE'?1:0)||(a.b===target?-1:b.b===target?1:0)||((a.b.parent===family?0:1)-(b.b.parent===family?0:1))||a.distance-b.distance);
+ for(const {b,point,distance,locked,cross}of candidates.filter((c,i)=>c.b.type==='WORMHOLE'||c.b===target||!c.b.parent&&/PLANET|GIANT|STAR|BLACK HOLE/.test(c.b.type)||i<16)){
   const skyItem=surface.active?(surface.skyBodies||[]).find(item=>item.body===b):null;const anchor=surface.active?skyItem?.mesh?.getWorldPosition(V()):b.pos.clone().sub(flight.pos);
-  if(anchor&&(labelDepth.blocked(anchor,skyItem?.mesh||b.mesh)||!surface.active&&!cross&&labelOccluded(flight.pos.clone().add(camera.position),b,labelOccluders)))continue;
+  if(b.type!=='WORMHOLE'&&anchor&&(labelDepth.blocked(anchor,skyItem?.mesh||b.mesh)||!surface.active&&!cross&&labelOccluded(flight.pos.clone().add(camera.position),b,labelOccluders)))continue;
   let node=objectLabels.get(b.id);
   if(!node){node=document.createElement('button');node.className='objectLabel';node.onclick=()=>setTarget(b);objectLabels.set(b.id,node);labelLayer.append(node)}
   node.hidden=false;node.classList.toggle('selected',b===target);

@@ -1,8 +1,21 @@
 {
-  "currentVersion": "v0.0.200",
+  "currentVersion": "v0.0.201",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1\u2013v0.0.2, v0.0.9\u2013v0.0.13 and v0.0.18\u2013v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 201,
+      "version": "v0.0.201",
+      "date": "2026-11-12",
+      "title": "Recorder quality, sound and pause controls",
+      "source": "Repository release v201",
+      "changes": [
+        "Improved the draggable recording panel with Pause/Resume beside Stop and keyboard movement.",
+        "Added Frame Rate (20\u201360 FPS) and Resolution (360p\u20131080p) sliders below recording methods.",
+        "Added Record In-Game Sounds; recording respects game audio levels and includes ambience, effects and engine audio.",
+        "The one-minute recording limit and timer now exclude paused time; the red border and recording controls remain excluded from captures."
+      ]
+    },
     {
       "legacyVersion": 200,
       "version": "v0.0.200",

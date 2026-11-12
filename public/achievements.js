@@ -63,7 +63,7 @@ export class Achievements{
  async playSound(){
   const toast=this.toast,s=this.sound;if(!s?.enabled||!s.unlocked||!s.active||!s.context||s.context.state!=='running'||s.volume<=0)return;
   try{const epoch=s.epoch,buffer=await s.loadBuffer('sounds/achievement-unlocked.mp3');if(this.toast!==toast||epoch!==s.epoch||!s.enabled||s.context.state!=='running')return;
-   const source=s.context.createBufferSource(),gain=s.context.createGain();source.buffer=buffer;gain.gain.value=s.volume*s.level('achievement');source.connect(gain).connect(s.context.destination);const node={source,gain,name:'achievement',base:1};s.nodes.add(node);source.onended=()=>{s.nodes.delete(node);source.disconnect();gain.disconnect()};source.start();this.soundNode=node;
+   const source=s.context.createBufferSource(),gain=s.context.createGain();source.buffer=buffer;gain.gain.value=s.volume*s.level('achievement');source.connect(gain).connect(s.output());const node={source,gain,name:'achievement',base:1};s.nodes.add(node);source.onended=()=>{s.nodes.delete(node);source.disconnect();gain.disconnect()};source.start();this.soundNode=node;
   }catch{/* Browser/audio decode failures are not reported as successful playback. */}
  }
  nextToast(){

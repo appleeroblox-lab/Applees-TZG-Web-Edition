@@ -1,0 +1,4 @@
+// Same deterministic cellular fissures in the terrain shader and minimap raster.
+const fract=x=>x-Math.floor(x);
+export function lavaFissure(x,z,strength=1){if(!(strength>0))return 0;const px=x*.055,pz=z*.055,ix=Math.floor(px),iz=Math.floor(pz),fx=fract(px),fz=fract(pz);let first=10,second=10;for(let y=-1;y<=1;y++)for(let x=-1;x<=1;x++){const a=ix+x,b=iz+y,jx=fract(Math.sin(a*127.1+b*311.7)*43758.5453),jz=fract(Math.sin(a*269.5+b*183.3)*43758.5453),dx=x+jx-fx,dz=y+jz-fz,d=dx*dx+dz*dz;if(d<first){second=first;first=d}else second=Math.min(second,d)}const t=Math.max(0,Math.min(1,(second-first-.008)/(.035-.008)));return (1-t*t*(3-2*t))*strength;}
+export function minimapLava(x,z,strength,footprint=0){let value=lavaFissure(x,z,strength);const span=Math.min(5,footprint*.4);for(const [dx,dz]of [[-span,0],[span,0],[0,-span],[0,span]])value=Math.max(value,lavaFissure(x+dx,z+dz,strength));return value;}

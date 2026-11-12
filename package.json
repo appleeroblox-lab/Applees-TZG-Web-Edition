@@ -58,7 +58,7 @@
     "test:v170": "node tests/gameplay-v170.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --v170-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --v170-only",
     "test:profile-banners": "node tests/profile-banner-sql.mjs && node tests/profile-banner-ui.mjs && node tests/prospecting-visibility.mjs",
     "test:on-foot": "node tests/tnt-ignite-prompt.mjs && node tests/character-grip.mjs && node tests/on-foot-camera.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --on-foot-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --on-foot-only",
-    "test:proto": "node tests/proto-system.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --proto-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --proto-only"
+    "test:proto": "node tests/proto-system.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --proto-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --proto-only && node --experimental-vm-modules tests/ui-smoke.mjs --proto-resume-only && node --experimental-vm-modules tests/ui-smoke.mjs --proto-resume-space-only"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

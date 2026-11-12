@@ -1,5 +1,5 @@
 {
-  "version": 197,
+  "version": 198,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -459,7 +459,7 @@
     "textures/roblox/ganymede.png",
     "textures/roblox/gonggong.png",
     "textures/roblox/iapetus.png",
-    "textures/roblox/ilmarë.png",
+    "textures/roblox/ilmar\u00eb.png",
     "textures/roblox/io.png",
     "textures/roblox/jupiter.png",
     "textures/roblox/makemake.png",
@@ -541,7 +541,8 @@
     "weather-state.js",
     "wood-models.js",
     "world-label-depth.js",
-    "world-precipitation.js"
+    "world-precipitation.js",
+    "wormhole-occlusion.js"
   ],
   "versionedFiles": [
     "account-auth-flow.js",
@@ -846,7 +847,7 @@
     "flight.js": 196,
     "forestry.js": 182,
     "friends-ui.js": 187,
-    "game.js": 197,
+    "game.js": 198,
     "gif-gallery.js": 96,
     "ground-weather.js": 170,
     "identity-ui.js": 91,
@@ -874,9 +875,9 @@
     "supabase-config.js": 61,
     "supabase-debug.js": 156,
     "surface-roads.js": 170,
-    "surface-sky.js": 197,
+    "surface-sky.js": 198,
     "surface-streaming.js": 195,
-    "surface-view.js": 197,
+    "surface-view.js": 198,
     "surface.js": 195,
     "terrain-detail.js": 195,
     "touch-buttons.js": 57,
@@ -898,7 +899,7 @@
     "world-precipitation.js": 170,
     "models/crafting-center-v96.json": 97,
     "account-gate.js": 163,
-    "boot-loader.js": 197,
+    "boot-loader.js": 198,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
     "models/base-venus.json": 100,
@@ -999,7 +1000,7 @@
     "terrain-clouds.js": 170,
     "texture-palettes.js": 119,
     "surface-palette.js": 195,
-    "minimap.js": 196,
+    "minimap.js": 198,
     "minimap.css": 127,
     "index.html": 193,
     "warp-effects.js": 197,
@@ -1072,9 +1073,9 @@
     "textures/star-bloom.png": 193,
     "star-settings.js": 194,
     "sky-texture.js": 194,
-    "proto-data.js": 197,
-    "proto-system.js": 197,
-    "proto-visuals.js": 197,
+    "proto-data.js": 198,
+    "proto-system.js": 198,
+    "proto-visuals.js": 198,
     "textures/proto-earth.jpg": 195,
     "textures/proto-jupiter.png": 195,
     "textures/proto-mars.png": 195,
@@ -1085,7 +1086,8 @@
     "textures/proto-uranus.jpg": 195,
     "textures/proto-venus.jpg": 195,
     "volcanic-terrain.js": 196,
-    "warp-hud.js": 196
+    "warp-hud.js": 196,
+    "wormhole-occlusion.js": 198
   },
   "publicReleaseVersion": 194
 }

@@ -1,0 +1,5 @@
+Mediabunny 1.65.2 by Vanilagy
+Unmodified browser ESM distribution from https://www.npmjs.com/package/mediabunny/v/1.65.2
+Source: https://github.com/Vanilagy/mediabunny/tree/v1.65.2
+License: Mozilla Public License 2.0 (see mediabunny.LICENSE).
+Loaded locally only when a recording is finalized; no media is uploaded.

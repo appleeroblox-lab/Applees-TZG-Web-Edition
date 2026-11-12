@@ -8,7 +8,7 @@ export function localMoonFamily(bodies,position,system){
  let closest=null,best=Infinity;for(const {parent,moons} of index.parents){if(parent.system!==system)continue;const reach=Math.max(parent.r*25,...moons.map(m=>m.pos.distanceTo(parent.pos)*1.6)),distance=position.distanceTo(parent.pos);if(distance<=reach&&distance<best){closest=parent.name;best=distance}}return closest;
 }
 export function bodyLabelAllowed(body,system,family){
- return body?.type!=='WORMHOLE'&&meaningfulBodyLabel(body)&&body.system===system&&(!body.parent||body.parent===family);
+ return meaningfulBodyLabel(body)&&body.system===system&&(!body.parent||body.parent===family);
 }
 export function labelProjection(relative,camera,width,height){
  // Update camera matrices before calling this, in the same frame as rendering.

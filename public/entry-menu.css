@@ -62,3 +62,46 @@ body.referenceHUD #boot .bootCard,#boot .bootCard{position:absolute!important;in
 #boot .entryBackdrop.ready{opacity:1}#boot::before{z-index:1!important}
 #accountGate .entryBackdrop{transition-duration:.65s}#boot #sourceProgress{transition-duration:.45s}
 #gyroControlsRow{display:flex!important;align-items:center;gap:10px}#gyroControlsRow input{display:inline-block!important;flex:none;width:20px!important;height:20px!important;appearance:auto!important;accent-color:#61d8ff}
+
+
+/* Keep title, methods and consent independently spaced around screen center. */
+#accountGate[data-entry=welcome] .entryWelcome{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+#accountGate .entryWelcome h1{position:absolute;left:50%;top:34%;width:min(920px,94vw);translate:-50% -50%;font-size:clamp(34px,4.8vw,62px)!important;pointer-events:auto}
+#accountGate .entryMethods{position:absolute;left:50%;top:60%;translate:-50% -50%;width:max-content;max-width:94vw;pointer-events:auto}
+#accountGate .entryRules{position:fixed!important;bottom:calc(max(24px,env(safe-area-inset-bottom)) + 12px)!important}
+body.referenceHUD #accountGate[data-entry=welcome]>.accountCard{bottom:calc(max(24px,env(safe-area-inset-bottom)) + 52px)!important;border-radius:0!important}
+#accountGate .accountCard #accountStatus{position:static!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+#accountGate .accountCard #accountStatus:empty{display:none!important}
+body.referenceHUD #accountGate[data-entry=welcome] .accountCard>#accountStatus{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+/* Fit each form to its content; full-width fields and actions avoid empty rows. */
+body.referenceHUD #accountGate:not([data-entry=welcome]) .accountCard{width:min(360px,92vw)!important;height:auto!important;max-height:calc(100dvh - 114px)!important;overflow-y:auto!important;scrollbar-gutter:auto;padding:16px!important;gap:10px!important}
+#accountGate .accountCard #signupProfile{display:flex;flex-direction:column;align-items:stretch;gap:10px}
+#accountGate .signupAvatarLabel{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px!important;grid-column:auto;grid-row:auto}
+#accountGate #signupAvatarPreview{display:block;width:64px;height:64px;object-fit:cover;border-radius:50%;margin:0 auto}
+#accountGate #signupAvatarChoose{height:auto!important;min-height:30px!important;padding:5px 14px!important;font-size:11px!important;width:100%!important}
+#accountGate #accountNameRow,#accountGate #accountUsernameRow{width:100%;grid-column:auto}
+#accountGate #accountForm input{width:100%!important;box-sizing:border-box}
+#accountGate #accountForm>button,#accountGate #signupEmail>button{width:100%!important;min-height:32px!important}
+#accountGate #accountForm label{display:flex!important;flex-direction:column;align-items:stretch}
+#accountGate .accountCard #accountHelp{display:none!important}
+/* The progress track itself is the screen-center anchor, not the whole stack. */
+body.referenceHUD #boot .bootCard,#boot .bootCard{position:absolute!important;inset:0!important;left:0!important;top:0!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;transform:none!important;display:block!important;overflow:visible!important}
+#boot .bootProgressRow{position:absolute!important;left:50%!important;top:50%!important;translate:-50% -50%;margin:0!important}
+body.referenceHUD #boot h1.bootTitle,#boot h1.bootTitle{position:absolute!important;left:50%!important;top:30%!important;translate:-50% -50%;width:94vw;font-size:clamp(34px,4.8vw,62px)!important;margin:0!important}
+body.referenceHUD #boot #bootStatus{position:absolute;top:calc(50% + 44px);left:5%;width:90%;margin:0!important;line-height:1.4}
+#boot #sourceDetail{position:absolute;top:calc(50% + 82px);left:5%;width:90%;margin:0!important;line-height:1.4}
+#boot #rendererNote{position:absolute;top:calc(50% + 120px);left:5%;width:90%;margin:0!important}
+#boot #launchBtn[data-retry=true]{position:absolute;top:calc(50% + 146px);left:50%;translate:-50% 0;min-width:150px;padding:8px}
+@media(max-height:450px){
+ #accountGate .entryWelcome h1,body.referenceHUD #boot h1.bootTitle,#boot h1.bootTitle{font-size:34px!important}
+ #accountGate .entryMethods{top:62%}
+ body.referenceHUD #accountGate:not([data-entry=welcome]) .accountCard{max-height:calc(100dvh - 88px)!important;padding:10px!important;gap:6px!important}
+ #accountGate .accountCard #signupProfile{gap:6px}
+ #accountGate #signupAvatarPreview{width:42px;height:42px}
+ #accountGate .signupAvatarLabel{gap:4px!important}
+ #accountGate #signupAvatarChoose{min-height:26px!important}
+ #accountGate .entryRules{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 8px)!important}
+ #boot #sourceDetail{top:calc(50% + 72px)}
+ #boot #rendererNote{top:calc(50% + 102px)}
+ #boot #launchBtn[data-retry=true]{top:calc(50% + 120px)}
+}

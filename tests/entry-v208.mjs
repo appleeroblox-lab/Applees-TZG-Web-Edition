@@ -1,3 +1,4 @@
+import {installOnFootControls} from '../public/on-foot-controls.js';
 import {entryBackdropHost} from '../public/entry-backdrop.js';
 import {accountGate} from '../public/account-gate.js';
 import {installEntryPresentation} from '../public/entry-presentation.js';
@@ -8,11 +9,12 @@ import {DeviceGyro,GyroSmoother,installGyroControls} from '../public/device-gyro
 import {installSettingsAppearance} from '../public/settings-appearance.js';
 const {document,window}=parseHTML(fs.readFileSync('public/index.html','utf8'));
 Object.assign(globalThis,{document,window});
+installOnFootControls({doc:document,canvas:document.getElementById('space'),camera:{enabled:false},active:()=>false,blocked:()=>false,look(){}});
 installGyroControls({doc:document,win:window,mobile:true});
 installSettingsAppearance(document,{});
 document.getElementById('settingsTab-controls').click();
 const toggle=document.getElementById('gyroControls'),section=toggle.closest('.settingsSection');
-assert(section);assert.equal(section.dataset.pages,'controls');assert(!section.hidden);assert(!toggle.checked,'Gyro defaults OFF');assert.equal(toggle.closest('label').textContent,'Gyro Controls');assert(section.contains(document.getElementById('gyroStatus')));
+assert.equal(document.getElementById('onFootShiftLock').closest('label').nextElementSibling,toggle.closest('label'),'Gyro must be immediately below Shift Lock after settings rearrangement');assert(section);assert.equal(section.dataset.pages,'controls');assert(!section.hidden);assert(!toggle.checked,'Gyro defaults OFF');assert.equal(toggle.closest('label').textContent,'Gyro Controls');assert(section.contains(document.getElementById('gyroStatus')));
 const sensor=new DeviceGyro({addEventListener(){},DeviceOrientationEvent:{},screen:{orientation:{angle:0}}});
 const origin={beta:0,gamma:0,time:Date.now()};
 const a=sensor.axes(origin,{beta:120,gamma:30,time:Date.now()}),b=sensor.axes(origin,{beta:60,gamma:-150,time:Date.now()});

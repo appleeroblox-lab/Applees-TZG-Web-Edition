@@ -1028,7 +1028,7 @@
     "reentry-plume.js": 182,
     "textures/reentry-shine.png": 128,
     "reference-ui.css": 173,
-    "settings-appearance.js": 208,
+    "settings-appearance.js": 209,
     "settings-appearance.css": 155,
     "ship-camera-modes.js": 171,
     "star-size.js": 170,
@@ -1120,7 +1120,7 @@
     "entry-menu.css": 208,
     "entry-presentation.js": 208,
     "entry-backdrop.js": 208,
-    "device-gyro.js": 208
+    "device-gyro.js": 209
   },
   "publicReleaseVersion": 208
 }

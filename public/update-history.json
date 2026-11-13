@@ -1,8 +1,20 @@
 {
-  "currentVersion": "v0.0.203",
+  "currentVersion": "v0.0.204",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "version": "v0.0.204",
+      "title": "Compact entry menus",
+      "changes": [
+        "Smaller mobile sign-in buttons and centered title; version badge stays at the left.",
+        "Restored Google icon and added Create an account beside email sign-in.",
+        "Compact square account dialogs with centered X controls and password-aware recovery link.",
+        "Paginated official rules without scrolling or overlapping game footer styles.",
+        "Signing out returns to sign-in without refreshing the page."
+      ],
+      "source": "Entry-menu feedback fixes"
+    },
     {
       "version": "v0.0.203",
       "title": "New sign-in and loading screens",

@@ -1,5 +1,5 @@
 {
-  "version": 203,
+  "version": 204,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -833,7 +833,7 @@
     "account-pages.js": 187,
     "atlas-3d.js": 199,
     "atlas-sky.js": 91,
-    "auth-first.js": 203,
+    "auth-first.js": 204,
     "avatar-crop.js": 187,
     "building.js": 187,
     "catalog.js": 199,
@@ -875,7 +875,7 @@
     "models.js": 169,
     "night-aurora.js": 168,
     "photo-library.js": 187,
-    "player-account.js": 203,
+    "player-account.js": 204,
     "pool-shape.js": 59,
     "pool-splashes.js": 59,
     "profile-view.js": 187,
@@ -913,8 +913,8 @@
     "weather-precipitation.js": 170,
     "world-precipitation.js": 170,
     "models/crafting-center-v96.json": 97,
-    "account-gate.js": 203,
-    "boot-loader.js": 203,
+    "account-gate.js": 204,
+    "boot-loader.js": 204,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
     "models/base-venus.json": 100,
@@ -1043,7 +1043,7 @@
     "experimental/planet.js": 157,
     "experimental/chunks.js": 157,
     "experimental/coordinates.js": 157,
-    "account-auth-flow.js": 203,
+    "account-auth-flow.js": 204,
     "account.css": 182,
     "account-birthday.js": 187,
     "neon-lights.js": 190,
@@ -1110,8 +1110,8 @@
     "vendor/mediabunny.min.mjs": 202,
     "vendor/mediabunny.LICENSE": 202,
     "vendor/mediabunny.NOTICE": 202,
-    "entry-menu.js": 203,
-    "entry-menu.css": 203
+    "entry-menu.js": 204,
+    "entry-menu.css": 204
   },
-  "publicReleaseVersion": 203
+  "publicReleaseVersion": 204
 }

@@ -13,7 +13,7 @@ import {PhotoLibrary} from './photo-library.js?v=187';
 const $=id=>document.getElementById(id);
 export const APPEAL_URL='https://discord.gg/rPdRRHSkmw';
 export const DEFAULT_AVATAR='icons/default-profile.svg';
-export function setAvatar(img,value){const safe=typeof value==='string'&&value.length<=40000&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(value);img.hidden=false;img.src=safe?value:DEFAULT_AVATAR;img.onerror=()=>{img.onerror=null;img.src=DEFAULT_AVATAR};img.alt='Profile image';img.loading='lazy';}
+export function setAvatar(img,value){const safe=typeof value==='string'&&value.length<=40000&&(/^(?:data:image\/jpeg;base64,[A-Za-z0-9+/=]+)$/.test(value)||/^https:\/\/(?:[a-z0-9-]+\.)*googleusercontent\.com\//i.test(value));img.hidden=false;img.src=safe?value:DEFAULT_AVATAR;img.onerror=()=>{img.onerror=null;img.src=DEFAULT_AVATAR};img.alt='Profile image';img.loading='lazy';}
 function photoTimeout(promise,label,ms=7000){let timer;return Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label)),ms)})]).finally(()=>clearTimeout(timer))}
 function readPhoto(file){return photoTimeout(new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(Error('Could not read the selected photo.'));reader.readAsDataURL(file)}),'Reading the photo timed out. Please select it again.')}
 function decodePhoto(source){return photoTimeout(new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(Error('This browser could not open that image format. Try a JPG, PNG or WebP image.'));image.src=source}),'Opening the photo timed out. Please try a smaller JPG or PNG.')}

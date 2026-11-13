@@ -1,5 +1,5 @@
 {
-  "version": 202,
+  "version": 203,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -548,7 +548,14 @@
     "recording-export.js",
     "vendor/mediabunny.min.mjs",
     "vendor/mediabunny.LICENSE",
-    "vendor/mediabunny.NOTICE"
+    "vendor/mediabunny.NOTICE",
+    "entry-menu.js",
+    "entry-menu.css",
+    "images/entry/planet.png",
+    "images/entry/signin.png",
+    "images/entry/background.png",
+    "images/entry/play.png",
+    "images/entry/google.png"
   ],
   "versionedFiles": [
     "account-auth-flow.js",
@@ -818,13 +825,15 @@
     "star-effects.js",
     "star-settings.js",
     "textures/star-bloom.png",
-    "textures/star-flare.png"
+    "textures/star-flare.png",
+    "entry-menu.js",
+    "entry-menu.css"
   ],
   "fileVersions": {
     "account-pages.js": 187,
     "atlas-3d.js": 199,
     "atlas-sky.js": 91,
-    "auth-first.js": 187,
+    "auth-first.js": 203,
     "avatar-crop.js": 187,
     "building.js": 187,
     "catalog.js": 199,
@@ -866,7 +875,7 @@
     "models.js": 169,
     "night-aurora.js": 168,
     "photo-library.js": 187,
-    "player-account.js": 187,
+    "player-account.js": 203,
     "pool-shape.js": 59,
     "pool-splashes.js": 59,
     "profile-view.js": 187,
@@ -875,7 +884,7 @@
     "selection-menu.js": 187,
     "settlements.js": 195,
     "ship-respawn.js": 182,
-    "social-ui.js": 187,
+    "social-ui.js": 203,
     "sound.js": 201,
     "stellar-glare.js": 196,
     "supabase-config.js": 61,
@@ -904,8 +913,8 @@
     "weather-precipitation.js": 170,
     "world-precipitation.js": 170,
     "models/crafting-center-v96.json": 97,
-    "account-gate.js": 163,
-    "boot-loader.js": 202,
+    "account-gate.js": 203,
+    "boot-loader.js": 203,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
     "models/base-venus.json": 100,
@@ -1034,7 +1043,7 @@
     "experimental/planet.js": 157,
     "experimental/chunks.js": 157,
     "experimental/coordinates.js": 157,
-    "account-auth-flow.js": 187,
+    "account-auth-flow.js": 203,
     "account.css": 182,
     "account-birthday.js": 187,
     "neon-lights.js": 190,
@@ -1100,7 +1109,9 @@
     "recording-export.js": 202,
     "vendor/mediabunny.min.mjs": 202,
     "vendor/mediabunny.LICENSE": 202,
-    "vendor/mediabunny.NOTICE": 202
+    "vendor/mediabunny.NOTICE": 202,
+    "entry-menu.js": 203,
+    "entry-menu.css": 203
   },
-  "publicReleaseVersion": 202
+  "publicReleaseVersion": 203
 }

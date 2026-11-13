@@ -59,3 +59,17 @@ There is no password-viewing feature. Supabase Auth handles password resets.
 `npm run test:accounts`, `npm run test:debug`, `npm test`, and `npm run test:ui`.
 UI simulations mock WebGL and network. Verify real email delivery, login,
 refresh persistence, and an inventory/currency round trip after dashboard setup.
+
+## Google sign-in (entry screen v203)
+
+The game uses Supabase Google OAuth; credentials belong in the Supabase dashboard, never in public game files.
+
+1. Create a Google OAuth web client. Set its authorized redirect URI to `https://zwtcytzaozysxiqixihk.supabase.co/auth/v1/callback`.
+2. In Supabase Authentication → Sign In / Providers → Google, enter the client ID and client secret and enable Google.
+3. In Authentication → URL Configuration, allow the exact deployed return URLs (including `/index.html`), such as `https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html` and the custom domain's actual entry URL. Set the Site URL to the production game.
+4. Apply `20261113044459_google_profile_onboarding.sql` before deploying the entry screen.
+5. Test a new Google identity (profile, username and private birthday), an existing registered email (existing progress preserved), cancellation, and sign-out on a real device.
+
+Google verifies the email through Supabase Auth. This does not grant the game's developer-managed verified badge. New Google profiles require setup before normal entry; provider photos are allowed only from Google image hosts, and custom cropped avatars keep the existing validation.
+
+Rules agreement is versioned on the device and checked before every entry method. The original password reset and optional-email signup paths remain available in the email/username menu. Loading automatically enters the existing game startup handler only after account/save initialization.

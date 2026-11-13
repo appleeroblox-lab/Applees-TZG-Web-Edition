@@ -1119,8 +1119,8 @@
     "entry-menu.js": 207,
     "entry-menu.css": 211,
     "entry-presentation.js": 211,
-    "entry-backdrop.js": 211,
-    "device-gyro.js": 211
+    "entry-backdrop.js": 212,
+    "device-gyro.js": 212
   },
   "publicReleaseVersion": 208
 }

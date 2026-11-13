@@ -60,6 +60,6 @@ export function installGyroControls({doc=document,win=window,mobile=false,active
  });
  const reorient=()=>{origin=null;previous=null;motion={pitch:0,roll:0};smoother.reset();wasActive=false};
  win.addEventListener('orientationchange',reorient);win.screen?.orientation?.addEventListener?.('change',reorient);
- return {axes(){const on=enabled&&active()&&!doc.hidden;if(!on){wasActive=false;previous=null;motion={pitch:0,roll:0};smoother.reset();return {pitch:0,yaw:0}}if(!wasActive){origin=sensor.sample;previous=sensor.sample;motion={pitch:0,roll:0};wasActive=true}const value=smoother.step(sensor.sample&&Date.now()-sensor.sample.time<150?motion:{pitch:0,roll:0});return {pitch:value.pitch,yaw:-value.roll||0}}};
+ return {axes(){const on=enabled&&active()&&!doc.hidden;if(!on){wasActive=false;previous=null;motion={pitch:0,roll:0};smoother.reset();return {pitch:0,yaw:0}}if(!wasActive){origin=sensor.sample;previous=sensor.sample;motion={pitch:0,roll:0};wasActive=true}const value=smoother.step(sensor.sample&&Date.now()-sensor.sample.time<150?motion:{pitch:0,roll:0});return {pitch:-value.pitch||0,yaw:-value.roll||0}}};
 }
 

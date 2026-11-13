@@ -37,7 +37,8 @@ const handlers=new Map(),win={DeviceOrientationEvent:{},screen:{orientation:{ang
 try{
  const control=installGyroControls({doc,win,mobile:true});const emit=(gamma,beta=60)=>handlers.get('deviceorientation')({alpha:0,beta,gamma});
  emit(0);assert.deepEqual(control.axes(),{pitch:0,yaw:0});const toggle=doc.getElementById('gyroControls');toggle.checked=true;await toggle.onchange();control.axes();
- let moving;for(let i=1;i<=30;i++){now+=16;emit(i*.5);moving=control.axes();}assert(moving.pitch>.1&&Math.abs(moving.yaw)<1e-6);assert(!('roll' in moving));
+ let moving;for(let i=1;i<=30;i++){now+=16;emit(i*.5);moving=control.axes();}assert(moving.pitch<-.1&&Math.abs(moving.yaw)<1e-6,'raising the phone uses the corrected upward pitch');assert(!('roll' in moving));
+ handlers.get('orientationchange')();control.axes();for(let i=1;i<=30;i++){now+=16;emit(15-i*.5);moving=control.axes();}assert(moving.pitch>.1&&Math.abs(moving.yaw)<1e-6,'lowering the phone reverses pitch without turning sideways');
  for(let i=0;i<100;i++){now+=16;emit(15);control.axes();}const still=control.axes();assert(Math.abs(still.pitch)<1e-5&&Math.abs(still.yaw)<1e-5);
  handlers.get('orientationchange')();assert.deepEqual(control.axes(),{pitch:0,yaw:0});
  toggle.checked=false;await toggle.onchange();assert.deepEqual(control.axes(),{pitch:0,yaw:0});

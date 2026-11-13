@@ -16,7 +16,7 @@ export function installSettingsAppearance(doc,{updateLogs,openSettings}={}){
  // Preset buttons operate the original graphics select and its existing change handler.
  const preset=doc.getElementById('graphicsPreset');if(preset){const choices=doc.createElement('div');choices.className='settingsQualityChoices';choices.setAttribute('aria-label','Graphics quality presets');const sync=()=>{for(const b of choices.children)b.setAttribute('aria-pressed',String(b.dataset.value===preset.value))};for(const mode of ['Low','Medium','High','Ultra','Ultra+']){const b=doc.createElement('button');b.type='button';b.textContent=mode;b.dataset.value=mode;b.onclick=()=>{preset.value=mode;preset.dispatchEvent(new doc.defaultView.Event('change',{bubbles:true}));sync()};choices.append(b)}preset.closest('label').after(choices);preset.addEventListener('change',sync);dialog.addEventListener('click',sync);sync()}
  // Keep auxiliary controls reachable in their relevant category.
- for(const id of ['tiltEnable','tiltCalibrate']){const control=doc.getElementById(id);if(control&&controls)controls.append(control)}
+ for(const id of ['tiltEnable','gyroControlsRow','gyroStatus','tiltCalibrate']){const control=doc.getElementById(id);if(control&&controls)controls.append(control)}
  for(const toggle of content.querySelectorAll('.settingsSectionToggle'))toggle.style.setProperty('min-height','0','important');
  for(const checkbox of content.querySelectorAll('label>input[type=checkbox]'))checkbox.parentElement.append(checkbox);
  // Normalize range labels once: title/value on top, one full-width track below.

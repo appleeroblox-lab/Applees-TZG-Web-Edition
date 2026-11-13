@@ -1,3 +1,4 @@
+import {acceptRules} from './rules-helper.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {parseHTML} from 'linkedom';
@@ -14,7 +15,7 @@ const client={rpc:async()=>({}),auth:{
 const boot=authenticateFirst({doc:document,config:{},requestSDK:async()=>({createClient:()=>client})}).then(()=>loaded=true);
 await tick();const $=id=>document.getElementById(id),gate=$('accountGate');
 assert(!$('accountConnected').hidden);
-$('accountRulesAccepted').checked=true;$('accountRulesAccepted').onchange();
+acceptRules(document);
 const logout=$('accountGateLogout').onclick();
 $('accountContinue').onclick();await tick();assert(!loaded,'Continue cannot race sign-out');
 releaseSignOut();await logout;

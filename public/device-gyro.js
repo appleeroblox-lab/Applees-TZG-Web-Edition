@@ -15,8 +15,21 @@ export class DeviceGyro{
 }
 export class GyroSmoother{
  constructor(){this.reset()}
- reset(){this.value={pitch:0,roll:0};this.time=null}
- step(target,time=Date.now()){const dt=this.time===null?1/60:Math.max(0,Math.min((time-this.time)/1000,.05));this.time=time;const blend=1-Math.exp(-9*dt),limit=2.5*dt;for(const key of ['pitch','roll']){const difference=(target[key]-this.value[key])*blend;this.value[key]+=Math.max(-limit,Math.min(limit,difference));if(Math.abs(this.value[key])<.002&&Math.abs(target[key])<.025)this.value[key]=0}return {...this.value}}
+ reset(){this.value={pitch:0,roll:0};this.target={pitch:0,roll:0};this.time=null}
+ step(target,time=globalThis.performance?.now?.()??Date.now()){
+  const dt=this.time===null?1/60:Math.max(0,Math.min((time-this.time)/1000,.05));this.time=time;
+  // Filter sensor noise first, then ease steering each animation frame. Keeping
+  // both stages running between sensor events avoids staircase motion.
+  const inputBlend=1-Math.exp(-18*dt),blend=1-Math.exp(-12*dt),limit=2.5*dt;
+  for(const key of ['pitch','roll']){
+   const raw=Number.isFinite(target[key])?Math.max(-1,Math.min(1,target[key])):0;
+   const desired=Math.abs(raw)<=.02?0:Math.sign(raw)*(Math.abs(raw)-.02)/.98;
+   this.target[key]+=(desired-this.target[key])*inputBlend;
+   const difference=(this.target[key]-this.value[key])*blend;
+   this.value[key]+=Math.max(-limit,Math.min(limit,difference));
+  }
+  return {...this.value};
+ }
 }
 let shared;export function deviceGyro(win=window){return shared||=new DeviceGyro(win)}
 export function installGyroControls({doc=document,win=window,mobile=false,active=()=>true}={}){
@@ -26,7 +39,7 @@ export function installGyroControls({doc=document,win=window,mobile=false,active
  const unsupported=()=>{enabled=false;toggle.checked=false;status.textContent='This device does not support Gyro Controls.'};
  if(!mobile||!sensor.available){toggle.disabled=true;unsupported()}
  toggle.onchange=async()=>{clearTimeout(timer);if(!toggle.checked){enabled=false;origin=null;smoother.reset();status.textContent='Gyro Controls off.';return}if(!await sensor.request()){toggle.checked=false;status.textContent=sensor.available?'Motion permission was not granted. Enable motion access in your browser to use Gyro Controls.':'This device does not support Gyro Controls.';return}enabled=true;origin=sensor.sample;status.textContent='Hold your device comfortably to calibrate.';timer=setTimeout(()=>{if(!sensor.sample)unsupported()},1800)};
- calibrate&&(calibrate.onclick=()=>{origin=null;status.textContent='Hold your device comfortably · recalibrating.'});
+ calibrate&&(calibrate.onclick=()=>{origin=null;smoother.reset();status.textContent='Hold your device comfortably · recalibrating.'});
  let wasActive=false;sensor.subscribe(sample=>{if(enabled&&!origin){origin=sample;status.textContent='Gyro Controls on. Tilt to steer your ship.'}});
  return {axes(){const on=enabled&&active()&&!doc.hidden;if(!on){wasActive=false;smoother.reset();return {pitch:0,roll:0}}if(!wasActive){origin=sensor.sample;wasActive=true}return smoother.step(sensor.axes(origin))}};
 }

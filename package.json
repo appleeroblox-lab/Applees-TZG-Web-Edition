@@ -59,7 +59,9 @@
     "test:profile-banners": "node tests/profile-banner-sql.mjs && node tests/profile-banner-ui.mjs && node tests/prospecting-visibility.mjs",
     "test:on-foot": "node tests/tnt-ignite-prompt.mjs && node tests/character-grip.mjs && node tests/on-foot-camera.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --on-foot-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --on-foot-only",
     "test:proto": "node tests/proto-system.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --proto-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --proto-only && node --experimental-vm-modules tests/ui-smoke.mjs --proto-resume-only && node --experimental-vm-modules tests/ui-smoke.mjs --proto-resume-space-only",
-    "test:public-ids": "node tests/public-player-ids.mjs && node tests/player-account.mjs"
+    "test:public-ids": "node tests/public-player-ids.mjs && node tests/player-account.mjs",
+    "test:chat-presence": "node tests/chat-ten-messages.mjs && node tests/last-online.mjs && node tests/online-count.mjs && node tests/live-chat.mjs",
+    "test:events": "node tests/developer-events-sql.mjs && node tests/developer-events-ui.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --events-only && node tests/friends-ui.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

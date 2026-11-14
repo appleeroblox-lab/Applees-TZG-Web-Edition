@@ -255,3 +255,8 @@ body.referenceHUD #chatPlayerProfile.sharedPlayerProfile .profileInfoCard{paddin
 body.referenceHUD #chatPlayerProfile.sharedPlayerProfile .profileInfoCard dd{font-size:13px}
 body.referenceHUD #chatPlayerProfile.sharedPlayerProfile .profileActions button{min-height:36px;font-size:15px;padding:5px 8px}
 }
+
+#chatOnlinePlayers{font-size:11px;line-height:1.3;white-space:nowrap;color:#d8f3ff}#chatPanel>.chatHead>div{display:flex;align-items:center;gap:6px;flex-wrap:wrap}#chatPanel>.chatHead{gap:8px;flex-wrap:wrap}
+
+/* Keep conversation lists and message history independently scrollable. */
+#friendsPanel:not(.inConversation) #friendsBody{overflow-y:auto!important;overflow-x:hidden!important;min-height:0;touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}#friendsPanel .friendMessages{overflow-y:auto!important;min-height:0!important;touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}#friendsPanel .conversationCard{flex:none}

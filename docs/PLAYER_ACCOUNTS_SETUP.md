@@ -79,3 +79,13 @@ Rules agreement is versioned on the device and checked before every entry method
 `20261114145017_public_player_ids.sql` assigns existing and new profiles an immutable, unique numeric ID starting at 100000001. Account and public profile views show it; Copy UID copies it. Members and guests can search by full numeric ID or username. IDs are returned as decimal strings to preserve precision. Auth UUIDs remain the keys for authentication, saves, friends and moderation.
 
 Run `npm run test:public-ids` for allocation, migration, ownership, search and account UI coverage.
+
+## Chat and presence
+
+Global Chat keeps the latest 10 messages instead of expiring messages by age. Party/private messages keep their existing five-hour expiry. `20261114201419_global_chat_ten_messages_online_count.sql` applies this change and exposes an aggregate online count of active accounts and guest visitors within 90 seconds. The chat header refreshes the count with activity heartbeats. Offline profiles use elapsed Last Seen labels. Run `npm run test:chat-presence`.
+
+## Developer Events
+
+Open Debug Menu → Developer Panel → Events, or type `events` in the developer command box. Local addresses only the player on the developer's current device. Global snapshots currently online accounts and guests; later arrivals are excluded. Currency/parts giveaways require a signed-in account, and guest recipients receive only warp events. Server authorization uses the existing developer allowlist. Rewards use private receipts and revision checks to avoid duplicate payouts and preserve pending gameplay saves. Clients poll events every five seconds; pending deliveries expire after five minutes. Surface players board and leave the body before a free ten-second event warp.
+
+Apply `20261114202605_developer_events_local_global.sql`. Tests: `npm run test:events`.

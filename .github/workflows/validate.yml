@@ -42,5 +42,7 @@ jobs:
         run: npm run test:boot
       - name: Account maintenance and minimap regressions
         run: npm run test:maintenance:sql && npm run test:minimap
+      - name: Chat presence and developer events
+        run: npm run test:chat-presence && npm run test:events
       - name: UI smoke tests
         run: npm run test:ui

@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict';import fs from 'node:fs/promises';import {PGlite} from '@electric-sql/pglite';
+const db=new PGlite();await db.exec(`create role anon;create role authenticated;create role service_role;create schema auth;create table auth.users(id uuid primary key,email text,created_at timestamptz default now(),email_confirmed_at timestamptz,phone_confirmed_at timestamptz,is_anonymous boolean default false,raw_user_meta_data jsonb default '{}');create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade);create table auth.identities(user_id uuid references auth.users(id) on delete cascade,provider text);create function auth.uid() returns uuid language sql stable as $$select(nullif(current_setting('request.jwt.claims',true),'')::jsonb->>'sub')::uuid$$;create function auth.jwt() returns jsonb language sql stable as $$select nullif(current_setting('request.jwt.claims',true),'')::jsonb$$;grant usage on schema auth to authenticated;grant execute on all functions in schema auth to authenticated;create schema cron;create table cron.job(jobname text primary key,schedule text,command text);create function cron.schedule(text,text,text) returns bigint language plpgsql as $$begin insert into cron.job values($1,$2,$3) on conflict(jobname) do update set schedule=excluded.schedule,command=excluded.command;return 1;end;$$;`);
+const migration=(await fs.readdir('supabase/migrations')).find(f=>f.endsWith('_public_player_ids.sql'));
+for(const file of (await fs.readdir('supabase/migrations')).filter(f=>!f.includes('mobile_push')&&f!==migration).sort()){
+ const sql=(await fs.readFile('supabase/migrations/'+file,'utf8')).replace(/create extension if not exists pg_cron[^;]*;/gi,'');
+ await db.exec(sql);
+}
+const a=crypto.randomUUID(), b=crypto.randomUUID(), c=crypto.randomUUID(), session=crypto.randomUUID();
+for(const [id,name] of [[a,'pilot_a'],[b,'pilot_b']])await db.query('insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values($1,$2,now(),$3)',[id,name+'@example.test',JSON.stringify({username:name,display_name:name})]);
+await db.query('insert into auth.sessions values($1,$2)',[session,a]);
+const before=(await db.query('select user_id,username from tzg_private.player_profiles order by user_id')).rows;
+await db.exec(await fs.readFile('supabase/migrations/'+migration,'utf8'));
+assert.deepEqual((await db.query('select user_id,username from tzg_private.player_profiles order by user_id')).rows,before);
+let ids=(await db.query('select public_id::text as id from tzg_private.player_profiles order by public_id')).rows.map(r=>r.id);
+assert.equal(ids.length,2);assert.equal(new Set(ids).size,2);assert.equal(ids[0],'100000001');
+await db.query('insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values($1,$2,now(),$3)',[c,'c@example.test',JSON.stringify({username:'pilot_c',display_name:'pilot_c'})]);
+assert.equal((await db.query('select public_id::text as id from tzg_private.player_profiles where user_id=$1',[c])).rows[0].id,'100000003');
+await assert.rejects(db.query('update tzg_private.player_profiles set public_id=900000001 where user_id=$1',[a]),/cannot be changed|only be updated to DEFAULT/);
+await assert.rejects(db.query('update tzg_private.player_profiles set public_id=DEFAULT where user_id=$1',[a]),/cannot be changed/);
+const id=(await db.query('select public_id::text as id from tzg_private.player_profiles where user_id=$1',[a])).rows[0].id;
+await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:a,session_id:session})]);
+await db.exec('set role authenticated');
+const rpc=async(name,args=[]) => (await db.query('select public.'+name+'('+args.map((_,i)=>'$'+(i+1)).join(',')+') result',args)).rows[0].result;
+await rpc('tzg_player_session_start');const load=await rpc('tzg_player_load');assert.equal(load.public_id,id);assert.equal(load.user_id,a);
+assert.equal((await rpc('tzg_player_profile')).public_id,id);
+assert.equal((await rpc('tzg_social_profile',['pilot_a'])).public_id,id);
+assert.equal((await rpc('tzg_social_search',[id,'players',0]))[0].public_id,id);
+assert.equal((await rpc('tzg_social_search',['pilot_a','players',0]))[0].username,'pilot_a');
+await assert.rejects(db.query('select public_id from tzg_private.player_profiles'),/permission/);
+await assert.rejects(db.query("select nextval('tzg_private.player_profiles_public_id_seq')"),/permission/);
+await db.exec('reset role;set role anon');
+assert.equal((await rpc('tzg_guest_profiles',[id]))[0].public_id,id);
+assert.equal((await rpc('tzg_profile_banner',['pilot_a'])).public_id,id);
+assert.equal((await rpc('tzg_guest_profiles',['000000000'])).length,0);
+await db.exec('reset role');
+await db.query('insert into tzg_private.self_account_state(user_id,deactivated_at) values($1,now()) on conflict(user_id) do update set deactivated_at=now()',[a]);
+await db.exec('set role anon');assert.equal((await rpc('tzg_guest_profiles',[id])).length,0);assert.equal(await rpc('tzg_profile_banner',['pilot_a']),null);
+await db.close();console.log('PASS public IDs: backfill, automatic allocation, immutable IDs, preserved UUIDs, numeric/username search, public profiles, permissions and deactivation privacy.');

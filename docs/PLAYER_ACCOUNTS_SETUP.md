@@ -73,3 +73,9 @@ The game uses Supabase Google OAuth; credentials belong in the Supabase dashboar
 Google verifies the email through Supabase Auth. This does not grant the game's developer-managed verified badge. New Google profiles require setup before normal entry; provider photos are allowed only from Google image hosts, and custom cropped avatars keep the existing validation.
 
 Rules agreement is versioned on the device and checked before every entry method. The original password reset and optional-email signup paths remain available in the email/username menu. Loading automatically enters the existing game startup handler only after account/save initialization.
+
+## Public Player IDs
+
+`20261114145017_public_player_ids.sql` assigns existing and new profiles an immutable, unique numeric ID starting at 100000001. Account and public profile views show it; Copy UID copies it. Members and guests can search by full numeric ID or username. IDs are returned as decimal strings to preserve precision. Auth UUIDs remain the keys for authentication, saves, friends and moderation.
+
+Run `npm run test:public-ids` for allocation, migration, ownership, search and account UI coverage.

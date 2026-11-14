@@ -14,6 +14,11 @@ export function installEntryMenu(root,flow){
  const doc=root.ownerDocument,$=id=>root.querySelector('#'+id),storage=()=>doc.defaultView?.localStorage||globalThis.localStorage;
  $('gameRulesDialog')?.remove();const box=$('accountRulesAccepted');let verified=root.rulesConsentVersion===RULES_VERSION;try{verified=verified||storage()?.getItem('tzg-rules-accepted')===RULES_VERSION}catch{}box.checked=verified;box.setAttribute('aria-label','Read and accept the game rules');
  root.append(root.querySelector('.entryRules'));
+ if(!root.querySelector('.entryLegalLinks')){
+ const links=doc.createElement('nav');links.className='entryLegalLinks';links.setAttribute('aria-label','Privacy and terms');links.style.cssText='display:flex;justify-content:center;gap:16px;margin-top:4px;font-size:inherit';
+ for(const [label,path] of [['Privacy Policy','./privacy.html'],['Terms of Service','./terms.html']]){const a=doc.createElement('a');a.textContent=label;a.href=path;a.target='_blank';a.rel='noopener';a.style.cssText='color:#9cddff;text-decoration:underline';links.append(a)}
+ root.querySelector('.entryRules').append(links);
+ }
  const refresh=()=>{for(const id of ['accountGoogle','accountCreate','accountEmailLogin','entryGuest','accountGuest','accountSubmit','accountContinue','signupEmailContinue','signupSkipEmail'])$(id).disabled=!box.checked;};
  box.onchange=()=>{if(box.checked&&!verified)box.checked=false;root.rulesConsentVersion=box.checked?RULES_VERSION:null;try{if(box.checked)storage()?.setItem('tzg-rules-accepted',RULES_VERSION);else storage()?.removeItem('tzg-rules-accepted')}catch{}refresh()};
  root.rulesAllowed=()=>{if(box.checked&&verified)return true;flow.status('Please read and accept the rules before continuing.');box.focus?.();return false};

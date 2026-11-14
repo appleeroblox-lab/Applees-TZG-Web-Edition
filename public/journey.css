@@ -19,3 +19,7 @@ body.referenceHUD #chatPlayerProfile.sharedPlayerProfile{position:fixed;inset:0;
 @media(max-width:480px){body.referenceHUD #wallet{top:68px!important;left:12px!important;transform:none!important;height:32px;gap:10px;padding:4px 9px;font-size:14px}body.referenceHUD #gameTop .topLeftActions,body.referenceHUD #gameTop nav{gap:6px!important}}
 .journeyDialog input::placeholder{color:#c0dfed;opacity:.85}
 @media(max-height:500px) and (min-width:601px){body.referenceHUD #dailyRewards{width:min(600px,calc(100vw - 28px));padding:12px}.journeyDialog .journeyHead{margin-bottom:8px}.journeyHead small{font-size:9px;margin-bottom:3px}.journeyDialog .rewardStatus{margin-bottom:8px;font-size:11px;line-height:1.4}.dailyRewardCard{gap:4px;padding:7px 6px}.dailyRewardCard>strong{font-size:12px}.dailyRewardCard>small{font-size:7px}.rewardCurrency{font-size:13px}.rewardCurrency img{width:18px;height:18px}.rewardFooter{margin-top:10px}.rewardReset{margin-top:6px;font-size:9px}}
+
+/* Keep supplies readable and contained on small landscape screens. */
+#dailyRewards .dailyRewardCard{min-width:0;overflow-wrap:anywhere}#dailyRewards .rewardFooter{flex-wrap:wrap}#dailyRewards .rewardFooter p{min-width:140px;overflow-wrap:anywhere}#dailyRewards .rewardFooter button{max-width:100%;white-space:normal}
+@media(max-height:500px){body.referenceHUD #dailyRewards{width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overscroll-behavior:contain}.dailyRewardGrid{gap:6px}#dailyRewards .rewardFooter{gap:8px}#dailyRewards .journeyHead h2{font-size:20px}}

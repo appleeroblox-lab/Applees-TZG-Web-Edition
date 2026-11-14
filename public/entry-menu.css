@@ -105,3 +105,15 @@ body.referenceHUD #boot #bootStatus{position:absolute;top:calc(50% + 44px);left:
  #boot #rendererNote{top:calc(50% + 102px)}
  #boot #launchBtn[data-retry=true]{top:calc(50% + 120px)}
 }
+
+/* Hidden steps must win over the form's ID-scoped flex/grid layout rules. */
+body.referenceHUD #accountGate .accountCard #accountForm [hidden]{display:none!important}
+body.referenceHUD #accountGate .accountCard #accountStatus:not(:empty){display:block!important;flex-shrink:0;max-height:none;overflow:visible;white-space:normal;line-height:1.45!important;padding:4px 0!important}
+body.referenceHUD #accountGate .accountCard #accountStatus[data-kind=error]{color:#ffe0d8!important;font-weight:600}
+body.referenceHUD #accountGate .accountCard #accountStatus[data-kind=success]{color:#c9ffdf!important}
+#accountGate #accountForm #accountUsernameCheck:not(:empty){display:block!important;margin-top:4px!important;line-height:1.4!important}
+#accountGate #accountUsernameCheck[data-state=error]{color:#ffe0d8!important}
+#accountGate #accountUsernameCheck[data-state=success]{color:#c9ffdf!important}
+#accountGate #signupVerifiedEmail{opacity:.9;cursor:default}
+#accountGate #signupVerifiedEmailRow small{display:block!important;color:#c9ffdf!important}
+body.referenceHUD #accountGate[data-entry=welcome]>.accountCard{max-height:76px!important;overflow-y:auto!important}

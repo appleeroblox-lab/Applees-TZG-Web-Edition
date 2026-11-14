@@ -1,8 +1,23 @@
 {
-  "currentVersion": "v0.0.208",
+  "currentVersion": "v0.0.213",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 213,
+      "version": "v0.0.213",
+      "date": "2026-11-14",
+      "title": "Account entry, gyro smoothing and separate flight saves",
+      "changes": [
+        "Fixed hidden profile and sign-in fields, including Confirm password appearing during sign-in. Verified Google email is displayed in profile setup without another Add your email step.",
+        "Made wrong-password, taken-username, duplicate-email and password-reset progress/error feedback visible. Forgot password is available before entering a password.",
+        "Added a black fade before the loading screen and smooth spring interpolation for gyro movement.",
+        "Separated on-device flight checkpoints by account ID. Switching accounts restores that account’s checkpoint or starts at Earth; guest play does not overwrite member flights."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 208,
       "version": "v0.0.208",

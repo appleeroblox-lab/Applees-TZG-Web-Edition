@@ -21,21 +21,25 @@ export class DeviceGyro{
 }
 export class GyroSmoother{
  constructor(){this.reset()}
- reset(){this.value={pitch:0,roll:0};this.target={pitch:0,roll:0};this.time=null}
+ reset(){this.value={pitch:0,roll:0};this.velocity={pitch:0,roll:0};this.time=null}
  step(target,time=globalThis.performance?.now?.()??Date.now()){
   const dt=this.time===null?1/60:Math.max(0,Math.min((time-this.time)/1000,.05));this.time=time;
-  // Filter sensor noise first, then ease steering each animation frame. Keeping
-  // both stages running between sensor events avoids staircase motion.
-  const inputBlend=1-Math.exp(-18*dt),blend=1-Math.exp(-12*dt),limit=2.5*dt;
+  const omega=14,decay=Math.exp(-omega*dt),limit=2.5*dt;
   for(const key of ['pitch','roll']){
    const raw=Number.isFinite(target[key])?Math.max(-1,Math.min(1,target[key])):0;
    const desired=Math.abs(raw)<=.02?0:Math.sign(raw)*(Math.abs(raw)-.02)/.98;
-   this.target[key]+=(desired-this.target[key])*inputBlend;
-   const difference=(this.target[key]-this.value[key])*blend;
-   this.value[key]+=Math.max(-limit,Math.min(limit,difference));
+   const change=this.value[key]-desired,temp=(this.velocity[key]+omega*change)*dt;
+   let next=desired+(change+temp)*decay;
+   this.velocity[key]=(this.velocity[key]-omega*temp)*decay;
+   const delta=next-this.value[key];
+   if(Math.abs(delta)>limit){next=this.value[key]+Math.sign(delta)*limit;this.velocity[key]=Math.sign(delta)*2.5}
+   this.value[key]=Math.max(-1,Math.min(1,next));
+   if(this.value[key]!==next)this.velocity[key]=0;
+   if(desired===0&&Math.abs(this.value[key])<.0005&&Math.abs(this.velocity[key])<.005){this.value[key]=0;this.velocity[key]=0;}
   }
   return {...this.value};
  }
+
 }
 let shared;export function deviceGyro(win=window){return shared||=new DeviceGyro(win)}
 export function installGyroControls({doc=document,win=window,mobile=false,active=()=>true}={}){

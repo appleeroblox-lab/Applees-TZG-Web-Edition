@@ -1,5 +1,5 @@
 {
-  "version": 211,
+  "version": 213,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -558,7 +558,8 @@
     "images/entry/google.png",
     "entry-presentation.js",
     "entry-backdrop.js",
-    "device-gyro.js"
+    "device-gyro.js",
+    "flight-save.js"
   ],
   "versionedFiles": [
     "account-auth-flow.js",
@@ -833,13 +834,14 @@
     "entry-menu.css",
     "entry-presentation.js",
     "entry-backdrop.js",
-    "device-gyro.js"
+    "device-gyro.js",
+    "flight-save.js"
   ],
   "fileVersions": {
     "account-pages.js": 187,
     "atlas-3d.js": 199,
     "atlas-sky.js": 91,
-    "auth-first.js": 211,
+    "auth-first.js": 213,
     "avatar-crop.js": 187,
     "building.js": 187,
     "catalog.js": 199,
@@ -868,7 +870,7 @@
     "flight.js": 199,
     "forestry.js": 182,
     "friends-ui.js": 187,
-    "game.js": 211,
+    "game.js": 213,
     "gif-gallery.js": 96,
     "ground-weather.js": 170,
     "identity-ui.js": 91,
@@ -919,8 +921,8 @@
     "weather-precipitation.js": 170,
     "world-precipitation.js": 170,
     "models/crafting-center-v96.json": 97,
-    "account-gate.js": 208,
-    "boot-loader.js": 211,
+    "account-gate.js": 213,
+    "boot-loader.js": 213,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
     "models/base-venus.json": 100,
@@ -984,7 +986,7 @@
     "vendor/html2canvas.min.js": 102,
     "update-logs.js": 202,
     "legacy-ui.js": 102,
-    "update-history.json": 208,
+    "update-history.json": 213,
     "update-logs.css": 103,
     "mobile-notifications.js": 103,
     "free-camera.js": 105,
@@ -1049,7 +1051,7 @@
     "experimental/planet.js": 157,
     "experimental/chunks.js": 157,
     "experimental/coordinates.js": 157,
-    "account-auth-flow.js": 207,
+    "account-auth-flow.js": 213,
     "account.css": 182,
     "account-birthday.js": 187,
     "neon-lights.js": 190,
@@ -1117,10 +1119,11 @@
     "vendor/mediabunny.LICENSE": 202,
     "vendor/mediabunny.NOTICE": 202,
     "entry-menu.js": 207,
-    "entry-menu.css": 211,
-    "entry-presentation.js": 211,
+    "entry-menu.css": 213,
+    "entry-presentation.js": 213,
     "entry-backdrop.js": 212,
-    "device-gyro.js": 212
+    "device-gyro.js": 213,
+    "flight-save.js": 213
   },
-  "publicReleaseVersion": 208
+  "publicReleaseVersion": 213
 }

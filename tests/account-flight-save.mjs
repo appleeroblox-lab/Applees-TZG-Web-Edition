@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import * as T from '../public/vendor/three.module.js';
+import {ShipBoost} from '../public/boost.js';
+import {Flight} from '../public/flight.js';
+import {SurfaceSession} from '../public/surface.js';
+import {readFlightSave,writeFlightSave,flightSaveKey} from '../public/flight-save.js';
+const rows=new Map(),storage={getItem:k=>rows.get(k)??null,setItem:(k,v)=>rows.set(k,v)};
+const checkpoint=(owner,pos)=>({version:6,owner,pos,q:[0,0,0,1],target:'Mars',system:'Sol',surface:null,visited:['Earth','Mars']});
+rows.set('cosmic-flight-v6',JSON.stringify(checkpoint(undefined,[999,999,999])));
+assert.equal(readFlightSave(storage,'a'),null,'unowned shared legacy checkpoint is never assigned to an account');
+writeFlightSave(storage,'a',checkpoint('a',[1,2,3]));writeFlightSave(storage,'b',checkpoint('b',[4,5,6]));assert.deepEqual(readFlightSave(storage,'a').pos,[1,2,3]);assert.deepEqual(readFlightSave(storage,'b').pos,[4,5,6]);assert.equal(readFlightSave(storage,'c'),null);
+rows.set(flightSaveKey('c'),JSON.stringify(checkpoint('a',[1,2,3])));assert.equal(readFlightSave(storage,'c'),null,'foreign tagged saves are rejected even under another account key');
+rows.set('cosmic-flight-v6',JSON.stringify({...checkpoint(undefined,[7,8,9]),temporal:{version:1,owner:'legacy-account'}}));assert.deepEqual(readFlightSave(storage,'legacy-account').pos,[7,8,9]);assert(rows.has(flightSaveKey('legacy-account')));assert.equal(readFlightSave(storage,'another-account'),null);rows.clear();
+// Execute the actual game's save/load/reset/hydration callbacks with real flight
+// and surface classes: this catches stale positions surviving a live account swap.
+const source=fs.readFileSync('public/game.js','utf8');
+const earth={id:'Earth',name:'Earth',system:'Sol',type:'TERRESTRIAL PLANET',r:637,solid:true,pos:new T.Vector3()},mars={id:'Mars',name:'Mars',system:'Sol',r:338,solid:true,pos:new T.Vector3(5000,0,0)},bodies=[earth,mars];
+const flight=new Flight(bodies),surface=new SurfaceSession(flight),economy={fp:0,rc:0,inventory:new Map()};
+const noop=()=>{},context=vm.createContext({console,queueMicrotask,Map,Set,JSON,Number,ShipBoost,shipBoost:new ShipBoost(),boostSelected:true,boostTouch:true,routeActive:true,routeIndex:3,routeDelay:2,globalThis:undefined,localStorage:storage,readFlightSave,writeFlightSave,flight,surface,earth,bodies,economy,cloudAccounts:true,flightOwner:null,flightRestored:false,restoringDevicePreferences:false,devicePreferences:{save:noop},groundWeather:{persist:noop},surfaceView:{environment:{serialize:()=>({})}},experimental:null,proto:{loading:false,transit:null,engaged:false,past:false,abort:noop},explorer:{enabled:false,cancelOrbit:noop},crew:{onFoot:false},document:{body:{classList:{remove:noop}}},camQ:new T.Quaternion(),clearInputs:noop,target:earth,visited:new Set(['Earth']),labelFilters:{},planetLabelsMode:'collision',graphics:'Medium',GRAPHICS_MODES:['Low','Medium'],rotationSpeed:n=>n,clamp:T.MathUtils.clamp,clearance:1.65,surfacePadding:()=>0,PROTO_SYSTEM:'Proto Solar System',systemUnlocked:()=>true,unlockedSystems:[],playerAccount:{loadedId:'a',rpc:async()=>({systems:[]})},Economy:class{constructor(_,state){Object.assign(this,state);this.inventory=new Map()}},updateEconomyHUD:noop,inventoryUI:null,soundState:null,updateSurfaceControls:noop,syncExplorer:noop,setTarget:noop,persistEconomy:noop,toast:noop,$:()=>({textContent:''})});
+vm.runInContext('globalThis=this',context);
+const functions=source.slice(source.indexOf('function save('),source.indexOf("let planetLabelsMode='collision'"));
+const hydrate=source.match(/hydrate:(async\(state,uid\)=>\{.*?\}),block:value/s)[1];
+const guestStart=source.match(/onGuestStart:(\(\)=>\{.*?\}),onMemberStart:/s)[1];
+vm.runInContext(functions+'\nthis.hydrate='+hydrate+';this.guestStart='+guestStart,context);
+const state={fp:7,rc:2,inventory:[]};
+rows.set('cosmic-flight-v6',JSON.stringify(checkpoint(undefined,[999,999,999])));
+await context.hydrate(state,'a');assert.equal(context.flightOwner,'a');assert.equal(surface.body,earth);assert.equal(context.routeActive,false);assert.equal(context.boostSelected,false);
+surface.body=null;flight.pos.set(100,200,300);context.target=mars;context.save();assert.deepEqual(readFlightSave(storage,'a').pos,[100,200,300]);
+context.playerAccount.loadedId='b';const changing=context.hydrate(state,'b');context.save();assert(!rows.has(flightSaveKey('b')),'account swap cannot save the previous live flight under the new ID');await changing;assert.equal(surface.body,earth,'an account without a checkpoint starts at Earth');assert.notDeepEqual(flight.pos.toArray(),[100,200,300]);
+surface.body=null;flight.pos.set(400,500,600);context.target=mars;context.save();
+context.playerAccount.loadedId='a';await context.hydrate(state,'a');assert.deepEqual(flight.pos.toArray(),[100,200,300]);assert.equal(surface.body,null);
+context.playerAccount.loadedId='b';await context.hydrate(state,'b');assert.deepEqual(flight.pos.toArray(),[400,500,600]);
+const before=[...rows];context.__tzgGuest=true;context.playerAccount.loadedId=null;context.guestStart();await context.hydrate(state,null);flight.pos.set(50,50,50);context.save();assert.deepEqual([...rows],before,'guest play cannot overwrite either member checkpoint');
+context.__tzgGuest=false;context.playerAccount.loadedId='a';await context.hydrate(state,'a');assert.deepEqual(flight.pos.toArray(),[100,200,300]);
+console.log('PASS separate A/B checkpoints, live swap reset/restore, save-during-hydration guard, guest isolation, legacy owner migration and unknown/foreign owner rejection.');

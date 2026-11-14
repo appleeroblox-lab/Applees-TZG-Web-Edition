@@ -16,6 +16,6 @@ console.log('PASS guest boot bypasses stalled SDK, session refresh and user veri
 // Signing out of a remembered preloader session must restore the one-page login form.
 {
  const {document}=parseHTML('<html><body></body></html>');const user={id:'remembered-user'};const client={rpc:async()=>({}),auth:{getSession:async()=>({data:{session:{user}}}),getUser:async()=>({data:{user}}),signOut:async()=>({})}};
- const boot=authenticateFirst({doc:document,config:{},requestSDK:async()=>({createClient:()=>client})});await tick();assert(document.querySelector('#accountForm').hidden);await document.querySelector('#accountGateLogout').onclick();assert(!document.querySelector('#accountForm').hidden);assert(document.querySelector('#accountConnected').hidden);assert(document.querySelector('#accountForgot').hidden);acceptRules(document);document.querySelector('#accountGuest').onclick();await boot;takePreAuthClient();delete globalThis.__tzgGuest;
+ const boot=authenticateFirst({doc:document,config:{},requestSDK:async()=>({createClient:()=>client})});await tick();assert(document.querySelector('#accountForm').hidden);await document.querySelector('#accountGateLogout').onclick();assert(!document.querySelector('#accountForm').hidden);assert(document.querySelector('#accountConnected').hidden);assert(!document.querySelector('#accountForgot').hidden);acceptRules(document);document.querySelector('#accountGuest').onclick();await boot;takePreAuthClient();delete globalThis.__tzgGuest;
 }
-console.log('PASS remembered-session sign-out restores login fields and keeps recovery hidden until a credential error.');
+console.log('PASS remembered-session sign-out restores login fields and keeps password recovery available without entering a password.');

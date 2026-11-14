@@ -3,6 +3,7 @@ const db=new PGlite();await db.exec(`create role anon;create role authenticated;
 for(const file of (await fs.readdir('supabase/migrations')).filter(f=>!f.includes('mobile_push')).sort()){let sql=await fs.readFile('supabase/migrations/'+file,'utf8');sql=sql.replace(/create extension if not exists pg_cron[^;]*;/gi,'');try{await db.exec(sql)}catch(e){throw Error(file+': '+e.message)}}
 
 
+
 const admin=crypto.randomUUID(),player=crypto.randomUUID(),late=crypto.randomUUID(),sessions=new Map();
 for(const [id,name] of [[admin,'event_admin'],[player,'event_player'],[late,'event_late']]){
  await db.query('insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values($1,$2,now(),$3)',[id,name+'@example.test',JSON.stringify({username:name,display_name:name})]);
@@ -16,12 +17,12 @@ async function login(id){await db.exec('reset role');await db.query("select set_
 const rpc=async(name,args=[]) => (await db.query('select public.'+name+'('+args.map((_,i)=>'$'+(i+1)).join(',')+') result',args)).rows[0].result;
 for(const id of [admin,player,late]){await login(id);await rpc('tzg_player_session_start');await rpc('tzg_player_load');}
 await login(player);await assert.rejects(rpc('tzg_debug_event',[crypto.randomUUID(),'global','currency','fp',20,null,null]),/Developer access/);
-await login(admin);const request=crypto.randomUUID();const gift=await rpc('tzg_debug_event',[request,'global','currency','fp',123,null,null]);assert.equal(gift.recipients,2);
+await login(admin);const request=crypto.randomUUID();const gift=await rpc('tzg_debug_event',[request,'global','currency','fp',123,null,null]);assert.equal(gift.recipients,3);
 assert.deepEqual(await rpc('tzg_debug_event',[request,'global','currency','fp',123,null,null]),gift,'retries preserve audience');
 await login(late);assert.equal((await rpc('tzg_event_poll',[null])).length,0,'late joiners excluded');
 await login(player);assert.equal((await rpc('tzg_event_poll',[null]))[0].id,gift.event);let state=await rpc('tzg_player_load');const mutation=crypto.randomUUID();const received=await rpc('tzg_event_claim',[gift.event,state.revision,mutation]);assert.equal(received.state.fp,state.fp+123);assert.deepEqual(await rpc('tzg_event_claim',[gift.event,state.revision,mutation]),received);await assert.rejects(rpc('tzg_event_claim',[gift.event,received.revision,crypto.randomUUID()]),/already collected/);
 await login(admin);const local=await rpc('tzg_debug_event',[crypto.randomUUID(),'local','parts','glass',5,admin,null]);assert.equal(local.recipients,1);state=await rpc('tzg_player_load');const part=await rpc('tzg_event_claim',[local.event,state.revision,crypto.randomUUID()]);assert(part.state.inventory.some(x=>x.type==='glass'&&x.body==='Earth'&&x.qty===5));
 const warp=await rpc('tzg_debug_event',[crypto.randomUUID(),'global','warp','Earth',0,null,null]);assert.equal(warp.recipients,3);
-await login(null);const guestEvents=await rpc('tzg_event_poll',[visitors[2]]);assert.equal(guestEvents.length,1);assert.equal(guestEvents[0].kind,'warp');await rpc('tzg_event_warp_ack',[warp.event,visitors[2]]);assert.equal((await rpc('tzg_event_poll',[visitors[2]])).length,0);await assert.rejects(rpc('tzg_event_claim',[gift.event,0,crypto.randomUUID()]),/permission/);
+await login(null);const guestEvents=await rpc('tzg_event_poll',[visitors[2]]);assert.equal(guestEvents.length,2);assert(guestEvents.some(e=>e.kind==='warp'));await rpc('tzg_event_warp_ack',[gift.event,visitors[2]]);await rpc('tzg_event_warp_ack',[warp.event,visitors[2]]);assert.equal((await rpc('tzg_event_poll',[visitors[2]])).length,0);await assert.rejects(rpc('tzg_event_claim',[gift.event,0,crypto.randomUUID()]),/permission/);
 await login(player);await assert.rejects(rpc('tzg_event_claim',[local.event,0,crypto.randomUUID()]),/not addressed/);await assert.rejects(db.query('select * from tzg_private.developer_events'),/permission/);
-await db.close();console.log('PASS developer-only events, local/global audience snapshot, guest warp-only access, currency/items, idempotent retries and private receipts');
+await db.close();console.log('PASS developer-only events, local/global audience snapshot, guest session rewards, currency/items, idempotent retries and private receipts');

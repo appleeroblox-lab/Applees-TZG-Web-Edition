@@ -15,5 +15,10 @@ window.Element.prototype.animate=function(frames,options){
 };
 const presentation=installEntryPresentation(root);await presentation.load(async update=>{assert(root.hidden);assert(!boot.classList.contains('hidden'));assert(!document.getElementById('entryLoadingFade'));update(75)});
 assert.deepEqual(events,[260,380]);assert(boot.classList.contains('hidden'));assert(!root.hidden);
+// A longer title entrance must not make an already faded overlay turn black again.
+let releaseTitle;
+const originalAnimate=window.Element.prototype.animate;
+window.Element.prototype.animate=function(frames,options){if(this.classList.contains('bootTitle'))return {finished:new Promise(resolve=>releaseTitle=resolve)};return originalAnimate.call(this,frames,options)};
+const slow=presentation.startLoading();await new Promise(resolve=>setImmediate(resolve));assert.equal(document.getElementById('entryLoadingFade').style.opacity,'0','fade-out remains transparent while the title entrance finishes');releaseTitle();await slow;window.Element.prototype.animate=originalAnimate;root.hidden=false;boot.classList.add('hidden');
 events.length=0;await assert.rejects(presentation.load(async()=>{throw Error('Offline')}),/Offline/);assert(!root.hidden);assert(boot.classList.contains('hidden'));assert(!document.getElementById('entryLoadingFade'));
 console.log('PASS fade to black before revealing loading, fade-out handoff, task timing and offline cleanup without a stuck overlay.');

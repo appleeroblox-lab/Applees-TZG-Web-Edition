@@ -12,7 +12,7 @@ export function installEntryPresentation(root){
  const blackFade=async action=>{
   if(reduced()||!doc.createElement||!doc.body)return action();
   const shade=doc.createElement('div');shade.id='entryLoadingFade';shade.setAttribute('aria-hidden','true');shade.style.cssText='position:fixed;inset:0;background:#000;opacity:0;z-index:2147483647;pointer-events:auto';doc.body.append(shade);
-  try{await animate(shade,[{opacity:0},{opacity:1}],{duration:260});shade.style.opacity='1';const result=action();await animate(shade,[{opacity:1},{opacity:0}],{duration:380});return await result}finally{shade.remove()}
+  try{await animate(shade,[{opacity:0},{opacity:1}],{duration:260});shade.style.opacity='1';const result=action();await animate(shade,[{opacity:1},{opacity:0}],{duration:380});shade.style.opacity='0';return await result}finally{shade.remove()}
  };
  const startLoading=async()=>{await leave();await blackFade(()=>{root.hidden=true;return revealLoading()})};
  let loading=false;

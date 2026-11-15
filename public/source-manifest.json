@@ -1014,7 +1014,7 @@
     "post-effects.js": 182,
     "warp-pricing.js": 199,
     "graphics-controls.js": 194,
-    "guest-access.js": 223,
+    "guest-access.js": 224,
     "player-activity.js": 107,
     "player-journey.js": 187,
     "journey.css": 108,
@@ -1139,10 +1139,10 @@
     "layout-stability.css": 222,
     "debug-menu.css": 223,
     "developer-events.js": 223,
-    "event-feed.js": 223,
+    "event-feed.js": 224,
     "guest-profile.js": 223,
     "connection-warning.js": 223,
-    "social-refresh.css": 223
+    "social-refresh.css": 224
   },
   "publicReleaseVersion": 213
 }

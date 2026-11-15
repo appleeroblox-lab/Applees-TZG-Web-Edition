@@ -6,7 +6,7 @@ const $=id=>document.getElementById(id);
 const button=(text,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=text;b.onclick=fn;return b};
 const features={
  account:['Guest account','You are exploring as a Guest. Inventory, currencies and world edits are temporary and disappear when this page closes. Log in to save your progress, customize your profile and collect daily rewards.'],
- friends:['Party & Friends','Add friends, see who is online, send private messages and create group chats with a registered account. Guests can browse public player profiles and read Global Chat. Log in or sign up to join the conversation.'],
+ friends:['Party & Friends','Add friends, see who is online, send private messages and create group chats with a registered account. Guests can use Global Chat and browse public profiles. Log in or sign up to use private and group chats.'],
  rewards:['Daily Rewards','Registered explorers can claim FP, RC and building supplies once per UTC day. Your seven-day cycle keeps its progress when you miss a day. Day 7 includes 64 TNT. Log in to collect rewards and save them in your inventory.']
 };
 // A separate anonymous client never reuses a saved member token.

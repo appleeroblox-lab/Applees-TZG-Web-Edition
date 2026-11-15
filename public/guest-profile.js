@@ -1,4 +1,12 @@
-export function guestProfile(displayName){const d=document.createElement('dialog');d.className='guestPublicProfile';const close=document.createElement('button');close.textContent='✕';close.type='button';close.onclick=()=>d.close();const name=document.createElement('strong');name.textContent=displayName;const tag=document.createElement('span');tag.className='guestTag';tag.textContent='Guest';d.append(close,name,tag);d.addEventListener('close',()=>d.remove());document.body.append(d);d.showModal();}
+export function guestProfile(displayName){
+ const d=document.createElement('dialog');d.className='guestPublicProfile';d.setAttribute('aria-label','Guest profile');
+ const head=document.createElement('div');head.className='guestProfileHead';const title=document.createElement('h2');title.textContent='Player Profile';
+ const close=document.createElement('button');close.textContent='✕';close.type='button';close.setAttribute('aria-label','Close guest profile');close.onclick=()=>d.close();head.append(title,close);
+ const body=document.createElement('div');body.className='guestProfileIdentity';const avatar=document.createElement('img');avatar.src='icons/default-profile.svg';avatar.alt='';avatar.className='guestProfileAvatar';
+ const info=document.createElement('div');info.className='guestProfileName';const name=document.createElement('strong');name.textContent=displayName;const tag=document.createElement('span');tag.className='guestTag';tag.textContent='Guest';info.append(name,tag);body.append(avatar,info);d.append(head,body);
+ for(const type of ['keydown','keyup','pointerdown'])d.addEventListener(type,e=>e.stopPropagation());
+ d.addEventListener('close',()=>d.remove());document.body.append(d);d.showModal();close.focus();
+}
 export function storedGuestName(){try{const n=(localStorage.getItem('tzg-guest-display-name')||'').trim();return n.length>=2&&n.length<=32?n:''}catch{return ''}}
 export function askGuestName(current=storedGuestName(),required=false){
  return new Promise(resolve=>{

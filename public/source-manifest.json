@@ -904,7 +904,7 @@
     "selection-menu.js": 187,
     "settlements.js": 195,
     "ship-respawn.js": 182,
-    "social-ui.js": 231,
+    "social-ui.js": 232,
     "sound.js": 201,
     "stellar-glare.js": 196,
     "supabase-config.js": 61,
@@ -1140,9 +1140,9 @@
     "debug-menu.css": 228,
     "developer-events.js": 223,
     "event-feed.js": 224,
-    "guest-profile.js": 229,
+    "guest-profile.js": 232,
     "connection-warning.js": 223,
-    "social-refresh.css": 230
+    "social-refresh.css": 232
   },
   "publicReleaseVersion": 213
 }

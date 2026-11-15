@@ -24,7 +24,7 @@ await db.query("insert into tzg_private.play_sessions(id,visitor,user_id,last_se
 await db.exec('set role anon');assert.equal(Number(await rpc('tzg_online_players')),2,'deduplicate accounts and ignore expired presence');
 await db.exec("reset role;update tzg_private.chat_messages set created_at=now()-interval '6 hours' where id=(select min(id) from tzg_private.chat_messages);select tzg_private.cleanup_temporary_chat()");assert.equal((await db.query('select count(*)::int n from tzg_private.chat_messages')).rows[0].n,9,'only the expired message is deleted');
 const guestToken=crypto.randomUUID(),mutation=crypto.randomUUID();
-await db.exec('set role anon');await rpc('tzg_guest_identity',[guestToken,'Guest Pilot']);
+await db.exec('set role anon');await rpc('tzg_guest_identity',[guestToken,'Guest Pilot']);await rpc('tzg_guest_identity',[guestToken,'Guest Pilot']);await assert.rejects(rpc('tzg_guest_identity',[crypto.randomUUID(),'guest pilot']),/already taken/);
 await assert.rejects(rpc('tzg_guest_chat_send',[crypto.randomUUID(),'No identity',crypto.randomUUID()]),/display name/);
 const sent=await rpc('tzg_guest_chat_send',[guestToken,'Hello from guest',mutation]);
 assert.equal((await rpc('tzg_guest_chat_send',[guestToken,'Hello from guest',mutation])).id,sent.id,'retry does not duplicate');

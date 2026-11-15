@@ -28,7 +28,7 @@ await db.exec('set role anon');await rpc('tzg_guest_identity',[guestToken,'Guest
 await assert.rejects(rpc('tzg_guest_chat_send',[crypto.randomUUID(),'No identity',crypto.randomUUID()]),/display name/);
 const sent=await rpc('tzg_guest_chat_send',[guestToken,'Hello from guest',mutation]);
 assert.equal((await rpc('tzg_guest_chat_send',[guestToken,'Hello from guest',mutation])).id,sent.id,'retry does not duplicate');
-const visible=(await rpc('tzg_guest_chat')).find(m=>m.id===sent.id);assert.equal(visible.display_name,'Guest Pilot');assert(visible.guest);assert(!JSON.stringify(visible).includes(guestToken),'guest identity token stays private');
+const visible=(await rpc('tzg_guest_chat')).find(m=>m.id===sent.id);assert.equal(visible.display_name,'Guest Pilot');assert(visible.guest);await db.exec('reset role;set role authenticated');const memberView=(await rpc('tzg_chat_read')).find(m=>m.id===sent.id);assert(memberView,'guest sent message is visible to normal players');assert.equal(memberView.display_name,'Guest Pilot');assert(memberView.guest);await db.exec('reset role;set role anon');assert(!JSON.stringify(visible).includes(guestToken),'guest identity token stays private');
 await assert.rejects(rpc('tzg_guest_chat_send',[guestToken,'Too soon',crypto.randomUUID()]),/Wait/);
 await assert.rejects(db.query('select * from tzg_private.guest_identities'),/permission/);
 await db.close();console.log('PASS ten-message cap, individual five-hour expiry, guest names/send/rate limits/idempotency/privacy and online counts');

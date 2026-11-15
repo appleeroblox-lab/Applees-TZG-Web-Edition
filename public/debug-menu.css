@@ -26,3 +26,64 @@ body.referenceHUD #debugWindow.debugDashboard{left:50%;top:50%;transform:transla
 #debugAuthorization .authorizationActions{grid-column:1/-1;display:flex;gap:12px}#debugAuthorization .authorizationActions button{flex:1;grid-area:auto!important}#debugWindow .debugWarpPicker{width:100%;margin:4px 0 10px;text-align:left;padding:12px}
 
 #debugWindow .eventAudience{display:flex;gap:8px;margin-top:6px}#debugWindow .eventAudience button{flex:1;font-size:12px;padding:9px}#debugWindow .eventAudience button[aria-pressed=true]{background:linear-gradient(#16c6ef,#0086c2);border-color:#96f1ff}#debugWindow #debugEvents form>label:first-child{grid-column:1/-1}
+
+/* Reference dashboard: compact frame, cyan controls, independent scroll areas. */
+body.referenceHUD #debugWindow.debugDashboard{width:min(840px,88dvw);height:min(510px,82dvh);padding-bottom:12px;border:3px solid #80e8ff;border-radius:20px;background:linear-gradient(120deg,#08618b,#03466b);box-shadow:inset 0 0 12px #2bb4dd66,0 0 0 2px #0a8cb5,0 15px 45px #001525aa}
+#debugWindow .debugIcon{display:inline-flex;flex:none;width:23px;height:23px;align-items:center;justify-content:center;background:transparent;vertical-align:middle;margin-right:10px;color:white}
+#debugWindow .debugIcon svg{width:100%;height:100%;overflow:visible}
+#debugWindow #debugDrag{min-height:56px;padding:8px 12px;background:linear-gradient(110deg,#07537b,#08638d);border-bottom:1px solid #71ddf7}
+#debugWindow #debugDrag>strong{display:flex;align-items:center;font-size:24px;white-space:nowrap}
+#debugWindow #debugClose{width:44px;height:44px;padding:0;font-size:28px;border:2px solid #a3efff;border-radius:11px;background:linear-gradient(#0da7db,#066a99)}
+#debugWindow #debugContent nav{width:176px;padding:10px 8px;gap:8px;background:linear-gradient(100deg,#07517a,#034265);border-right:1px solid #60c6e7}
+#debugWindow #debugContent nav button{display:flex;align-items:center;min-height:43px;padding:8px;font-size:13px;font-weight:500;border-radius:10px;box-shadow:inset 0 1px 3px #b9efff55,0 2px 3px #001c3544}
+#debugWindow #debugContent nav button[aria-pressed=true]{background:linear-gradient(#1ed2fa,#008ac4);border-color:#9ef4ff;color:white;box-shadow:inset 0 1px 5px #efffff66,0 0 8px #20d7ff44}
+#debugWindow #debugContent main{padding:8px 10px}
+#debugWindow :is(#debugCommandForm,.debugCommandCard,#debugStatistics,#debugEvents form){border:1px solid #5cc3e4;border-radius:14px;background:#03486e88;padding:12px;margin:0 0 8px}
+#debugWindow #debugCommandForm{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+#debugWindow #debugCommandForm h3{grid-column:1/-1;margin:0;display:flex;align-items:center}
+#debugWindow #debugCommandForm input{margin:0;min-width:0}
+#debugWindow #debugCommandForm button{height:39px;background:linear-gradient(#17c8f4,#008bc4);border-radius:10px}
+#debugWindow :is(input,select,textarea){background:#03476b;border-color:#5db9dc}
+#debugWindow .debugCommandCard h3{display:flex;align-items:center;margin:0 0 8px}
+#debugWindow .debugCommandCard .debugActions{margin-top:8px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+#debugWindow .debugCommandCard .debugActions:nth-of-type(2){grid-template-columns:repeat(3,minmax(0,1fr))}
+#debugWindow .debugCommandCard button{padding:9px 5px;font-size:12px;border-radius:10px}
+#debugWindow #debugStatistics>h3{display:flex;align-items:center;margin-bottom:8px}
+#debugWindow #debugStatistics>p{margin:0}
+#debugWindow #debugStatistics>p>p{font-size:13px;min-height:45px;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px}
+#debugWindow .debugWarpPicker{border-radius:12px;min-height:42px;margin:0 0 8px;font-size:14px}
+#debugWindow #debugEvents form{grid-template-columns:1fr;gap:10px}
+#debugWindow #debugEvents form>label{display:grid;grid-template-columns:90px minmax(0,1fr);align-items:center;gap:10px;font-size:14px}
+#debugWindow #debugEvents form>label :is(select,input){margin:0}
+#debugWindow #debugEvents .eventAudience{margin:0}
+#debugWindow #debugEvents form>p:not(.eventStatus){padding:10px;border:1px solid #64c5e6;border-radius:10px;font-size:12px;margin:0}
+#debugWindow #debugEvents form>button[type=submit]{min-height:44px;font-size:18px;border-radius:12px}
+#debugAuthorization{font-family:Fredoka,sans-serif}
+#debugAuthorization [hidden]{display:none!important}
+#debugAuthorization .authorizationHead,#debugAuthorization form{width:min(560px,88dvw)}
+#debugAuthorization .authorizationHead{padding:14px 18px;border-width:3px;border-bottom:0}
+#debugAuthorization .authorizationHead h2{font-size:24px}
+#debugAuthorization form{border-width:3px;border-top:0;padding:8px 18px 18px;gap:14px}
+#debugAuthorization form>label{display:grid;grid-template-columns:160px minmax(0,1fr);align-items:center;font-size:15px;gap:12px}
+#debugAuthorization input{margin:0;min-width:0;height:40px}
+#debugAuthorization .authorizationActions{margin-top:8px}
+@media(max-width:650px),(max-height:480px){body.referenceHUD #debugWindow.debugDashboard{width:92dvw;height:88dvh;border-radius:14px}#debugWindow #debugDrag{min-height:42px;padding:5px 8px}#debugWindow #debugDrag>strong{font-size:18px}#debugWindow #debugClose{width:34px;height:34px;font-size:23px}#debugWindow #debugContent nav{width:140px;gap:6px;padding:7px 6px}#debugWindow #debugContent nav button{font-size:11px;min-height:36px;padding:6px}#debugWindow .debugIcon{width:19px;height:19px;margin-right:7px}#debugWindow #debugContent main{padding:7px}#debugWindow #debugEvents form>label{grid-template-columns:65px minmax(0,1fr);font-size:12px}#debugWindow .eventAudience button{font-size:11px;padding:7px}#debugAuthorization form>label{grid-template-columns:135px minmax(0,1fr);font-size:13px}}
+@media(max-width:440px){#debugWindow #debugContent nav{width:106px}#debugWindow #debugContent nav button{font-size:10px}#debugWindow .debugCommandCard .debugActions{grid-template-columns:repeat(2,minmax(0,1fr))}#debugWindow #debugCommandForm{grid-template-columns:1fr}#debugAuthorization form>label{grid-template-columns:1fr;gap:5px}}
+
+#debugAuthorization .authorizationCard{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,88dvw);max-height:88dvh;display:flex;flex-direction:column;filter:drop-shadow(0 12px 25px #00152888)}
+#debugAuthorization .authorizationCard>.authorizationHead,#debugAuthorization .authorizationCard>form{width:100%;box-sizing:border-box}
+#debugAuthorization .authorizationHead{cursor:move;touch-action:none;user-select:none;padding:10px 14px;flex:none}
+#debugAuthorization .authorizationHead h2{font-size:20px;line-height:1.2}
+#debugAuthorization .authorizationHead>button{flex:0 0 32px;width:32px;height:32px;min-width:32px;min-height:32px;padding:0;font-size:23px;line-height:1;display:grid;place-items:center}
+#debugAuthorization .authorizationCard>form{min-height:0;max-height:none;padding:6px 14px 14px;gap:10px;overflow:auto}
+#debugAuthorization form>label{grid-template-columns:125px minmax(0,1fr);gap:14px;font-size:13px}
+#debugAuthorization .authorizationCard input{height:36px;padding:8px;font-size:13px}
+#debugAuthorization .authorizationActions{gap:14px;margin-top:4px}
+#debugAuthorization .authorizationActions button{padding:9px;font-size:14px}
+#debugWindow #debugClose{flex-shrink:0;box-sizing:border-box;line-height:1;display:grid;place-items:center}
+#debugWindow #debugContent nav button{column-gap:10px}
+#debugWindow #debugContent nav .debugIcon{margin-right:0}
+#debugWindow #debugEvents form>label{column-gap:18px}
+#debugWindow #debugEvents select{padding-left:12px;padding-right:28px}
+#debugWindow #debugContent nav #debugReportsTab{padding-left:14px}
+@media(max-width:440px){#debugAuthorization form>label{grid-template-columns:1fr;gap:6px}#debugWindow #debugContent nav button{column-gap:7px}}

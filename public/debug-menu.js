@@ -15,7 +15,34 @@ export class DebugMenu{
  addEventListener('pagehide',()=>{++this.revision;this.active=false;this.root.hidden=true;this.api('logout',{pageExit:true},true).catch(()=>{})});
  addEventListener('error',e=>this.log('error',String(e.message||'Runtime error')));addEventListener('unhandledrejection',()=>this.log('error','An asynchronous operation failed.'));addEventListener('tzg-chat-report-sent',()=>{if(this.active)this.moderation.poll()});this.log('info','Debug console ready. Admin commands require server authorization.');
  }
- scaleContent(){this.inner.style.transform='none';this.inner.style.width='100%';this.inner.style.height='100%'}
+ styleDashboard(){
+  if(this.root.dataset.referenceLayout)return;
+  this.root.dataset.referenceLayout='true';
+  const icon=(name)=>{const paths={terminal:'M4 5h16v14H4z M7 9l3 3-3 3 M13 15h4',build:'M14 5a5 5 0 0 0-6 6L3 16l5 5 5-5a5 5 0 0 0 6-6l-4 3-3-3z',calendar_month:'M4 6h16v15H4z M4 10h16 M8 3v5 M16 3v5 M8 14h2 M14 14h2 M8 18h2',group:'M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6 M16 11a3 3 0 1 0 0-6 M2 20v-3c0-4 12-4 12 0v3 M16 14c4 0 6 1 6 3v3',flag:'M5 21V3 M5 4h14l-3 4 3 4H5',verified_user:'M12 2l8 4v6c0 5-8 10-8 10S4 17 4 12V6z M8 12l3 3 5-6',chat:'M3 4h18v13H9l-6 4z',logout:'M10 3H3v18h7 M8 12h13 M16 7l5 5-5 5',code:'M8 6l-6 6 6 6 M16 6l6 6-6 6 M14 3l-4 18',bar_chart:'M4 20V12h3v8 M11 20V7h3v13 M18 20V3h3v17'};const wrap=document.createElement('span');wrap.className='debugIcon';wrap.setAttribute('aria-hidden','true');wrap.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="'+paths[name]+'"/></svg>';return wrap};
+  const icons={debugConsoleTab:'terminal',debugDeveloperTab:'build',debugEventsTab:'calendar_month',debugAccountsTab:'group',debugVerifiedTab:'verified_user',debugMessageLogsTab:'chat',debugSignOut:'logout'};
+  for(const [id,name]of Object.entries(icons)){const button=$(id);if(button)button.prepend(icon(name))}
+  $('debugDrag').querySelector('strong').prepend(icon('code'));
+  const form=$('debugCommandForm'),label=form.querySelector('label'),input=$('debugCommand');
+  const title=document.createElement('h3');title.textContent='Admin Command';title.prepend(icon('terminal'));
+  input.setAttribute('aria-label','Admin command');label.replaceWith(title);form.insertBefore(input,form.querySelector('button'));
+  const commands=document.createElement('section');commands.className='debugCommandCard';
+  const heading=document.createElement('h3');heading.textContent='Commands';heading.prepend(icon('code'));commands.append(heading);
+  for(const row of [...$('debugDeveloperPage').querySelectorAll('.debugActions')])commands.append(row);
+  commands.querySelector('.debugActions:last-child').append($('debugEventsOpen'));
+  form.parentElement.insertBefore(commands,$('debugStatistics'));
+  const help=$('debugDeveloperPage').querySelector('details');if(help)commands.append(help);
+  $('debugStatistics').querySelector('h3').prepend(icon('bar_chart'));
+  $('debugAuthHelp').classList.add('authorizationSubtitle');
+  const card=document.createElement('div');card.className='authorizationCard';
+  const head=this.authRoot.querySelector('.authorizationHead');card.append(head,$('debugAuth'));this.authRoot.append(card);
+  let drag=null;
+  const move=(x,y)=>{const r=card.getBoundingClientRect();card.style.left=Math.max(8,Math.min(x,innerWidth-r.width-8))+'px';card.style.top=Math.max(8,Math.min(y,innerHeight-r.height-8))+'px';card.style.transform='none'};
+  head.onpointerdown=e=>{if(e.button>0||e.target.closest('button'))return;const r=card.getBoundingClientRect();drag={id:e.pointerId,x:e.clientX-r.left,y:e.clientY-r.top};head.setPointerCapture?.(e.pointerId);e.preventDefault()};
+  head.onpointermove=e=>{if(drag?.id===e.pointerId)move(e.clientX-drag.x,e.clientY-drag.y)};
+  head.onpointerup=head.onpointercancel=head.onlostpointercapture=()=>{drag=null};
+  addEventListener('resize',()=>{if(!this.authRoot.hidden&&card.style.left){const r=card.getBoundingClientRect();move(r.left,r.top)}});
+ }
+ scaleContent(){this.styleDashboard();this.inner.style.transform='none';this.inner.style.width='100%';this.inner.style.height='100%'}
  owns(target){return !!target&&(this.root.contains(target)||this.authRoot.contains(target))}
  typing(){return this.owns(document.activeElement)&&/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)}
  size(width,height){const r=this.root.getBoundingClientRect(),maxWidth=Math.max(1,innerWidth-r.left-12),maxHeight=Math.max(1,innerHeight-r.top-12);this.root.style.maxHeight=maxHeight+'px';this.root.style.width=Math.min(maxWidth,Math.max(Math.min(340,maxWidth),width))+'px';this.root.style.height=Math.min(maxHeight,Math.max(Math.min(220,maxHeight),height))+'px';this.scaleContent()}

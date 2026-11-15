@@ -62,7 +62,7 @@
     "test:public-ids": "node tests/public-player-ids.mjs && node tests/player-account.mjs",
     "test:chat-presence": "node tests/chat-ten-messages.mjs && node tests/last-online.mjs && node tests/online-count.mjs && node tests/live-chat.mjs",
     "test:events": "node tests/developer-events-sql.mjs && node tests/developer-events-ui.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --events-only && node tests/friends-ui.mjs",
-    "test:entry-chat-ui": "node tests/entry-chat-autosave.mjs && node tests/account-flight-save.mjs"
+    "test:entry-chat-ui": "node tests/entry-chat-autosave.mjs && node tests/account-flight-save.mjs && node tests/guest-profile-warning.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

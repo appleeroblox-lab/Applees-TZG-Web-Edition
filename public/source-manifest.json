@@ -1,5 +1,5 @@
 {
-  "version": 234,
+  "version": 235,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -904,7 +904,7 @@
     "selection-menu.js": 187,
     "settlements.js": 195,
     "ship-respawn.js": 182,
-    "social-ui.js": 232,
+    "social-ui.js": 235,
     "sound.js": 201,
     "stellar-glare.js": 196,
     "supabase-config.js": 61,

@@ -70,7 +70,8 @@ body.referenceHUD #debugWindow.debugDashboard{width:min(840px,88dvw);height:min(
 @media(max-width:650px),(max-height:480px){body.referenceHUD #debugWindow.debugDashboard{width:92dvw;height:88dvh;border-radius:14px}#debugWindow #debugDrag{min-height:42px;padding:5px 8px}#debugWindow #debugDrag>strong{font-size:18px}#debugWindow #debugClose{width:34px;height:34px;font-size:23px}#debugWindow #debugContent nav{width:140px;gap:6px;padding:7px 6px}#debugWindow #debugContent nav button{font-size:11px;min-height:36px;padding:6px}#debugWindow .debugIcon{width:19px;height:19px;margin-right:7px}#debugWindow #debugContent main{padding:7px}#debugWindow #debugEvents form>label{grid-template-columns:65px minmax(0,1fr);font-size:12px}#debugWindow .eventAudience button{font-size:11px;padding:7px}#debugAuthorization form>label{grid-template-columns:135px minmax(0,1fr);font-size:13px}}
 @media(max-width:440px){#debugWindow #debugContent nav{width:106px}#debugWindow #debugContent nav button{font-size:10px}#debugWindow .debugCommandCard .debugActions{grid-template-columns:repeat(2,minmax(0,1fr))}#debugWindow #debugCommandForm{grid-template-columns:1fr}#debugAuthorization form>label{grid-template-columns:1fr;gap:5px}}
 
-#debugAuthorization .authorizationCard{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,88dvw);max-height:88dvh;display:flex;flex-direction:column;filter:drop-shadow(0 12px 25px #00152888)}
+#debugAuthorization{background:transparent;backdrop-filter:none;pointer-events:none}
+#debugAuthorization .authorizationCard{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,88dvw);max-height:88dvh;display:flex;flex-direction:column;filter:drop-shadow(0 12px 25px #00152888);pointer-events:auto}
 #debugAuthorization .authorizationCard>.authorizationHead,#debugAuthorization .authorizationCard>form{width:100%;box-sizing:border-box}
 #debugAuthorization .authorizationHead{cursor:move;touch-action:none;user-select:none;padding:10px 14px;flex:none}
 #debugAuthorization .authorizationHead h2{font-size:20px;line-height:1.2}
@@ -86,4 +87,9 @@ body.referenceHUD #debugWindow.debugDashboard{width:min(840px,88dvw);height:min(
 #debugWindow #debugEvents form>label{column-gap:18px}
 #debugWindow #debugEvents select{padding-left:12px;padding-right:28px}
 #debugWindow #debugContent nav #debugReportsTab{padding-left:14px}
+#debugWindow .debugCommandCard .debugActions{gap:12px;margin-top:12px}
+#debugWindow .eventAudience{gap:12px}
+#debugWindow #debugEvents form{gap:14px}
+#debugWindow #debugDrag{column-gap:12px}
+#debugWindow #debugCommandForm{gap:12px}
 @media(max-width:440px){#debugAuthorization form>label{grid-template-columns:1fr;gap:6px}#debugWindow #debugContent nav button{column-gap:7px}}

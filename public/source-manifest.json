@@ -1,5 +1,5 @@
 {
-  "version": 241,
+  "version": 242,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -568,7 +568,8 @@
     "wormhole-occlusion.js",
     "home-experiment.js",
     "home-experiment.css",
-    "home-world.js"
+    "home-world.js",
+    "runtime-versions.js"
   ],
   "versionedFiles": [
     "account-auth-flow.js",
@@ -853,7 +854,8 @@
     "world-precipitation.js",
     "home-experiment.js",
     "home-experiment.css",
-    "home-world.js"
+    "home-world.js",
+    "runtime-versions.js"
   ],
   "fileVersions": {
     "account-pages.js": 187,
@@ -888,7 +890,7 @@
     "flight.js": 199,
     "forestry.js": 182,
     "friends-ui.js": 223,
-    "game.js": 241,
+    "game.js": 242,
     "gif-gallery.js": 96,
     "ground-weather.js": 170,
     "identity-ui.js": 91,
@@ -936,10 +938,10 @@
     "voice-message.js": 91,
     "voice-player.js": 91,
     "water-reflection.js": 101,
-    "weather-precipitation.js": 170,
+    "weather-precipitation.js": 242,
     "world-precipitation.js": 170,
     "models/crafting-center-v96.json": 97,
-    "account-gate.js": 213,
+    "account-gate.js": 242,
     "boot-loader.js": 234,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
@@ -1017,7 +1019,7 @@
     "interface-v86.css": 105,
     "lighting.js": 197,
     "performance.js": 182,
-    "post-effects.js": 182,
+    "post-effects.js": 242,
     "warp-pricing.js": 199,
     "graphics-controls.js": 194,
     "guest-access.js": 240,
@@ -1038,7 +1040,7 @@
     "distant-terrain.js": 199,
     "atmosphere-profiles.js": 197,
     "globe-raster.js": 168,
-    "terrain-clouds.js": 170,
+    "terrain-clouds.js": 242,
     "texture-palettes.js": 119,
     "surface-palette.js": 195,
     "minimap.js": 198,
@@ -1139,8 +1141,8 @@
     "entry-menu.js": 207,
     "entry-menu.css": 213,
     "entry-presentation.js": 214,
-    "entry-backdrop.js": 212,
-    "device-gyro.js": 213,
+    "entry-backdrop.js": 242,
+    "device-gyro.js": 242,
     "flight-save.js": 213,
     "layout-stability.css": 222,
     "debug-menu.css": 236,
@@ -1149,9 +1151,11 @@
     "guest-profile.js": 232,
     "connection-warning.js": 223,
     "social-refresh.css": 236,
-    "home-experiment.js": 241,
-    "home-experiment.css": 241,
-    "home-world.js": 241
+    "home-experiment.js": 242,
+    "home-experiment.css": 242,
+    "home-world.js": 241,
+    "runtime-versions.js": 242
   },
-  "publicReleaseVersion": 213
+  "publicReleaseVersion": 213,
+  "clientVersion": "v0.0.242"
 }

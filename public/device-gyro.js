@@ -1,4 +1,5 @@
 // One sensor subscription shared by the entry camera and optional ship controls.
+export function mixCameraInput(sensor={},finger={}){sensor||={};finger||={};const sum=(a,b)=>Math.max(-1,Math.min(1,(Number.isFinite(a)?a:0)+(Number.isFinite(b)?b:0)));return {roll:sum(sensor.roll,finger.x),pitch:sum(sensor.pitch,finger.y)}}
 export class DeviceGyro{
  constructor(win=window){this.win=win;this.listeners=new Set();this.available=typeof win.DeviceOrientationEvent!=='undefined';this.permission='unknown';this.sample=null;this.onOrientation=e=>{if(!Number.isFinite(e.beta)||!Number.isFinite(e.gamma))return;this.available=true;this.permission='granted';this.sample={alpha:Number.isFinite(e.alpha)?e.alpha:0,beta:e.beta,gamma:e.gamma,time:Date.now()};for(const fn of this.listeners)fn(this.sample)};win.addEventListener('deviceorientation',this.onOrientation);}
  subscribe(fn){this.listeners.add(fn);return()=>this.listeners.delete(fn)}

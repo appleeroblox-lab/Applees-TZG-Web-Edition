@@ -1,4 +1,13 @@
 #homeExperiment[hidden],#homeExperiment [hidden],#homeExperimentFade[hidden]{display:none!important}
+.homeTitleActions{transition:transform .32s ease,opacity .32s ease;transform:translateY(-150%)}
+.homeLeft{transform:translateX(-140%)}.homeQuick{transform:translateX(150%)}.homeBottom{transform:translateY(180%)}
+.homeBottom{height:60px;padding:0}
+.homeChromeVisible .homeTitleActions,.homeChromeVisible:not(.homeIsCustomizing) :is(.homeLeft,.homeQuick,.homeBottom){transform:translate(0,0);opacity:1}
+#homeExperiment:not(.homeChromeVisible) .homeChrome button{pointer-events:none!important}
+body.homeExperimentOpen #globalChat{transition:translate .32s ease}
+body.homeExperimentOpen:has(#homeExperiment:not(.homeChromeVisible)) #globalChat{translate:120vw 0}
+#runtimeVersions{position:fixed;left:12px;bottom:5px;z-index:270;pointer-events:none;color:#d5e7f3b0;font:9px Fredoka,sans-serif;max-width:calc(100vw - 24px)}
+@media(prefers-reduced-motion:reduce){.homeTitleActions,body.homeExperimentOpen #globalChat{transition:none!important}}
 #homeExperiment{position:fixed;inset:0;z-index:250;color:white;font-family:Fredoka,sans-serif;background:#04152b;overflow:hidden}
 .homeScene{position:absolute;inset:0;touch-action:none;cursor:grab}.homeScene:active{cursor:grabbing}.homeScene canvas{display:block;width:100%;height:100%;pointer-events:none}
 /* Original title and chat keep their gameplay styling. */

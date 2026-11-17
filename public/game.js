@@ -1,4 +1,4 @@
-import {HomeExperiment} from './home-experiment.js?v=237';
+import {HomeExperiment} from './home-experiment.js?v=238';
 import {installFlightAutosave} from './flight-autosave.js?v=220';
 import {readFlightSave,writeFlightSave} from './flight-save.js?v=213';
 import {installGyroControls} from './device-gyro.js?v=207';
@@ -516,5 +516,5 @@ proto=new ProtoSystem({flight,surface,explorer,bodies,scene,ship,effects,mobile:
 
 function installProtoBodies(rows){for(const b of rows){b.mesh=makeWorld(b,b.type==='STAR'?starVisualRadius(b,rows):b.r);if(b.type==='ASTEROID'){b.mesh.geometry.dispose();b.mesh.geometry=new T.IcosahedronGeometry(b.r,1);const a=b.mesh.geometry.attributes.position;for(let i=0;i<a.count;i++){const x=a.getX(i),y=a.getY(i),z=a.getZ(i),f=.85+.15*Math.sin(x*3.1+y*5.7+z*2.9);a.setXYZ(i,x*f,y*f,z*f)}b.mesh.geometry.computeVertexNormals();}b.mesh.visible=false;scene.add(b.mesh);bodies.push(b);if(b.type==='STAR')effectStars.push(b);}}
 proto.prepare();if(flight.system===PROTO_SYSTEM)proto.resume();
-homeExperiment=new HomeExperiment({debug:debugMenu,character:capsuleCharacter,account:()=>playerAccount,economy,clearInputs,notify:toast,openInventory:()=>{inventoryUI.render(true);open('inventoryDialog')}});
+homeExperiment=new HomeExperiment({debug:debugMenu,character:capsuleCharacter,account:()=>playerAccount,economy,backgroundBody:()=>surface.body||(flight.nearest()?.solid?flight.nearest():earth),clearInputs,notify:toast,openInventory:()=>{inventoryUI.render(true);open('inventoryDialog')}});
 

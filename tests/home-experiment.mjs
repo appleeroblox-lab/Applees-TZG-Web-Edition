@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {parseHTML} from 'linkedom';
 const {document,window}=parseHTML('<html><head></head><body><button id="brand"><span>The Zero Gravity</span></button><section id="debugWindow"><section id="debugExperimental"><div class="debugActions"></div></section></section><button id="dailyRewardsOpen"></button><button id="mapBtn"></button><button id="accountBtn"></button></body></html>');
 const storage=new Map();Object.assign(globalThis,{document,window,localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},cancelAnimationFrame(){}});
+const chat=document.createElement('section');chat.id='globalChat';chat.hidden=true;chat.innerHTML='<div id="chatPanel" hidden><p>Existing real message</p></div>';document.body.append(chat);const more=document.createElement('section');more.id='utilityMenu';more.hidden=true;document.body.append(more);const moreButton=document.createElement('button');moreButton.id='menuBtn';moreButton.onclick=()=>more.hidden=!more.hidden;document.body.append(moreButton);globalThis.tzgPlayerProgress={level:12,level_xp:25,required_xp:100};
 const {HomeExperiment,CHARACTER_COLORS,savedCharacterColor}=await import('../public/home-experiment.js');
 let current,cleared=0,inventory=0,daily=0;document.getElementById('dailyRewardsOpen').onclick=()=>daily++;
 const debug={active:false,root:document.getElementById('debugWindow')},character={body:{material:{color:{set:v=>current=v}}}};
@@ -9,8 +10,10 @@ const home=new HomeExperiment({debug,character,economy:{fp:2000,rc:50},account:(
 home.transition=async fn=>fn();home.initScene=()=>{};home.frame=()=>{};
 assert.equal(CHARACTER_COLORS.length,16);assert.equal(new Set(CHARACTER_COLORS).size,16);assert.equal(home.root.querySelectorAll('[data-color]').length,16);assert.equal(current,CHARACTER_COLORS[0]);
 await home.open();assert(!home.active,'authorization required');debug.active=true;await home.open();assert(home.active);assert(debug.root.hidden);assert.equal(home.root.querySelector('.homeName').textContent,'Applee');assert.equal(home.root.querySelector('.homeId').textContent,'TZG-Id_7');
+assert.equal(home.root.querySelector('.homeNews'),null);assert(home.root.querySelector('.homeAvatar').src);assert.equal(home.root.querySelector('.homeLevel').textContent,'Level 12');assert.equal(home.root.querySelector('.homeXPTrack i').style.width,'25%');assert.equal(chat.parentElement,home.chatDock);assert(!chat.hidden);home.openMenu('menuBtn');assert(!more.hidden);assert(!document.getElementById('homeMoreHelp').hidden);assert.equal(home.root.querySelector('.homeQuick [data-home="helpBtn"]'),null);
 home.openMenu('dailyRewardsOpen');assert.equal(daily,1);home.openMenu('inventoryBtn');assert.equal(inventory,1);
 home.customize(true);assert(home.root.classList.contains('homeIsCustomizing'));home.choose(CHARACTER_COLORS[6]);assert.equal(savedCharacterColor(),CHARACTER_COLORS[0],'preview is not saved');home.customize(false);assert.equal(home.draft,CHARACTER_COLORS[0],'cancel discards preview');
 home.customize(true);home.choose(CHARACTER_COLORS[8]);home.saveColor();assert.equal(current,CHARACTER_COLORS[8]);assert.equal(savedCharacterColor(),CHARACTER_COLORS[8]);
 await home.play();assert(!home.active);assert(home.root.hidden);assert(!document.body.classList.contains('homeExperimentOpen'));assert(cleared>=2);storage.set('tzg-character-color','invalid');assert.equal(savedCharacterColor(),CHARACTER_COLORS[0]);
+assert.equal(chat.parentElement,document.body);assert(chat.hidden);assert(more.hidden);assert(document.getElementById('homeMoreHelp').hidden);
 console.log('PASS authorized Home experiment, existing menu actions, 16 colors, preview/cancel, device save, gameplay color and Play restoration');

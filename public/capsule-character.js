@@ -17,6 +17,18 @@ export class CapsuleCharacter{
   const pixels=new Uint8Array(32*32*4);for(let y=0;y<32;y++)for(let x=0;x<32;x++){const r=Math.hypot((x-15.5)/15.5,(y-15.5)/15.5),i=(y*32+x)*4;pixels[i+3]=Math.round(Math.max(0,1-r)**2*160)}const map=new T.DataTexture(pixels,32,32,T.RGBAFormat);map.needsUpdate=true;this.shadow=new T.Mesh(new T.PlaneGeometry(1.15,.88),new T.MeshBasicMaterial({map,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));this.shadow.name='Character contact shadow';this.shadow.renderOrder=1;this.group.add(this.shadow);
   this.group.traverse(o=>{if(o.isMesh){o.castShadow=o!==this.shadow;o.receiveShadow=o!==this.shadow}});
  }
+ setFace(face='Neutral'){
+  if(!['Neutral','Happy','Surprised','Sleepy','Wink','Serious'].includes(face))face='Neutral';
+  if(this.face===face)return;this.face=face;
+  this.eyes.forEach((eye,i)=>{eye.geometry.dispose();eye.scale.set(1,1,1);eye.rotation.set(0,0,0);eye.position.z=-.35;
+   if(face==='Happy'){eye.geometry=new T.TorusGeometry(.055,.014,6,18,Math.PI);eye.position.y=1.10;}
+   else{eye.geometry=new T.CapsuleGeometry(.032,face==='Surprised'?.09:.07,4,10);eye.position.y=1.13;if(face==='Sleepy'||face==='Wink'&&i===1)eye.rotation.z=Math.PI/2;if(face==='Serious')eye.rotation.z=i?-.32:.32;}
+  });
+  this.mouth.geometry.dispose();this.mouth.scale.set(1,1,1);this.mouth.rotation.set(0,0,0);this.mouth.position.set(0,.98,-.365);
+  if(face==='Happy'||face==='Wink'){this.mouth.geometry=new T.TorusGeometry(.067,.013,6,20,Math.PI);this.mouth.rotation.z=Math.PI;}
+  else if(face==='Surprised')this.mouth.geometry=new T.TorusGeometry(.043,.013,6,20);
+  else{this.mouth.geometry=new T.CapsuleGeometry(.012,face==='Serious'?.075:.10,3,10);this.mouth.rotation.z=Math.PI/2;}
+ }
  update({feet,rotation,time,moving=false,running=false,vertical=0,grounded=true,holding=false,action=0,tool=null,groundPoint=null,up=new T.Vector3(0,1,0),visible=true}){
   this.group.visible=visible;if(!visible)return;this.group.position.copy(feet);this.group.quaternion.copy(rotation);
   const floor=groundPoint||feet,s=this.scratch,altitude=Math.max(0,s.delta.copy(feet).sub(floor).dot(up));s.inverse.copy(rotation).invert();this.shadow.position.copy(floor).sub(feet).addScaledVector(up,.018).applyQuaternion(s.inverse);const localUp=s.up.copy(up).applyQuaternion(s.inverse);this.shadow.quaternion.setFromUnitVectors(s.normal,localUp);this.shadow.material.opacity=Math.max(0,.65-altitude*.12);this.shadow.scale.setScalar(1+Math.min(altitude,3)*.12);
@@ -26,7 +38,7 @@ export class CapsuleCharacter{
   this.torso.position.y=Math.sin(time*2.5)*.012+(moving&&grounded?Math.abs(Math.sin(cycle))*.018:0)-(this.landing||0);
   this.legs.forEach((leg,i)=>{leg.scale.y=1;const x=grounded?stride*(i?1:-1):vertical>0?-.50+(i?.15:-.15):Math.sin(time*7+i*Math.PI)*.25+.22;leg.rotation.x=T.MathUtils.lerp(leg.rotation.x,x,blend);leg.rotation.z=T.MathUtils.lerp(leg.rotation.z,grounded?0:(i?1:-1)*.10,blend);});
   this.hands.forEach((h,i)=>{const px=h.position.x,py=h.position.y,pz=h.position.z,rx=h.rotation.x,rz=h.rotation.z;h.position.z=holding&&i===1?-.12:-stride*.4*(i?1:-1);h.position.y=.76+(grounded?0:.09);h.rotation.set(0,0,0);if(holding&&i===1){h.position.y+=action*.08;h.position.z-=action*(tool==='saw'?.20:.10);h.rotation.x=-action*(tool==='saw'?.25:1.05)}if(!grounded&&vertical<=0){h.position.y=1.35+Math.sin(time*5+i)*.025;h.position.z=0;h.rotation.x=-.65;h.rotation.z=(i?1:-1)*-.35}h.position.set(T.MathUtils.lerp(px,h.position.x,blend),T.MathUtils.lerp(py,h.position.y,blend),T.MathUtils.lerp(pz,h.position.z,blend));h.rotation.x=T.MathUtils.lerp(rx,h.rotation.x,blend);h.rotation.z=T.MathUtils.lerp(rz,h.rotation.z,blend)});
-  const blink=time%4.7>4.56?.08:1;this.eyes.forEach((e,i)=>e.scale.y=blink*(this.face==='Happy'||this.face==='Sleepy'?.25:this.face==='Wink'&&i===1?.15:1));
+  const blink=time%4.7>4.56?.08:1;this.eyes.forEach(e=>e.scale.y=blink);
  }
  dispose(){const geometries=new Set(),materials=new Set();
   this.group.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)materials.add(o.material)});geometries.forEach(g=>g.dispose());materials.forEach(m=>{m.map?.dispose();m.dispose()});this.group.removeFromParent()}

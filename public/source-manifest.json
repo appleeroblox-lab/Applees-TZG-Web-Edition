@@ -1,5 +1,5 @@
 {
-  "version": 240,
+  "version": 241,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -888,7 +888,7 @@
     "flight.js": 199,
     "forestry.js": 182,
     "friends-ui.js": 223,
-    "game.js": 240,
+    "game.js": 241,
     "gif-gallery.js": 96,
     "ground-weather.js": 170,
     "identity-ui.js": 91,
@@ -1025,7 +1025,7 @@
     "player-journey.js": 187,
     "journey.css": 231,
     "menu-sizes.js": 144,
-    "responsive-ui.css": 184,
+    "responsive-ui.css": 241,
     "black-hole-effects.js": 110,
     "speed-control.js": 168,
     "textures.js": 196,
@@ -1047,7 +1047,7 @@
     "warp-effects.js": 197,
     "reentry-plume.js": 182,
     "textures/reentry-shine.png": 128,
-    "reference-ui.css": 173,
+    "reference-ui.css": 241,
     "settings-appearance.js": 209,
     "settings-appearance.css": 155,
     "ship-camera-modes.js": 171,
@@ -1082,7 +1082,7 @@
     "achievements.js": 201,
     "achievements.css": 186,
     "last-online.js": 176,
-    "capsule-character.js": 240,
+    "capsule-character.js": 241,
     "on-foot-controls.js": 184,
     "on-foot-camera.js": 189,
     "character-grip.js": 180,
@@ -1149,9 +1149,9 @@
     "guest-profile.js": 232,
     "connection-warning.js": 223,
     "social-refresh.css": 236,
-    "home-experiment.js": 240,
-    "home-experiment.css": 240,
-    "home-world.js": 240
+    "home-experiment.js": 241,
+    "home-experiment.css": 241,
+    "home-world.js": 241
   },
   "publicReleaseVersion": 213
 }

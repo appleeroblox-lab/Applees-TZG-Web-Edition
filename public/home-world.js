@@ -5,6 +5,8 @@ import {SurfaceView} from './surface-view.js';
 import {SurfaceStream} from './surface-streaming.js';
 import {GroundWeather} from './ground-weather.js';
 import {makeShip} from './visuals.js';
+import {GlobalShadows} from './global-shadows.js';
+import {NeonLights} from './neon-lights.js';
 
 // Use the gameplay generators and environment without moving the saved flight.
 export class HomeWorld{
@@ -19,11 +21,20 @@ export class HomeWorld{
   this.stream.decorations=context.stream.decorations;this.stream.grassAmount=context.stream.grassAmount;
   this.weather=new GroundWeather(this.view);
   this.scene.add(this.rig.ship,character.group);
+  this.shadows=new GlobalShadows(context.renderer,[this.scene,this.scene],[this.view.sun,this.view.sun]);
+  this.neon=new NeonLights(this.scene);this.syncSettings(context);
+ }
+ syncSettings(context){
+  const key=[context.quality,context.mobile,context.globalShadow,context.stream.radius,context.stream.decorations,context.stream.grassAmount].join(':');this.context=context;if(this.settingsKey===key)return;this.settingsKey=key;
+  this.view.quality=context.quality;this.view.mobile=context.mobile;this.stream.radius=context.stream.radius;this.stream.decorations=context.stream.decorations;this.stream.grassAmount=context.stream.grassAmount;
+  this.shadows.set(context.globalShadow,context.quality,context.mobile);
+  if(this.session.active)this.stream.update(this.session.crew?.pos||this.session.pos,context.quality,{mobile:context.mobile,compatibility:context.compatibility});
  }
  enter(body){
   this.session.enter(body?.solid?body:this.context.earth,true);this.session.pos.y=this.session.floor;
-  this.session.crew={onFoot:true,pos:new T.Vector3(-6,0,-7),reset(){},ground:()=>surfaceHeight(-6,-7)};
-  this.character.group.position.copy(this.session.crew.pos);this.character.group.position.y=surfaceHeight(-6,-7);
+  this.flight.q.setFromAxisAngle(new T.Vector3(0,1,0),Math.PI);
+  this.session.crew={onFoot:true,pos:new T.Vector3(-3,0,-14),reset(){},ground:()=>surfaceHeight(-3,-14)};
+  this.character.group.position.copy(this.session.crew.pos);this.character.group.position.y=surfaceHeight(-3,-14);
   this.rig.model.rotation.x=Math.PI/2;this.rig.exhaust.rotation.x=Math.PI/2;
   this.rig.gear.visible=true;this.view.build();
   this.placements?.removeFromParent();this.placements=null;
@@ -36,5 +47,6 @@ export class HomeWorld{
   if(this.view.skyDome)this.view.skyDome.position.copy(camera.position);
   this.view.celestial.update(camera);
   this.weather.update(camera,this.session.earthEnvironment,this.context.quality,this.context.compatibility,this.context.mobile);
+  this.shadows.update(dt,this.session,this.session.crew,camera,true);this.neon.update(now,camera,true);
  }
 }

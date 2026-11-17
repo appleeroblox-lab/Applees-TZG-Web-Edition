@@ -86,7 +86,7 @@ body.referenceHUD.onFoot #vitals{top:30%}body.referenceHUD.onFoot #exitShipBtn{t
 body.referenceHUD #boot,body.referenceHUD #rotatePrompt,body.referenceHUD #warpOverlay{background:radial-gradient(ellipse at center,#218ac9ed,#124f7df5);color:white}
 body.referenceHUD #boot :is(p,small),body.referenceHUD #rotatePrompt p,body.referenceHUD #warpOverlay p{color:#def4ff}
 /* v16: larger held-speed controls, consistent menus, and a perspective atlas. */
-body.referenceHUD #gameTop #brand{color:white;text-align:left;cursor:pointer;letter-spacing:0;min-width:0}
+body.referenceHUD :is(#gameTop,#homeExperiment) #brand{color:white;text-align:left;cursor:pointer;letter-spacing:0;min-width:0}
 body.referenceHUD #gameTop nav button{display:flex;align-items:center;justify-content:center;gap:5px}
 body.referenceHUD #utilityMenu{width:240px;max-height:calc(100dvh - 80px);overflow-y:auto;display:flex;flex-direction:column;gap:4px;padding:10px;z-index:34}
 body.referenceHUD #utilityMenu[hidden]{display:none!important}
@@ -185,9 +185,9 @@ body.referenceHUD #fatal:not([hidden]){background:linear-gradient(#3b9edeee,#146
 
 #boot.ready .loadSpinner{animation:none;border-color:#b9f6d2}
 /* v17: shared HUD styling and centered loading / inventory content. */
-body.referenceHUD #gameTop #brand{background:linear-gradient(135deg,#53b7e9a8,#196da7c9)!important;border:2px solid #a6eaff!important;border-radius:10px!important;box-shadow:inset 0 0 0 2px #d5f4ff30,0 0 12px #27bbff38;display:flex;align-items:center;justify-content:center;text-align:center;gap:9px;color:white;padding:8px 12px}
-body.referenceHUD #gameTop #brand b{color:white;font-weight:600}
-body.referenceHUD #gameTop #brand span{color:white;letter-spacing:0}
+body.referenceHUD :is(#gameTop,#homeExperiment) #brand{background:linear-gradient(135deg,#53b7e9a8,#196da7c9)!important;border:2px solid #a6eaff!important;border-radius:10px!important;box-shadow:inset 0 0 0 2px #d5f4ff30,0 0 12px #27bbff38;display:flex;align-items:center;justify-content:center;text-align:center;gap:9px;color:white;padding:8px 12px}
+body.referenceHUD :is(#gameTop,#homeExperiment) #brand b{color:white;font-weight:600}
+body.referenceHUD :is(#gameTop,#homeExperiment) #brand span{color:white;letter-spacing:0}
 body.referenceHUD .bootProgressRow{position:relative;width:min(600px,72%);display:block;padding:0}
 body.referenceHUD .bootProgressTrack{width:100%;margin:0 auto;flex:none}
 body.referenceHUD .loadSpinner{position:absolute;left:-52px;top:50%;transform:translateY(-50%);animation:loadingSpinCentered 1s linear infinite}
@@ -197,7 +197,7 @@ body.referenceHUD .hotbarSlot{display:flex;align-items:center;justify-content:ce
 body.referenceHUD .hotbarSlot>.itemThumb{position:absolute!important;left:50%!important;top:44%!important;transform:translate(-50%,-50%);width:70%;height:70%;object-fit:contain;margin:0!important}
 body.referenceHUD .hotbarSlot>.mineralIcon,body.referenceHUD .hotbarSlot>.uiIcon{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);margin:0!important}
 body.referenceHUD .itemEquip>.mineralIcon{align-self:center;flex-shrink:0;margin:0 auto 5px}
-@media(max-height:550px){body.referenceHUD .loadSpinner{width:27px;height:27px;left:-37px;border-width:4px}body.referenceHUD #gameTop #brand{padding:5px 9px}}
+@media(max-height:550px){body.referenceHUD .loadSpinner{width:27px;height:27px;left:-37px;border-width:4px}body.referenceHUD :is(#gameTop,#homeExperiment) #brand{padding:5px 9px}}
 @media(max-width:550px) and (orientation:portrait){body.referenceHUD .bootProgressRow{width:72%}body.referenceHUD .loadSpinner{width:25px;height:25px;left:-33px;border-width:4px}}
 /* v18: compact actions, clear menus, and stable map paint. */
 body.referenceHUD #flightRight{grid-template-rows:56px 44px 78px}

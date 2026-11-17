@@ -2,6 +2,12 @@
 #homeExperiment{position:fixed;inset:0;z-index:250;color:white;font-family:Fredoka,sans-serif;background:#04152b;overflow:hidden}
 .homeScene{position:absolute;inset:0;touch-action:none;cursor:grab}.homeScene:active{cursor:grabbing}.homeScene canvas{display:block;width:100%;height:100%;pointer-events:none}
 /* Original title and chat keep their gameplay styling. */
+.homeTitleActions{--home-chat-size:40px;display:flex;align-items:center;gap:9px;pointer-events:auto}
+#homeExperiment .homeQuick{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+body.referenceHUD.homeExperimentOpen #homeExperiment #chatToggle{position:relative;flex:none;width:var(--home-chat-size)!important;height:var(--home-chat-size)!important;min-width:var(--home-chat-size)!important;min-height:var(--home-chat-size)!important;max-width:var(--home-chat-size)!important;max-height:var(--home-chat-size)!important;padding:0!important}
+body.referenceHUD.homeExperimentOpen #homeExperiment #chatToggle :is(.uiIcon,.previewIcon,svg){position:absolute;inset:0;margin:auto!important;width:calc(var(--home-chat-size)*.85)!important;height:calc(var(--home-chat-size)*.85)!important;max-width:none!important;max-height:none!important;flex:none!important;object-fit:contain}
+#homeExperiment .homeCustomization{top:calc(50% + 24px);max-height:calc(100dvh - 104px)}
+@media(max-height:550px){.homeTitleActions{--home-chat-size:34px;gap:7px}}
 #homeExperiment button:not(#brand):not(#chatToggle){font:inherit;font-weight:500;color:white;cursor:pointer;border:var(--rim);border-radius:12px;background:var(--glass);padding:9px 13px;min-height:38px;box-sizing:border-box;box-shadow:inset 0 0 12px #9eeaff22,0 3px 0 #132c3b66}
 .homeChrome{position:absolute;inset:0;pointer-events:none}.homeChrome button,.homeChrome nav{pointer-events:auto}.homeTop{position:absolute;top:12px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
 #homeExperiment .homeBrand #brand{position:static!important;inset:auto!important;transform:none!important;margin:0!important}

@@ -1,5 +1,5 @@
 {
-  "version": 236,
+  "version": 237,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -565,7 +565,9 @@
     "wood-models.js",
     "world-label-depth.js",
     "world-precipitation.js",
-    "wormhole-occlusion.js"
+    "wormhole-occlusion.js",
+    "home-experiment.js",
+    "home-experiment.css"
   ],
   "versionedFiles": [
     "account-auth-flow.js",
@@ -847,7 +849,9 @@
     "weather-precipitation.js",
     "weather-state.js",
     "world-label-depth.js",
-    "world-precipitation.js"
+    "world-precipitation.js",
+    "home-experiment.js",
+    "home-experiment.css"
   ],
   "fileVersions": {
     "account-pages.js": 187,
@@ -882,7 +886,7 @@
     "flight.js": 199,
     "forestry.js": 182,
     "friends-ui.js": 223,
-    "game.js": 234,
+    "game.js": 237,
     "gif-gallery.js": 96,
     "ground-weather.js": 170,
     "identity-ui.js": 91,
@@ -1142,7 +1146,9 @@
     "event-feed.js": 224,
     "guest-profile.js": 232,
     "connection-warning.js": 223,
-    "social-refresh.css": 236
+    "social-refresh.css": 236,
+    "home-experiment.js": 237,
+    "home-experiment.css": 237
   },
   "publicReleaseVersion": 213
 }

@@ -44,5 +44,7 @@ jobs:
         run: npm run test:maintenance:sql && npm run test:minimap
       - name: Chat presence and developer events
         run: npm run test:chat-presence && npm run test:events && npm run test:entry-chat-ui
+      - name: Home Page experiment
+        run: node tests/home-experiment.mjs && node --experimental-vm-modules tests/ui-smoke.mjs --home-only && node --experimental-vm-modules tests/ui-smoke.mjs --desktop-only --home-only
       - name: UI smoke tests
         run: npm run test:ui

@@ -26,7 +26,7 @@ export class CapsuleCharacter{
   this.torso.position.y=Math.sin(time*2.5)*.012+(moving&&grounded?Math.abs(Math.sin(cycle))*.018:0)-(this.landing||0);
   this.legs.forEach((leg,i)=>{leg.scale.y=1;const x=grounded?stride*(i?1:-1):vertical>0?-.50+(i?.15:-.15):Math.sin(time*7+i*Math.PI)*.25+.22;leg.rotation.x=T.MathUtils.lerp(leg.rotation.x,x,blend);leg.rotation.z=T.MathUtils.lerp(leg.rotation.z,grounded?0:(i?1:-1)*.10,blend);});
   this.hands.forEach((h,i)=>{const px=h.position.x,py=h.position.y,pz=h.position.z,rx=h.rotation.x,rz=h.rotation.z;h.position.z=holding&&i===1?-.12:-stride*.4*(i?1:-1);h.position.y=.76+(grounded?0:.09);h.rotation.set(0,0,0);if(holding&&i===1){h.position.y+=action*.08;h.position.z-=action*(tool==='saw'?.20:.10);h.rotation.x=-action*(tool==='saw'?.25:1.05)}if(!grounded&&vertical<=0){h.position.y=1.35+Math.sin(time*5+i)*.025;h.position.z=0;h.rotation.x=-.65;h.rotation.z=(i?1:-1)*-.35}h.position.set(T.MathUtils.lerp(px,h.position.x,blend),T.MathUtils.lerp(py,h.position.y,blend),T.MathUtils.lerp(pz,h.position.z,blend));h.rotation.x=T.MathUtils.lerp(rx,h.rotation.x,blend);h.rotation.z=T.MathUtils.lerp(rz,h.rotation.z,blend)});
-  const blink=time%4.7>4.56?.08:1;this.eyes.forEach(e=>e.scale.y=blink);
+  const blink=time%4.7>4.56?.08:1;this.eyes.forEach((e,i)=>e.scale.y=blink*(this.face==='Happy'||this.face==='Sleepy'?.25:this.face==='Wink'&&i===1?.15:1));
  }
  dispose(){const geometries=new Set(),materials=new Set();
   this.group.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)materials.add(o.material)});geometries.forEach(g=>g.dispose());materials.forEach(m=>{m.map?.dispose();m.dispose()});this.group.removeFromParent()}

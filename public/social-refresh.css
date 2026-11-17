@@ -35,3 +35,10 @@ body.guestMode #chatAttach,body.guestMode #chatAttachment,body.guestMode .emojiP
 .guestProfileName strong{font-size:18px;overflow-wrap:anywhere;min-width:0;color:white}
 .guestProfileName .guestTag{margin:0;font-size:11px;padding:3px 7px;color:#d6f3ff;white-space:nowrap}
 @media(max-height:440px){#guestNamePrompt,#guestMenu{padding:14px}#guestNamePrompt .guestNameHelp{margin-bottom:10px}#guestNamePrompt h2,#guestMenu h2{font-size:20px}}
+@media(max-width:600px),(pointer:coarse) and (max-width:1000px){
+  #connectionWarning{width:min(360px,84dvw);padding:14px;border-radius:14px}
+  #connectionWarning h2{font-size:20px;line-height:1.2;margin-bottom:12px}
+  #connectionWarning p{font-size:13px;line-height:1.4}
+  #connectionWarning .connectionError{padding:9px}
+  #connectionWarning button{padding:10px}
+}

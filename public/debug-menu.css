@@ -81,6 +81,10 @@ body.referenceHUD #debugWindow.debugDashboard{width:min(840px,88dvw);height:min(
 #debugAuthorization .authorizationCard input{height:36px;padding:8px;font-size:13px}
 #debugAuthorization .authorizationActions{gap:14px;margin-top:4px}
 #debugAuthorization .authorizationActions button{padding:9px;font-size:14px}
+#debugAuthorization .authorizationCard{box-sizing:border-box;border:2px solid #86e9ff;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#07648c,#03466e)}
+#debugAuthorization .authorizationCard>.authorizationHead{margin:0;border:0;border-radius:0;background:transparent;min-width:0;gap:12px}
+#debugAuthorization .authorizationCard>.authorizationHead h2{min-width:0;overflow-wrap:anywhere}
+#debugAuthorization .authorizationCard>form{margin:0;border:0;border-radius:0;background:transparent;flex:1 1 auto}
 #debugWindow #debugClose{flex-shrink:0;box-sizing:border-box;line-height:1;display:grid;place-items:center}
 #debugWindow #debugContent nav button{column-gap:10px}
 #debugWindow #debugContent nav .debugIcon{margin-right:0}

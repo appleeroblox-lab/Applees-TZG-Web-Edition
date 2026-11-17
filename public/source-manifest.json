@@ -1,5 +1,5 @@
 {
-  "version": 235,
+  "version": 236,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -1137,12 +1137,12 @@
     "device-gyro.js": 213,
     "flight-save.js": 213,
     "layout-stability.css": 222,
-    "debug-menu.css": 234,
+    "debug-menu.css": 236,
     "developer-events.js": 223,
     "event-feed.js": 224,
     "guest-profile.js": 232,
     "connection-warning.js": 223,
-    "social-refresh.css": 232
+    "social-refresh.css": 236
   },
   "publicReleaseVersion": 213
 }

@@ -1,3 +1,4 @@
+import * as T from '../public/vendor/three.module.js';
 import assert from 'node:assert/strict';
 import {parseHTML} from 'linkedom';
 import fs from 'node:fs';import CSSOM from 'cssom';import {parse as selectors} from 'css-what';
@@ -13,7 +14,19 @@ assert.equal(CHARACTER_COLORS.length,16);assert.equal(new Set(CHARACTER_COLORS).
 await home.open();assert(!home.active,'authorization required');debug.active=true;await home.open();assert(home.active);assert(debug.root.hidden);assert.equal(home.root.querySelector('.homeName').textContent,'Applee');assert.equal(home.root.querySelector('.homeId').textContent,'TZG-Id_7');
 assert.equal(home.root.querySelector('.homeNews'),null);assert(home.root.querySelector('.homeAvatar').src);assert.equal(home.root.querySelector('.homeLevel').textContent,'Level 12');assert.equal(home.root.querySelector('.homeXPTrack i').style.width,'25%');assert.equal(chatToggle.parentElement,home.root.querySelector('.homeTitleActions'));assert.equal(chat.parentElement,document.body);assert(chat.hidden);home.openMenu('menuBtn');assert(!more.hidden);assert(!document.getElementById('homeMoreHelp').hidden);assert.equal(home.root.querySelector('.homeQuick [data-home="helpBtn"]'),null);
 home.openMenu('dailyRewardsOpen');assert.equal(daily,1);home.openMenu('inventoryBtn');assert.equal(inventory,1);
-home.customize(true);assert(home.root.classList.contains('homeIsCustomizing'));const pointer=(type,x)=>{const e=new window.Event(type,{bubbles:true,cancelable:true});Object.assign(e,{pointerId:7,button:0,clientX:x,clientY:100});home.host.dispatchEvent(e)};const yaw=home.yaw;pointer('pointerdown',100);pointer('pointermove',200);pointer('pointerup',200);assert(home.yaw>yaw,'drag rotates the character during customization');home.root.querySelector('[data-category=faces]').click();assert(!home.root.querySelector('.homeFaces').hidden);home.root.querySelector('[data-face=Happy]').click();assert.equal(home.draftFace,'Happy');home.choose(CHARACTER_COLORS[6]);assert.equal(savedCharacterColor(),CHARACTER_COLORS[0],'preview is not saved');home.customize(false);assert.equal(home.draft,CHARACTER_COLORS[0],'cancel discards preview');
+home.customize(true);assert(home.root.classList.contains('homeIsCustomizing'));const pointer=(type,x)=>{const e=new window.Event(type,{bubbles:true,cancelable:true});Object.assign(e,{pointerId:7,button:0,clientX:x,clientY:100});home.host.dispatchEvent(e)};const yaw=home.yaw;
+const preview={group:new T.Group()};
+preview.group.add(new T.Mesh(new T.SphereGeometry(.6,12,8),new T.MeshBasicMaterial()));
+home.preview=preview;
+home.camera=new T.PerspectiveCamera(50,1,.1,100);
+home.camera.position.z=5;
+home.host.getBoundingClientRect=()=>({left:0,top:0,width:200,height:200});
+pointer('pointerdown',15);pointer('pointermove',100);pointer('pointerup',100);
+assert.equal(home.yaw,yaw,'a drag starting in the background stays ignored');
+pointer('pointerdown',100);pointer('pointermove',170);pointer('pointerup',170);
+assert(home.yaw>yaw,'a drag starting on the character continues outside its silhouette');
+home.preview=null;
+home.root.querySelector('[data-category=faces]').click();assert(!home.root.querySelector('.homeFaces').hidden);home.root.querySelector('[data-face=Happy]').click();assert.equal(home.draftFace,'Happy');home.choose(CHARACTER_COLORS[6]);assert.equal(savedCharacterColor(),CHARACTER_COLORS[0],'preview is not saved');home.customize(false);assert.equal(home.draft,CHARACTER_COLORS[0],'cancel discards preview');
 home.customize(true);home.choose(CHARACTER_COLORS[8]);home.saveColor();assert.equal(current,CHARACTER_COLORS[8]);assert.equal(savedCharacterColor(),CHARACTER_COLORS[8]);
 await home.play();assert(!home.active);assert(home.root.hidden);assert(!document.body.classList.contains('homeExperimentOpen'));assert(cleared>=2);storage.set('tzg-character-color','invalid');assert.equal(savedCharacterColor(),CHARACTER_COLORS[0]);
 assert.equal(chatToggle.parentElement,document.body);assert.equal(chat.parentElement,document.body);assert(chat.hidden);assert(more.hidden);assert(document.getElementById('homeMoreHelp').hidden);

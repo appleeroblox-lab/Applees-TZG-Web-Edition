@@ -271,40 +271,6 @@ body.referenceHUD #chatPlayerProfile.sharedPlayerProfile .profileActions button{
  column-gap: 10px;
 }
 
-#accountDialog #accountInactivity14Days {
- appearance: none;
- -webkit-appearance: none;
- position: relative;
- box-sizing: border-box;
- width: 48px;
- height: 28px;
- margin: 0;
- padding: 0;
- border: 1px solid #84c9e8;
- border-radius: 999px;
- background: #245574;
- cursor: pointer;
-}
-
-#accountDialog #accountInactivity14Days::after {
- position: absolute;
- inset: 3px auto auto 3px;
- width: 20px;
- height: 20px;
- border-radius: 50%;
- background: #f3fcff;
- content: '';
- transition: transform 150ms ease;
-}
-
-#accountDialog #accountInactivity14Days[aria-checked="true"] {
- background: #039ff2;
-}
-
-#accountDialog #accountInactivity14Days[aria-checked="true"]::after {
- transform: translateX(20px);
-}
-
 #accountDialog #accountInactivity14Days:focus-visible {
  outline: 2px solid #f3fcff;
  outline-offset: 3px;
@@ -313,8 +279,4 @@ body.referenceHUD #chatPlayerProfile.sharedPlayerProfile .profileActions button{
 #accountDialog #accountInactivity14Days:disabled {
  opacity: .65;
  cursor: default;
-}
-
-@media (prefers-reduced-motion: reduce) {
- #accountDialog #accountInactivity14Days::after { transition: none; }
 }

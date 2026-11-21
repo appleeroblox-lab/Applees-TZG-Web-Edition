@@ -1,5 +1,11 @@
 -- Dispatch from a private Cron worker. The HTTP credential never enters pg_net.
-create extension if not exists http with schema extensions;
+do $$
+begin
+ if exists (select 1 from pg_available_extensions where name = 'http') then
+  create extension if not exists http with schema extensions;
+ end if;
+end;
+$$;
 
 create table tzg_private.discord_signin_outbox (
  id bigint generated always as identity primary key,

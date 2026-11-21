@@ -22,7 +22,7 @@ await db.exec(`
  end$$;
 `);
 await db.exec(fs.readFileSync(new URL('../supabase/migrations/20261121185421_discord_signin_alerts.sql',import.meta.url),'utf8'));
-await db.exec(fs.readFileSync(new URL('../supabase/migrations/20261121185613_discord_signin_private_dispatch.sql',import.meta.url),'utf8').replace('create extension if not exists http with schema extensions;', ''));
+await db.exec(fs.readFileSync(new URL('../supabase/migrations/20261121185613_discord_signin_private_dispatch.sql',import.meta.url),'utf8'));
 const count=async()=>Number((await db.query('select count(*) from net.requests')).rows[0].count);
 await db.exec("insert into auth.sessions values ('Chrome/'); insert into tzg_private.play_sessions values (null)");
 assert.equal(await count(),0);

@@ -9,7 +9,7 @@
       "date": "2026-11-21",
       "title": "Warp controls, Home character drag, and phone notifications",
       "changes": [
-        "During warp and Time Travel, panels slide toward their screen edges. Currencies remain visible, and the ship can roll with Q/E or the roll buttons. Ship exhaust stays steady in the tunnel.",
+        "During warp and Time Travel, panels slide toward their screen edges. Currencies and ship controls stay visible. Roll with Q/E or the roll buttons during normal warp and Time Travel. Ship exhaust stays steady in the tunnel.",
         "Drag the character directly on the Home Page to rotate it.",
         "Adaptive Resolution is off by default for new devices and remains available in Settings.",
         "Enabled closed-game push alerts for supported Android browsers and installed iPhone and iPad Home Screen apps."

@@ -1,8 +1,26 @@
 {
-  "currentVersion": "v0.0.213",
+  "currentVersion": "v0.0.243",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 243,
+      "version": "v0.0.243",
+      "date": "2026-11-21",
+      "title": "Warp HUD, clearer connection errors, and account inactivity settings",
+      "changes": [
+        "During regular warp and Time Travel, the HUD and ship controls slide offscreen, then return to their original positions.",
+        "Background connection checks no longer interrupt game entry. When a sign-in or gameplay request fails, the warning identifies the request and shows the details available from your browser.",
+        "Added an account inactivity setting. It defaults to deletion after 14 days of inactivity. With the setting off, the account is deleted after 30 days of inactivity.",
+        "Improved mobile flight and on-foot performance inside atmospheric planets. Gyro controls now work alongside finger dragging.",
+        "Guests can send text and emoji in Global Chat after choosing a unique display name. The chat header refreshes the online player count, and chat retains up to 10 messages for up to five hours.",
+        "Improved mobile menu sizing, daily rewards, and Friends scrolling. Player profiles now show a numeric public ID.",
+        "Added privacy and terms links, improved inline intro playback on phones, and increased the size of named asteroids and Kuiper Belt bodies."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 213,
       "version": "v0.0.213",

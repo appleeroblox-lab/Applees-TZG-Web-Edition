@@ -1,8 +1,20 @@
 {
-  "currentVersion": "v0.0.246",
+  "currentVersion": "v0.0.247",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 247,
+      "version": "v0.0.247",
+      "date": "2026-11-22",
+      "title": "Ship controls stay visible during warp",
+      "changes": [
+        "Ship controls and currencies stay visible during normal warp and Time Travel. Use Q/E or the roll buttons to roll the ship in either tunnel."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 246,
       "version": "v0.0.246",
@@ -15,7 +27,7 @@
         "Enabled closed-game push alerts for supported Android browsers and installed iPhone and iPad Home Screen apps."
       ],
       "source": {
-        "kind": "current release"
+        "kind": "release notes"
       }
     },
     {

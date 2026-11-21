@@ -29,9 +29,22 @@ export class HomeExperiment{
   this.root.querySelector('.homeCustomClose').onclick=()=>this.customize(false);this.root.querySelector('.homeReset').onclick=()=>this.choose(CHARACTER_COLORS[0]);this.root.querySelector('.homeSave').onclick=()=>this.saveColor();
   CHARACTER_COLORS.forEach((color,i)=>{const b=document.createElement('button');b.type='button';b.style.setProperty('background',color,'important');b.setAttribute('aria-label','Color '+(i+1));b.dataset.color=color;b.onclick=()=>this.choose(color);this.root.querySelector('.homeColors').append(b)});
   const entry=document.createElement('button');entry.type='button';entry.id='debugHomeExperiment';entry.textContent='Open Home Page';entry.onclick=()=>this.open();debug.root.querySelector('#debugExperimental .debugActions').append(entry);
-  this.host.addEventListener('pointerdown',e=>{if(this.busy||e.button>0)return;this.drag={id:e.pointerId,x:e.clientX,y:e.clientY};this.host.setPointerCapture?.(e.pointerId)});this.host.addEventListener('pointermove',e=>{if(this.drag?.id!==e.pointerId)return;this.yaw+=(e.clientX-this.drag.x)*.012;this.finger={x:T.MathUtils.clamp((e.clientX/Math.max(1,this.host.clientWidth)-.5)*.16,-.08,.08),y:T.MathUtils.clamp((.5-e.clientY/Math.max(1,this.host.clientHeight))*.12,-.06,.06)};this.drag.x=e.clientX;this.drag.y=e.clientY});const end=e=>{if(this.drag?.id===e.pointerId)this.drag=null};for(const type of ['pointerup','pointercancel','lostpointercapture'])this.host.addEventListener(type,end);
+  this.host.addEventListener('pointerdown',e=>{if(this.busy||this.drag||e.button>0||!this.hitsCharacter(e.clientX,e.clientY))return;this.drag={id:e.pointerId,x:e.clientX,y:e.clientY};this.host.setPointerCapture?.(e.pointerId)});this.host.addEventListener('pointermove',e=>{if(this.drag?.id!==e.pointerId)return;this.yaw+=(e.clientX-this.drag.x)*.012;this.finger={x:T.MathUtils.clamp((e.clientX/Math.max(1,this.host.clientWidth)-.5)*.16,-.08,.08),y:T.MathUtils.clamp((.5-e.clientY/Math.max(1,this.host.clientHeight))*.12,-.06,.06)};this.drag.x=e.clientX;this.drag.y=e.clientY});const end=e=>{if(this.drag?.id===e.pointerId)this.drag=null};for(const type of ['pointerup','pointercancel','lostpointercapture'])this.host.addEventListener(type,end);
   this.sensor=new DeviceGyro();this.unsubscribe=this.sensor.subscribe(sample=>{if(!this.active)return;if(!this.gyroOrigin)this.gyroOrigin=sample;const axes=this.sensor.axes(this.gyroOrigin,sample);this.gyro={x:T.MathUtils.clamp(axes.roll,-.08,.08),y:T.MathUtils.clamp(axes.pitch,-.06,.06)}});
   this.onKey=e=>{if(!this.active)return;if(e.target.closest?.('input,textarea,select'))return;if(e.code==='Escape'&&this.customizing){e.preventDefault();this.customize(false)}if(!e.target.closest?.('dialog,[role="dialog"],#friendsPanel,#globalChat'))e.stopImmediatePropagation()};window.addEventListener('keydown',this.onKey,true);this.upgradeLayout();this.installCustomization();this.refresh();
+ }
+ hitsCharacter(x,y){
+  const group=this.preview?.group;
+  if(!this.active||!this.camera||!group?.visible)return false;
+  const rect=this.host.getBoundingClientRect();
+  if(!rect.width||!rect.height)return false;
+  this.characterRay??=new T.Raycaster();
+  this.characterPointer??=new T.Vector2();
+  this.characterPointer.set((x-rect.left)/rect.width*2-1,1-(y-rect.top)/rect.height*2);
+  group.updateWorldMatrix(true,true);
+  this.camera.updateMatrixWorld();
+  this.characterRay.setFromCamera(this.characterPointer,this.camera);
+  return this.characterRay.intersectObject(group,true).some(({object})=>object.visible);
  }
  upgradeLayout(){
   this.root.querySelector('.homeNews')?.remove();this.root.querySelector('[data-home="home-settings"]')?.remove();const map=this.root.querySelector('.homeQuick [data-home="helpBtn"]');if(map){map.dataset.home='mapBtn';map.textContent='Universe Map';map.onclick=()=>this.openMenu('mapBtn')}

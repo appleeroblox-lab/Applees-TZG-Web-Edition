@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {parseHTML} from 'linkedom';
 import {CLIENT_VERSION,semanticVersion,installRuntimeVersions} from '../public/runtime-versions.js';
+import {HomeExperiment} from '../public/home-experiment.js';
 import {mixCameraInput} from '../public/device-gyro.js';
 import {TerrainClouds} from '../public/terrain-clouds.js';
 import * as T from '../public/vendor/three.module.js';
@@ -15,3 +16,13 @@ let keyReads=0;class Chunks extends Map{keys(){keyReads++;return super.keys()}}c
 const clouds=new TerrainClouds(Array.from({length:4},()=>new T.Mesh(new T.SphereGeometry(),new T.MeshBasicMaterial())),{body:{id:'Earth',name:'Earth'},altitude:0});
 for(let i=0;i<60;i++)clouds.sync(chunks,new T.Vector3(1,0,1),i/60,4);assert.equal(keyReads,1,'reuse cloud ownership throughout stationary frames');clouds.sync(chunks,new T.Vector3(100,0,1),2,4);assert.equal(keyReads,2,'refresh ownership after travelling');
 console.log('PASS independent versions, offline reporting, cached metadata, sensor/finger blending and retained cloud ownership across 60 frames');
+
+const preview=new T.Group();
+preview.add(new T.Mesh(new T.SphereGeometry(.7,16,12),new T.MeshBasicMaterial()));
+const camera=new T.PerspectiveCamera(50,2,.1,100);
+camera.position.z=5;
+const home=Object.assign(Object.create(HomeExperiment.prototype),{
+ active:true,camera,preview:{group:preview},host:{getBoundingClientRect:()=>({left:10,top:20,width:400,height:200})}
+});
+assert.equal(home.hitsCharacter(210,120),true,'a drag may start on the projected character');
+assert.equal(home.hitsCharacter(360,120),false,'the background cannot start character rotation');

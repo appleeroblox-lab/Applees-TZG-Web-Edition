@@ -1,8 +1,23 @@
 {
-  "currentVersion": "v0.0.243",
+  "currentVersion": "v0.0.246",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 246,
+      "version": "v0.0.246",
+      "date": "2026-11-21",
+      "title": "Warp controls, Home character drag, and phone notifications",
+      "changes": [
+        "During warp and Time Travel, panels slide toward their screen edges. Currencies remain visible, and the ship can roll with Q/E or the roll buttons. Ship exhaust stays steady in the tunnel.",
+        "Drag the character directly on the Home Page to rotate it.",
+        "Adaptive Resolution is off by default for new devices and remains available in Settings.",
+        "Enabled closed-game push alerts for supported Android browsers and installed iPhone and iPad Home Screen apps."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 243,
       "version": "v0.0.243",

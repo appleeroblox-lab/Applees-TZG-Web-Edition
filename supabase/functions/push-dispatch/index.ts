@@ -1,11 +1,15 @@
 import {createClient} from 'npm:@supabase/supabase-js@2.49.1';
 import webpush from 'npm:web-push@3.6.7';
 const url=Deno.env.get('SUPABASE_URL')||'',serviceKey=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'',anon=Deno.env.get('SUPABASE_ANON_KEY')||'';
-const cors={'Access-Control-Allow-Origin':'https://appleeroblox-lab.github.io','Access-Control-Allow-Headers':'authorization,apikey,content-type','Access-Control-Allow-Methods':'POST,OPTIONS'};
-const json=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{...cors,'Content-Type':'application/json'}});
+const allowedOrigins=new Set(['https://appleeroblox-lab.github.io','https://applees-tzg-web-edition.space']);
 function endpointAllowed(endpoint:string){try{const u=new URL(endpoint);return u.protocol==='https:'&&!u.username&&!u.password&&(!u.port||u.port==='443')&&(/^(fcm(?:-x)?\.googleapis\.com|android\.googleapis\.com|web\.push\.apple\.com)$/.test(u.hostname)||u.hostname.endsWith('.push.services.mozilla.com')||u.hostname.endsWith('.notify.windows.com'))}catch{return false}}
 Deno.serve(async request=>{
- if(request.method==='OPTIONS')return new Response(null,{headers:cors});if(request.method!=='POST')return json({error:'POST required'},405);if(!url||!serviceKey)return json({error:'Server configuration unavailable'},503);
+ const origin=request.headers.get('origin');
+ const cors=new Headers({'Access-Control-Allow-Headers':'authorization,apikey,content-type,x-client-info','Access-Control-Allow-Methods':'POST,OPTIONS','Vary':'Origin'});
+ if(origin&&allowedOrigins.has(origin))cors.set('Access-Control-Allow-Origin',origin);
+ const json=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{...Object.fromEntries(cors),'Content-Type':'application/json'}});
+ if(origin&&!allowedOrigins.has(origin))return json({error:'Origin not allowed'},403);
+ if(request.method==='OPTIONS')return new Response(null,{status:204,headers:cors});if(request.method!=='POST')return json({error:'POST required'},405);if(!url||!serviceKey)return json({error:'Server configuration unavailable'},503);
  const admin=createClient(url,serviceKey,{auth:{persistSession:false,autoRefreshToken:false}});
  try{const body=await request.json().catch(()=>({}));
   if(body.action==='config'){

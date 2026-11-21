@@ -280,17 +280,17 @@ body.referenceHUD #flightGauge .flightSpeedTrack{box-sizing:border-box;height:22
 #mineralLabels[hidden],.mineralBillboard[hidden],.traderBillboard[hidden]{display:none!important}
 
 /* Translate HUD roots independently of their existing layout transforms. */
-body.gameplayReady > :where(header,aside,footer,section:not(#accountGate,#startupIntro),dialog[open]:not(#connectionWarning),
+body.gameplayReady > :where(header,aside,footer,section:not(#accountGate,#startupIntro,#flightPad),dialog[open]:not(#connectionWarning),
  #navInfo,#flightMode,#touchControls,#shipStatusPanel,#exploreStatus,#exploreControls,
- #restoreInterface,#location,#walkHint,#walkHelp,#walkTouch,#wallet,#gearBar,
+ #restoreInterface,#location,#walkHint,#walkHelp,#walkTouch,#gearBar,
  #miningHint,#freeCameraSpeed,#orbitZoom,#earthWeather,#minimap,#globalChat,
  #toast,#settingsShield,#recordingControls,#runtimeVersions,#minimapToggle,#experimentalHUD,.desktopHelp) {
  transition: translate var(--warp-hud-duration, 320ms) ease-in-out, visibility 0s;
 }
 
-body.gameplayReady:is(.warping,.protoTransit) > :where(header,aside,footer,section:not(#accountGate,#startupIntro),dialog[open]:not(#connectionWarning),
+body.gameplayReady:is(.warping,.protoTransit) > :where(header,aside,footer,section:not(#accountGate,#startupIntro,#flightPad),dialog[open]:not(#connectionWarning),
  #navInfo,#flightMode,#touchControls,#shipStatusPanel,#exploreStatus,#exploreControls,
- #restoreInterface,#location,#walkHint,#walkHelp,#walkTouch,#wallet,#gearBar,
+ #restoreInterface,#location,#walkHint,#walkHelp,#walkTouch,#gearBar,
  #miningHint,#freeCameraSpeed,#orbitZoom,#earthWeather,#minimap,#globalChat,
  #toast,#settingsShield,#recordingControls,#runtimeVersions,#minimapToggle,#experimentalHUD,.desktopHelp) {
  translate: 110vw 0;
@@ -299,9 +299,32 @@ body.gameplayReady:is(.warping,.protoTransit) > :where(header,aside,footer,secti
  pointer-events: none !important;
 }
 
-body.gameplayReady:is(.warping,.protoTransit) > :where(#gameTop,#utilityMenu,#missionPanel,
- #shipPanel,#flightPad,#touchControls,#bodyReadout,#vitals,#wallet,#location,.desktopHelp) {
+body.gameplayReady:is(.warping,.protoTransit) > :where(#utilityMenu,#missionPanel,
+ #touchControls,#vitals,#location) {
  translate: -110vw 0;
+}
+
+body.gameplayReady:is(.warping,.protoTransit) > :is(#gameTop,#jumpStatus,#bodyReadout,#earthWeather) {
+ translate: 0 -110vh;
+}
+
+body.gameplayReady:is(.warping,.protoTransit) > :is(#shipPanel,#gearBar,#flightGauge,#flightRight,#runtimeVersions,#walkHint,#walkHelp,#walkTouch,#toast,#miningHint,.desktopHelp) {
+ translate: 0 110vh;
+}
+
+body.gameplayReady #flightPad > button:not(#rollLeft,#rollRight) {
+ transition: translate var(--warp-hud-duration, 320ms) ease-in-out, visibility 0s;
+}
+
+body.gameplayReady:is(.warping,.protoTransit) #flightPad > button:not(#rollLeft,#rollRight) {
+ translate: 0 110vh;
+ visibility: hidden;
+ transition-delay: 0s, var(--warp-hud-duration, 320ms);
+ pointer-events: none !important;
+}
+
+body.gameplayReady.protoTransit :is(#wallet,#flightPad) {
+ z-index: 2147483001;
 }
 
 body.gameplayReady:is(.warping,.protoTransit) > dialog:not(#connectionWarning)::backdrop {

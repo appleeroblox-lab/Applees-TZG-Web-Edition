@@ -252,7 +252,7 @@ body.referenceHUD .craftCard h3{min-height:30px;display:flex;align-items:center;
 
 body[data-graphics="low"] canvas.gradedScene{filter:none}body[data-graphics="medium"] canvas.gradedScene{filter:brightness(1.06) saturate(1.03)}body[data-graphics="high"] canvas.gradedScene{filter:brightness(1.08) saturate(1.08) contrast(1.02)}
 
-body.referenceHUD #warpOverlay,body.referenceHUD #warpFlash{display:none!important}#jumpStatus{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);text-align:center;z-index:25;pointer-events:none;max-width:80vw;text-shadow:0 2px 5px #091c35,0 0 20px #70c6f9}#jumpStatus[hidden],#warpTimerTrack[hidden]{display:none!important}#jumpTitle{font-size:clamp(25px,5vw,44px);margin:0;font-weight:600;color:white}#jumpSubtitle{font-size:clamp(12px,2vw,18px);margin:7px 0;color:#def4ff}#warpTimerTrack{position:relative;height:18px;margin:0 38px 6px;border:1px solid #dbf4ff;border-radius:5px;background:#123f60;overflow:hidden}#warpTimerFill{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#63b9e5,#d1f4ff);transition:width .1s linear}#warpTimerText{position:relative;display:block;font-size:10px;line-height:16px;color:white;text-shadow:0 1px 2px #17384d}body.referenceHUD #gaugeWarpBtn{width:31px;height:30px;min-width:31px;padding:3px;display:grid;place-items:center;border:2px solid #d5f1ff;border-radius:6px;background:#4298c9aa}body.referenceHUD #gaugeWarpBtn[hidden]{display:none!important}body.referenceHUD #gaugeWarpBtn .uiIcon{width:21px;height:21px}.sessionActions{flex-wrap:wrap}body.referenceHUD.warping #shade{background:none;animation:none}body.referenceHUD.warping #navInfo{display:none!important}@media(max-height:480px){#jumpStatus{top:34%}#jumpTitle{font-size:27px}#jumpSubtitle{font-size:13px}}
+body.referenceHUD #warpOverlay,body.referenceHUD #warpFlash{display:none!important}#jumpStatus{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);text-align:center;z-index:25;pointer-events:none;max-width:80vw;text-shadow:0 2px 5px #091c35,0 0 20px #70c6f9}#jumpStatus[hidden],#warpTimerTrack[hidden]{display:none!important}#jumpTitle{font-size:clamp(25px,5vw,44px);margin:0;font-weight:600;color:white}#jumpSubtitle{font-size:clamp(12px,2vw,18px);margin:7px 0;color:#def4ff}#warpTimerTrack{position:relative;height:18px;margin:0 38px 6px;border:1px solid #dbf4ff;border-radius:5px;background:#123f60;overflow:hidden}#warpTimerFill{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#63b9e5,#d1f4ff);transition:width .1s linear}#warpTimerText{position:relative;display:block;font-size:10px;line-height:16px;color:white;text-shadow:0 1px 2px #17384d}body.referenceHUD #gaugeWarpBtn{width:31px;height:30px;min-width:31px;padding:3px;display:grid;place-items:center;border:2px solid #d5f1ff;border-radius:6px;background:#4298c9aa}body.referenceHUD #gaugeWarpBtn[hidden]{display:none!important}body.referenceHUD #gaugeWarpBtn .uiIcon{width:21px;height:21px}.sessionActions{flex-wrap:wrap}body.referenceHUD.warping #shade{background:none;animation:none}@media(max-height:480px){#jumpStatus{top:34%}#jumpTitle{font-size:27px}#jumpSubtitle{font-size:13px}}
 
 #jumpCancel{pointer-events:auto;font-size:11px;padding:5px 12px;background:#17638499;border:1px solid #c8edff;border-radius:6px;margin-top:8px}body.referenceHUD #boostTimerTrack{margin-left:38px;margin-right:38px}.speedRange{margin-left:38px;margin-right:38px}
 
@@ -278,3 +278,39 @@ body.referenceHUD #flightGauge .flightSpeedTrack{box-sizing:border-box;height:22
 
 /* Never expose unpositioned surface prompts during space startup/respawn. */
 #mineralLabels[hidden],.mineralBillboard[hidden],.traderBillboard[hidden]{display:none!important}
+
+/* Translate HUD roots independently of their existing layout transforms. */
+body.gameplayReady > :where(header,aside,footer,section:not(#accountGate,#startupIntro),dialog[open]:not(#connectionWarning),
+ #navInfo,#flightMode,#touchControls,#shipStatusPanel,#exploreStatus,#exploreControls,
+ #restoreInterface,#location,#walkHint,#walkHelp,#walkTouch,#wallet,#gearBar,
+ #miningHint,#freeCameraSpeed,#orbitZoom,#earthWeather,#minimap,#globalChat,
+ #toast,#settingsShield,#recordingControls,#runtimeVersions,#minimapToggle,#experimentalHUD,.desktopHelp) {
+ transition: translate var(--warp-hud-duration, 320ms) ease-in-out, visibility 0s;
+}
+
+body.gameplayReady:is(.warping,.protoTransit) > :where(header,aside,footer,section:not(#accountGate,#startupIntro),dialog[open]:not(#connectionWarning),
+ #navInfo,#flightMode,#touchControls,#shipStatusPanel,#exploreStatus,#exploreControls,
+ #restoreInterface,#location,#walkHint,#walkHelp,#walkTouch,#wallet,#gearBar,
+ #miningHint,#freeCameraSpeed,#orbitZoom,#earthWeather,#minimap,#globalChat,
+ #toast,#settingsShield,#recordingControls,#runtimeVersions,#minimapToggle,#experimentalHUD,.desktopHelp) {
+ translate: 110vw 0;
+ visibility: hidden;
+ transition-delay: 0s, var(--warp-hud-duration, 320ms);
+ pointer-events: none !important;
+}
+
+body.gameplayReady:is(.warping,.protoTransit) > :where(#gameTop,#utilityMenu,#missionPanel,
+ #shipPanel,#flightPad,#touchControls,#bodyReadout,#vitals,#wallet,#location,.desktopHelp) {
+ translate: -110vw 0;
+}
+
+body.gameplayReady:is(.warping,.protoTransit) > dialog:not(#connectionWarning)::backdrop {
+ background: transparent;
+ backdrop-filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+ body.gameplayReady { --warp-hud-duration: 0ms; }
+}
+
+#connectionWarning .connectionError { overflow-wrap: anywhere; }

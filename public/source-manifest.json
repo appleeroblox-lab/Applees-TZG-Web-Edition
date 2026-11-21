@@ -858,7 +858,7 @@
     "runtime-versions.js"
   ],
   "fileVersions": {
-    "account-pages.js": 243,
+    "account-pages.js": 244,
     "atlas-3d.js": 223,
     "atlas-sky.js": 91,
     "auth-first.js": 243,
@@ -1072,7 +1072,7 @@
     "experimental/chunks.js": 157,
     "experimental/coordinates.js": 157,
     "account-auth-flow.js": 243,
-    "account.css": 182,
+    "account.css": 244,
     "account-birthday.js": 187,
     "neon-lights.js": 190,
     "system-unlocks.js": 168,

@@ -8,34 +8,35 @@ export class AccountPages{
  for(const[id,name]of [['accountAvatarEdit','edit'],['accountEditUsername','edit'],['accountEditDisplay','edit'],['accountPasswordOpen','settings'],['accountVerificationOpen','upload'],['accountSessionsOpen','account'],['accountBlockedOpen','friends'],['accountInventoryOpen','upload'],['accountCurrenciesOpen','upload'],['accountProgressOpen','globe'],['accountDeactivate','account'],['accountDelete','delete'],['accountSaveData','upload']])iconButton($(id),name);
  $('accountEditUsername').onclick=()=>{this.show('account');this.submenu('Change Username',$('accountUsernameTools'));$('accountUsernameTools').open=true;$('accountUsernameEdit').focus()};$('accountEditDisplay').onclick=()=>{this.show('profile');$('accountDisplayName').focus()};$('accountPasswordOpen').onclick=()=>{const tools=$('accountPasswordTools');this.submenu('Change Password',tools);tools.open=true};$('accountVerificationOpen').onclick=()=>this.security('verification');$('accountSessionsOpen').onclick=()=>this.security('sessions');$('accountBlockedOpen').onclick=()=>{closeMenuDialog($('accountDialog'));account.friends.page='blocked';account.friends.room=null;account.friends.profile=null;showMenu(account.friends.root);account.friends.refresh()};for(const kind of ['Inventory','Currencies','Progress'])$('account'+kind+'Open').onclick=()=>this.data(kind.toLowerCase());$('accountDeactivate').onclick=()=>this.manage('deactivate');$('accountDelete').onclick=()=>this.manage('delete');this.birthday=new AccountBirthday(this);
  const inactivity=$('accountInactivity14Days');
- if(inactivity)inactivity.onchange=()=>this.updateInactivity(inactivity.checked);
+ if(inactivity)inactivity.onclick=()=>this.updateInactivity(inactivity.getAttribute('aria-checked')!=='true');
  }
  show(page){this.page=page;if(page==='account')this.updateInactivity();for(const node of document.querySelectorAll('.accountPage'))node.hidden=node.id!=='accountPage-'+page;for(const button of $('accountPageTabs').querySelectorAll('button'))button.setAttribute('aria-pressed',String(button.dataset.accountPage===page));}
- refreshLocal(){const a=this.account;if(this.owner!==a.user?.id){const inactivity=$('accountInactivity14Days');if(inactivity&&this.inactivityOwner!==a.user?.id){inactivity.disabled=true;inactivity.checked=true;$('accountInactivityStatus').textContent='';}this.dashboard=null;globalThis.tzgPlayerProgress=null;this.knownWorlds.clear();this.owner=a.user?.id}const s=a.snapshot?.()||{fp:0,rc:0,inventory:[]};$('accountInfoUsername').textContent=a.profile?.username||'';const date=this.dashboard?.joined_at||a.user?.created_at;const joined=date?new Date(date).toLocaleDateString(): '—';$('accountJoinedDate').textContent=$('accountInfoJoined').textContent=joined;$('accountEmailVerified').textContent=!realEmail(a.user)?'Email is not added':(this.dashboard?.email_confirmed??!!a.user?.email_confirmed_at)?'Verified':'Unverified';$('accountInventoryCount').textContent=(s.inventory||[]).reduce((sum,row)=>sum+(Number(row.qty)||0),0).toLocaleString()+' items';$('accountCurrencySummary').textContent=s.fp.toLocaleString()+' FP · '+s.rc.toLocaleString()+' RC';$('accountSessionCount').textContent=this.dashboard?this.dashboard.sessions.length+' sessions':'—';$('accountBlockCount').textContent=this.dashboard?String(this.dashboard.blocked_count):'—';const progress=this.dashboard?.progress;$('accountProgressSummary').textContent=progress?'Level '+progress.level+' · '+progress.xp.toLocaleString()+' XP':'—';let role=$('accountDeveloperBadge');if(!role){role=make('span','Developer');role.id='accountDeveloperBadge';$('accountUsernameText').after(role)}role.hidden=!this.dashboard?.developer;this.birthday?.refresh();}
+ refreshLocal(){const a=this.account;if(this.owner!==a.user?.id){const inactivity=$('accountInactivity14Days');if(inactivity&&this.inactivityOwner!==a.user?.id){inactivity.disabled=true;inactivity.setAttribute('aria-checked','true');$('accountInactivityStatus').textContent='';}this.dashboard=null;globalThis.tzgPlayerProgress=null;this.knownWorlds.clear();this.owner=a.user?.id}const s=a.snapshot?.()||{fp:0,rc:0,inventory:[]};$('accountInfoUsername').textContent=a.profile?.username||'';const date=this.dashboard?.joined_at||a.user?.created_at;const joined=date?new Date(date).toLocaleDateString(): '—';$('accountJoinedDate').textContent=$('accountInfoJoined').textContent=joined;$('accountEmailVerified').textContent=!realEmail(a.user)?'Email is not added':(this.dashboard?.email_confirmed??!!a.user?.email_confirmed_at)?'Verified':'Unverified';$('accountInventoryCount').textContent=(s.inventory||[]).reduce((sum,row)=>sum+(Number(row.qty)||0),0).toLocaleString()+' items';$('accountCurrencySummary').textContent=s.fp.toLocaleString()+' FP · '+s.rc.toLocaleString()+' RC';$('accountSessionCount').textContent=this.dashboard?this.dashboard.sessions.length+' sessions':'—';$('accountBlockCount').textContent=this.dashboard?String(this.dashboard.blocked_count):'—';const progress=this.dashboard?.progress;$('accountProgressSummary').textContent=progress?'Level '+progress.level+' · '+progress.xp.toLocaleString()+' XP':'—';let role=$('accountDeveloperBadge');if(!role){role=make('span','Developer');role.id='accountDeveloperBadge';$('accountUsernameText').after(role)}role.hidden=!this.dashboard?.developer;this.birthday?.refresh();}
  async load(){if(this.loading||!this.account.ready)return;this.refreshLocal();this.loading=true;const uid=this.account.user?.id;try{const result=await this.account.rpc('tzg_account_dashboard');if(this.account.user?.id!==uid||!this.account.ready)return;this.dashboard=result;globalThis.tzgPlayerProgress=result.progress;for(const body of result.progress?.worlds||[])this.knownWorlds.add(body);$('accountDashboardStatus').textContent='';this.refreshLocal();this.recordProgress(this.account.progressSnapshot?.()||[])}catch(e){$('accountDashboardStatus').textContent=e.code==='PGRST202'?'Run account SQL 012 to enable the new account features.':e.message}finally{this.loading=false}}
  async updateInactivity(enabled){
-  const input=$('accountInactivity14Days'),status=$('accountInactivityStatus'),uid=this.account.user?.id;
-  if(!input||!uid||!this.account.ready||this.inactivityRequest?.uid===uid)return;
+  const toggle=$('accountInactivity14Days'),status=$('accountInactivityStatus'),uid=this.account.user?.id;
+  if(!toggle||!uid||!this.account.ready||this.inactivityRequest?.uid===uid)return;
   const request=this.inactivityRequest={uid};
   const previous=this.inactivityOwner===uid?this.inactivityEnabled:undefined;
-  input.checked=enabled??previous??true;
-  input.disabled=true;
+  toggle.setAttribute('aria-checked',String(enabled??previous??true));
+  toggle.disabled=true;
   status.textContent=enabled===undefined?'Loading inactivity setting…':'Saving inactivity setting…';
   try{
    const args=enabled===undefined?{}:{p_delete_after_14_days:enabled};
    const saved=await this.account.rpc('tzg_account_inactivity',args);
    if(this.inactivityRequest!==request||this.account.user?.id!==uid)return;
    this.inactivityOwner=uid;
-   this.inactivityEnabled=input.checked=saved;
+   this.inactivityEnabled=saved;
+   toggle.setAttribute('aria-checked',String(saved));
    status.textContent=enabled===undefined?'':'Inactivity setting saved.';
   }catch(error){
    if(this.inactivityRequest!==request||this.account.user?.id!==uid)return;
-   input.checked=previous??true;
+   toggle.setAttribute('aria-checked',String(previous??true));
    status.textContent=error.message;
   }finally{
    if(this.inactivityRequest===request){
     this.inactivityRequest=null;
-    input.disabled=this.account.user?.id!==uid||this.inactivityOwner!==uid;
+    toggle.disabled=this.account.user?.id!==uid||this.inactivityOwner!==uid;
    }
   }
  }

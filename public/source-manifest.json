@@ -1,5 +1,5 @@
 {
-  "version": 252,
+  "version": 253,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -1051,7 +1051,7 @@
     "textures/reentry-shine.png": 128,
     "reference-ui.css": 248,
     "settings-appearance.js": 209,
-    "settings-appearance.css": 252,
+    "settings-appearance.css": 253,
     "ship-camera-modes.js": 171,
     "star-size.js": 170,
     "camera-horizon.js": 140,

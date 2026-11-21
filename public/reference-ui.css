@@ -326,3 +326,17 @@ body.gameplayReady:is(.warping,.protoTransit) > dialog:not(#connectionWarning)::
 }
 
 #connectionWarning .connectionError { overflow-wrap: anywhere; }
+
+/* The rest of the HUD already leaves the screen using the warp slide. */
+body.gameplayReady :is(#wallet,#flightPad,#flightRight,#flightGauge,#touchControls,#shipPanel) {
+ transition: opacity var(--warp-hud-duration, 320ms) ease-in-out;
+}
+
+body.gameplayReady.warpCutscene :is(#wallet,#flightPad,#flightRight,#flightGauge,#touchControls,#shipPanel) {
+ opacity: 0 !important;
+ pointer-events: none !important;
+}
+
+body.gameplayReady.warpCutscene :is(#wallet,#flightPad,#flightRight,#flightGauge,#touchControls,#shipPanel) * {
+ pointer-events: none !important;
+}

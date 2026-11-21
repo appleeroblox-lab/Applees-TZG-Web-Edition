@@ -70,3 +70,67 @@ this.interiorBackground=new T.Color('#244671');this.hiddenRoots=[];this.transitP
  renderInterior(scene,keep,draw){if(!this.enclosed)return draw();const background=scene.background,fog=scene.fog;this.hiddenRoots.length=0;for(const root of scene.children)if(root.visible&&!root.isLight&&root!==this.group&&!keep.includes(root)){root.visible=false;this.hiddenRoots.push(root)}scene.background=this.interiorBackground;scene.fog=null;try{return draw()}finally{for(const root of this.hiddenRoots)root.visible=true;this.hiddenRoots.length=0;scene.background=background;scene.fog=fog}}
 
 }
+
+function warpDrift(time, point) {
+ return point.set(Math.sin(time * 1.45) * .8, Math.sin(time * 2.1) * .42, Math.sin(time * 1.8) * 1.15);
+}
+
+// Keep the wake local to the ship so floating-origin changes cannot break it.
+export class WarpShipMotion {
+ constructor(ship) {
+  this.ship = ship;
+  this.offset = new T.Vector3();
+  this.head = new T.Vector3();
+  this.sample = new T.Vector3();
+  this.inverseRoll = new T.Quaternion();
+  this.rollAxis = new T.Vector3(0, 0, 1);
+  this.geometry = new T.BufferGeometry();
+  this.positions = new T.BufferAttribute(new Float32Array(2 * 17 * 3), 3).setUsage(T.DynamicDrawUsage);
+  const colors = [];
+  const indices = [];
+  for (let wing = 0; wing < 2; wing++) {
+   for (let sample = 0; sample <= 16; sample++) {
+    colors.push(.66, .88, 1, .85 * (1 - sample / 16) ** 1.65);
+    if (sample < 16) indices.push(wing * 17 + sample, wing * 17 + sample + 1);
+   }
+  }
+  this.geometry.setAttribute('position', this.positions);
+  this.geometry.setAttribute('color', new T.Float32BufferAttribute(colors, 4));
+  this.geometry.setIndex(indices);
+  this.material = new T.LineBasicMaterial({
+   vertexColors: true, transparent: true, depthWrite: false,
+   blending: T.AdditiveBlending, toneMapped: false,
+  });
+  this.trails = new T.LineSegments(this.geometry, this.material);
+  this.trails.name = 'Warp wingtip trails';
+  this.trails.frustumCulled = false;
+  this.trails.visible = false;
+  ship.add(this.trails);
+ }
+
+ update(time, roll, tips, visible) {
+  warpDrift(time, this.head);
+  this.offset.copy(this.head).applyQuaternion(this.ship.quaternion);
+  this.ship.position.add(this.offset);
+  this.ship.rotateZ(roll);
+  this.trails.visible = visible;
+  if (!visible) return;
+  this.inverseRoll.setFromAxisAngle(this.rollAxis, -roll);
+  for (let wing = 0; wing < 2; wing++) {
+   for (let i = 0; i <= 16; i++) {
+    const age = i / 16;
+    warpDrift(time - age * .72, this.sample).sub(this.head);
+    this.sample.z += age * 34;
+    this.sample.applyQuaternion(this.inverseRoll).add(tips[wing]);
+    this.positions.setXYZ(wing * 17 + i, this.sample.x, this.sample.y, this.sample.z);
+   }
+  }
+  this.positions.needsUpdate = true;
+ }
+
+ dispose() {
+  this.trails.removeFromParent();
+  this.geometry.dispose();
+  this.material.dispose();
+ }
+}

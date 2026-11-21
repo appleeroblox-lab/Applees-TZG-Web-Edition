@@ -46,7 +46,7 @@ Deno.serve(async request=>{
  try {
   const text=await request.text();
   if(text.length>160)return done();
-  const {kind,visitor}=JSON.parse(text);
+  const {kind,visitor,restored}=JSON.parse(text);
   if(kind!=='member'&&kind!=='guest'&&kind!=='test')return done();
   test=kind==='test';
 
@@ -89,12 +89,31 @@ Deno.serve(async request=>{
   if(!test)seen.set(key,dispatchTime+(kind==='guest'?30000:120000));
   nextAlert[kind]=dispatchTime+5000;
   const {browser,device}=browserInfo((request.headers.get('user-agent')||'').slice(0,1024));
-  const label=test?'Webhook test':kind==='member'?'Member sign-in':'Guest entry';
+  const label=test?'Webhook test':kind==='member'?(restored===true?'Member auto-login':'Member sign-in'):'Guest entry';
   const color=/^#[0-9a-f]{6}$/i.test(settings.color||'')?parseInt(settings.color.slice(1),16):0x3498db;
   const fields=[
    ...(settings.browser===false?[]:[{name:'Browser',value:browser,inline:true}]),
    ...(settings.device===false?[]:[{name:'Device',value:device,inline:true}]),
   ];
+  const details=config.details||{};
+  const addField=(name:string,value:unknown)=>{
+   if(typeof value==='string'&&value)fields.push({name,value:value.slice(0,250),inline:true});
+   else if(typeof value==='number'&&Number.isFinite(value))fields.push({name,value:value.toLocaleString('en-US'),inline:true});
+  };
+  if(settings.account!==false){
+   addField('Display name',details.display_name);
+   addField('Username',details.username);
+   addField('Public player ID',details.public_id);
+  }
+  if(settings.currency!==false){
+   addField('Flight Points (FP)',details.fp);
+   addField('Rocket Coins (RC)',details.rc);
+  }
+  if(settings.progress!==false){
+   addField('XP',details.xp);
+   addField('Level',details.level);
+  }
+  if(settings.ip===true)addField('Member sign-in IP',details.ip);
   const embed={title:label,color,fields,...(settings.utc===false?{}:{timestamp:new Date(dispatchTime).toISOString()})};
   const response=await fetch(webhook+'?wait=true',{
    method:'POST',redirect:'error',signal:AbortSignal.timeout(7000),

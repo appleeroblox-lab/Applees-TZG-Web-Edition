@@ -16,17 +16,28 @@ export class DebugMenu{
  $('debugDeveloperPage').after(webhookPage);
  const webhook=document.createElement('form');
  webhook.className='debugCommandCard';
- webhook.innerHTML='<h3>Discord alerts</h3><label>Replace webhook URL <input type="password" maxlength="300" autocomplete="off" spellcheck="false" autocapitalize="off"></label><label>Embed color <input name="color" type="color" value="#3498db"></label><fieldset><legend>Send</legend><label><input name="member" type="checkbox" checked> Member sign-ins</label><label><input name="guest" type="checkbox" checked> Guest entries</label><label><input name="browser" type="checkbox" checked> Browser family</label><label><input name="device" type="checkbox" checked> Device category</label><label><input name="utc" type="checkbox" checked> Timestamp</label></fieldset><div class="debugActions"><button type="submit">Save</button><button type="button" data-test disabled>Send test</button><button type="button" data-remove disabled>Remove webhook</button></div><p role="status"></p>';
+ const webhookOptions=[
+  ['member','Member sign-ins'],['guest','Guest entries'],['browser','Browser family'],['device','Device category'],
+  ['utc','Timestamp'],['account','Player name and public ID'],['currency','Currency balances'],
+  ['progress','XP and level'],['ip','Member sign-in IP address'],
+ ];
+ const switches=webhookOptions.map(([name,label])=>
+  `<div class="webhookSwitchRow"><span id="webhook-${name}">${label}</span><button type="button" name="${name}" role="switch" class="webhookSwitch" aria-labelledby="webhook-${name}" aria-checked="${name!=='ip'}"></button></div>`
+ ).join('');
+ webhook.innerHTML=`<h3>Discord alerts</h3><label>Replace webhook URL <input type="password" maxlength="300" autocomplete="off" spellcheck="false" autocapitalize="off"></label><label>Embed color <input name="color" type="color" value="#3498db"></label><fieldset><legend>Send</legend>${switches}</fieldset><div class="debugActions"><button type="submit">Save</button><button type="button" data-test disabled>Send test</button><button type="button" data-remove disabled>Remove webhook</button></div><p role="status"></p>`;
  const webhookURL=webhook.querySelector('input[type=password]');
  this.webhookURL=webhookURL;
  this.webhookStatus=webhook.querySelector('[role=status]');
- this.webhookButtons=[...webhook.querySelectorAll('button')];
- this.webhookSettings=[...webhook.querySelectorAll('input[name]')];
+ this.webhookButtons=[...webhook.querySelectorAll('.debugActions button')];
+ this.webhookSettings=[...webhook.querySelectorAll('input[name], button[role=switch]')];
+ for(const input of this.webhookSettings){
+  if(input.type==='button')input.onclick=()=>input.setAttribute('aria-checked',String(input.getAttribute('aria-checked')!=='true'));
+ }
  webhook.onsubmit=e=>{
   e.preventDefault();
   const url=webhookURL.value.trim();
   webhookURL.value='';
-  const settings=Object.fromEntries(this.webhookSettings.map(input=>[input.name,input.type==='checkbox'?input.checked:input.value]));
+  const settings=Object.fromEntries(this.webhookSettings.map(input=>[input.name,input.type==='button'?input.getAttribute('aria-checked')==='true':input.value]));
   this.updateWebhook('save',url,settings);
  };
  webhook.querySelector('[data-remove]').onclick=()=>this.updateWebhook('remove');
@@ -95,7 +106,7 @@ export class DebugMenu{
     this.webhookConfigured=result.configured===true;
     for(const input of this.webhookSettings){
      const value=result.settings?.[input.name];
-     if(input.type==='checkbox')input.checked=value!==false;
+     if(input.type==='button')input.setAttribute('aria-checked',String(input.name==='ip'?value===true:value!==false));
      else input.value=value||'#3498db';
     }
     this.webhookStatus.textContent=this.webhookConfigured?'Webhook configured.':'No webhook configured.';

@@ -101,5 +101,6 @@ body.referenceHUD #debugWindow.debugDashboard{width:min(840px,88dvw);height:min(
 #debugWebhookPage .debugCommandCard>label,#debugWebhookPage fieldset label{display:flex;align-items:center;gap:8px;margin:8px 0}
 #debugWebhookPage input[type=password]{min-width:0;flex:1}
 #debugWebhookPage fieldset{margin:10px 0;border:1px solid #5cc3e4;border-radius:8px}
-#debugWebhookPage input[type=checkbox]{width:auto;min-width:0}
+#debugWebhookPage .webhookSwitchRow{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:34px}
+#debugWebhookPage .webhookSwitch:focus-visible{outline:2px solid white;outline-offset:3px}
 #debugWebhookPage input[type=color]{width:44px;min-width:0;height:30px;padding:2px}

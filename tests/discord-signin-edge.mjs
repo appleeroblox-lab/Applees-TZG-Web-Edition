@@ -18,7 +18,7 @@ const sdk={
   if(name==='tzg_debug_authorize')return {data:{authorized:true}};
   assert.equal(name,'tzg_discord_delivery_config');
   const valid=params.p_guest_visitor===visitor||params.p_member_session===session&&params.p_member_user===user;
-  return {data:params.p_test?JSON.stringify({url,settings:{color:'#ff0033',browser:false}}):valid?url:null};
+  return {data:params.p_test?JSON.stringify({url,settings:{color:'#ff0033',browser:false}}):params.p_member_session===session?JSON.stringify({url,settings:{ip:true},details:{display_name:'Explorer',public_id:'123',fp:120,rc:10,xp:500,level:3,ip:'192.0.2.1'}}):valid?url:null};
  },
 };
 const code=readFileSync(new URL('../supabase/functions/discord-signin/index.ts',import.meta.url),'utf8')
@@ -43,12 +43,18 @@ await call({kind:'member'},'https://appleeroblox-lab.github.io','Bearer invalid'
 assert.equal(posts.length,0);
 await call({kind:'guest',visitor});
 await call({kind:'guest',visitor});
-await call({kind:'member'},origin,'Bearer '+token);
+await call({kind:'member',restored:true},origin,'Bearer '+token);
 assert.equal(posts.length,2);
 assert.equal(posts[0].embeds[0].title,'Guest entry');
 assert.equal(posts[0].embeds[0].color,0x3498db);
 assert.equal(posts[0].embeds[0].fields[0].value,'Chrome');
-assert.equal(posts[1].embeds[0].title,'Member sign-in');
+assert.equal(posts[1].embeds[0].title,'Member auto-login');
+const memberFields=Object.fromEntries(posts[1].embeds[0].fields.map(({name,value})=>[name,value]));
+assert.equal(memberFields['Flight Points (FP)'],'120');
+assert.equal(memberFields.XP,'500');
+assert.equal(memberFields.Level,'3');
+assert.equal(memberFields['Member sign-in IP'],'192.0.2.1');
+assert(!posts[0].embeds[0].fields.some(field=>field.name.includes('IP')));
 const result=await call({kind:'test'},origin,'Bearer '+token);
 assert.deepEqual(await result.json(),{ok:true});
 assert.equal(posts[2].embeds[0].color,0xff0033);

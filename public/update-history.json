@@ -12,7 +12,7 @@
         "During regular warp and Time Travel, the HUD and ship controls slide offscreen, then return to their original positions.",
         "Background connection checks no longer interrupt game entry. When a sign-in or gameplay request fails, the warning identifies the request and shows the details available from your browser.",
         "Added an account inactivity setting. It defaults to deletion after 14 days of inactivity. With the setting off, the account is deleted after 30 days of inactivity. The switch uses the same design as the Settings toggles.",
-        "Improved mobile flight and on-foot performance inside atmospheric planets. Gyro controls now work alongside finger dragging.",
+        "Improved mobile flight and on-foot performance inside atmospheric planets. Adaptive resolution now reacts sooner to sustained low frame rates on mobile, including in atmospheric flight and on foot. Gyro controls now work alongside finger dragging.",
         "Guests can send text and emoji in Global Chat after choosing a unique display name. The chat header refreshes the online player count, and chat retains up to 10 messages for up to five hours.",
         "Improved mobile menu sizing, daily rewards, and Friends scrolling. Player profiles now show a numeric public ID.",
         "Added privacy and terms links, improved inline intro playback on phones, and increased the size of named asteroids and Kuiper Belt bodies."

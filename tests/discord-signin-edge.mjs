@@ -15,9 +15,10 @@ let handler;
 const sdk={
  auth:{getUser:async input=>({data:{user:input===token?{id:user}:null}})},
  rpc:async(name,params)=>{
-  assert.equal(name,'tzg_discord_live_config');
+  if(name==='tzg_debug_authorize')return {data:{authorized:true}};
+  assert.equal(name,'tzg_discord_delivery_config');
   const valid=params.p_guest_visitor===visitor||params.p_member_session===session&&params.p_member_user===user;
-  return {data:valid?url:null};
+  return {data:params.p_test?JSON.stringify({url,settings:{color:'#ff0033',browser:false}}):valid?url:null};
  },
 };
 const code=readFileSync(new URL('../supabase/functions/discord-signin/index.ts',import.meta.url),'utf8')
@@ -27,7 +28,7 @@ vm.runInNewContext(stripTypeScriptTypes(code),{
  createClient:()=>sdk,
  Request,Response,AbortSignal,atob,
  fetch:async(endpoint,options)=>{
-  assert.equal(endpoint,url);
+  assert.equal(endpoint,url+'?wait=true');
   assert.equal(options.redirect,'error');
   posts.push(JSON.parse(options.body));
   return new Response(null,{status:204});
@@ -44,7 +45,13 @@ await call({kind:'guest',visitor});
 await call({kind:'guest',visitor});
 await call({kind:'member'},origin,'Bearer '+token);
 assert.equal(posts.length,2);
-assert.match(posts[0].content,/Guest entry.*Chrome.*Android.* UTC$/);
-assert.match(posts[1].content,/Member sign-in.*Chrome.*Android.* UTC$/);
+assert.equal(posts[0].embeds[0].title,'Guest entry');
+assert.equal(posts[0].embeds[0].color,0x3498db);
+assert.equal(posts[0].embeds[0].fields[0].value,'Chrome');
+assert.equal(posts[1].embeds[0].title,'Member sign-in');
+const result=await call({kind:'test'},origin,'Bearer '+token);
+assert.deepEqual(await result.json(),{ok:true});
+assert.equal(posts[2].embeds[0].color,0xff0033);
+assert.equal(posts[2].embeds[0].fields[0].name,'Device');
 assert.doesNotMatch(JSON.stringify(posts),new RegExp(visitor+'|'+session+'|'+user));
 console.log('PASS live Discord payload, origin guard, authorization, duplicate suppression and private IDs omitted.');

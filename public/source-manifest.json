@@ -1,5 +1,5 @@
 {
-  "version": 250,
+  "version": 251,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -876,7 +876,7 @@
     "control-sizes.js": 109,
     "crew.js": 180,
     "debug-commands.js": 156,
-    "debug-menu.js": 249,
+    "debug-menu.js": 251,
     "debug-message-logs.js": 96,
     "debug-moderation.js": 188,
     "debug-verified.js": 187,
@@ -916,7 +916,7 @@
     "sound.js": 201,
     "stellar-glare.js": 196,
     "supabase-config.js": 61,
-    "supabase-debug.js": 249,
+    "supabase-debug.js": 251,
     "surface-roads.js": 170,
     "surface-sky.js": 200,
     "surface-streaming.js": 199,
@@ -1145,7 +1145,7 @@
     "device-gyro.js": 242,
     "flight-save.js": 213,
     "layout-stability.css": 222,
-    "debug-menu.css": 236,
+    "debug-menu.css": 251,
     "developer-events.js": 223,
     "event-feed.js": 224,
     "guest-profile.js": 232,

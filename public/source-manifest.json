@@ -1,5 +1,5 @@
 {
-  "version": 248,
+  "version": 249,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -876,7 +876,7 @@
     "control-sizes.js": 109,
     "crew.js": 180,
     "debug-commands.js": 156,
-    "debug-menu.js": 234,
+    "debug-menu.js": 249,
     "debug-message-logs.js": 96,
     "debug-moderation.js": 188,
     "debug-verified.js": 187,
@@ -916,7 +916,7 @@
     "sound.js": 201,
     "stellar-glare.js": 196,
     "supabase-config.js": 61,
-    "supabase-debug.js": 156,
+    "supabase-debug.js": 249,
     "surface-roads.js": 170,
     "surface-sky.js": 200,
     "surface-streaming.js": 199,

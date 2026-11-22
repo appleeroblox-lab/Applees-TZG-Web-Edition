@@ -1,8 +1,24 @@
 {
-  "currentVersion": "v0.0.258",
+  "currentVersion": "v0.0.259",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 259,
+      "version": "v0.0.259",
+      "date": "2026-11-22",
+      "title": "Home customization controls and space previews",
+      "changes": [
+        "Moved the smaller Parts and Colours panels closer to the screen edges and matched the game’s blue controls.",
+        "Opened the custom colour wheel and hex field in a separate centered picker for both models.",
+        "Fixed reversed ship dragging and limited the outline to the selected section.",
+        "Kept ship neon visible and gave both wings, both engines and the cabin steady lighting.",
+        "Moved the Engine Fire and Trails previews into space and anchored the trails to the wingtips."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 258,
       "version": "v0.0.258",

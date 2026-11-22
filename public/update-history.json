@@ -1,8 +1,26 @@
 {
-  "currentVersion": "v0.0.259",
+  "currentVersion": "v0.0.260",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 260,
+      "version": "v0.0.260",
+      "date": "2026-11-23",
+      "title": "Exposure and faster ship previews",
+      "changes": [
+        "Drag the custom colour picker by its title bar.",
+        "Anchored the Parts panel to the left edge and added side-in and side-out animations for Parts and Colours.",
+        "Added a live Exposure readout in Display settings.",
+        "Kept the Home day and night cycle visible while dragging the ship or character.",
+        "Fixed lights keeping their original blue tint after changing their colour.",
+        "Widened wingtip trails and made the Engine Fire and Trails previews fly straight through space at higher speed using the current graphics settings.",
+        "Increased Time Travel tunnel movement and moved the chase camera slightly farther back."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 259,
       "version": "v0.0.259",

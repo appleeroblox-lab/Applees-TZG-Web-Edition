@@ -4,7 +4,7 @@ export function tunnelPoint(distance,total=16200,seed=0,out=new T.Vector3()){con
 export function tunnelTangent(distance,total=16200,seed=0,out=new T.Vector3()){return out.copy(tunnelPoint(distance+1,total,seed)).sub(tunnelPoint(distance-1,total,seed)).normalize()}
 export function warpWhiteFade(nav){if(!warpTunnelStrength(nav))return 0;const p=nav.progress||0;return Math.max(1-T.MathUtils.smoothstep(p,0,.06),T.MathUtils.smoothstep(p,.94,1))}
 export const TUNNEL_LENGTH=460,TUNNEL_SPEED=1800;
-export const TEMPORAL_SPEED=7200,TEMPORAL_SECTION_LENGTH=920,TEMPORAL_SECTIONS=20;
+export const TEMPORAL_SPEED=9600,TEMPORAL_SECTION_LENGTH=920,TEMPORAL_SECTIONS=20;
 // Four continuous heading changes, with straight approaches between the bends.
 export function temporalPoint(distance,total=144000,out=new T.Vector3()){if(distance<=0)return out.set(0,0,-distance);let x=0,z=0,heading=0,cursor=0;const arc=total*.14;for(const [fraction,angle]of [[.12,Math.PI*2/3],[.32,-Math.PI*7/9],[.52,Math.PI*13/18],[.72,Math.PI*2/3]]){const start=total*fraction,straight=Math.max(0,Math.min(distance,start)-cursor);x+=Math.sin(heading)*straight;z-=Math.cos(heading)*straight;if(distance<=start)return out.set(x,0,z);const length=Math.min(arc,distance-start),k=angle/arc,next=heading+k*length;x+=(Math.cos(heading)-Math.cos(next))/k;z-=(Math.sin(next)-Math.sin(heading))/k;if(distance<=start+arc)return out.set(x,0,z);heading+=angle;cursor=start+arc;}const last=distance-cursor;return out.set(x+Math.sin(heading)*last,0,z-Math.cos(heading)*last);}
 export class WarpTunnel{
@@ -106,6 +106,24 @@ export class WarpShipMotion {
   this.trails.frustumCulled = false;
   this.trails.visible = false;
   ship.add(this.trails);
+  this.ribbonGeometry=new T.BufferGeometry();
+  this.ribbonPositions=new T.Float32BufferAttribute(new Float32Array(34*2*3),3).setUsage(T.DynamicDrawUsage);
+  this.ribbonColors=new T.Float32BufferAttribute(colors.flatMap((_,i)=>i%4===0?[...colors.slice(i,i+4),...colors.slice(i,i+4)]:[]),4);
+  const faces=[];
+  for(let wing=0;wing<2;wing++)for(let sample=0;sample<16;sample++){
+   const start=(wing*17+sample)*2;
+   faces.push(start,start+1,start+2,start+1,start+3,start+2);
+  }
+  this.ribbonGeometry.setAttribute('position',this.ribbonPositions);
+  this.ribbonGeometry.setAttribute('color',this.ribbonColors);
+  this.ribbonGeometry.setIndex(faces);
+  this.ribbonMaterial=new T.MeshBasicMaterial({
+   vertexColors:true,transparent:true,depthWrite:false,side:T.DoubleSide,
+   blending:T.AdditiveBlending,toneMapped:false,opacity:.7,
+  });
+  const ribbon=new T.Mesh(this.ribbonGeometry,this.ribbonMaterial);
+  ribbon.frustumCulled=false;
+  this.trails.add(ribbon);
  }
 
  setColor(color){
@@ -114,10 +132,13 @@ export class WarpShipMotion {
   if(this.material.userData.trailColor===(custom?color:null))return;
   this.material.userData.trailColor=custom?color:null;
   this.material.color.set(custom?color:0xffffff);
+  this.ribbonMaterial.color.copy(this.material.color);
   for(let i=0;i<attribute.count;i++){
    attribute.setXYZ(i,custom?1:.66,custom?1:.88,1);
+   this.ribbonColors.setXYZ(i*2,attribute.getX(i),attribute.getY(i),1);
+   this.ribbonColors.setXYZ(i*2+1,attribute.getX(i),attribute.getY(i),1);
   }
-  attribute.needsUpdate=true;
+  attribute.needsUpdate=true;this.ribbonColors.needsUpdate=true;
  }
 
  preview(tips){
@@ -127,7 +148,7 @@ export class WarpShipMotion {
     this.positions.setXYZ(wing*17+i,point.x,point.y,point.z+i*.55);
    }
   }
-  this.positions.needsUpdate=true;
+  this.updateRibbon();
   this.trails.visible=true;
  }
 
@@ -148,11 +169,24 @@ export class WarpShipMotion {
     this.positions.setXYZ(wing * 17 + i, this.sample.x, this.sample.y, this.sample.z);
    }
   }
-  this.positions.needsUpdate = true;
+  this.updateRibbon();
+ }
+
+ updateRibbon(){
+  this.positions.needsUpdate=true;
+  for(let i=0;i<this.positions.count;i++){
+   const x=this.positions.getX(i),y=this.positions.getY(i),z=this.positions.getZ(i);
+   const width=.24*(1-(i%17)/16);
+   this.ribbonPositions.setXYZ(i*2,x-width,y,z);
+   this.ribbonPositions.setXYZ(i*2+1,x+width,y,z);
+  }
+  this.ribbonPositions.needsUpdate=true;
  }
 
  dispose() {
   this.trails.removeFromParent();
+  this.ribbonGeometry.dispose();
+  this.ribbonMaterial.dispose();
   this.geometry.dispose();
   this.material.dispose();
  }

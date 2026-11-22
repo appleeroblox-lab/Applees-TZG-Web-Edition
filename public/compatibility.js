@@ -54,7 +54,7 @@ export class CompatibilityRenderer {
   const a=new T.Vector3(),b=new T.Vector3();
   const project=(point,i)=>point.fromBufferAttribute(attributes.position,i)
    .applyMatrix4(trails.matrixWorld).sub(camera.position).applyQuaternion(q);
-  x.save();x.lineWidth=1.4;x.lineCap='round';
+  x.save();x.lineWidth=2.8;x.lineCap='round';
   for(let i=0;i<count;i+=2){
    const from=index?index.getX(i):i,to=index?index.getX(i+1):i+1;
    const p=project(a,from),bEnd=project(b,to);

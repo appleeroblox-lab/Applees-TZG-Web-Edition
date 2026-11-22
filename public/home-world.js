@@ -18,9 +18,11 @@ export class HomeWorld{
   this.trailPreview=new WarpShipMotion(this.rig.ship);
   this.rig.trailPreview=this.trailPreview.trails;
   this.flightPreview=null;this.previewTime=0;
-  this.padPosition=new T.Vector3();this.previewPoint=new T.Vector3();this.previewInverse=new T.Quaternion();
-  this.trailAnchor=new T.Vector3();this.trailRotation=new T.Quaternion();this.trailEuler=new T.Euler();
+  this.padPosition=new T.Vector3();
+
   this.spaceScene=new T.Scene();
+  this.spaceScene.userData.shipRig=this.rig;
+  this.spaceScene.userData.warpShipTrails=this.trailPreview.trails;
   this.spaceScene.background=new T.Color(0x030713);
   this.spaceScene.add(new T.HemisphereLight(0xdceeff,0x455775,2));
   const sun=new T.DirectionalLight(0xf4f7ff,2.4);
@@ -28,6 +30,15 @@ export class HomeWorld{
   this.spaceSky=context.sky?new T.Mesh(new T.SphereGeometry(9000,32,20),
    new T.MeshBasicMaterial({map:context.sky,side:T.BackSide,depthWrite:false,toneMapped:false})):makeStars();
   this.spaceScene.add(this.spaceSky);
+  this.previewStars=Array.from({length:48},(_,i)=>new T.Vector3(
+   ((i*31%53)/53-.5)*85,((i*17%59)/59-.5)*60,(i*43%101)/101*100
+  ));
+  const streakGeometry=new T.BufferGeometry();
+  this.streakPositions=new T.Float32BufferAttribute(new Float32Array(this.previewStars.length*6),3).setUsage(T.DynamicDrawUsage);
+  streakGeometry.setAttribute('position',this.streakPositions);
+  this.previewStreaks=new T.LineSegments(streakGeometry,new T.LineBasicMaterial({color:0xafd9ff,transparent:true,opacity:.45,depthWrite:false}));
+  this.previewStreaks.frustumCulled=false;
+  this.spaceScene.add(this.previewStreaks);
 
   this.view=new SurfaceView(this.session,context.bodies);this.scene=this.view.scene;
   this.view.environment=context.view.environment;this.view.quality=context.quality;this.view.mobile=context.mobile;
@@ -120,47 +131,39 @@ export class HomeWorld{
   for(const flame of this.rig.flames){flame.visible=!!mode;flame.scale.z=1;}
   for(const halo of this.rig.engines)halo.visible=!!mode;
  }
- flightPath(time,point){
-  const angle=time*.22;
-  return point.set(35*(1-Math.cos(angle)),1.6*Math.sin(angle*2),-35*Math.sin(angle));
- }
  animateFlightPreview(dt){
   if(!this.flightPreview)return;
   this.previewTime+=dt;
-  const time=this.previewTime,ship=this.rig.ship;
-  this.flightPath(time,ship.position).add(this.padPosition);
-  ship.rotation.set(0,-time*.22,.11*Math.sin(time*.8));
-  for(const flame of this.rig.flames)flame.scale.z=.8+Math.sin(time*25)*.17;
-  const inverse=this.previewInverse.copy(ship.quaternion).invert(),point=this.previewPoint;
+  const time=this.previewTime,ship=this.rig.ship,distance=time*32;
+  ship.position.copy(this.padPosition);
+  ship.position.z-=distance;
+  ship.quaternion.identity();
+  for(const flame of this.rig.flames)flame.scale.z=1.03+Math.sin(time*25)*.2;
   for(let wing=0;wing<2;wing++){
    const tip=this.rig.shipTrailTips[wing];
-   for(let i=0;i<17;i++){
-    const sampleTime=time-i*.075;
-    this.flightPath(sampleTime,point).add(this.padPosition).sub(ship.position);
-    this.trailEuler.set(0,-sampleTime*.22,.11*Math.sin(sampleTime*.8));
-    this.trailRotation.setFromEuler(this.trailEuler);
-    point.add(this.trailAnchor.copy(tip).applyQuaternion(this.trailRotation)).applyQuaternion(inverse);
-    this.trailPreview.positions.setXYZ(wing*17+i,point.x,point.y,point.z);
-   }
+   for(let i=0;i<17;i++)this.trailPreview.positions.setXYZ(wing*17+i,tip.x,tip.y,tip.z+i*1.5);
   }
-  this.trailPreview.positions.needsUpdate=true;
+  this.trailPreview.updateRibbon();
+  this.previewStreaks.position.copy(ship.position);
+  for(const [i,star] of this.previewStars.entries()){
+   const z=(star.z+distance)%100-80;
+   this.streakPositions.setXYZ(i*2,star.x,star.y,z);
+   this.streakPositions.setXYZ(i*2+1,star.x,star.y,z+1.6);
+  }
+  this.streakPositions.needsUpdate=true;
  }
 
  update(now,dt,camera,{interacting=false}={}){
   for(const {light,mesh} of this.shipLights)light.color.copy(mesh.material.emissive);
-  if(this.flightPreview){this.spaceSky.position.copy(camera.position);return;}
   this.view.environment.step(dt);
-  if(interacting){
-   if(this.view.skyDome)this.view.skyDome.position.copy(camera.position);
-   this.view.celestial.update(camera);
-   return;
-  }
+  if(this.flightPreview){this.spaceSky.position.copy(camera.position);return;}
   if(this.lastViewUpdate===undefined||now-this.lastViewUpdate>=1/15){
    this.view.update(now,this.rig,this.lastViewUpdate===undefined?dt:Math.min(.1,now-this.lastViewUpdate));
    this.lastViewUpdate=now;
   }
   if(this.view.skyDome)this.view.skyDome.position.copy(camera.position);
   this.view.celestial.update(camera);
+  if(interacting)return;
   if(this.lastWeatherUpdate===undefined||now-this.lastWeatherUpdate>=.1){
    this.weather.update(camera,this.session.earthEnvironment,this.context.quality,this.context.compatibility,this.context.mobile);
    this.lastWeatherUpdate=now;

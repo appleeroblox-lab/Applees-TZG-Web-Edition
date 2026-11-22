@@ -1,7 +1,12 @@
+const sensitivityKey='tzg-gyro-sensitivity';
+function gyroSensitivity(value){
+ const percent=Number(value);
+ return value!=null&&Number.isFinite(percent)?Math.min(200,Math.max(25,percent)):100;
+}
 // One sensor subscription shared by the entry camera and optional ship controls.
 export function mixCameraInput(sensor={},finger={}){sensor||={};finger||={};const sum=(a,b)=>Math.max(-1,Math.min(1,(Number.isFinite(a)?a:0)+(Number.isFinite(b)?b:0)));return {roll:sum(sensor.roll,finger.x),pitch:sum(sensor.pitch,finger.y)}}
 export class DeviceGyro{
- constructor(win=window){this.win=win;this.listeners=new Set();this.available=typeof win.DeviceOrientationEvent!=='undefined';this.permission='unknown';this.sample=null;this.onOrientation=e=>{if(!Number.isFinite(e.beta)||!Number.isFinite(e.gamma))return;this.available=true;this.permission='granted';this.sample={alpha:Number.isFinite(e.alpha)?e.alpha:0,beta:e.beta,gamma:e.gamma,time:Date.now()};for(const fn of this.listeners)fn(this.sample)};win.addEventListener('deviceorientation',this.onOrientation);}
+ constructor(win=window){this.win=win;this.sensitivity=100;try{this.sensitivity=gyroSensitivity(win.localStorage?.getItem(sensitivityKey))}catch{}this.listeners=new Set();this.available=typeof win.DeviceOrientationEvent!=='undefined';this.permission='unknown';this.sample=null;this.onOrientation=e=>{if(!Number.isFinite(e.beta)||!Number.isFinite(e.gamma))return;this.available=true;this.permission='granted';this.sample={alpha:Number.isFinite(e.alpha)?e.alpha:0,beta:e.beta,gamma:e.gamma,time:Date.now()};for(const fn of this.listeners)fn(this.sample)};win.addEventListener('deviceorientation',this.onOrientation);}
  subscribe(fn){this.listeners.add(fn);return()=>this.listeners.delete(fn)}
  async request(){if(!this.available)return false;try{const ask=this.win.DeviceOrientationEvent.requestPermission;if(typeof ask==='function'&&await ask.call(this.win.DeviceOrientationEvent)!=='granted'){this.permission='denied';return false}this.permission='granted';return true}catch{this.permission='denied';return false}}
  axes(origin,sample=this.sample){
@@ -16,7 +21,7 @@ export class DeviceGyro{
   if(w<0){x=-x;y=-y;z=-z;w=-w}
   const length=Math.hypot(x,y,z),scale=length>1e-8?2*Math.atan2(length,w)/length*180/Math.PI:0;
   const angle=(this.win.screen?.orientation?.angle??this.win.orientation??0)*Math.PI/180,clamp=v=>Math.max(-1,Math.min(1,v))||0;
-  return {pitch:clamp((x*Math.cos(angle)+y*Math.sin(angle))*scale/25),roll:clamp((y*Math.cos(angle)-x*Math.sin(angle))*scale/25)};
+  return {pitch:clamp((x*Math.cos(angle)+y*Math.sin(angle))*scale*this.sensitivity/2500),roll:clamp((y*Math.cos(angle)-x*Math.sin(angle))*scale*this.sensitivity/2500)};
  }
 
 }
@@ -46,9 +51,16 @@ let shared;export function deviceGyro(win=window){return shared||=new DeviceGyro
 export function installGyroControls({doc=document,win=window,mobile=false,active=()=>true}={}){
  const sensor=deviceGyro(win),button=doc.getElementById('tiltEnable'),calibrate=doc.getElementById('tiltCalibrate');let enabled=false,origin=null,timer;const smoother=new GyroSmoother();
  const status=doc.createElement('p');status.id='gyroStatus';status.setAttribute('role','status');button?.after(status);
- const label=doc.createElement('label');label.className='check';label.id='gyroControlsRow';const toggle=doc.createElement('input');toggle.type='checkbox';toggle.id='gyroControls';toggle.checked=false;label.append(toggle,doc.createTextNode('Gyro Controls'));button?.replaceWith(label);const controls=[...doc.querySelectorAll('.settingsSection')].find(section=>section.dataset.pages==='controls'||section.querySelector('h3')?.textContent.trim()==='Controls');if(controls){controls.append(label,status);if(calibrate)controls.append(calibrate)}const shift=doc.getElementById('onFootShiftLock')?.closest('label');if(shift)shift.after(label,status,...(calibrate?[calibrate]:[]));
+ const label=doc.createElement('label');label.className='check';label.id='gyroControlsRow';const toggle=doc.createElement('input');toggle.type='checkbox';toggle.setAttribute('role','switch');toggle.id='gyroControls';toggle.checked=false;label.append(toggle,doc.createTextNode('Gyro Controls'));button?.replaceWith(label);const controls=[...doc.querySelectorAll('.settingsSection')].find(section=>section.dataset.pages==='controls'||section.querySelector('h3')?.textContent.trim()==='Controls');const sensitivityRow=doc.createElement('label');
+ sensitivityRow.append(doc.createTextNode('Gyro Sensitivity'));
+ const sensitivity=doc.createElement('input');sensitivity.type='range';sensitivity.id='gyroSensitivity';
+ sensitivity.min='25';sensitivity.max='200';sensitivity.step='5';sensitivity.value=String(sensor.sensitivity);
+ const output=doc.createElement('output');output.setAttribute('for',sensitivity.id);output.textContent=sensitivity.value+'%';
+ sensitivityRow.append(sensitivity,output);
+ sensitivity.oninput=()=>{sensor.sensitivity=gyroSensitivity(sensitivity.value);output.textContent=sensor.sensitivity+'%';try{win.localStorage?.setItem(sensitivityKey,String(sensor.sensitivity))}catch{}};
+ if(controls){controls.append(label,sensitivityRow,status);if(calibrate)controls.append(calibrate)}const shift=doc.getElementById('onFootShiftLock')?.closest('label');if(shift)shift.after(label,sensitivityRow,status,...(calibrate?[calibrate]:[]));
  const unsupported=()=>{enabled=false;toggle.checked=false;status.textContent='This device does not support Gyro Controls.'};
- if(!mobile||!sensor.available){toggle.disabled=true;unsupported()}
+ if(!mobile||!sensor.available){toggle.disabled=true;sensitivity.disabled=true;unsupported()}
  toggle.onchange=async()=>{clearTimeout(timer);if(!toggle.checked){enabled=false;origin=null;smoother.reset();status.textContent='Gyro Controls off.';return}if(!await sensor.request()){toggle.checked=false;status.textContent=sensor.available?'Motion permission was not granted. Enable motion access in your browser to use Gyro Controls.':'This device does not support Gyro Controls.';return}enabled=true;origin=sensor.sample;status.textContent='Hold your device comfortably to calibrate.';timer=setTimeout(()=>{if(!sensor.sample)unsupported()},1800)};
  calibrate&&(calibrate.onclick=()=>{origin=null;previous=null;motion={pitch:0,roll:0};smoother.reset();status.textContent='Hold your device comfortably · recalibrating.'});
  let wasActive=false,previous=null,motion={pitch:0,roll:0};

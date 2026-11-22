@@ -33,15 +33,15 @@ const elements=new Map();
 const doc={hidden:false,querySelectorAll:()=>[],createTextNode:text=>({textContent:text}),getElementById:id=>elements.get(id),createElement(){const node={after(){},replaceWith(){},append(){},setAttribute(){},closest(){return null}};Object.defineProperty(node,'id',{set(v){elements.set(v,node)},get(){return [...elements].find(([,n])=>n===node)?.[0]}});return node}};
 for(const id of ['tiltEnable','tiltCalibrate']){const n=doc.createElement();n.id=id;}
 let now=1000;const realNow=Date.now,realPerformance=globalThis.performance;Date.now=()=>now;globalThis.performance={now:()=>now};
-const handlers=new Map(),win={DeviceOrientationEvent:{},screen:{orientation:{angle:90}},addEventListener:(type,fn)=>handlers.set(type,fn)};
+const handlers=new Map(),gyroPrefs=new Map(),win={localStorage:{getItem:key=>gyroPrefs.get(key)??null,setItem:(key,value)=>gyroPrefs.set(key,value)},DeviceOrientationEvent:{},screen:{orientation:{angle:90}},addEventListener:(type,fn)=>handlers.set(type,fn)};
 try{
- const control=installGyroControls({doc,win,mobile:true});const emit=(gamma,beta=60)=>handlers.get('deviceorientation')({alpha:0,beta,gamma});
+ const control=installGyroControls({doc,win,mobile:true});const sensitivity=doc.getElementById('gyroSensitivity');assert.equal(sensitivity.value,'100');sensitivity.value='150';sensitivity.oninput();assert.equal(gyroPrefs.get('tzg-gyro-sensitivity'),'150');const emit=(gamma,beta=60)=>handlers.get('deviceorientation')({alpha:0,beta,gamma});
  emit(0);assert.deepEqual(control.axes(),{pitch:0,yaw:0});const toggle=doc.getElementById('gyroControls');toggle.checked=true;await toggle.onchange();control.axes();
  let moving;for(let i=1;i<=30;i++){now+=16;emit(i*.5);moving=control.axes();}assert(moving.pitch<-.1&&Math.abs(moving.yaw)<1e-6,'raising the phone uses the corrected upward pitch');assert(!('roll' in moving));
  handlers.get('orientationchange')();control.axes();for(let i=1;i<=30;i++){now+=16;emit(15-i*.5);moving=control.axes();}assert(moving.pitch>.1&&Math.abs(moving.yaw)<1e-6,'lowering the phone reverses pitch without turning sideways');
  for(let i=0;i<100;i++){now+=16;emit(15);control.axes();}const still=control.axes();assert(Math.abs(still.pitch)<1e-5&&Math.abs(still.yaw)<1e-5);
  handlers.get('orientationchange')();assert.deepEqual(control.axes(),{pitch:0,yaw:0});
- toggle.checked=false;await toggle.onchange();assert.deepEqual(control.axes(),{pitch:0,yaw:0});
+ toggle.checked=false;await toggle.onchange();assert.deepEqual(control.axes(),{pitch:0,yaw:0});assert.equal(new DeviceGyro(win).sensitivity,150);
 }finally{Date.now=realNow;globalThis.performance=realPerformance;}
 // The real loading presentation must reveal a previously hidden loader before
 // animating it, and keep it visible until a guest task finishes.

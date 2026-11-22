@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import * as T from '../public/vendor/three.module.js';
 import {CapsuleCharacter} from '../public/capsule-character.js';
 import {mountAtGrip,gripPose} from '../public/character-grip.js';
-const avatar=new CapsuleCharacter(),scene=new T.Scene();scene.add(avatar.group);assert(avatar.mouth);avatar.body.geometry.computeBoundingBox();assert(avatar.body.geometry.boundingBox.getSize(new T.Vector3()).y>1.2&&avatar.body.geometry.boundingBox.getSize(new T.Vector3()).y<1.35,'balanced capsule body');avatar.feet[0].geometry.computeBoundingBox();assert(avatar.feet[0].geometry.boundingBox.getSize(new T.Vector3()).y<.45,'shorter attached legs');
+const avatar=new CapsuleCharacter(),scene=new T.Scene();scene.add(avatar.group);assert(avatar.mouth);const capsuleBounds=new T.Box3().setFromObject(avatar.paintParts.torso).expandByObject(avatar.paintParts.head);const capsuleHeight=capsuleBounds.getSize(new T.Vector3()).y;assert(capsuleHeight>1.2&&capsuleHeight<1.35,'balanced capsule body');avatar.feet[0].geometry.computeBoundingBox();assert(avatar.feet[0].geometry.boundingBox.getSize(new T.Vector3()).y<.45,'shorter attached legs');
 for(let frame=0;frame<120;frame++){
  avatar.update({feet:new T.Vector3(20,2,-30),rotation:new T.Quaternion().setFromEuler(new T.Euler(.4,frame/20,-.2)),time:frame/20,moving:true,running:true,grounded:frame%3===0,vertical:frame%2?3:-3,holding:true,action:(Math.sin(frame)+1)/2,tool:'pickaxe'});
  avatar.group.updateWorldMatrix(true,true);

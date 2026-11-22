@@ -340,3 +340,20 @@ body.gameplayReady.warpCutscene :is(#wallet,#flightPad,#flightRight,#flightGauge
 body.gameplayReady.warpCutscene :is(#wallet,#flightPad,#flightRight,#flightGauge,#touchControls,#shipPanel) * {
  pointer-events: none !important;
 }
+
+#graphicsRecovery:not([hidden]) {
+ position: fixed;
+ z-index: 85;
+ inset: auto 12px max(12px, env(safe-area-inset-bottom)) auto;
+ display: flex;
+ flex-wrap: wrap;
+ align-items: center;
+ gap: 8px;
+ max-width: min(90vw, 400px);
+ padding: 8px 12px;
+ border-radius: 8px;
+ background: #102d46;
+ color: white;
+ pointer-events: none;
+}
+#graphicsRecovery button { pointer-events: auto; }

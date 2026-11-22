@@ -161,6 +161,25 @@ function multiTouchRegression(){
 if(process.argv.includes('--ship-cockpit-only')){
  state.surface.enter(state.flight.bodies.find(b=>b.name==='Earth'),true);queued();$('cameraBtn').onclick();queued();assert(state.cockpit);assert(state.shipRig.ship.visible);assert(Math.abs(state.shipRig.model.rotation.x-Math.PI/2)<1e-6);const expected=state.shipRig.cockpitPosition.clone().applyQuaternion(state.shipRig.model.quaternion).applyQuaternion(state.flight.q).add(state.surface.pos);assert(state.camera.position.distanceTo(expected)<1e-6,'ground camera guard must not move the pilot above the roof');assert.equal(state.shipRig.flames.length,2);assert(state.shipRig.flames.every(f=>!f.visible),'no parked fire');const shipQ=state.flight.q.clone(),viewQ=state.camera.quaternion.clone();const canvas=$('space');canvas.onpointerdown({button:0,pointerId:901,clientX:100,clientY:100});canvas.onpointermove({pointerId:901,clientX:145,clientY:120});canvas.onpointerup({pointerId:901,clientX:145,clientY:120});queued();assert(state.flight.q.angleTo(shipQ)<1e-7,'cockpit look never rotates ship');assert(state.camera.quaternion.angleTo(viewQ)>.03,'cockpit drag rotates view');assert(state.camera.position.distanceTo(expected)<1e-6,'free look stays in seat');console.log('PASS: exact in-cabin pilot position on the pad, upright hull, visible 3D cockpit, twin engine sockets and no parked fire.');process.exit(0)
 }
+if(process.argv.includes('--resume-only')){
+ const quality=$('graphicsPreset');
+ quality.value='High';
+ quality.onchange({target:quality});
+ const canvas=$('space');
+ canvas.dispatchEvent(new dom.Event('webglcontextlost',{cancelable:true}));
+ assert.equal(quality.value,'High','GPU suspension preserves the selected preset');
+ assert($('fatal').hidden,'GPU suspension does not open the fatal overlay');
+ $('settingsShield').hidden=false;
+ dom.dispatchEvent(new dom.Event('pageshow'));
+ assert($('settingsShield').hidden,'a stray shield cannot intercept touch after restoring the page');
+ canvas.dispatchEvent(new dom.Event('webglcontextrestored'));
+ assert.equal(quality.value,'High');
+ assert($('graphicsRecovery').hidden);
+ $('brand').onclick();
+ assert($('settingsDialog').open||$('settingsDialog').hasAttribute('open'),'Settings remains accessible after restoring WebGL');
+ console.log('PASS page resume preserves graphics and restores menu input after context loss');
+ process.exit(0);
+}
 if(process.argv.includes('--landing-warp-only')){
  state.surface.enter(state.flight.bodies.find(b=>b.name==='Earth'),true);queued();assert.equal(state.surface.pos.y,state.surface.floor);assert.equal(state.shipRig.model.rotation.x,Math.PI/2);assert.equal(state.shipRig.exhaust.rotation.x,Math.PI/2);
  state.surface.phase='flying';state.surface.pos.y=state.surface.floor+12;state.flight.q.setFromAxisAngle(new THREE.Vector3(1,0,0),Math.PI/2);state.surface.requestLand();for(let i=0;i<240&&state.surface.phase!=='parked';i++)queued();assert.equal(state.surface.phase,'parked');assert.equal(state.shipRig.model.rotation.x,Math.PI/2);assert.equal(state.flight.cruiseSpeed,0);

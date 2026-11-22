@@ -35,6 +35,8 @@ export function installTouchButtons(doc,win){
  const cancel=e=>taps.delete(e.pointerId);
  doc.addEventListener('pointercancel',cancel,true);
  doc.addEventListener('lostpointercapture',cancel,true);
- win.addEventListener('blur',()=>taps.clear());
- doc.addEventListener('visibilitychange',()=>{if(doc.hidden)taps.clear()});
+ const reset=()=>{taps.clear();recent.length=0};
+ win.addEventListener('blur',reset);
+ win.addEventListener('pagehide',reset);
+ doc.addEventListener('visibilitychange',reset);
 }

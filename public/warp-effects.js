@@ -108,6 +108,29 @@ export class WarpShipMotion {
   ship.add(this.trails);
  }
 
+ setColor(color){
+  const custom=typeof color==='string'&&/^#[a-f0-9]{6}$/i.test(color);
+  const attribute=this.geometry.attributes.color;
+  if(this.material.userData.trailColor===(custom?color:null))return;
+  this.material.userData.trailColor=custom?color:null;
+  this.material.color.set(custom?color:0xffffff);
+  for(let i=0;i<attribute.count;i++){
+   attribute.setXYZ(i,custom?1:.66,custom?1:.88,1);
+  }
+  attribute.needsUpdate=true;
+ }
+
+ preview(tips){
+  for(let wing=0;wing<2;wing++){
+   const point=tips[wing];
+   for(let i=0;i<=16;i++){
+    this.positions.setXYZ(wing*17+i,point.x,point.y,point.z+i*.55);
+   }
+  }
+  this.positions.needsUpdate=true;
+  this.trails.visible=true;
+ }
+
  update(time, roll, tips, visible) {
   warpDrift(time, this.head);
   this.offset.copy(this.head).applyQuaternion(this.ship.quaternion);

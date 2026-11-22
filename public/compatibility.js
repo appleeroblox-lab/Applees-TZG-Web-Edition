@@ -27,6 +27,7 @@ export class CompatibilityRenderer {
  if(air){x.globalAlpha=T.MathUtils.smoothstep(alt,450,1500);x.fillStyle=air[1];x.fillRect(0,horizon-50,w,h-horizon+50);x.globalAlpha=1;}
  this.drawExhaust(s.shipRig,camera);
  this.drawModel([s.shipRig?.model,s.baseModel],camera);
+ if(s.shipRig?.trailPreview)this.drawWingTrails(s.shipRig.trailPreview,camera);
  this.drawPadSign(s,camera);this.drawTorchGlows(s,camera);this.info.render.calls=1;
  }
 
@@ -45,6 +46,8 @@ export class CompatibilityRenderer {
   const {attributes,index,drawRange}=trails.geometry;
   const count=Math.min(drawRange.count,index?.count??attributes.position.count);
   const strength=trails.material.uniforms?.strength.value??1;
+  const color=trails.material.userData.trailColor||'#ebf8ff';
+  const rgb=[1,3,5].map(offset=>parseInt(color.slice(offset,offset+2),16)).join(',');
   const x=this.ctx,q=camera.quaternion.clone().invert();
   const scale=this.h/(2*Math.tan(camera.fov*Math.PI/360));
   trails.updateWorldMatrix(true,false);
@@ -57,13 +60,13 @@ export class CompatibilityRenderer {
    const p=project(a,from),bEnd=project(b,to);
    if(p.z>=-.05||bEnd.z>=-.05)continue;
    const alpha=attributes.alpha?.getX(from)??attributes.color.getW(from);
-   x.strokeStyle='rgba(235,248,255,'+(alpha*strength)+')';
+   x.strokeStyle='rgba('+rgb+','+(alpha*strength)+')';
    x.beginPath();x.moveTo(this.w/2+p.x/-p.z*scale,this.h/2-p.y/-p.z*scale);
    x.lineTo(this.w/2+bEnd.x/-bEnd.z*scale,this.h/2-bEnd.y/-bEnd.z*scale);x.stroke();
   }
   x.restore();
  }
- drawExhaust(rig,camera){if(!rig?.exhaust||rig.ship.visible===false||!rig.flames.some(f=>f.visible))return;rig.exhaust.updateWorldMatrix(true,true);const q=camera.quaternion.clone().invert(),scale=this.h/(2*Math.tan(camera.fov*Math.PI/360)),point=z=>new T.Vector3(0,0,z).applyMatrix4(rig.exhaust.matrixWorld).sub(camera.position).applyQuaternion(q),a=point(1.56),b=point(1.56+2.8*rig.flames[0].scale.z);if(a.z>=-.05||b.z>=-.05)return;const px=this.w/2+a.x/-a.z*scale,py=this.h/2-a.y/-a.z*scale,bx=this.w/2+b.x/-b.z*scale,by=this.h/2-b.y/-b.z*scale,rad=Math.max(2,.32/-a.z*scale),x=this.ctx,g=x.createLinearGradient(px,py,bx,by);g.addColorStop(0,'#fffbdfff');g.addColorStop(.3,'#8ae7ffbb');g.addColorStop(1,'#55c7ff00');x.strokeStyle=g;x.lineWidth=rad*2;x.lineCap='round';x.beginPath();x.moveTo(px,py);x.lineTo(bx,by);x.stroke();x.lineCap='butt';}
+ drawExhaust(rig,camera){if(!rig?.exhaust||rig.ship.visible===false||!rig.flames.some(f=>f.visible))return;rig.exhaust.updateWorldMatrix(true,true);const q=camera.quaternion.clone().invert(),scale=this.h/(2*Math.tan(camera.fov*Math.PI/360)),point=z=>new T.Vector3(0,0,z).applyMatrix4(rig.exhaust.matrixWorld).sub(camera.position).applyQuaternion(q),a=point(1.56),b=point(1.56+2.8*rig.flames[0].scale.z);if(a.z>=-.05||b.z>=-.05)return;const px=this.w/2+a.x/-a.z*scale,py=this.h/2-a.y/-a.z*scale,bx=this.w/2+b.x/-b.z*scale,by=this.h/2-b.y/-b.z*scale,rad=Math.max(2,.32/-a.z*scale),x=this.ctx,g=x.createLinearGradient(px,py,bx,by);g.addColorStop(0,'#fffbdfff');const tint=rig.exhaust.userData.paintColor;g.addColorStop(.3,tint?tint+'bb':'#8ae7ffbb');g.addColorStop(1,tint?tint+'00':'#55c7ff00');x.strokeStyle=g;x.lineWidth=rad*2;x.lineCap='round';x.beginPath();x.moveTo(px,py);x.lineTo(bx,by);x.stroke();x.lineCap='butt';}
 
  drawGlints(camera,w,h){const q=camera.quaternion.clone().invert(),scale=h/(2*Math.tan(camera.fov*Math.PI/360)),x=this.ctx;for(let i=0;i<({Low:20,Medium:45,High:70}[this.quality]||45);i++){const p=new T.Vector3(Math.sin(i*91.7),Math.cos(i*63.4),Math.sin(i*37.8)).normalize().applyQuaternion(q);if(p.z>-.1)continue;const px=w/2+p.x/-p.z*scale,py=h/2-p.y/-p.z*scale;if(px<0||px>w||py<0||py>h)continue;const r=(2+(i%3))*(.8+.2*Math.sin(performance.now()*.001+i));const glow=x.createRadialGradient(px,py,0,px,py,r*2.5);glow.addColorStop(0,'#f3faffb0');glow.addColorStop(.25,'#c2e7ff55');glow.addColorStop(1,'#7fc7ff00');x.fillStyle=glow;x.fillRect(px-r*2.5,py-r*2.5,r*5,r*5);}}
 

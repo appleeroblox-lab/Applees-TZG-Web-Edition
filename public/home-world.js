@@ -7,6 +7,7 @@ import {GroundWeather} from './ground-weather.js';
 import {makeShip} from './visuals.js';
 import {GlobalShadows} from './global-shadows.js';
 import {NeonLights} from './neon-lights.js';
+import {WarpShipMotion} from './warp-effects.js';
 
 // Use the gameplay generators and environment without moving the saved flight.
 export class HomeWorld{
@@ -14,6 +15,10 @@ export class HomeWorld{
   this.context=context;this.character=character;
   this.flight=new Flight(context.bodies);this.session=new SurfaceSession(this.flight);
   this.rig=makeShip();this.session.shipRig=this.rig;
+  this.rig.shipTrailTips=[new T.Vector3(-3.7,-.76,.9),new T.Vector3(3.7,-.76,.9)];
+  this.trailPreview=new WarpShipMotion(this.rig.ship);
+  this.rig.trailPreview=this.trailPreview.trails;
+
   this.view=new SurfaceView(this.session,context.bodies);this.scene=this.view.scene;
   this.view.environment=context.view.environment;this.view.quality=context.quality;this.view.mobile=context.mobile;
   if(context.sky)this.view.setSky(context.sky);
@@ -21,6 +26,7 @@ export class HomeWorld{
   this.stream.decorations=context.stream.decorations;this.stream.grassAmount=context.stream.grassAmount;
   this.weather=new GroundWeather(this.view);
   this.scene.add(this.rig.ship,character.group);
+  this.scene.userData.warpShipTrails=this.trailPreview.trails;
   this.shadows=new GlobalShadows(context.renderer,[this.scene,this.scene],[this.view.sun,this.view.sun]);
   this.neon=new NeonLights(this.scene);this.syncSettings(context);
  }
@@ -42,8 +48,13 @@ export class HomeWorld{
   if(this.context.surface.body===this.session.body){this.placements=this.context.building.group.clone(true);this.placements.visible=true;this.scene.add(this.placements)}
   this.stream.update(this.session.crew.pos,this.context.quality,{mobile:this.context.mobile,compatibility:this.context.compatibility});
  }
- update(now,dt,camera){
+ update(now,dt,camera,{interacting=false}={}){
   this.view.environment.step(dt);
+  if(interacting){
+   if(this.view.skyDome)this.view.skyDome.position.copy(camera.position);
+   this.view.celestial.update(camera);
+   return;
+  }
   if(this.lastViewUpdate===undefined||now-this.lastViewUpdate>=1/15){
    this.view.update(now,this.rig,this.lastViewUpdate===undefined?dt:Math.min(.1,now-this.lastViewUpdate));
    this.lastViewUpdate=now;

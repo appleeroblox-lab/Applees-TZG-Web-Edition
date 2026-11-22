@@ -68,7 +68,7 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(490px,82dvw)!imp
 #homeExperiment .homeCustomization h2,.homeParts h2 {font-size: clamp(12px, 1.8vw, 17px); margin: 0}
 .homeParts {
  position: absolute;
- left: max(7px, env(safe-area-inset-left, 0px)); top: 52%; transform: translateY(-50%);
+ left: max(3px, env(safe-area-inset-left, 0px)); top: 52%; transform: translateY(-50%);
  width: min(130px, 20vw); max-height: min(82dvh, calc(100dvh - 52px));
  padding: 7px; display: flex; flex-direction: column; gap: 6px;
  z-index: 2; pointer-events: auto;
@@ -139,3 +139,9 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(490px,82dvw)!imp
 
 .homePickerTop {cursor: grab; touch-action: none; user-select: none}
 .homePickerTop:active {cursor: grabbing}
+#homeExperiment .homePickerShade:has(.homeColorPicker:not(.homeGradientEditor):not([hidden])) .homeGradientEditor {display:none}
+#homeExperiment .homeGradientEditor {width:min(310px,calc(100% - 20px))}
+.homeGradientTrack {position:relative;height:28px;margin:6px 10px 12px;touch-action:none;border:1px solid #d9f4ff;border-radius:5px}
+#homeExperiment .homeGradientTrack button:not(#brand):not(#chatToggle) {position:absolute;bottom:-11px;transform:translateX(-50%);width:17px;min-height:17px;padding:0;border-radius:4px;border:2px solid #e8f9ff}
+#homeExperiment .homeGradientTrack button[aria-pressed=true]:not(#brand):not(#chatToggle) {outline:2px solid #133d63}
+.homeGradientActions {display:flex;gap:6px;flex-wrap:wrap}

@@ -1,3 +1,4 @@
+import {applyPaintGradient,isPaintHex,paintColor,paintGradient} from './paint-gradient.js';
 import {dragPanel} from './panel-drag.js';
 import * as T from './vendor/three.module.js';
 import {CapsuleCharacter} from './capsule-character.js';
@@ -11,7 +12,8 @@ export const CHARACTER_FACES=['Neutral','Happy','Surprised','Sleepy','Wink','Ser
 export function applyCharacterFace(character,face){if(CHARACTER_FACES.includes(face))character?.setFace?.(face)}
 export function compactCurrency(value){const n=Math.max(0,Number(value)||0);for(const [size,suffix]of [[1e9,'b'],[1e6,'m'],[1e3,'k']])if(n>=size)return String(Number((n/size).toFixed(2)))+suffix;return String(Math.floor(n))}
 const COLOR_KEY='tzg-character-color';
-const isHexColor=value=>typeof value==='string'&&/^#[a-f0-9]{6}$/i.test(value);
+const isHexColor=isPaintHex;
+const isPaint=value=>isHexColor(value)||!!paintGradient(value);
 export function savedCharacterColor(){try{const value=localStorage.getItem(COLOR_KEY);return isHexColor(value)?value.toLowerCase():CHARACTER_COLORS[0]}catch{return CHARACTER_COLORS[0]}}
 const CHARACTER_PAINT_KEY='tzg-character-parts';
 const characterParts=[
@@ -21,13 +23,16 @@ const characterParts=[
 function readCharacterPaint(){
  try{
   const source=JSON.parse(localStorage.getItem(CHARACTER_PAINT_KEY)||'{}');
-  return Object.fromEntries(characterParts.filter(([key])=>isHexColor(source?.[key])).map(([key])=>[key,source[key]]));
+  return Object.fromEntries(characterParts.filter(([key])=>isPaint(source?.[key])).map(([key])=>[key,source[key]]));
  }catch{return {}}
 }
 export function applyCharacterColor(character,color,paint={}){
  if(!character||!isHexColor(color))return;
- character.body.material.color.set(paint.torso||color);
- for(const [key,mesh] of Object.entries(character.paintParts||{}))mesh.material.color.set(paint[key]||color);
+ for(const [key,mesh] of Object.entries({torso:character.body,...character.paintParts})){
+  const value=paint[key],gradient=paintGradient(value);
+  mesh.material.color.set(gradient?'#ffffff':value||color);
+  applyPaintGradient(mesh,gradient);
+ }
 }
 
 const SHIP_PAINT_KEY='tzg-ship-paint';
@@ -172,21 +177,26 @@ export function applyShipPaint(rig,paint,selectedRegion){
    const base=original.fallback||'#'+original.color.getHexString();
    const override=overrides.find(key=>key===region||key===colourGroup);
    const candidate=paint[override??base];
-   const tint=isHexColor(candidate)?candidate:null;
+   const gradient=paintGradient(candidate),tint=gradient?'#ffffff':isHexColor(candidate)?candidate:null;
+   applyPaintGradient(mesh,gradient,'z');
    material.color.set(tint||original.color);
    if(original.emissive&&material.emissiveIntensity>0)material.emissive.set(tint||original.emissive);
    tintPaintTexture(material,original,base,tint);
-   if(tint||original.fallback)material.userData.fallbackColor=tint||original.fallback;
+   if(tint||original.fallback)material.userData.fallbackColor=gradient?.[0].color||tint||original.fallback;
    else delete material.userData.fallbackColor;
   }
  }
  if(selectedRegion&&selectedRegion!=='exhaust')return;
- if(rig?.exhaust)rig.exhaust.userData.paintColor=isHexColor(paint.exhaust)?paint.exhaust:null;
+ const exhaustGradient=paintGradient(paint.exhaust);
+ if(rig?.exhaust)rig.exhaust.userData.paintGradient=exhaustGradient;
+ if(rig?.exhaust)rig.exhaust.userData.paintColor=isPaint(paint.exhaust)?paintColor(paint.exhaust):null;
  for(const item of [...(rig?.flames||[]),...(rig?.engines||[])]){
   const material=item.material;
   if(!material?.color)continue;
   if(!originalPaint.has(material))originalPaint.set(material,{color:material.color.clone()});
-  material.color.set(isHexColor(paint.exhaust)?paint.exhaust:originalPaint.get(material).color);
+  const gradient=item.isMesh?exhaustGradient:null;
+  material.color.set(gradient?'#ffffff':isPaint(paint.exhaust)?paintColor(paint.exhaust):originalPaint.get(material).color);
+  applyPaintGradient(item,gradient,'z');
  }
 
 }
@@ -227,7 +237,7 @@ export class HomeExperiment{
   const end=e=>{if(this.drag?.id===e.pointerId)this.drag=null};
   for(const type of ['pointerup','pointercancel','lostpointercapture'])this.host.addEventListener(type,end);
   this.sensor=deviceGyro();this.unsubscribe=this.sensor.subscribe(sample=>{if(!this.active)return;if(!this.gyroOrigin)this.gyroOrigin=sample;const axes=this.sensor.axes(this.gyroOrigin,sample);this.gyro={x:T.MathUtils.clamp(axes.roll,-.08,.08),y:T.MathUtils.clamp(axes.pitch,-.06,.06)}});
-  this.onKey=e=>{if(!this.active)return;if(e.code==='Escape'&&this.picker&&!this.picker.hidden){e.preventDefault();e.stopImmediatePropagation();this.closePicker();return}if(e.target.closest?.('input,textarea,select'))return;if(e.code==='Escape'&&this.customizing){e.preventDefault();this.customize(false)}if(!e.target.closest?.('dialog,[role="dialog"],#friendsPanel,#globalChat'))e.stopImmediatePropagation()};window.addEventListener('keydown',this.onKey,true);this.upgradeLayout();this.installCustomization();this.installShipCustomization();this.installColorPicker();this.refresh();
+  this.onKey=e=>{if(!this.active)return;if(e.code==='Escape'&&this.picker&&!this.picker.hidden){e.preventDefault();e.stopImmediatePropagation();this.closePicker();return}if(e.target.closest?.('input,textarea,select'))return;if(e.code==='Escape'&&this.gradientEditor&&!this.gradientEditor.hidden){e.preventDefault();this.closeGradientEditor();return}if(e.code==='Escape'&&this.customizing){e.preventDefault();this.customize(false)}if(!e.target.closest?.('dialog,[role="dialog"],#friendsPanel,#globalChat'))e.stopImmediatePropagation()};window.addEventListener('keydown',this.onKey,true);this.upgradeLayout();this.installCustomization();this.installShipCustomization();this.installColorPicker();this.refresh();
  }
  hitsCharacter(x,y){
   const group=this.preview?.group;
@@ -301,8 +311,9 @@ export class HomeExperiment{
   this.shipColors=document.createElement('div');this.shipColors.className='homePaintColors';
   this.shipCustom=document.createElement('button');
   this.shipCustom.type='button';this.shipCustom.className='homeCustomColor';this.shipCustom.textContent='Custom Colour';
-  this.shipCustom.onclick=()=>this.openPicker(this.shipColor(),color=>this.chooseShipColor(color));
-  this.paintControls.append(this.shipColors,this.shipCustom);this.customActions.before(this.paintControls);
+  this.shipCustom.onclick=()=>this.openPicker(paintColor(this.shipColor()),color=>this.chooseShipColor(color));
+  this.paintControls.append(this.shipColors,this.shipCustom);
+  this.shipGradient=this.installGradientButton(this.shipCustom,()=>this.shipColor(),value=>this.chooseShipColor(value));this.customActions.before(this.paintControls);
   this.customChoices=document.createElement('nav');
   this.customChoices.className='homeCustomChoices';this.customChoices.hidden=true;
   this.customChoices.setAttribute('aria-label','Customize a model');
@@ -329,7 +340,7 @@ export class HomeExperiment{
    panel.hidden=false;
    const animation=panel.animate(
     [{translate:current||(visible?edge:'0px')},{translate:visible?'0px':edge}],
-    {duration:230,easing:visible?'ease-out':'ease-in',fill:'forwards'}
+    {duration:visible?135:190,easing:visible?'ease-out':'ease-in',fill:'forwards'}
    );
    this.panelAnimations.set(panel,animation);
    animation.onfinish=()=>{
@@ -344,7 +355,7 @@ export class HomeExperiment{
   this.customView=view;this.cameraPanelKey=null;this.drag=null;
   const overview=view==='overview',ship=view==='ship';
   this.customChoices.hidden=!overview;
-  if(overview)for(const button of this.modelButtons)button.hidden=true;
+  if(overview&&this.camera&&this.world)this.updateCamera(this.host.clientWidth||globalThis.innerWidth||844,this.host.clientHeight||globalThis.innerHeight||390,0);
   this.closePicker();
   this.setCustomPanelsVisible(!overview);
   this.root.classList.toggle('homeCustomDetail',!overview);
@@ -373,7 +384,8 @@ export class HomeExperiment{
   this.characterCustom.type='button';this.characterCustom.className='homeCustomColor';
   this.characterCustom.textContent='Custom Colour';
   this.characterColors.after(this.characterCustom);
-  this.characterCustom.onclick=()=>this.openPicker(this.draft,color=>this.choose(color));
+  this.characterCustom.onclick=()=>this.openPicker(paintColor(this.draft),color=>this.choose(color));
+  this.characterGradient=this.installGradientButton(this.characterCustom,()=>this.draft,value=>this.choose(value));
   this.picker=document.createElement('section');
   this.picker.className='homeColorPicker';this.picker.hidden=true;
   this.picker.innerHTML='<div class="homePickerTop"><strong>Custom Colour</strong><span class="homePickerSwatch" aria-hidden="true"></span><button type="button">Done</button></div><div class="homePickerSurfaces"><div class="homeHueWheel" tabindex="0" aria-label="Hue wheel"><i></i></div><div class="homeColorPlane" tabindex="0" aria-label="Saturation and brightness"><i></i></div></div><label>Hex <input type="text" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Hex color"></label>';
@@ -384,7 +396,7 @@ export class HomeExperiment{
   this.pickerShade=document.createElement('div');
   this.pickerShade.className='homePickerShade';this.pickerShade.hidden=true;
   this.pickerShade.append(this.picker);
-  this.pickerShade.onclick=e=>{if(e.target===this.pickerShade)this.closePicker();};
+  this.pickerShade.onclick=e=>{if(e.target===this.pickerShade){if(!this.picker.hidden)this.closePicker();else this.closeGradientEditor();}};
   this.root.append(this.pickerShade);
   this.pickerSwatch=this.picker.querySelector('.homePickerSwatch');
   this.pickerHex=this.picker.querySelector('input[type=text]');
@@ -441,12 +453,116 @@ export class HomeExperiment{
    if(isHexColor(hex)){this.syncPicker(hex);this.pickColor?.(hex);}
   };
   this.picker.querySelector('button').onclick=()=>this.closePicker();
+  this.installGradientEditor();
   this.picker.onkeydown=e=>{
    if(e.key!=='Tab')return;
    const controls=[...this.picker.querySelectorAll('button,[tabindex],input')];
    const index=controls.indexOf(document.activeElement);
    e.preventDefault();controls[(index+(e.shiftKey?-1:1)+controls.length)%controls.length].focus();
   };
+ }
+ installGradientButton(after,value,apply){
+  const button=document.createElement('button');
+  button.type='button';button.className='homeCustomColor';button.textContent='Gradient Editor';
+  after.after(button);
+  button.onclick=()=>{
+   const current=value(),color=paintColor(current)||CHARACTER_COLORS[0];
+   this.gradientStops=(paintGradient(current)||[{position:0,color},{position:1,color}]).map(stop=>({...stop}));
+   this.gradientStop=0;this.applyGradient=apply;this.gradientFocus=button;
+   this.gradientEditor.hidden=false;this.pickerShade.hidden=false;
+   for(const panel of [this.partsPanel,this.customPanel,this.host,this.root.querySelector('.homeCustomClose')])panel.inert=true;
+   this.renderGradientEditor();this.gradientEditor.querySelector('button').focus();
+  };
+  return button;
+ }
+ installGradientEditor(){
+  const editor=this.gradientEditor=document.createElement('section');
+  editor.className='homeColorPicker homeGradientEditor';editor.hidden=true;
+  editor.setAttribute('role','dialog');editor.setAttribute('aria-modal','true');
+  editor.setAttribute('aria-label','Gradient Editor');
+  editor.innerHTML='<div class="homePickerTop"><strong>Gradient Editor</strong><button type="button" data-gradient="done">Done</button></div><div class="homeGradientTrack"></div><label>Position <input type="number" min="0" max="100" step="1" aria-label="Stop position"><span>%</span></label><div class="homeGradientActions"><button type="button" data-gradient="colour">Stop Colour</button><button type="button" data-gradient="add">Add Stop</button><button type="button" data-gradient="remove">Remove</button></div>';
+  this.pickerShade.prepend(editor);
+  dragPanel(editor.querySelector('.homePickerTop'),editor,{margin:8});
+  const get=key=>editor.querySelector('[data-gradient='+key+']');
+  this.gradientTrack=editor.querySelector('.homeGradientTrack');
+  this.gradientPosition=editor.querySelector('input');
+  const apply=()=>{this.applyGradient(this.gradientStops.map(stop=>({...stop})));this.renderGradientEditor();};
+  get('done').onclick=()=>{apply();this.closeGradientEditor();};
+  get('colour').onclick=()=>{
+   const stop=this.gradientStops[this.gradientStop];
+   this.openPicker(stop.color,color=>{stop.color=color;apply();});
+  };
+  get('add').onclick=()=>{
+   if(this.gradientStops.length>=4)return;
+   let largest=0;
+   for(let i=1;i<this.gradientStops.length-1;i++){
+    if(this.gradientStops[i+1].position-this.gradientStops[i].position>this.gradientStops[largest+1].position-this.gradientStops[largest].position)largest=i;
+   }
+   const left=this.gradientStops[largest],right=this.gradientStops[largest+1];
+   this.gradientStop=largest+1;
+   this.gradientStops.splice(this.gradientStop,0,{position:(left.position+right.position)/2,color:left.color});
+   apply();
+  };
+  get('remove').onclick=()=>{
+   if(this.gradientPosition.disabled)return;
+   this.gradientStops.splice(this.gradientStop,1);this.gradientStop--;
+   apply();
+  };
+  const move=position=>{
+   const index=this.gradientStop;
+   if(this.gradientPosition.disabled||!Number.isFinite(position))return;
+   const left=this.gradientStops[index-1].position,right=this.gradientStops[index+1].position;
+   const gap=Math.min(.01,(right-left)/3);
+   this.gradientStops[index].position=T.MathUtils.clamp(position,left+gap,right-gap);
+   apply();
+  };
+  this.gradientPosition.onchange=()=>move(Number(this.gradientPosition.value)/100);
+  const track=this.gradientTrack;
+  let drag=null;
+  track.onpointerdown=e=>{
+   const key=e.target.closest('button[data-stop]');
+   if(!key||e.button>0||drag)return;
+   this.gradientStop=Number(key.dataset.stop);
+   const rect=track.getBoundingClientRect();
+   if(!rect.width)return;
+   if(this.gradientStop===0||this.gradientStop===this.gradientStops.length-1)return;
+   drag={id:e.pointerId,rect};
+   track.setPointerCapture?.(e.pointerId);this.renderGradientEditor();
+  };
+  track.onpointermove=e=>{
+   if(drag?.id===e.pointerId)move((e.clientX-drag.rect.left)/drag.rect.width);
+  };
+  track.onpointerup=track.onpointercancel=track.onlostpointercapture=e=>{if(drag?.id===e.pointerId)drag=null;};
+  editor.onkeydown=e=>{
+   if(e.key!=='Tab')return;
+   const controls=[...editor.querySelectorAll('button,input')].filter(node=>!node.disabled);
+   const index=controls.indexOf(document.activeElement);
+   e.preventDefault();controls[(index+(e.shiftKey?-1:1)+controls.length)%controls.length].focus();
+  };
+
+ }
+ renderGradientEditor(){
+  const stops=this.gradientStops,index=this.gradientStop;
+  this.gradientTrack.style.background='linear-gradient(90deg,'+stops.map(stop=>stop.color+' '+stop.position*100+'%').join(',')+')';
+  this.gradientTrack.replaceChildren();
+  for(const [i,stop] of stops.entries()){
+   const key=document.createElement('button');key.type='button';
+   key.dataset.stop=String(i);key.style.left=(stop.position*100)+'%';key.style.setProperty('background',stop.color,'important');
+   key.setAttribute('aria-pressed',String(index===i));key.setAttribute('aria-label','Stop '+(i+1));
+   key.onclick=()=>{this.gradientStop=i;this.renderGradientEditor();this.gradientTrack.children[i].focus();};
+   this.gradientTrack.append(key);
+  }
+  const end=index===0||index===stops.length-1;
+  this.gradientPosition.value=String(Math.round(stops[index].position*100));
+  this.gradientPosition.disabled=end;
+  this.gradientEditor.querySelector('[data-gradient=remove]').disabled=end;
+  this.gradientEditor.querySelector('[data-gradient=add]').disabled=stops.length===4;
+ }
+ closeGradientEditor(){
+  if(!this.gradientEditor||this.gradientEditor.hidden)return;
+  this.gradientEditor.hidden=true;this.gradientEditor.style.translate='';this.pickerShade.hidden=true;
+  for(const panel of [this.partsPanel,this.customPanel,this.host,this.root.querySelector('.homeCustomClose')])panel.inert=false;
+  this.gradientFocus?.focus();
  }
  openPicker(color,choose){
   this.pickerFocus=document.activeElement;
@@ -456,14 +572,14 @@ export class HomeExperiment{
  }
  closePicker(){
   if(!this.picker||this.picker.hidden)return;
-  this.picker.hidden=true;this.pickerShade.hidden=true;this.pickColor=null;this.picker.style.translate='';
-  for(const panel of [this.partsPanel,this.customPanel,this.host,this.root.querySelector('.homeCustomClose')])panel.inert=false;
+  this.picker.hidden=true;this.pickerShade.hidden=this.gradientEditor?.hidden!==false;this.pickColor=null;this.picker.style.translate='';
+  for(const panel of [this.partsPanel,this.customPanel,this.host,this.root.querySelector('.homeCustomClose')])panel.inert=this.gradientEditor?.hidden===false;
   this.pickerFocus?.focus();this.pickerFocus=null;
  }
  selectCharacterPart(part){
   this.closePicker();this.characterPart=part;
   const faces=part==='faces';
-  this.characterColors.hidden=faces;this.characterCustom.hidden=faces;this.characterFaces.hidden=!faces;
+  this.characterColors.hidden=faces;this.characterCustom.hidden=faces;this.characterGradient.hidden=faces;this.characterFaces.hidden=!faces;
   for(const button of this.partList.querySelectorAll('button'))button.setAttribute('aria-pressed',String(button.dataset.part===part));
   const label=faces?'Faces':characterParts.find(([key])=>key===part)?.[1]||'Torso';
   this.partDescription.textContent=faces?'Faces':label+' · Colours';
@@ -529,7 +645,7 @@ export class HomeExperiment{
  selectShipRegion(region){
   this.closePicker();this.clearShipOutline();
   this.shipRegion=region;this.paintGroups??=shipPaintGroups(this.world?.rig);
-  this.characterColors.hidden=true;this.characterCustom.hidden=true;this.characterFaces.hidden=true;
+  this.characterColors.hidden=true;this.characterCustom.hidden=true;this.characterGradient.hidden=true;this.characterFaces.hidden=true;
   for(const button of this.partList.querySelectorAll('button'))button.setAttribute('aria-pressed',String(button.dataset.part===region));
   this.partDescription.textContent=(shipCategories.find(([key])=>key===region)?.[1]||'Ship')+' · Colours';
   this.paintKey=this.paintGroups.has(region)||region==='exhaust'||region==='trails'?region:null;
@@ -546,7 +662,7 @@ export class HomeExperiment{
  }
  renderShipPaint(){
   this.shipColors.replaceChildren();
-  this.shipCustom.hidden=!this.paintKey;
+  this.shipCustom.hidden=!this.paintKey;this.shipGradient.hidden=!this.paintKey;
   if(!this.paintKey){
    this.shipColors.textContent='This ship has no parts in this category.';
    return;
@@ -562,7 +678,7 @@ export class HomeExperiment{
   this.shipColors.append(swatches);
  }
  chooseShipColor(color){
-  if(!isHexColor(color)||!this.paintKey)return;
+  if(!isPaint(color)||!this.paintKey)return;
   delete this.draftShipPaint[this.paintKey];
   this.draftShipPaint[this.paintKey]=color;
   applyShipPaint(this.world?.rig,this.draftShipPaint,this.paintKey);
@@ -618,14 +734,14 @@ export class HomeExperiment{
    this.draftShipPaint={...this.shipPaint};this.draftCharacterPaint={...this.characterPaint};this.yaw=0;
    this.draft=this.color;this.chooseFace(this.face);this.selectCustomView('overview');
   }else{
-   this.customView=null;this.closePicker();this.clearShipOutline();this.showShipEffectPreview(null);this.customChoices.hidden=true;this.setCustomPanelsVisible(false);
+   this.customView=null;this.closePicker();this.closeGradientEditor();this.clearShipOutline();this.showShipEffectPreview(null);this.customChoices.hidden=true;this.setCustomPanelsVisible(false);
    this.root.classList.remove('homeCustomDetail');
    this.draft=this.color;applyCharacterColor(this.preview,this.color,this.characterPaint);applyCharacterFace(this.preview,this.face);applyShipPaint(this.world?.rig,this.shipPaint);
   }
  }
  choose(color){
-  if(!isHexColor(color)||!this.characterPart||this.characterPart==='faces')return;
-  this.draft=color.toLowerCase();
+  if(!isPaint(color)||!this.characterPart||this.characterPart==='faces')return;
+  this.draft=typeof color==='string'?color.toLowerCase():color;
   this.draftCharacterPaint[this.characterPart]=this.draft;
   applyCharacterColor(this.preview,this.color,this.draftCharacterPaint);
   this.syncCharacterSwatches();
@@ -717,11 +833,11 @@ export class HomeExperiment{
   const point=this.markerPoint;
   const markers=positions.map((position,i)=>{
    point.copy(position);point.y+=i?.8:1.5;point.project(this.camera);
-   return {x:(point.x+1)*w/2,y:(1-point.y)*h/2,visible:Math.abs(point.x)<1&&Math.abs(point.y)<1&&Math.abs(point.z)<1};
+   return {x:(point.x+1)*w/2,y:(1-point.y)*h/2};
   });
   for(const [i,button] of this.modelButtons.entries()){
    const marker=markers[i],side=marker.x<markers[1-i].x?-1:1;
-   button.hidden=!marker.visible;
+   button.hidden=false;
    const x=Math.round(T.MathUtils.clamp(marker.x+side*74,58,w-58));
    const y=Math.round(T.MathUtils.clamp(marker.y,52,h-30));
    const transform=`translate(${x}px,${y}px) translate(-50%,-50%)`;

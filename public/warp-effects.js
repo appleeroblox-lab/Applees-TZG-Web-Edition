@@ -1,3 +1,4 @@
+import {gradientSampler,paintColor,paintGradient} from './paint-gradient.js';
 import * as T from './vendor/three.module.js';
 export function warpTunnelStrength(nav){return nav?.kind==='warp'&&nav.sourceSystem!==nav.b.system?1:0}
 export function tunnelPoint(distance,total=16200,seed=0,out=new T.Vector3()){const u=T.MathUtils.clamp((distance/total-.2)/.6,0,1),envelope=Math.pow(Math.sin(Math.PI*u),4);return out.set(Math.sin(u*Math.PI*2+seed)*700*envelope,Math.sin(u*Math.PI+seed*1.7)*420*envelope,-distance)}
@@ -127,16 +128,21 @@ export class WarpShipMotion {
  }
 
  setColor(color){
-  const custom=typeof color==='string'&&/^#[a-f0-9]{6}$/i.test(color);
+  const gradient=paintGradient(color),custom=typeof color==='string'&&/^#[a-f0-9]{6}$/i.test(color);
   const attribute=this.geometry.attributes.color;
-  if(this.material.userData.trailColor===(custom?color:null))return;
-  this.material.userData.trailColor=custom?color:null;
+  if(this.paint===color)return;
+  this.paint=color;
+  this.material.userData.trailColor=custom||gradient?paintColor(color):null;
+  this.material.userData.trailGradient=gradient;
   this.material.color.set(custom?color:0xffffff);
   this.ribbonMaterial.color.copy(this.material.color);
+  const sample=gradient&&gradientSampler(gradient),tint=new T.Color();
   for(let i=0;i<attribute.count;i++){
-   attribute.setXYZ(i,custom?1:.66,custom?1:.88,1);
-   this.ribbonColors.setXYZ(i*2,attribute.getX(i),attribute.getY(i),1);
-   this.ribbonColors.setXYZ(i*2+1,attribute.getX(i),attribute.getY(i),1);
+   if(sample)sample((i%17)/16,tint);
+   else tint.setRGB(custom?1:.66,custom?1:.88,1);
+   attribute.setXYZ(i,tint.r,tint.g,tint.b);
+   this.ribbonColors.setXYZ(i*2,tint.r,tint.g,tint.b);
+   this.ribbonColors.setXYZ(i*2+1,tint.r,tint.g,tint.b);
   }
   attribute.needsUpdate=true;this.ribbonColors.needsUpdate=true;
  }

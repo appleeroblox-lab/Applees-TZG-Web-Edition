@@ -47,6 +47,16 @@ if(process.argv.includes('--home-only')){
   home.resetCustomization();
   home.selectShipRegion('body');
  }
+ home.shipGradient.click();
+ assert(!home.gradientEditor.hidden);
+ for(let i=0;i<3;i++)home.gradientEditor.querySelector('[data-gradient=add]').click();
+ assert.equal(home.gradientStops.length,4,'gradient editor caps the sequence at four stops');
+ home.gradientEditor.querySelector('[data-gradient=colour]').click();
+ home.pickerHex.value='#5511ff';home.pickerHex.oninput();home.closePicker();
+ assert.equal(home.gradientStops[home.gradientStop].color,'#5511ff');
+ assert(!home.gradientEditor.hidden,'the color picker returns to the gradient editor');
+ home.closeGradientEditor();
+ home.chooseShipColor('#35b6a4');
  const startingYaw=home.shipOrbitYaw;
  home.hitsShip=()=>true;
  for(const [type,x] of [['pointerdown',100],['pointermove',140],['pointerup',140]]){

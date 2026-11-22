@@ -6,6 +6,9 @@ import {SurfaceStream} from './surface-streaming.js';
 import {GroundWeather} from './ground-weather.js';
 import {makeShip,makeStars} from './visuals.js';
 import {GlobalShadows} from './global-shadows.js';
+import {loadBlenderModel} from './models.js';
+import {CRAFT_LAYOUT} from './surface-layout.js';
+import {TRADER} from './economy.js?v=170';
 import {WarpShipMotion} from './warp-effects.js';
 
 // Use the gameplay generators and environment without moving the saved flight.
@@ -68,7 +71,20 @@ export class HomeWorld{
   this.padPosition.copy(this.rig.ship.position);
   this.rig.ship.updateWorldMatrix(true,false);
   this.placements?.removeFromParent();this.placements=null;
-  if(this.context.surface.body===this.session.body){this.placements=this.context.building.group.clone(true);this.placements.visible=true;this.scene.add(this.placements)}
+  if(this.context.surface.body===this.session.body){
+   const building=this.context.building;
+   this.placements=building.group.clone(false);
+   for(const child of building.group.children)if(child!==building.hall)this.placements.add(child.clone(true));
+   this.placements.visible=true;this.scene.add(this.placements);
+  }
+  if(this.session.body?.name==='Earth'&&!this.centers){
+   const trade=new T.Group(),craft=new T.Group();
+   trade.name='Trade Center';trade.position.copy(TRADER);
+   craft.name='Crafting Center';craft.position.set(CRAFT_LAYOUT.x,0,CRAFT_LAYOUT.z);craft.rotation.y=CRAFT_LAYOUT.yaw;
+   loadBlenderModel(trade,'trading-hall');loadBlenderModel(craft,'crafting-center-v96');
+   this.centers=new T.Group();this.centers.add(trade,craft);this.scene.add(this.centers);
+  }
+  if(this.centers)this.centers.visible=this.session.body?.name==='Earth';
   this.stream.update(this.session.crew.pos,this.context.quality,{mobile:this.context.mobile,compatibility:this.context.compatibility});
  }
  prepareShipDetails(){
@@ -154,7 +170,11 @@ export class HomeWorld{
  }
 
  update(now,dt,camera,{interacting=false}={}){
-  for(const {light,mesh} of this.shipLights)light.color.copy(mesh.material.emissive);
+  for(const {light,mesh} of this.shipLights){
+   const material=mesh.material;
+   if(material.vertexColors&&material.userData.fallbackColor)light.color.set(material.userData.fallbackColor);
+   else light.color.copy(material.emissive);
+  }
   this.view.environment.step(dt);
   if(this.flightPreview){this.spaceSky.position.copy(camera.position);return;}
   if(this.lastViewUpdate===undefined||now-this.lastViewUpdate>=1/15){
@@ -163,11 +183,11 @@ export class HomeWorld{
   }
   if(this.view.skyDome)this.view.skyDome.position.copy(camera.position);
   this.view.celestial.update(camera);
+  this.shadows.update(dt,this.session,this.session.crew,camera,true);
   if(interacting)return;
   if(this.lastWeatherUpdate===undefined||now-this.lastWeatherUpdate>=.1){
    this.weather.update(camera,this.session.earthEnvironment,this.context.quality,this.context.compatibility,this.context.mobile);
    this.lastWeatherUpdate=now;
   }
-  this.shadows.update(dt,this.session,this.session.crew,camera,true);
  }
 }

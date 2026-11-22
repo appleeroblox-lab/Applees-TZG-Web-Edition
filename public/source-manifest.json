@@ -1,5 +1,5 @@
 {
-  "version": 262,
+  "version": 263,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -570,6 +570,7 @@
     "home-experiment.css",
     "home-world.js",
     "panel-drag.js",
+    "paint-gradient.js",
     "runtime-versions.js",
     "paint-geometry.js"
   ],
@@ -858,6 +859,7 @@
     "home-experiment.css",
     "home-world.js",
     "panel-drag.js",
+    "paint-gradient.js",
     "runtime-versions.js",
     "paint-geometry.js"
   ],
@@ -876,7 +878,7 @@
     "chat-phrasebook.js": 91,
     "chat-translation.js": 187,
     "cloud-save.js": 171,
-    "compatibility.js": 262,
+    "compatibility.js": 263,
     "control-sizes.js": 109,
     "crew.js": 180,
     "debug-commands.js": 156,
@@ -1008,9 +1010,9 @@
     "vendor/html2canvas.LICENSE": 102,
     "game-screenshot.js": 200,
     "vendor/html2canvas.min.js": 102,
-    "update-logs.js": 262,
+    "update-logs.js": 263,
     "legacy-ui.js": 102,
-    "update-history.json": 262,
+    "update-history.json": 263,
     "update-logs.css": 103,
     "mobile-notifications.js": 246,
     "free-camera.js": 105,
@@ -1037,7 +1039,7 @@
     "textures.js": 196,
     "atmospheric-flight.js": 168,
     "graphics-detail.js": 182,
-    "ship-flight-effects.js": 262,
+    "ship-flight-effects.js": 263,
     "planet-transition.js": 195,
     "spherical-atmosphere.js": 168,
     "body-transition.js": 116,
@@ -1050,7 +1052,7 @@
     "minimap.js": 198,
     "minimap.css": 127,
     "index.html": 193,
-    "warp-effects.js": 262,
+    "warp-effects.js": 263,
     "reentry-plume.js": 182,
     "textures/reentry-shine.png": 128,
     "reference-ui.css": 260,
@@ -1155,13 +1157,14 @@
     "guest-profile.js": 232,
     "connection-warning.js": 243,
     "social-refresh.css": 236,
-    "home-experiment.js": 262,
-    "home-experiment.css": 262,
-    "home-world.js": 260,
+    "home-experiment.js": 263,
+    "home-experiment.css": 263,
+    "home-world.js": 263,
     "panel-drag.js": 260,
-    "runtime-versions.js": 262,
+    "paint-gradient.js": 263,
+    "runtime-versions.js": 263,
     "paint-geometry.js": 258
   },
-  "publicReleaseVersion": 262,
-  "clientVersion": "v0.0.262"
+  "publicReleaseVersion": 263,
+  "clientVersion": "v0.0.263"
 }

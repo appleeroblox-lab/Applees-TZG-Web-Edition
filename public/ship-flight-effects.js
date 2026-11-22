@@ -80,7 +80,7 @@ gl_FragColor=vec4(mix(vec3(1.,.7,.2),vec3(1.,.065,.004),tail),strength*.9);}`});
  for(let i=0;i<this.samples.length;i++){const point=this.point.copy(this.samples[i][side]).sub(flight.pos),segment=point.distanceTo(previous);if(segment<.0001)continue;const remaining=length-travelled,clipped=segment>remaining;if(clipped)point.lerpVectors(previous,point,remaining/segment);const endDistance=travelled+Math.min(segment,remaining);previous.toArray(this.positions,n*3);this.alphas[n++]=Math.pow(Math.max(0,1-travelled/length),1.6);point.toArray(this.positions,n*3);this.alphas[n++]=Math.pow(Math.max(0,1-endDistance/length),1.6);previous.copy(point);travelled=endDistance;if(clipped||travelled>=length||n>=this.alphas.length-2)break;}}
  this.trailRight.set(1,0,0).applyQuaternion(flight.q);
  for(let i=0;i<n;i++){
-  const width=.24*this.alphas[i],offset=i*3;
+  const width=.085*this.alphas[i],offset=i*3;
   this.point.fromArray(this.positions,offset).addScaledVector(this.trailRight,-width);
   this.ribbonPositions.setXYZ(i*2,this.point.x,this.point.y,this.point.z);
   this.point.addScaledVector(this.trailRight,width*2);

@@ -647,6 +647,7 @@ export class HomeExperiment{
   const character=this.preview.group.position,ship=this.world.rig.ship.position;
   const view=this.customizing?this.customView:null;
   const position=this.nextPosition,target=this.nextTarget;
+  const flyingPreview=view==='ship'&&!!this.world.flightPreview;
   let fov=50;
   if(view==='overview'){
    target.copy(character).lerp(ship,.5);target.y+=1;
@@ -685,15 +686,16 @@ export class HomeExperiment{
     this.cameraPartsWidth=this.partsPanel.offsetWidth||this.partsPanel.getBoundingClientRect().width||Math.min(200,w*.22);
    }
    const left=this.cameraPartsWidth+8,right=this.cameraPanelWidth+8;
-   centerOffset=(left-right)/2;
-   const available=Math.max(.2,1-(left+right)/w);
+   centerOffset=flyingPreview?0:(left-right)/2;
+   const panelSpace=flyingPreview?2*Math.max(left,right):left+right;
+   const available=Math.max(.2,1-panelSpace/w);
    const tangent=Math.tan(T.MathUtils.degToRad(fov/2));
    const currentDistance=position.distanceTo(target);
    const width=view==='character'?1.0:this.shipRegion==='cockpit'?6:11;
    const distance=Math.max(currentDistance,width/(2*tangent*(w/h)*available));
    if(distance>currentDistance)position.sub(target).multiplyScalar(distance/currentDistance).add(target);
   }
-  const blend=!this.cameraReady||globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches?1:1-Math.exp(-dt*7);
+  const blend=flyingPreview||!this.cameraReady||globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches?1:1-Math.exp(-dt*7);
   this.cameraMoving=this.camera.position.distanceToSquared(position)>.001||this.cameraTarget.distanceToSquared(target)>.001;
   this.camera.position.lerp(position,blend);
   this.cameraTarget.lerp(target,blend);

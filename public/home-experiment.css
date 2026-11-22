@@ -68,9 +68,9 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(490px,82dvw)!imp
 #homeExperiment .homeCustomization h2,.homeParts h2 {font-size: clamp(12px, 1.8vw, 17px); margin: 0}
 .homeParts {
  position: absolute;
- left: 0; top: 52%; transform: translateY(-50%);
- width: calc(min(145px, 20vw) + env(safe-area-inset-left, 0px)); max-height: min(82dvh, calc(100dvh - 52px));
- padding: 7px; padding-left: calc(7px + env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; gap: 6px;
+ left: max(7px, env(safe-area-inset-left, 0px)); top: 52%; transform: translateY(-50%);
+ width: min(130px, 20vw); max-height: min(82dvh, calc(100dvh - 52px));
+ padding: 7px; display: flex; flex-direction: column; gap: 6px;
  z-index: 2; pointer-events: auto;
 }
 .homePartList {
@@ -131,7 +131,7 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(490px,82dvw)!imp
 .homeColorPlane i {left: var(--color-x,100%); top: var(--color-y,0%)}
 @media (max-width: 480px) {
  #homeExperiment .homeCustomization {width: 34vw; padding: 6px}
- .homeParts {width: calc(24vw + env(safe-area-inset-left, 0px)); padding: 5px; padding-left: calc(5px + env(safe-area-inset-left, 0px))}
+ .homeParts {width: 22vw; padding: 5px}
  #homeExperiment .homeCustomization .homeColors {gap: 3px}
 }
 #homeExperiment .homeCustomization > header {min-height: 0 !important; padding: 2px 0 5px !important}

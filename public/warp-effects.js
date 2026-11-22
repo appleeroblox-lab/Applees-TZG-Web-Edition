@@ -176,7 +176,7 @@ export class WarpShipMotion {
   this.positions.needsUpdate=true;
   for(let i=0;i<this.positions.count;i++){
    const x=this.positions.getX(i),y=this.positions.getY(i),z=this.positions.getZ(i);
-   const width=.24*(1-(i%17)/16);
+   const width=.085*(1-(i%17)/16);
    this.ribbonPositions.setXYZ(i*2,x-width,y,z);
    this.ribbonPositions.setXYZ(i*2+1,x+width,y,z);
   }

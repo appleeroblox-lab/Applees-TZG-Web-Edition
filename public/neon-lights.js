@@ -3,7 +3,7 @@ import * as T from './vendor/three.module.js';
 export function neonBrightness(scene){let value=0;for(const light of scene.children){if(!light.visible)continue;if(light.isAmbientLight)value+=light.intensity*.5;else if(light.isHemisphereLight)value+=light.intensity*.35;else if(light.isDirectionalLight)value+=light.intensity*.25}return T.MathUtils.lerp(1,.2,T.MathUtils.clamp(value,0,1))}
 const visibleIn=(object,scene)=>{let root=object;for(let node=object;node;node=node.parent){if(!node.visible)return false;root=node}return root===scene};
 export class NeonLights{
- constructor(scene){this.scene=scene;this.slots=Array.from({length:4},()=>({part:null}));this.lights=this.slots.map(slot=>{const light=slot.light=new T.PointLight(0xffffff,0,7,2);light.name='Small neon part light';light.castShadow=false;scene.add(light);return light});this.nextScan=0;this.candidates=[];this.materials=new Set();this.occluders=[];this.center=new T.Vector3();this.direction=new T.Vector3();this.ray=new T.Raycaster();this.hits=[];this.sphere=new T.Sphere();this.brightness=1;}
+ constructor(scene){this.scene=scene;this.slots=Array.from({length:4},()=>({part:null}));this.lights=this.slots.map(slot=>{const light=slot.light=new T.PointLight(0xffffff,0,7,2);light.name='Small neon part light';light.castShadow=false;scene.add(light);return light});this.nextScan=0;this.candidates=[];this.materials=new Set();this.occluders=[];this.rayTargets=[];this.center=new T.Vector3();this.direction=new T.Vector3();this.ray=new T.Raycaster();this.hits=[];this.sphere=new T.Sphere();this.brightness=1;}
  scan(camera,time=0){
   this.candidates=[];this.materials.clear();this.occluders=[];this.scene.updateMatrixWorld();const held=new Set(this.slots.map(s=>s.part?.key));
   this.scene.traverseVisible(mesh=>{
@@ -27,7 +27,16 @@ export class NeonLights{
  }
  blocked(part,camera){
   part.mesh.localToWorld(this.center.copy(part.point));this.direction.copy(this.center).sub(camera.position);const distance=this.direction.length();if(distance<.1)return false;
-  this.ray.set(camera.position,this.direction.divideScalar(distance));this.ray.near=.04;this.ray.far=Math.max(.04,distance-.06);this.hits.length=0;this.ray.intersectObjects(this.occluders,false,this.hits);
+  this.ray.set(camera.position,this.direction.divideScalar(distance));this.ray.near=.04;this.ray.far=Math.max(.04,distance-.06);this.hits.length=0;
+  this.rayTargets.length=0;
+  for(const mesh of this.occluders){
+   if(mesh===part.mesh||!visibleIn(mesh,this.scene))continue;
+   const bounds=mesh.isInstancedMesh?mesh.boundingSphere:mesh.geometry.boundingSphere;
+   this.sphere.copy(bounds).applyMatrix4(mesh.matrixWorld);
+   if(this.sphere.center.distanceToSquared(camera.position)>(distance+this.sphere.radius)**2)continue;
+   if(this.ray.ray.intersectsSphere(this.sphere))this.rayTargets.push(mesh);
+  }
+  this.ray.intersectObjects(this.rayTargets,false,this.hits);
   return this.hits.some(hit=>{if(hit.object===part.mesh||!visibleIn(hit.object,this.scene))return false;const m=Array.isArray(hit.object.material)?hit.object.material[hit.face?.materialIndex||0]:hit.object.material;return m&&m.visible!==false&&m.depthWrite!==false&&m.colorWrite!==false&&(!m.transparent||m.opacity>=.9)&&!(m.transmission>.1)});
  }
  update(time,camera,enabled=true){
@@ -41,7 +50,7 @@ export class NeonLights{
   for(const slot of this.slots)if(!slot.part&&desired.size){const part=desired.values().next().value;slot.part=part;desired.delete(part.key)}
   let matricesUpdated=false;
   for(const slot of this.slots){const {part,light}=slot;if(!part){light.intensity=0;continue}const visible=visibleIn(part.mesh,this.scene);if(!visible){light.intensity=0;continue}part.mesh.localToWorld(light.position.copy(part.point));
-   if(time>=part.nextRay){part.mesh.updateWorldMatrix(true,false);for(const object of this.occluders)object.updateWorldMatrix(true,false);part.nextRay=time+.15;part.blocked=this.blocked(part,camera)}
+   if(time>=part.nextRay){part.mesh.updateWorldMatrix(true,false);if(!matricesUpdated){for(const object of this.occluders)object.updateWorldMatrix(true,false);matricesUpdated=true;}part.nextRay=time+.15;part.blocked=this.blocked(part,camera)}
    const selected=this.candidates.some(p=>p.key===part.key),distance=light.position.distanceTo(camera.position),fade=1-T.MathUtils.smoothstep(distance,20,30),target=selected&&!part.blocked?1.8*this.brightness*fade:0;
    light.intensity=part.blocked?0:T.MathUtils.lerp(light.intensity,target,blend);
    light.color.copy(part.material.color);if(part.material.map&&part.material.userData.fallbackColor)light.color.set(part.material.userData.fallbackColor);

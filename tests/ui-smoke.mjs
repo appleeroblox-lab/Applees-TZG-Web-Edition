@@ -66,6 +66,11 @@ if(process.argv.includes('--home-only')){
  home.cameraReady=false;home.updateCamera(844,390,0);
  const seat=home.world.rig.model.localToWorld(home.shipSeat.clone());
  assert(home.cameraTarget.distanceTo(seat)<1e-6,'flight preview stays centered on the cockpit seat');
+ home.world.animateFlightPreview(1/30);
+ home.updateCamera(844,390,1/30);
+ const movingSeat=home.world.rig.model.localToWorld(home.shipSeat.clone());
+ assert(home.cameraTarget.distanceTo(movingSeat)<1e-6,'camera follows the moving seat without trailing');
+ assert(Math.abs(movingSeat.project(home.camera).x)<1e-6,'seat projects at screen center');
  const trails=home.world.trailPreview.positions;
  for(const [wing,tip] of home.world.rig.shipTrailTips.entries()){
   assert(new THREE.Vector3().fromBufferAttribute(trails,wing*17).distanceTo(tip)<.00001,'trail head remains attached to the wingtip');

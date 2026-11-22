@@ -36,17 +36,24 @@ export class HomeWorld{
   this.session.crew={onFoot:true,pos:new T.Vector3(-3,0,-14),reset(){},ground:()=>surfaceHeight(-3,-14)};
   this.character.group.position.copy(this.session.crew.pos);this.character.group.position.y=surfaceHeight(-3,-14);
   this.rig.model.rotation.x=Math.PI/2;this.rig.exhaust.rotation.x=Math.PI/2;
-  this.rig.gear.visible=true;this.view.build();
+  this.rig.gear.visible=true;this.view.build();this.lastWeatherUpdate=undefined;this.lastViewUpdate=undefined;
+  this.rig.ship.position.copy(this.session.pos).add(this.rig.padOffset.clone().applyQuaternion(this.flight.q));this.rig.ship.quaternion.copy(this.flight.q);
   this.placements?.removeFromParent();this.placements=null;
   if(this.context.surface.body===this.session.body){this.placements=this.context.building.group.clone(true);this.placements.visible=true;this.scene.add(this.placements)}
   this.stream.update(this.session.crew.pos,this.context.quality,{mobile:this.context.mobile,compatibility:this.context.compatibility});
  }
  update(now,dt,camera){
-  this.view.environment.step(dt);this.view.update(now,this.rig,dt);
-  this.rig.ship.position.copy(this.session.pos).add(this.rig.padOffset.clone().applyQuaternion(this.flight.q));this.rig.ship.quaternion.copy(this.flight.q);
+  this.view.environment.step(dt);
+  if(this.lastViewUpdate===undefined||now-this.lastViewUpdate>=1/15){
+   this.view.update(now,this.rig,this.lastViewUpdate===undefined?dt:Math.min(.1,now-this.lastViewUpdate));
+   this.lastViewUpdate=now;
+  }
   if(this.view.skyDome)this.view.skyDome.position.copy(camera.position);
   this.view.celestial.update(camera);
-  this.weather.update(camera,this.session.earthEnvironment,this.context.quality,this.context.compatibility,this.context.mobile);
+  if(this.lastWeatherUpdate===undefined||now-this.lastWeatherUpdate>=.1){
+   this.weather.update(camera,this.session.earthEnvironment,this.context.quality,this.context.compatibility,this.context.mobile);
+   this.lastWeatherUpdate=now;
+  }
   this.shadows.update(dt,this.session,this.session.crew,camera,true);this.neon.update(now,camera,true);
  }
 }

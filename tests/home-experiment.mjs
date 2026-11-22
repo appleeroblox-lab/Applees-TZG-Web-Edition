@@ -14,7 +14,7 @@ assert.equal(CHARACTER_COLORS.length,16);assert.equal(new Set(CHARACTER_COLORS).
 await home.open();assert(!home.active,'authorization required');debug.active=true;await home.open();assert(home.active);assert(debug.root.hidden);assert.equal(home.root.querySelector('.homeName').textContent,'Applee');assert.equal(home.root.querySelector('.homeId').textContent,'TZG-Id_7');
 assert.equal(home.root.querySelector('.homeNews'),null);assert(home.root.querySelector('.homeAvatar').src);assert.equal(home.root.querySelector('.homeLevel').textContent,'Level 12');assert.equal(home.root.querySelector('.homeXPTrack i').style.width,'25%');assert.equal(chatToggle.parentElement,home.root.querySelector('.homeTitleActions'));assert.equal(chat.parentElement,document.body);assert(chat.hidden);home.openMenu('menuBtn');assert(!more.hidden);assert(!document.getElementById('homeMoreHelp').hidden);assert.equal(home.root.querySelector('.homeQuick [data-home="helpBtn"]'),null);
 home.openMenu('dailyRewardsOpen');assert.equal(daily,1);home.openMenu('inventoryBtn');assert.equal(inventory,1);
-home.customize(true);assert(home.root.classList.contains('homeIsCustomizing'));const pointer=(type,x)=>{const e=new window.Event(type,{bubbles:true,cancelable:true});Object.assign(e,{pointerId:7,button:0,clientX:x,clientY:100});home.host.dispatchEvent(e)};const yaw=home.yaw;
+home.customize(true);assert(home.root.classList.contains('homeIsCustomizing'));assert.deepEqual([...home.modelButtons].map(button=>button.textContent),['Ship','Character']);home.modelButtons[1].click();const pointer=(type,x)=>{const e=new window.Event(type,{bubbles:true,cancelable:true});Object.assign(e,{pointerId:7,button:0,clientX:x,clientY:100});home.host.dispatchEvent(e)};const yaw=home.yaw;
 const preview={group:new T.Group()};
 preview.group.add(new T.Mesh(new T.SphereGeometry(.6,12,8),new T.MeshBasicMaterial()));
 home.preview=preview;
@@ -40,3 +40,20 @@ const title=document.getElementById('brand'),originalTitleParent=title.parentEle
 assert.equal(home.root.querySelector('[data-color]').style.background,CHARACTER_COLORS[0]);
 assert.equal(compactCurrency(10560),'10.56k');assert.equal(home.root.querySelectorAll('[data-face]').length,CHARACTER_FACES.length);assert.equal(home.root.querySelector('.homeCustomClose').parentElement,home.root);
 console.log('PASS authorized Home experiment, existing menu actions, 16 colors, preview/cancel, device save, gameplay color and Play restoration');
+
+const {CapsuleCharacter}=await import('../public/capsule-character.js');
+const capsule=new CapsuleCharacter(),vertex=new T.Vector3();
+for(const face of CHARACTER_FACES){
+ capsule.setFace(face);
+ for(const part of [...capsule.eyes,capsule.mouth]){
+  const positions=part.geometry.attributes.position;
+  let inset=false,raised=false;
+  for(let i=0;i<positions.count;i++){
+   vertex.fromBufferAttribute(positions,i).applyMatrix4(part.matrix);
+   const cap=Math.max(0,Math.abs(vertex.y-capsule.body.position.y)-.27);
+   const radius=Math.hypot(vertex.x,vertex.z,cap);
+   inset ||= radius<.34;raised ||= radius>.34;
+  }
+  assert(inset&&raised,face+' facial geometry intersects the capsule surface');
+ }
+}

@@ -1,8 +1,21 @@
 {
-  "currentVersion": "v0.0.255",
+  "currentVersion": "v0.0.256",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 256,
+      "version": "v0.0.256",
+      "date": "2026-11-22",
+      "title": "Ship and character customization",
+      "changes": [
+        "Character faces now follow the curve of the capsule body.",
+        "Home customization opens on both models, with separate Ship and Character buttons and smooth camera transitions.",
+        "Ship paint can be changed per color group, saved on the device, and used in gameplay.",
+        "Home does less rendering work on mobile while menus and customization are open."
+      ],
+      "source": {"kind": "current release"}
+    },
     {
       "legacyVersion": 255,
       "version": "v0.0.255",
@@ -12,7 +25,7 @@
         "Coming back from another app releases stale touch controls, refreshes the viewport, and keeps the selected graphics preset.",
         "Temporary graphics interruptions recover without a blocking popup."
       ],
-      "source": {"kind": "current release"}
+      "source": {"kind": "release notes"}
     },
     {
       "legacyVersion": 254,

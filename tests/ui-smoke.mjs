@@ -38,6 +38,15 @@ if(process.argv.includes('--home-only')){
  const before=state.flight.pos.clone();for(let i=0;i<5;i++)queued();assert(state.flight.pos.equals(before),'home preview pauses flight');
  home.openMenu('mapBtn');assert($('mapDialog').hasAttribute('open'),'reuse real Universe Map');$('mapDialog').close();home.openMenu('inventoryBtn');assert($('inventoryDialog').hasAttribute('open'));$('inventoryDialog').close();
  home.customize(true);home.modelButtons[0].click();const custom=home.shipCustom;assert(custom,'ship exposes a built-in picker');custom.click();assert(!home.picker.hidden);assert(!home.customPanel.contains(home.picker));home.pickerHex.value='#35b6a4';home.pickerHex.oninput();home.closePicker();
+ if(desktop){
+  home.partList.querySelector('[data-part=redParts]').click();
+  home.chooseShipColor('#aa5511');
+  const reds=home.paintGroups.get('redParts').meshes;
+  assert(reds.length>1,'original reds span multiple ship sections');
+  assert(reds.every(mesh=>mesh.material.color.getHexString()==='aa5511'),'original reds repaint together');
+  home.resetCustomization();
+  home.selectShipRegion('body');
+ }
  const startingYaw=home.shipOrbitYaw;
  home.hitsShip=()=>true;
  for(const [type,x] of [['pointerdown',100],['pointermove',140],['pointerup',140]]){
@@ -54,6 +63,9 @@ if(process.argv.includes('--home-only')){
  const padPosition=home.world.rig.ship.position.clone();home.world.animateFlightPreview(2);
  assert(home.world.rig.ship.position.distanceTo(padPosition)>5,'ship moves during the preview');
  assert.equal(home.world.rig.ship.parent,home.world.spaceScene,'flight preview uses a separate space scene');
+ home.cameraReady=false;home.updateCamera(844,390,0);
+ const seat=home.world.rig.model.localToWorld(home.shipSeat.clone());
+ assert(home.cameraTarget.distanceTo(seat)<1e-6,'flight preview stays centered on the cockpit seat');
  const trails=home.world.trailPreview.positions;
  for(const [wing,tip] of home.world.rig.shipTrailTips.entries()){
   assert(new THREE.Vector3().fromBufferAttribute(trails,wing*17).distanceTo(tip)<.00001,'trail head remains attached to the wingtip');

@@ -35,7 +35,19 @@ const originalPaint=new WeakMap();
 const readyPaintGroups=new WeakMap();
 const EXHAUST_DEFAULT='#9feaff';
 const TRAIL_DEFAULT='#ebf8ff';
+const shipColourGroups=[
+ ['redParts','Red Parts'],['whiteParts','White Parts'],['blueParts','Blue Parts'],['darkParts','Dark Parts'],
+];
+function originalShipColour(mesh,region){
+ if(mesh.name.includes('signal red'))return 'redParts';
+ if(region==='lights')return null;
+ if(mesh.name.includes('pearl painted'))return 'whiteParts';
+ if(mesh.name.startsWith('Canopy • blue'))return 'blueParts';
+ if(mesh.name.startsWith('Carbon •')||mesh.name.startsWith('Seat •'))return 'darkParts';
+ return null;
+}
 const shipCategories=[
+ ...shipColourGroups,
  ['body','Body'],['wings','Wings'],['cockpit','Cockpit'],['tail','Tail'],
  ['accents','Accents'],['lights','Lights'],['exhaust','Engine Fire'],['trails','Trails'],
 ];
@@ -112,8 +124,12 @@ function shipPaintGroups(rig){
   });
   const original=originalPaint.get(material);
   const base=original.fallback||'#'+original.color.getHexString();
-  if(!groups.has(region))groups.set(region,{base,meshes:[]});
-  groups.get(region).meshes.push(mesh);
+  const colourGroup=originalShipColour(mesh,region);
+  for(const key of [region,colourGroup]){
+   if(!key)continue;
+   if(!groups.has(key))groups.set(key,{base,meshes:[]});
+   groups.get(key).meshes.push(mesh);
+  }
  });
  if(rig?.model?.userData.blender)readyPaintGroups.set(rig,groups);
  return groups;
@@ -146,12 +162,16 @@ function tintPaintTexture(material,original,key,tint){
  if(original.paintAmount)original.paintAmount.value=tint?1:0;
 }
 export function applyShipPaint(rig,paint,selectedRegion){
+ const overrides=Object.keys(paint).reverse();
  for(const [region,{meshes}] of shipPaintGroups(rig)){
-  if(selectedRegion&&region!==selectedRegion)continue;
-  for(const {material} of meshes){
+  if(shipColourGroups.some(([key])=>key===region))continue;
+  for(const mesh of meshes){
+   const {material}=mesh,colourGroup=originalShipColour(mesh,region);
+   if(selectedRegion&&region!==selectedRegion&&colourGroup!==selectedRegion)continue;
    const original=originalPaint.get(material);
    const base=original.fallback||'#'+original.color.getHexString();
-   const candidate=Object.hasOwn(paint,region)?paint[region]:paint[base];
+   const override=overrides.find(key=>key===region||key===colourGroup);
+   const candidate=paint[override??base];
    const tint=isHexColor(candidate)?candidate:null;
    material.color.set(tint||original.color);
    if(original.emissive&&material.emissiveIntensity>0)material.emissive.set(tint||original.emissive);
@@ -468,6 +488,19 @@ export class HomeExperiment{
   const point=new T.Vector3(),transform=new T.Matrix4();
   rig.model.updateWorldMatrix(true,true);
   const inverse=rig.model.matrixWorld.clone().invert();
+  const seat=new T.Box3();
+  rig.model.traverse(mesh=>{
+   const vertices=mesh.geometry?.attributes.position;
+   if(!vertices)return;
+   transform.multiplyMatrices(inverse,mesh.matrixWorld);
+   for(const {name,start,count} of mesh.userData.sourceParts||[]){
+    if(!/^Seat_(Base|Back|Cushion_Red)$/.test(name))continue;
+    for(let i=start;i<start+count;i++){
+     seat.expandByPoint(point.fromBufferAttribute(vertices,i).applyMatrix4(transform));
+    }
+   }
+  });
+  this.shipSeat=seat.isEmpty()?rig.subjectCenter:seat.getCenter(new T.Vector3());
   for(const [region,{meshes}] of this.paintGroups){
    const positions=[],bounds=new T.Box3();
    for(const mesh of meshes){
@@ -530,6 +563,7 @@ export class HomeExperiment{
  }
  chooseShipColor(color){
   if(!isHexColor(color)||!this.paintKey)return;
+  delete this.draftShipPaint[this.paintKey];
   this.draftShipPaint[this.paintKey]=color;
   applyShipPaint(this.world?.rig,this.draftShipPaint,this.paintKey);
   this.world?.trailPreview?.setColor(this.draftShipPaint.trails);
@@ -543,6 +577,7 @@ export class HomeExperiment{
   this.closePicker();
   if(this.customView==='ship'){
    if(!this.paintKey)return;
+   delete this.draftShipPaint[this.paintKey];
    this.draftShipPaint[this.paintKey]=null;
    applyShipPaint(this.world?.rig,this.draftShipPaint);
    this.world?.trailPreview.setColor(this.draftShipPaint.trails);
@@ -617,9 +652,8 @@ export class HomeExperiment{
    target.copy(character).lerp(ship,.5);target.y+=1;
    position.copy(target).addScaledVector(this.offset.set(-18,8,-21),Math.max(1,h/w*.8));
   }else if(view==='ship'){
-   if(this.shipSection)this.world.rig.model.localToWorld(target.copy(this.shipSection.center));
-   else{target.copy(ship);target.y+=.8;if(this.world.flightPreview)target.add(this.offset.set(0,0,2.5).applyQuaternion(this.world.rig.ship.quaternion));}
-   const focused=this.shipRegion==='cockpit'||this.shipRegion==='lights';
+   this.world.rig.model.localToWorld(target.copy(this.shipSeat||this.world.rig.subjectCenter));
+   const focused=this.shipRegion==='cockpit';
    const distance=focused?9.5:14;
    const elevation=this.shipOrbitPitch??.36;
    const angle=this.shipOrbitYaw??-.65;

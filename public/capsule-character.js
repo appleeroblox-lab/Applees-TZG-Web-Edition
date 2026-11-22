@@ -1,4 +1,5 @@
 import * as T from './vendor/three.module.js';
+import {geometryFromRanges} from './paint-geometry.js';
 
 const bodyRadius=.34,bodyHalfLength=.27;
 function attachFaceMesh(mesh,bodyY){
@@ -19,23 +20,46 @@ function attachFaceMesh(mesh,bodyY){
  mesh.castShadow=false;
 }
 
+function makeBodySections(){
+ const path=new T.Path();
+ path.absarc(0,-bodyHalfLength,bodyRadius,Math.PI*1.5,0);
+ const neck=.115;
+ path.lineTo(bodyRadius,neck);
+ path.absarc(0,bodyHalfLength,bodyRadius,0,Math.PI*.5);
+ const indexed=new T.LatheGeometry(path.getPoints(6),14);
+ const geometry=indexed.toNonIndexed();
+ indexed.dispose();
+ const position=geometry.attributes.position,torso=[],head=[];
+ for(let i=0;i<position.count;i+=3){
+  const center=(position.getY(i)+position.getY(i+1)+position.getY(i+2))/3;
+  (center>=neck?head:torso).push({start:i,count:3});
+ }
+ const parts=[geometryFromRanges(geometry,torso),geometryFromRanges(geometry,head)];
+ geometry.dispose();
+ return parts;
+}
+
 // Local -Z faces forward; leg pivots overlap the body throughout their animation.
 export class CapsuleCharacter{
  constructor(){
   this.scratch={delta:new T.Vector3(),up:new T.Vector3(),inverse:new T.Quaternion(),normal:new T.Vector3(0,0,1)};this.group=new T.Group();this.group.name='On-foot capsule character';
   this.torso=new T.Group();this.torso.name='Breathing torso';this.group.add(this.torso);
   const white=new T.MeshStandardMaterial({color:0xf7f4ff,roughness:.42}),black=new T.MeshStandardMaterial({color:0x171321,roughness:.6});
-  this.body=new T.Mesh(new T.CapsuleGeometry(bodyRadius,bodyHalfLength*2,6,14),white);this.body.position.y=.87;this.torso.add(this.body);
+  const [bodyGeometry,headGeometry]=makeBodySections();
+  this.body=new T.Mesh(bodyGeometry,white);this.body.position.y=.87;
+  this.head=new T.Mesh(headGeometry,white.clone());this.head.position.copy(this.body.position);
+  this.torso.add(this.body,this.head);
   this.hands=[];this.feet=[];this.legs=[];this.eyes=[];
   for(const side of [-1,1]){
-   const hand=new T.Mesh(new T.SphereGeometry(.115,10,8),white);hand.scale.set(.85,1.2,1);hand.position.set(side*.46,.76,0);this.hands.push(hand);this.torso.add(hand);
-   const leg=new T.Group();leg.position.set(side*.17,.39,0);const foot=new T.Mesh(new T.CapsuleGeometry(.13,.16,4,10),white);foot.position.y=-.20;leg.add(foot);this.legs.push(leg);this.feet.push(foot);this.group.add(leg);
+   const hand=new T.Mesh(new T.SphereGeometry(.115,10,8),white.clone());hand.scale.set(.85,1.2,1);hand.position.set(side*.46,.76,0);this.hands.push(hand);this.torso.add(hand);
+   const leg=new T.Group();leg.position.set(side*.17,.39,0);const foot=new T.Mesh(new T.CapsuleGeometry(.13,.16,4,10),white.clone());foot.position.y=-.20;leg.add(foot);this.legs.push(leg);this.feet.push(foot);this.group.add(leg);
    const eye=new T.Mesh(new T.CapsuleGeometry(.039,.075,4,8),black);eye.position.set(side*.12,1.13,-.327);this.eyes.push(eye);this.torso.add(eye);
   }
   this.mouth=new T.Mesh(new T.CapsuleGeometry(.012,.10,3,8),black);this.mouth.rotation.z=Math.PI/2;this.mouth.position.set(0,.98,-.342);this.torso.add(this.mouth);
   this.rightGrip=new T.Object3D();this.rightGrip.name='Right palm grip';this.rightGrip.position.set(0,-.01,-.105);this.hands[1].add(this.rightGrip);
   const pixels=new Uint8Array(32*32*4);for(let y=0;y<32;y++)for(let x=0;x<32;x++){const r=Math.hypot((x-15.5)/15.5,(y-15.5)/15.5),i=(y*32+x)*4;pixels[i+3]=Math.round(Math.max(0,1-r)**2*160)}const map=new T.DataTexture(pixels,32,32,T.RGBAFormat);map.needsUpdate=true;this.shadow=new T.Mesh(new T.PlaneGeometry(1.15,.88),new T.MeshBasicMaterial({map,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));this.shadow.name='Character contact shadow';this.shadow.renderOrder=1;this.group.add(this.shadow);
   this.group.traverse(o=>{if(o.isMesh){o.castShadow=o!==this.shadow;o.receiveShadow=o!==this.shadow}});
+  this.paintParts={leftLeg:this.feet[0],leftHand:this.hands[0],rightLeg:this.feet[1],rightHand:this.hands[1],head:this.head,torso:this.body};
   this.setFace();
  }
  setFace(face='Neutral'){

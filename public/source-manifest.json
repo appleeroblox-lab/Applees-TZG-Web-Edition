@@ -1,5 +1,5 @@
 {
-  "version": 258,
+  "version": 259,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -1006,9 +1006,9 @@
     "vendor/html2canvas.LICENSE": 102,
     "game-screenshot.js": 200,
     "vendor/html2canvas.min.js": 102,
-    "update-logs.js": 258,
+    "update-logs.js": 259,
     "legacy-ui.js": 102,
-    "update-history.json": 258,
+    "update-history.json": 259,
     "update-logs.css": 103,
     "mobile-notifications.js": 246,
     "free-camera.js": 105,
@@ -1153,12 +1153,12 @@
     "guest-profile.js": 232,
     "connection-warning.js": 243,
     "social-refresh.css": 236,
-    "home-experiment.js": 258,
-    "home-experiment.css": 258,
-    "home-world.js": 258,
-    "runtime-versions.js": 258,
+    "home-experiment.js": 259,
+    "home-experiment.css": 259,
+    "home-world.js": 259,
+    "runtime-versions.js": 259,
     "paint-geometry.js": 258
   },
-  "publicReleaseVersion": 258,
-  "clientVersion": "v0.0.258"
+  "publicReleaseVersion": 259,
+  "clientVersion": "v0.0.259"
 }

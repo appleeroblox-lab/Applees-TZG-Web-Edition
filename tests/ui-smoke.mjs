@@ -10,7 +10,7 @@ const gradient={addColorStop(){}};const ctx2D=new Proxy({createLinearGradient(){
 dom.HTMLCanvasElement.prototype.getContext=()=>ctx2D;dom.Element.prototype.getBoundingClientRect=function(){return {left:20,top:90,width:this.id==='atlasCanvas'?400:this.id==='shipPanel'?500:180,height:this.id==='atlasCanvas'?400:100,right:200,bottom:190}};dom.Element.prototype.setPointerCapture=()=>{};dom.Element.prototype.showModal=function(){this.setAttribute('open','')};dom.Element.prototype.close=function(){this.removeAttribute('open');this.dispatchEvent(new dom.Event('close'))};
 Object.defineProperty(dom.HTMLSelectElement.prototype,'value',{get(){return this._testValue||this.querySelector('option[selected]')?.getAttribute('value')||this.firstElementChild?.getAttribute('value')||this.firstElementChild?.textContent||''},set(v){this._testValue=v},configurable:true});
 class Renderer{constructor(options={}){this.ratio=1;this.domElement=options.canvas||document.createElement('canvas');this.info={render:{calls:0}}}setSize(w,h){rendererSizes.push([w,h])}setPixelRatio(v){this.ratio=v}getPixelRatio(){return this.ratio}render(scene,camera){draws++;lastCameraQ=camera.quaternion.clone()}}
-class Loader{load(url,ok){const map=new THREE.Texture({width:1024,height:512});map.userData.url=url;ok(map);return map}}
+class Loader{load(url,ok){const map=new THREE.Texture({width:1024,height:512});map.userData.url=url;ok?.(map);return map}}
 class Clock{getDelta(){return 1/60}}
 const storage=new Map([['tzg-system-unlocks-v168',JSON.stringify(process.argv.includes('--progression-only')?[]:SYSTEM_ORDER)],['cosmic-economy-v8',JSON.stringify({fp:10000,rc:1000})]]),context=vm.createContext({fetch:async()=>{throw Error('No network in UI fixture')},...((startupRace||desktop)?{fetch:async url=>{if(url.includes('player-ship.json'))return desktop?{ok:true,json:async()=>JSON.parse(fs.readFileSync(root+'/models/player-ship.json','utf8'))}:delayedShip;throw Error('No network in startup fixture')}}:{}),console,crypto,CustomEvent:dom.CustomEvent,queueMicrotask,URL,URLSearchParams,Blob,File,AbortController,document,window:dom,screen:{orientation:{addEventListener(){},async lock(){throw Error('Unsupported')}}},innerWidth:desktop?1280:844,innerHeight:desktop?720:390,devicePixelRatio:desktop?1:3,matchMedia:()=>({matches:!desktop}),localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)},performance,requestAnimationFrame:f=>{if(f.name==='render')queued=f;else f()},setTimeout:()=>1,clearTimeout(){},addEventListener:dom.addEventListener.bind(dom),location:{reload(){reloads++}},setInterval(){}});
 if(process.argv.includes('--proto-resume-only')||process.argv.includes('--proto-resume-space-only'))storage.set('cosmic-flight-v6',JSON.stringify({version:6,system:'Proto Solar System',target:'Proto Earth',pos:[500,2000,3000],q:[0,0,0,1],temporal:{version:1,owner:'local',velocity:[2,0,-3],cruiseSpeed:3.6},surface:process.argv.includes('--proto-resume-only')?{body:'Proto Earth',pos:[0,2,0],q:[0,0,0,1],phase:'parked',orientation:'forward'}:null}));
@@ -37,16 +37,30 @@ if(process.argv.includes('--home-only')){
  const beforeSettings=home.world.context;home.world.syncSettings({...beforeSettings,quality:'Ultra'});assert.equal(home.world.view.quality,'Ultra');home.world.syncSettings(beforeSettings);
  const before=state.flight.pos.clone();for(let i=0;i<5;i++)queued();assert(state.flight.pos.equals(before),'home preview pauses flight');
  home.openMenu('mapBtn');assert($('mapDialog').hasAttribute('open'),'reuse real Universe Map');$('mapDialog').close();home.openMenu('inventoryBtn');assert($('inventoryDialog').hasAttribute('open'));$('inventoryDialog').close();
- home.customize(true);home.modelButtons[0].click();const custom=home.shipColors.querySelector('.homeCustomColor');assert(custom,'ship exposes a built-in picker');custom.click();assert(!home.picker.hidden);home.pickerHex.value='#35b6a4';home.pickerHex.oninput();home.closePicker();
- const bodyFocus=home.shipFocus?.clone();
+ home.customize(true);home.modelButtons[0].click();const custom=home.shipCustom;assert(custom,'ship exposes a built-in picker');custom.click();assert(!home.picker.hidden);assert(!home.customPanel.contains(home.picker));home.pickerHex.value='#35b6a4';home.pickerHex.oninput();home.closePicker();
+ const startingYaw=home.shipOrbitYaw;
+ home.hitsShip=()=>true;
+ for(const [type,x] of [['pointerdown',100],['pointermove',140],['pointerup',140]]){
+  const event=new dom.Event(type);
+  Object.assign(event,{pointerId:1,button:0,clientX:x,clientY:100});
+  home.host.dispatchEvent(event);
+ }
+ assert(home.shipOrbitYaw>startingYaw,'dragging right follows the same direction as the character');
+ const bodyOutline=home.shipSection?.outline;
+ if(desktop)assert.equal(home.world.shipLights.length,5,'both wings, both engines and the cabin emit local light');
  home.partList.querySelector('[data-part=lights]').click();
- if(bodyFocus&&home.shipFocus)assert(home.shipFocus.distanceTo(bodyFocus)>.01,'lights focus on a different part');
+ if(bodyOutline)assert(!bodyOutline.visible,'the previous section loses its outline');
  home.partList.querySelector('[data-part=trails]').click();assert(home.world.trailPreview.trails.visible);
  const padPosition=home.world.rig.ship.position.clone();home.world.animateFlightPreview(2);
- assert(home.world.rig.ship.position.y>padPosition.y+5,'trail preview takes off over the planet');
+ assert(home.world.rig.ship.position.distanceTo(padPosition)>5,'ship moves during the preview');
+ assert.equal(home.world.rig.ship.parent,home.world.spaceScene,'flight preview uses a separate space scene');
+ const trails=home.world.trailPreview.positions;
+ for(const [wing,tip] of home.world.rig.shipTrailTips.entries()){
+  assert(new THREE.Vector3().fromBufferAttribute(trails,wing*17).distanceTo(tip)<.00001,'trail head remains attached to the wingtip');
+ }
  home.partList.querySelector('[data-part=exhaust]').click();assert(home.world.rig.flames.every(flame=>flame.visible),'fire preview runs during flight');
  home.partList.querySelector('[data-part=trails]').click();
- home.shipColors.querySelector('.homeCustomColor').click();home.pickerHex.value='#ffbb33';home.pickerHex.oninput();
+ home.shipCustom.click();home.pickerHex.value='#ffbb33';home.pickerHex.oninput();
  assert.equal(home.world.trailPreview.material.userData.trailColor,'#ffbb33');home.saveCustomization();assert(Object.values(JSON.parse(context.localStorage.getItem('tzg-ship-paint'))).includes('#35b6a4'));let paintApplied=false;state.shipRig.model.traverse(mesh=>{if(mesh.material?.color?.getHexString()==='35b6a4')paintApplied=true});assert(paintApplied,'saved paint reaches the gameplay ship');assert.equal(state.scene.userData.warpShipTrails.material.userData.trailColor,'#ffbb33');home.customize(true);home.modelButtons[1].click();assert.equal(home.partList.querySelectorAll('button').length,7);
  home.partList.querySelector('[data-part=leftLeg]').click();home.characterCustom.click();
  assert.equal(home.picker.querySelectorAll('input[type=range]').length,0,'picker uses a wheel and color field');

@@ -31,6 +31,7 @@ export function applyCharacterColor(character,color,paint={}){
 
 const SHIP_PAINT_KEY='tzg-ship-paint';
 const originalPaint=new WeakMap();
+const readyPaintGroups=new WeakMap();
 const EXHAUST_DEFAULT='#9feaff';
 const TRAIL_DEFAULT='#ebf8ff';
 const shipCategories=[
@@ -38,7 +39,7 @@ const shipCategories=[
  ['accents','Accents'],['lights','Lights'],['exhaust','Engine Fire'],['trails','Trails'],
 ];
 function materialRegion(name,mesh){
- if(mesh.name.startsWith('Light')||/^Wing_Navigation_Light/.test(name))return 'lights';
+ if(mesh.userData.neonPart||/^Wing_Navigation_Light/.test(name))return 'lights';
  if(/^Wing_/.test(name))return 'wings';
  if(/^Tail_/.test(name))return 'tail';
  if(/^(Canopy_|Windshield|Side_Glass|Cabin_|Dashboard|Display|Seat_|Armrest|Headrest|Joystick|Rudder|Switch_Shelf)/.test(name))return 'cockpit';
@@ -73,6 +74,14 @@ function splitShipPaintRegions(rig){
    part.visible=mesh.visible;part.layers.mask=mesh.layers.mask;part.renderOrder=mesh.renderOrder;
    part.userData={...mesh.userData};
    part.userData.paintRegion=region;
+   if(region==='lights'&&!part.userData.neonPart){
+    material.map=null;
+    material.color.set(0xff394f);
+    material.emissive.copy(material.color);
+    material.emissiveIntensity=2;
+    material.userData.fallbackColor='#ff394f';
+    part.userData.neonPart=true;
+   }
    let start=0;
    part.userData.sourceParts=ranges.map(range=>{const mapped={...range,start};start+=range.count;return mapped});
    mesh.parent.add(part);
@@ -90,6 +99,7 @@ function readShipPaint(){
  }catch{return {}}
 }
 function shipPaintGroups(rig){
+ if(readyPaintGroups.has(rig))return readyPaintGroups.get(rig);
  splitShipPaintRegions(rig);
  const groups=new Map();
  rig?.model?.traverse(mesh=>{
@@ -104,6 +114,7 @@ function shipPaintGroups(rig){
   if(!groups.has(region))groups.set(region,{base,meshes:[]});
   groups.get(region).meshes.push(mesh);
  });
+ if(rig?.model?.userData.blender)readyPaintGroups.set(rig,groups);
  return groups;
 }
 function tintPaintTexture(material,original,key,tint){
@@ -129,8 +140,9 @@ function tintPaintTexture(material,original,key,tint){
  }
  if(original.paintAmount)original.paintAmount.value=tint?1:0;
 }
-export function applyShipPaint(rig,paint){
+export function applyShipPaint(rig,paint,selectedRegion){
  for(const [region,{meshes}] of shipPaintGroups(rig)){
+  if(selectedRegion&&region!==selectedRegion)continue;
   for(const {material} of meshes){
    const original=originalPaint.get(material);
    const base=original.fallback||'#'+original.color.getHexString();
@@ -143,6 +155,7 @@ export function applyShipPaint(rig,paint){
    else delete material.userData.fallbackColor;
   }
  }
+ if(selectedRegion&&selectedRegion!=='exhaust')return;
  if(rig?.exhaust)rig.exhaust.userData.paintColor=isHexColor(paint.exhaust)?paint.exhaust:null;
  for(const item of [...(rig?.flames||[]),...(rig?.engines||[])]){
   const material=item.material;
@@ -180,7 +193,7 @@ export class HomeExperiment{
   this.host.addEventListener('pointermove',e=>{
    if(this.drag?.id!==e.pointerId)return;
    if(this.drag.ship){
-    this.shipOrbitYaw-=(e.clientX-this.drag.x)*.009;
+    this.shipOrbitYaw+=(e.clientX-this.drag.x)*.012;
     this.shipOrbitPitch=T.MathUtils.clamp(this.shipOrbitPitch+(e.clientY-this.drag.y)*.007,-.2,1.25);
    }else this.yaw+=(e.clientX-this.drag.x)*.012;
    this.drag.x=e.clientX;
@@ -189,7 +202,7 @@ export class HomeExperiment{
   const end=e=>{if(this.drag?.id===e.pointerId)this.drag=null};
   for(const type of ['pointerup','pointercancel','lostpointercapture'])this.host.addEventListener(type,end);
   this.sensor=deviceGyro();this.unsubscribe=this.sensor.subscribe(sample=>{if(!this.active)return;if(!this.gyroOrigin)this.gyroOrigin=sample;const axes=this.sensor.axes(this.gyroOrigin,sample);this.gyro={x:T.MathUtils.clamp(axes.roll,-.08,.08),y:T.MathUtils.clamp(axes.pitch,-.06,.06)}});
-  this.onKey=e=>{if(!this.active)return;if(e.target.closest?.('input,textarea,select'))return;if(e.code==='Escape'&&this.customizing){e.preventDefault();this.customize(false)}if(!e.target.closest?.('dialog,[role="dialog"],#friendsPanel,#globalChat'))e.stopImmediatePropagation()};window.addEventListener('keydown',this.onKey,true);this.upgradeLayout();this.installCustomization();this.installShipCustomization();this.installColorPicker();this.refresh();
+  this.onKey=e=>{if(!this.active)return;if(e.code==='Escape'&&this.picker&&!this.picker.hidden){e.preventDefault();e.stopImmediatePropagation();this.closePicker();return}if(e.target.closest?.('input,textarea,select'))return;if(e.code==='Escape'&&this.customizing){e.preventDefault();this.customize(false)}if(!e.target.closest?.('dialog,[role="dialog"],#friendsPanel,#globalChat'))e.stopImmediatePropagation()};window.addEventListener('keydown',this.onKey,true);this.upgradeLayout();this.installCustomization();this.installShipCustomization();this.installColorPicker();this.refresh();
  }
  hitsCharacter(x,y){
   const group=this.preview?.group;
@@ -261,7 +274,10 @@ export class HomeExperiment{
   this.paintControls=document.createElement('div');
   this.paintControls.className='homeShipPaint';this.paintControls.hidden=true;
   this.shipColors=document.createElement('div');this.shipColors.className='homePaintColors';
-  this.paintControls.append(this.shipColors);this.customActions.before(this.paintControls);
+  this.shipCustom=document.createElement('button');
+  this.shipCustom.type='button';this.shipCustom.className='homeCustomColor';this.shipCustom.textContent='Custom Colour';
+  this.shipCustom.onclick=()=>this.openPicker(this.shipColor(),color=>this.chooseShipColor(color));
+  this.paintControls.append(this.shipColors,this.shipCustom);this.customActions.before(this.paintControls);
   this.customChoices=document.createElement('nav');
   this.customChoices.className='homeCustomChoices';this.customChoices.hidden=true;
   this.customChoices.setAttribute('aria-label','Customize a model');
@@ -307,7 +323,14 @@ export class HomeExperiment{
   this.picker=document.createElement('section');
   this.picker.className='homeColorPicker';this.picker.hidden=true;
   this.picker.innerHTML='<div class="homePickerTop"><strong>Custom Colour</strong><span class="homePickerSwatch" aria-hidden="true"></span><button type="button">Done</button></div><div class="homePickerSurfaces"><div class="homeHueWheel" tabindex="0" aria-label="Hue wheel"><i></i></div><div class="homeColorPlane" tabindex="0" aria-label="Saturation and brightness"><i></i></div></div><label>Hex <input type="text" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Hex color"></label>';
-  this.customActions.before(this.picker);
+  this.picker.setAttribute('role','dialog');
+  this.picker.setAttribute('aria-label','Custom Colour');
+  this.picker.setAttribute('aria-modal','true');
+  this.pickerShade=document.createElement('div');
+  this.pickerShade.className='homePickerShade';this.pickerShade.hidden=true;
+  this.pickerShade.append(this.picker);
+  this.pickerShade.onclick=e=>{if(e.target===this.pickerShade)this.closePicker();};
+  this.root.append(this.pickerShade);
   this.pickerSwatch=this.picker.querySelector('.homePickerSwatch');
   this.pickerHex=this.picker.querySelector('input[type=text]');
   const wheel=this.picker.querySelector('.homeHueWheel'),plane=this.picker.querySelector('.homeColorPlane');
@@ -363,15 +386,24 @@ export class HomeExperiment{
    if(isHexColor(hex)){this.syncPicker(hex);this.pickColor?.(hex);}
   };
   this.picker.querySelector('button').onclick=()=>this.closePicker();
+  this.picker.onkeydown=e=>{
+   if(e.key!=='Tab')return;
+   const controls=[...this.picker.querySelectorAll('button,[tabindex],input')];
+   const index=controls.indexOf(document.activeElement);
+   e.preventDefault();controls[(index+(e.shiftKey?-1:1)+controls.length)%controls.length].focus();
+  };
  }
  openPicker(color,choose){
-  this.pickColor=choose;this.syncPicker(color);this.picker.hidden=false;
-  this.root.classList.add('homePickingColor');
+  this.pickerFocus=document.activeElement;
+  this.pickColor=choose;this.syncPicker(color);this.picker.hidden=false;this.pickerShade.hidden=false;
+  for(const panel of [this.partsPanel,this.customPanel,this.host,this.root.querySelector('.homeCustomClose')])panel.inert=true;
+  this.picker.querySelector('button').focus();
  }
  closePicker(){
-  if(!this.picker)return;
-  this.picker.hidden=true;this.pickColor=null;
-  this.root.classList.remove('homePickingColor');
+  if(!this.picker||this.picker.hidden)return;
+  this.picker.hidden=true;this.pickerShade.hidden=true;this.pickColor=null;
+  for(const panel of [this.partsPanel,this.customPanel,this.host,this.root.querySelector('.homeCustomClose')])panel.inert=false;
+  this.pickerFocus?.focus();this.pickerFocus=null;
  }
  selectCharacterPart(part){
   this.closePicker();this.characterPart=part;
@@ -386,35 +418,56 @@ export class HomeExperiment{
  syncCharacterSwatches(){
   for(const button of this.characterColors.querySelectorAll('[data-color]'))button.setAttribute('aria-pressed',String(button.dataset.color===this.draft));
  }
+ prepareShipSections(){
+  const rig=this.world.rig;
+  this.paintGroups=shipPaintGroups(rig);
+  this.shipSections=new Map();
+  // Install paint uniforms before the first render so swatches only update uniforms.
+  for(const {meshes} of this.paintGroups.values())for(const {material} of meshes){
+   const original=originalPaint.get(material);
+   if(original.paintAmount)continue;
+   tintPaintTexture(material,original,original.fallback||'#'+original.color.getHexString(),true);
+   tintPaintTexture(material,original,original.fallback||'#'+original.color.getHexString(),false);
+  }
+  const material=new T.LineBasicMaterial({color:0x9cddff,transparent:true,opacity:.8,depthWrite:false,toneMapped:false});
+  const point=new T.Vector3(),transform=new T.Matrix4();
+  rig.model.updateWorldMatrix(true,true);
+  const inverse=rig.model.matrixWorld.clone().invert();
+  for(const [region,{meshes}] of this.paintGroups){
+   const positions=[],bounds=new T.Box3();
+   for(const mesh of meshes){
+    transform.multiplyMatrices(inverse,mesh.matrixWorld);
+    mesh.geometry.computeBoundingBox();
+    bounds.union(mesh.geometry.boundingBox.clone().applyMatrix4(transform));
+    const edges=new T.EdgesGeometry(mesh.geometry,45);
+    const vertices=edges.attributes.position;
+    for(let i=0;i<vertices.count;i++){
+     point.fromBufferAttribute(vertices,i).applyMatrix4(transform);
+     positions.push(point.x,point.y,point.z);
+    }
+    edges.dispose();
+   }
+   const geometry=new T.BufferGeometry().setAttribute('position',new T.Float32BufferAttribute(positions,3));
+   const outline=new T.LineSegments(geometry,material);
+   outline.visible=false;outline.renderOrder=4;
+   rig.model.add(outline);
+   this.shipSections.set(region,{center:bounds.getCenter(new T.Vector3()),outline});
+  }
+ }
  clearShipOutline(){
-  for(const line of this.shipOutlines||[])line.removeFromParent();
-  this.shipOutlines=[];
+  if(this.shipSection)this.shipSection.outline.visible=false;
+  this.shipSection=null;
  }
  selectShipRegion(region){
   this.closePicker();this.clearShipOutline();
-  this.shipRegion=region;this.paintGroups=shipPaintGroups(this.world?.rig);
+  this.shipRegion=region;this.paintGroups??=shipPaintGroups(this.world?.rig);
   this.characterColors.hidden=true;this.characterCustom.hidden=true;this.characterFaces.hidden=true;
   for(const button of this.partList.querySelectorAll('button'))button.setAttribute('aria-pressed',String(button.dataset.part===region));
   this.partDescription.textContent=(shipCategories.find(([key])=>key===region)?.[1]||'Ship')+' · Colours';
   this.paintKey=this.paintGroups.has(region)||region==='exhaust'||region==='trails'?region:null;
   this.showShipEffectPreview(region);
-  this.shipFocus=null;
-  const meshes=this.paintGroups.get(region)?.meshes;
-  if(meshes?.length){
-   const bounds=new T.Box3(),part=new T.Box3();
-   this.outlineMaterial??=new T.LineBasicMaterial({color:0x9cddff,transparent:true,opacity:.9,depthWrite:false,toneMapped:false});
-   this.outlineCache??=new WeakMap();
-   for(const mesh of meshes){
-    bounds.union(part.setFromObject(mesh));
-    if(!this.outlineCache.has(mesh)){
-     const lines=new T.LineSegments(new T.EdgesGeometry(mesh.geometry,28),this.outlineMaterial);
-     lines.renderOrder=4;this.outlineCache.set(mesh,lines);
-    }
-    const lines=this.outlineCache.get(mesh);
-    mesh.add(lines);this.shipOutlines.push(lines);
-   }
-   if(!bounds.isEmpty())this.shipFocus=bounds.getCenter(new T.Vector3());
-  }
+  this.shipSection=this.shipSections?.get(region);
+  if(this.shipSection)this.shipSection.outline.visible=true;
   const rear=region==='exhaust'||region==='trails'||region==='lights';
   this.shipOrbitYaw=rear?-2.55:-.65;this.shipOrbitPitch=region==='cockpit'?.55:.36;
   this.renderShipPaint();
@@ -425,6 +478,7 @@ export class HomeExperiment{
  }
  renderShipPaint(){
   this.shipColors.replaceChildren();
+  this.shipCustom.hidden=!this.paintKey;
   if(!this.paintKey){
    this.shipColors.textContent='This ship has no parts in this category.';
    return;
@@ -437,14 +491,12 @@ export class HomeExperiment{
    button.setAttribute('aria-pressed',String(color===this.shipColor()));
    button.onclick=()=>this.chooseShipColor(color);swatches.append(button);
   }
-  const custom=document.createElement('button');custom.type='button';custom.className='homeCustomColor';custom.textContent='Custom Colour';
-  custom.onclick=()=>this.openPicker(this.shipColor(),color=>this.chooseShipColor(color));
-  this.shipColors.append(swatches,custom);
+  this.shipColors.append(swatches);
  }
  chooseShipColor(color){
   if(!isHexColor(color)||!this.paintKey)return;
   this.draftShipPaint[this.paintKey]=color;
-  applyShipPaint(this.world?.rig,this.draftShipPaint);
+  applyShipPaint(this.world?.rig,this.draftShipPaint,this.paintKey);
   this.world?.trailPreview?.setColor(this.draftShipPaint.trails);
   for(const button of this.shipColors.querySelectorAll('[data-ship-color]'))button.setAttribute('aria-pressed',String(button.dataset.shipColor===color));
  }
@@ -518,7 +570,7 @@ export class HomeExperiment{
    this.customize(false);
   }catch{this.root.querySelector('.homeNotice').textContent='Could not save on this device. Please try again.'}
  }
- async initScene(){const context=this.worldContext();if(this.world){this.mountCanvas();return}try{const {HomeWorld}=await import('./home-world.js?v=258');this.renderer=context.renderer;this.camera=new T.PerspectiveCamera(50,1,.05,300000);this.preview=new CapsuleCharacter();applyCharacterColor(this.preview,this.color,this.characterPaint);applyCharacterFace(this.preview,this.face);this.world=new HomeWorld(context,this.preview);this.scene=this.world.scene;await this.world.rig.ready;applyShipPaint(this.world.rig,this.shipPaint);this.mountCanvas()}catch(error){this.renderer=null;this.notify('Home preview could not load: '+error.message)}}
+ async initScene(){const context=this.worldContext();if(this.world){this.mountCanvas();return}try{const {HomeWorld}=await import('./home-world.js?v=259');this.renderer=context.renderer;this.camera=new T.PerspectiveCamera(50,1,.05,300000);this.preview=new CapsuleCharacter();applyCharacterColor(this.preview,this.color,this.characterPaint);applyCharacterFace(this.preview,this.face);this.world=new HomeWorld(context,this.preview);this.scene=this.world.scene;await this.world.rig.ready;applyShipPaint(this.world.rig,this.shipPaint);this.prepareShipSections();this.world.prepareShipDetails();this.mountCanvas()}catch(error){this.renderer=null;this.notify('Home preview could not load: '+error.message)}}
  mountCanvas(){const canvas=this.renderer?.domElement||this.renderer?.canvas;if(!canvas)return;if(canvas.parentElement!==this.host){this.canvasOrigin={parent:canvas.parentElement,next:canvas.nextSibling};this.homePixelRatio=this.renderer.getPixelRatio?.();this.host.append(canvas);if(this.worldContext()?.mobile&&this.homePixelRatio)this.renderer.setPixelRatio?.(this.homePixelRatio*.78)}}
  restoreCanvas(){const canvas=this.renderer?.domElement||this.renderer?.canvas,o=this.canvasOrigin;if(canvas&&o?.parent)o.parent.insertBefore(canvas,o.next?.parentElement===o.parent?o.next:null);if(this.homePixelRatio)this.renderer.setPixelRatio?.(this.homePixelRatio);this.homePixelRatio=null;this.canvasOrigin=null;this.width=0;this.height=0;this.cameraReady=false}
  updateCamera(w,h,dt=0,now=performance.now()){
@@ -530,11 +582,12 @@ export class HomeExperiment{
    target.copy(character).lerp(ship,.5);target.y+=1;
    position.copy(target).addScaledVector(this.offset.set(-18,8,-21),Math.max(1,h/w*.8));
   }else if(view==='ship'){
-   target.copy(this.shipFocus||ship);
-   if(!this.shipFocus)target.y+=.8;
+   if(this.shipSection)this.world.rig.model.localToWorld(target.copy(this.shipSection.center));
+   else{target.copy(ship);target.y+=.8;if(this.world.flightPreview)target.add(this.offset.set(0,0,2.5).applyQuaternion(this.world.rig.ship.quaternion));}
    const focused=this.shipRegion==='cockpit'||this.shipRegion==='lights';
    const distance=focused?9.5:14;
-   const elevation=this.shipOrbitPitch??.36,angle=this.shipOrbitYaw??-.65;
+   const elevation=this.shipOrbitPitch??.36;
+   const angle=(this.shipOrbitYaw??-.65)+(this.world.flightPreview?this.world.previewTime*.22:0);
    const flat=distance*Math.cos(elevation);
    position.copy(target).add(this.offset.set(flat*Math.sin(angle),distance*Math.sin(elevation),-flat*Math.cos(angle)));
   }else if(view==='character'){
@@ -562,7 +615,7 @@ export class HomeExperiment{
     this.cameraPanelWidth=this.customPanel.offsetWidth||this.customPanel.getBoundingClientRect().width||Math.min(340,w*.34);
     this.cameraPartsWidth=this.partsPanel.offsetWidth||this.partsPanel.getBoundingClientRect().width||Math.min(200,w*.22);
    }
-   const left=this.cameraPartsWidth+14,right=this.cameraPanelWidth+14;
+   const left=this.cameraPartsWidth+8,right=this.cameraPanelWidth+8;
    centerOffset=(left-right)/2;
    const available=Math.max(.2,1-(left+right)/w);
    const tangent=Math.tan(T.MathUtils.degToRad(fov/2));
@@ -572,13 +625,15 @@ export class HomeExperiment{
    if(distance>currentDistance)position.sub(target).multiplyScalar(distance/currentDistance).add(target);
   }
   const blend=!this.cameraReady||globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches?1:1-Math.exp(-dt*7);
+  this.cameraMoving=this.camera.position.distanceToSquared(position)>.001||this.cameraTarget.distanceToSquared(target)>.001;
   this.camera.position.lerp(position,blend);
   this.cameraTarget.lerp(target,blend);
   const nextFov=T.MathUtils.lerp(this.camera.fov,fov,blend),aspect=w/h;
   if(Math.abs(this.camera.fov-nextFov)>.01||this.camera.aspect!==aspect){
    this.camera.fov=nextFov;this.camera.aspect=aspect;this.camera.updateProjectionMatrix();
   }
-  const nextOffset=T.MathUtils.lerp(this.cameraCenterOffset||0,centerOffset,blend);
+  const offset=T.MathUtils.lerp(this.cameraCenterOffset||0,centerOffset,blend);
+  const nextOffset=Math.abs(offset-centerOffset)<.05?centerOffset:offset;
   if(nextOffset!==this.cameraCenterOffset||this.cameraViewWidth!==w||this.cameraViewHeight!==h){
    this.cameraCenterOffset=nextOffset;this.cameraViewWidth=w;this.cameraViewHeight=h;
    this.camera.setViewOffset(w,h,-nextOffset,0,w,h);
@@ -622,7 +677,11 @@ export class HomeExperiment{
   this.preview.group.rotation.y=this.yaw;
   this.updateCamera(w,h,dt,now);
   if(!this.drag)this.preview.torso.position.y=Math.sin(now*.002)*.012;
-  this.world.update(now*.001,dt,this.camera,{interacting:!!this.drag});
+  this.world.update(now*.001,dt,this.camera,{interacting:!!this.drag||this.cameraMoving});
+  if(this.world.flightPreview){
+   this.renderer.render(this.world.spaceScene,this.camera);
+   return;
+  }
   context.effects.entryHeat=0;context.effects.mobile=context.mobile;
   context.effects.render(this.scene,this.camera,context.quality);
  }

@@ -145,6 +145,7 @@ if(process.argv.includes('--home-only')){
  const saving=home.saveCustomization();
  const confirmation=document.querySelector('.customizationConfirm');
  assert.equal(confirmation.querySelector('.homeConfirmTotal strong').textContent,'20 FP');
+ assert(!confirmation.hasAttribute('aria-modal'),'the customization review allows interaction with other UI');
  assert.match(confirmation.querySelector('.homePaintConfirmation').textContent,/Torso.*20 FP/);
  assert.equal(home.economy.fp,fpBeforePaint,'showing confirmation does not charge');
  await confirmation.querySelector('form').onsubmit({preventDefault(){}});

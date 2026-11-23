@@ -1,4 +1,4 @@
-v0.0.281
-- Custom Colour Picker, Gradient Editor, and Save Confirmation open without dimming the background.
+v0.0.282
+- Custom Colour Picker, Gradient Editor, and Save Confirmation open without dimming or blocking the surrounding UI.
 - Redesigned the purchase menus for faces, Custom Colour, and the Gradient Editor.
 - The Play title and camera start together, and the camera keeps pulling away through the frame collision.

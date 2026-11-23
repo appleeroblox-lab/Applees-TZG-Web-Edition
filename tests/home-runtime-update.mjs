@@ -5,6 +5,15 @@ import {HomeExperiment} from '../public/home-experiment.js';
 import {mixCameraInput} from '../public/device-gyro.js';
 import {TerrainClouds} from '../public/terrain-clouds.js';
 import * as T from '../public/vendor/three.module.js';
+const playCamera=new T.PerspectiveCamera();
+playCamera.rotation.set(.2,.4,0);
+const initialRotation=playCamera.quaternion.clone();
+const move={camera:playCamera,playCamera:{start:100,origin:new T.Vector3(1,2,3),offset:new T.Vector3(0,3.5,7*Math.cos(Math.PI/6))}};
+HomeExperiment.prototype.updateCamera.call(move,844,390,0,900);
+assert(Math.abs(playCamera.position.y-3.75)<1e-8,'Sine InOut is halfway after 800 ms');
+HomeExperiment.prototype.updateCamera.call(move,844,390,0,1700);
+assert(Math.abs(playCamera.position.distanceTo(move.playCamera.origin)-7)<1e-8);
+assert(playCamera.quaternion.equals(initialRotation),'Play camera translates without rotation');
 assert.equal(semanticVersion(242),'v0.0.242');assert.equal(semanticVersion('0.1.2'),'v0.1.2');assert.equal(semanticVersion('bad'),null);
 const {document}=parseHTML('<html><body><div class="entryRelease"></div></body></html>');let requests=0;
 const tracker=installRuntimeVersions(document,async url=>{requests++;assert(url.endsWith('/rpc/tzg_backend_version'));return {ok:true,json:async()=>({version:'v0.0.1'})}});await tracker.ready;
@@ -25,6 +34,33 @@ assert(prompt.querySelector('[data-refresh]').closest('section').hidden);
 prompt.querySelector('[data-back]').onclick();
 assert(!prompt.querySelector('[data-refresh]').closest('section').hidden);
 await prompt.querySelector('[data-refresh]').onclick();assert(refreshed);
+const playDoc=parseHTML('<html><body><div id="lobby"><div class="homeChrome"></div></div></body></html>').document;
+const previousDocument=globalThis.document;
+globalThis.document=playDoc;
+Object.defineProperty(playDoc,'hidden',{value:true});
+const steps=[];
+playDoc.defaultView.HTMLElement.prototype.animate=function(keyframes,options){
+ steps.push([this.className||this.textContent,options.duration,keyframes]);
+ return {finished:Promise.resolve()};
+};
+try{
+ const lobby={root:playDoc.getElementById('lobby'),active:true,clearInputs(){},customize(){},dockChat(){},
+  dockBrand(){},restoreCanvas(){
+   assert(playDoc.querySelector('.homePlayStage').hidden,'old layers are hidden only after the cover arrives');
+   steps.push(['gameplay']);
+  }};
+ await HomeExperiment.prototype.play.call(lobby);
+ assert.deepEqual(steps.slice(0,5).map(([name,duration])=>[name,duration]),[
+  ['homePlayTransition',1600],['The Zero Gravity',460],['Web Edition',460],['homePlayFrameTop',300],['homePlayFrameBottom',300]
+ ]);
+ assert.equal(steps.find(([name])=>name==='homePlayFlash')[2][0].opacity,.95);
+ assert.deepEqual(steps.slice(-4).map(([name])=>name),['homePlayFrames','homePlayCover','gameplay','homePlayCover']);
+ assert(!lobby.active&&!playDoc.querySelector('.homePlayTransition'));
+}finally{
+ delete playDoc.defaultView.HTMLElement.prototype.animate;
+ if(previousDocument===undefined)delete globalThis.document;
+ else globalThis.document=previousDocument;
+}
 const label=document.createElement('small');label.id='runtimeVersions';document.body.append(label);installRuntimeVersions(document);assert.equal(requests,1,'reuse the backend result instead of polling each frame');assert(label.textContent.includes('v0.0.1'));
 const offline=parseHTML('<html><body><div class="entryRelease"></div></body></html>').document;await installRuntimeVersions(offline,async()=>{throw Error('offline')}).ready;assert(offline.querySelector('.entryRelease').textContent.endsWith('Backend Version: —'),'never invent a backend version from the client build');
 assert.deepEqual(mixCameraInput({roll:.2,pitch:.3},{x:.4,y:-.1}),{roll:.6000000000000001,pitch:.19999999999999998});assert.deepEqual(mixCameraInput({roll:1,pitch:-1},{x:1,y:-1}),{roll:1,pitch:-1});assert.deepEqual(mixCameraInput(null,null),{roll:0,pitch:0});

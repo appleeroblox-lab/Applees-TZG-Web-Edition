@@ -207,7 +207,7 @@ export function applyShipPaint(rig,paint,selectedRegion){
 export class HomeExperiment{
  constructor({debug,character,shipRig,setTrailColor=()=>{},trailTips,account=()=>null,accountCustomization=false,economy,backgroundBody=()=>null,worldContext=()=>null,openInventory,closeMenus=()=>{},applyExposure=()=>{},clearInputs=()=>{},notify=()=>{}}){
   Object.assign(this,{debug,character,shipRig,setTrailColor,trailTips,account,accountCustomization,economy,backgroundBody,worldContext,openInventory,closeMenus,applyExposure,clearInputs,notify});this.active=false;this.busy=false;this.customizing=false;this.yaw=0;this.orbit=0;this.pitch=.12;this.distance=5.8;this.smoother=new GyroSmoother();this.cameraTarget=new T.Vector3();this.nextPosition=new T.Vector3();this.nextTarget=new T.Vector3();this.offset=new T.Vector3();this.markerPoint=new T.Vector3();this.ownedCustomizations=new Set();this.shipPaint=accountCustomization?{}:readShipPaint();shipRig?.ready.then(()=>applyShipPaint(shipRig,this.shipPaint));this.setTrailColor(this.shipPaint.trails);this.face=accountCustomization?'Neutral':localStorage.getItem('tzg-character-face')||'Neutral';applyCharacterFace(character,this.face);this.color=accountCustomization?CHARACTER_COLORS[0]:savedCharacterColor();this.characterPaint=accountCustomization?{}:readCharacterPaint();applyCharacterColor(character,this.color,this.characterPaint);
-  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=274';document.head.append(sheet);
+  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=275';document.head.append(sheet);
   this.root=document.createElement('section');this.root.id='homeExperiment';this.root.hidden=true;this.root.setAttribute('aria-label','Home Page experiment');
   this.root.innerHTML=`<div class="homeScene" aria-label="Drag to rotate character"></div><div class="homeChrome"><div class="homeTop"><div class="homeBrand"></div><nav class="homeQuick" aria-label="Home menus"></nav></div><aside class="homeLeft"><button class="homeIdentity" type="button"><strong class="homeName"></strong><span class="homeId"></span><span class="homeBalance"></span></button><nav class="homeLinks" aria-label="Player menus"></nav></aside><aside class="homeNews"><small>Explore our universe</small><h2>Time Travel</h2><p>Discover the Proto Solar System</p><button type="button" data-home="mapBtn">Universe Map →</button></aside><footer class="homeBottom"><button type="button" data-home="chatToggle">Global Chat</button><button type="button" class="homePlay">▶ Play</button><button type="button" class="homeCustomize">Customization</button><button type="button" data-home="mapBtn">Universe Map</button></footer></div><section class="homeCustomization" hidden aria-label="Character customization"><header><h2>Character Customization</h2><button type="button" class="homeCustomClose" aria-label="Close customization">✕</button></header><p>Body Color</p><div class="homeColors" role="group" aria-label="Character colors"></div><p class="homeCustomHint">Drag your character to rotate · Saved on this device</p><div class="homeCustomActions"><button type="button" class="homeReset">Reset</button><button type="button" class="homeSave">Save</button></div></section><div class="homeNotice" role="status"></div>`;
   document.body.append(this.root);this.host=this.root.querySelector('.homeScene');
@@ -906,7 +906,69 @@ export class HomeExperiment{
  refresh(){const a=this.account(),profile=a?.profile;this.root.querySelector('.homeName').textContent=profile?.display_name||(a?.guest?storedGuestName():'')||'Guest';this.root.querySelector('.homeId').textContent=a?.guest?'Guest':profile?.public_id?'TZG-Id_'+profile.public_id:'';this.drawCurrencies();const avatar=this.root.querySelector('.homeAvatar');if(avatar&&avatar.dataset.value!==String(profile?.avatar)){setAvatar(avatar,profile?.avatar);avatar.dataset.value=String(profile?.avatar)}const p=globalThis.tzgPlayerProgress||a?.pages?.dashboard?.progress;if(this.root.querySelector('.homeLevel')){this.root.querySelector('.homeLevel').textContent=a?.guest?'Guest explorer':p?'Level '+p.level:'Explorer';this.root.querySelector('.homeXPText').textContent=p?Number(p.level_xp||0).toLocaleString()+' / '+(p.required_xp??'MAX')+' XP':'';this.root.querySelector('.homeXPTrack i').style.width=(p?Math.min(100,p.required_xp?(p.level_xp||0)/p.required_xp*100:100):0)+'%'}}
  async transition(change){if(this.busy)return;this.busy=true;this.fade.hidden=false;this.fade.classList.remove('homeFadeBlack');await new Promise(r=>requestAnimationFrame(()=>{this.fade.classList.add('homeFadeBlack');setTimeout(r,230)}));try{await change()}finally{await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));this.fade.classList.remove('homeFadeBlack');await new Promise(r=>setTimeout(r,230));this.fade.hidden=true;this.busy=false}}
  async open(){if(!this.debug.active||this.active||this.busy)return;this.sensor.request();await this.transition(async()=>{this.clearInputs();this.debug.root.hidden=true;this.active=true;this.root.hidden=false;document.body.classList.add('homeExperimentOpen');this.refresh();await this.initScene();this.root.classList.remove('homeChromeVisible');this.dockChat(true);this.dockBrand();this.setGround();const help=document.getElementById('homeMoreHelp');if(help)help.hidden=false;this.customizing=false;this.root.classList.remove('homeIsCustomizing');this.root.querySelector('.homeCustomization').hidden=true;this.gyroOrigin=null;this.smoother.reset();this.last=performance.now();this.frame()});requestAnimationFrame(()=>requestAnimationFrame(()=>this.root.classList.add('homeChromeVisible')))}
- async play(){if(!this.active||this.busy||this.leaving)return;this.leaving=true;try{this.root.classList.remove('homeChromeVisible');if(this.root.animate&&!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches)await this.root.animate([{opacity:1},{opacity:1}],{duration:320}).finished.catch(()=>{});await this.transition(()=>{this.customize(false);this.active=false;this.dockChat(false);this.dockBrand();this.restoreCanvas();const help=document.getElementById('homeMoreHelp');if(help)help.hidden=true;const more=document.getElementById('utilityMenu');if(more)more.hidden=true;this.root.hidden=true;document.body.classList.remove('homeExperimentOpen');globalThis.cancelAnimationFrame?.(this.raf);this.drag=null;this.clearInputs()})}finally{this.leaving=false}}
+ async play(){
+  if(!this.active||this.busy||this.leaving)return;
+  this.leaving=true;
+  this.root.classList.remove('homeChromeVisible');
+  this.root.classList.add('homePlayLeaving');
+  const chrome=this.root.querySelector('.homeChrome');
+  chrome.inert=true;
+  this.drag=null;
+  this.clearInputs();
+  const handoff=()=>{
+   this.customize(false);this.active=false;this.dockChat(false);this.dockBrand();this.restoreCanvas();
+   for(const id of ['homeMoreHelp','utilityMenu']){
+    const element=document.getElementById(id);if(element)element.hidden=true;
+   }
+   this.root.hidden=true;document.body.classList.remove('homeExperimentOpen');
+   globalThis.cancelAnimationFrame?.(this.raf);this.clearInputs();
+  };
+  let overlay;
+  try{
+   if(!this.root.animate||globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){handoff();return;}
+   overlay=document.createElement('div');overlay.className='homePlayTransition';overlay.setAttribute('aria-hidden','true');
+   overlay.innerHTML='<div class="homePlayStage"><div class="homePlayFrames"><div class="homePlayFrameTop"></div><div class="homePlayFrameBottom"></div></div><div class="homePlayTitles"><strong>The Zero Gravity</strong><span>Web Edition</span></div></div><div class="homePlayFlash"></div><div class="homePlayCover"></div>';
+   document.body.append(overlay);
+   const stage=overlay.querySelector('.homePlayStage');
+   const frames=overlay.querySelector('.homePlayFrames');
+   const flash=overlay.querySelector('.homePlayFlash');
+   const cover=overlay.querySelector('.homePlayCover');
+   const [title,edition]=overlay.querySelectorAll('.homePlayTitles > *');
+   const [top,bottom]=frames.children;
+   const animate=(element,keyframes,duration,easing='cubic-bezier(.22,.61,.36,1)')=>
+    element.animate(keyframes,{duration,easing,fill:'both'}).finished.catch(()=>{});
+   if(this.cameraReady&&this.camera){
+    const offset=this.camera.getWorldDirection(new T.Vector3()).negate();
+    offset.y=0;
+    if(offset.lengthSq()<1e-6)offset.set(0,0,1);
+    offset.normalize().multiplyScalar(7*Math.cos(Math.PI/6));offset.y=7*Math.sin(Math.PI/6);
+    this.playCamera={start:performance.now(),origin:this.camera.position.clone(),offset};
+   }
+   await animate(overlay,[{opacity:1},{opacity:1}],1600,'linear');
+   await Promise.all([
+    animate(title,[{transform:'translateX(-110vw)'},{transform:'translateX(0)'}],460),
+    animate(edition,[{transform:'translateX(110vw)'},{transform:'translateX(0)'}],460)
+   ]);
+   await Promise.all([
+    animate(top,[{transform:'translateY(-101%)'},{transform:'translateY(0)'}],300,'cubic-bezier(.42,0,.65,1)'),
+    animate(bottom,[{transform:'translateY(101%)'},{transform:'translateY(0)'}],300,'cubic-bezier(.42,0,.65,1)')
+   ]);
+   await Promise.all([
+    animate(flash,[{opacity:.95},{opacity:0}],180),
+    animate(stage,[{transform:'translate(0)'},{transform:'translate(4px,-2px)'},{transform:'translate(-3px,2px)'},{transform:'translate(2px,0)'},{transform:'translate(0)'}],180,'linear')
+   ]);
+   await animate(frames,[{transform:'scale(1)'},{transform:'scale(1.12)'}],220);
+   await animate(cover,[{opacity:1,transform:'scale(.8)'},{opacity:1,transform:'scale(1.01)'}],220);
+   stage.hidden=true;
+   handoff();
+   if(!document.hidden)await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   await animate(cover,[{opacity:1,transform:'scale(1.01)'},{opacity:0,transform:'scale(1.01)'}],360);
+  }finally{
+   if(this.active)handoff();
+   overlay?.remove();this.playCamera=null;chrome.inert=false;
+   this.root.classList.remove('homePlayLeaving');this.leaving=false;
+  }
+ }
  openMenu(id){if(this.customizing||this.busy)return;if(id==='home-settings'){document.getElementById('brand')?.click();return}if(id==='inventoryBtn'){this.openInventory();return}const original=document.getElementById(id);if(original&&!original.disabled)original.click();else this.notify('This menu is not available for this account.')}
  customize(open){
   if(!this.active)return;
@@ -966,6 +1028,13 @@ export class HomeExperiment{
  mountCanvas(){const canvas=this.renderer?.domElement||this.renderer?.canvas;if(!canvas)return;if(canvas.parentElement!==this.host){this.canvasOrigin={parent:canvas.parentElement,next:canvas.nextSibling};this.homePixelRatio=this.renderer.getPixelRatio?.();this.host.append(canvas);if(this.worldContext()?.mobile&&this.homePixelRatio)this.renderer.setPixelRatio?.(this.homePixelRatio*.78)}}
  restoreCanvas(){const canvas=this.renderer?.domElement||this.renderer?.canvas,o=this.canvasOrigin;if(canvas&&o?.parent)o.parent.insertBefore(canvas,o.next?.parentElement===o.parent?o.next:null);if(this.homePixelRatio)this.renderer.setPixelRatio?.(this.homePixelRatio);this.homePixelRatio=null;this.canvasOrigin=null;this.width=0;this.height=0;this.cameraReady=false}
  updateCamera(w,h,dt=0,now=performance.now()){
+  if(this.playCamera){
+   const {start,origin,offset}=this.playCamera;
+   const progress=T.MathUtils.clamp((now-start)/1600,0,1);
+   this.camera.position.copy(origin).addScaledVector(offset,(1-Math.cos(Math.PI*progress))/2);
+   this.camera.updateMatrixWorld();
+   return;
+  }
   const character=this.preview.group.position,ship=this.world.rig.ship.position;
   const view=this.customizing?this.customView:null;
   const position=this.nextPosition,target=this.nextTarget;

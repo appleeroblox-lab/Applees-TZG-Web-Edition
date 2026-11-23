@@ -1,3 +1,5 @@
+import {bodies} from '../public/catalog.js';
+import {createProtoBodies} from '../public/proto-data.js';
 import assert from 'node:assert/strict';import fs from 'node:fs/promises';import {PGlite} from '@electric-sql/pglite';
 const db=new PGlite();await db.exec(`create role anon;create role authenticated;create role service_role;create schema auth;create table auth.users(id uuid primary key,email text,created_at timestamptz default now(),email_confirmed_at timestamptz,phone_confirmed_at timestamptz,is_anonymous boolean default false,raw_user_meta_data jsonb default '{}');create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade);create table auth.identities(user_id uuid references auth.users(id) on delete cascade,provider text);create function auth.uid() returns uuid language sql stable as $$select(nullif(current_setting('request.jwt.claims',true),'')::jsonb->>'sub')::uuid$$;create function auth.jwt() returns jsonb language sql stable as $$select nullif(current_setting('request.jwt.claims',true),'')::jsonb$$;grant usage on schema auth to authenticated;grant execute on all functions in schema auth to authenticated;create schema cron;create table cron.job(jobname text primary key,schedule text,command text);create function cron.schedule(text,text,text) returns bigint language plpgsql as $$begin insert into cron.job values($1,$2,$3) on conflict(jobname) do update set schedule=excluded.schedule,command=excluded.command;return 1;end;$$;`);
 for(const file of (await fs.readdir('supabase/migrations')).filter(f=>!f.includes('mobile_push')).sort()){let sql=await fs.readFile('supabase/migrations/'+file,'utf8');sql=sql.replace(/create extension if not exists pg_cron[^;]*;/gi,'');try{await db.exec(sql)}catch(e){throw Error(file+': '+e.message)}}
@@ -35,6 +37,17 @@ assert.deepEqual((await state()).unlocks,[]);
 await assert.rejects(rpc('tzg_customization_save',['character','{}','Neutral']),/permission/);
 await assert.rejects(save('character',{},0,'Happy'),/Unlock this face/);
 await assert.rejects(save('ship',{wings:'#123456'},100),/Unlock Custom Colours/);
+// Home Page purchases and Leave flush the full wallet before proceeding.
+const inventory=[...bodies,...createProtoBodies(bodies)]
+ .filter(body=>body.solid)
+ .map(body=>({body:body.id,type:'iron',qty:1}));
+const wallet={fp:2000,rc:1000,inventory};
+const startingRevision=(await load()).revision;
+await assert.rejects(rpc('tzg_player_save',[accounts[0],startingRevision,crypto.randomUUID(),{
+ ...wallet,inventory:[{body:'Invented world',type:'iron',qty:1}]
+}]),/Unknown item or celestial body/);
+const savedWallet=await rpc('tzg_player_save',[accounts[0],startingRevision,crypto.randomUUID(),wallet]);
+assert.equal(savedWallet.revision,startingRevision+1);
 const faceRevision=(await load()).revision,faceMutation=crypto.randomUUID();
 const face=await buy('face:Happy',faceMutation,faceRevision);
 assert.equal(face.state.fp,1750);
@@ -56,6 +69,7 @@ assert.equal(savedCharacter.state.fp,1630);
 await assert.rejects(save('ship',{wings:'#123456'},100),/Unlock Custom Colours/);
 const gradient=await buy('ship:gradient');
 assert.equal(gradient.state.rc,300);
+assert.deepEqual(gradient.state.inventory,inventory);
 const stops=[{position:0,color:'#123456'},{position:1,color:'#abcdef'}];
 const ship=await save('ship',{wings:'#57b9ff',trails:stops,exhaust:'#57b9ff'},450,null,['wings','trails','exhaust']);
 assert.equal(ship.state.fp,1180);

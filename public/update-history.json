@@ -10,7 +10,8 @@
       "title": "Surface and on-foot performance",
       "changes": [
         "Reduced terrain and scenery rendering load on mobile while flying over bodies or exploring on foot.",
-        "Optimized on-foot camera collision near ships and reduced repeated label and ground-weather updates."
+        "Optimized on-foot camera collision near ships and reduced repeated label and ground-weather updates.",
+        "Mobile terrain now loads in smaller batches and uses a lighter rendering path outside atmospheric entry."
       ],
       "source": {
         "kind": "current release"

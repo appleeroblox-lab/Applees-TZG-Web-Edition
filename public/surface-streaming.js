@@ -24,7 +24,24 @@ export class SurfaceStream{
  setGrassAmount(value){this.collisionRevision++;const amount=Number(value);this.grassAmount=Math.max(0,Math.min(100,Number.isFinite(amount)?amount:30));for(const group of this.chunks.values()){const mesh=group.userData.scenery;if(mesh){disposeChunk(mesh);group.remove(mesh);group.userData.scenery=null}}this.visibilityAt=null;this.treeCache=null;}
  setRadius(value){this.radius=T.MathUtils.clamp(Math.round(Number(value)||2),1,4);this.last='';this.visibilityAt=null;try{localStorage.setItem('zero-gravity-terrain-radius',String(this.radius))}catch{}}
  clear(){this.view.cloudField?.clear();this.distant.clear();this.collisionRevision++;for(const g of this.chunks.values()){disposeChunk(g);this.group.remove(g)}this.chunks.clear();this.last='';this.visibilityAt=null}
- update(pos,quality='Medium',{mobile=false,compatibility=false}={}){const body=this.view.session.body,budget=sceneryBudget(quality,mobile,compatibility),policy=quality+':'+mobile+':'+compatibility+':'+this.decorations+':'+this.grassAmount;if(body!==this.body||policy!==this.policy){this.clear();this.body=body;this.policy=policy;this.last=''}if(!body?.solid){this.distant.clear();return}this.distant.update(body,pos);this.grassCount=Math.round((mobile||compatibility?graphicsPolicy(quality).mobileGrass*.55:graphicsPolicy(quality).grass)*this.grassAmount/100);const [cx,cz]=chunkKey(pos.x,pos.z).split(',').map(Number),radius=airlessTerrainRadius(body,this.radius??graphicsPolicy(quality).terrainRadius,Math.max(0,pos.y-surfaceHeight(pos.x,pos.z)),this.radius===null&&(mobile||compatibility)?3:4),key=body.id+cx+','+cz+radius;this.view.session.terrainFog=terrainFog(radius);this.view.session.terrainRadius=radius;this.view.session.prospecting?.economy.discoverVillages(body,pos,mobile?1:radius);if(key!==this.last){this.last=key;const needed=new Set();for(let z=cz-radius;z<=cz+radius;z++)for(let x=cx-radius;x<=cx+radius;x++){const id=x+','+z;needed.add(id);if(!this.chunks.has(id)){const g=this.make(body,x,z);this.chunks.set(id,g);this.group.add(g)}}for(const [id,g] of this.chunks)if(!needed.has(id)){disposeChunk(g);this.group.remove(g);this.chunks.delete(id)}this.visibilityAt=null}
+ update(pos,quality='Medium',{mobile=false,compatibility=false,incremental=false}={}){const body=this.view.session.body,budget=sceneryBudget(quality,mobile,compatibility),policy=quality+':'+mobile+':'+compatibility+':'+this.decorations+':'+this.grassAmount;if(body!==this.body||policy!==this.policy){this.clear();this.body=body;this.policy=policy;this.last=''}if(!body?.solid){this.distant.clear();return}this.distant.update(body,pos);this.grassCount=Math.round((mobile||compatibility?graphicsPolicy(quality).mobileGrass*.55:graphicsPolicy(quality).grass)*this.grassAmount/100);const [cx,cz]=chunkKey(pos.x,pos.z).split(',').map(Number),radius=airlessTerrainRadius(body,this.radius??graphicsPolicy(quality).terrainRadius,Math.max(0,pos.y-surfaceHeight(pos.x,pos.z)),this.radius===null&&(mobile||compatibility)?3:4),key=body.id+cx+','+cz+radius;this.view.session.terrainFog=terrainFog(radius);this.view.session.terrainRadius=radius;this.view.session.prospecting?.economy.discoverVillages(body,pos,mobile?1:radius);if(key!==this.last){
+  this.last=key;
+  const needed=new Map();
+  for(let z=cz-radius;z<=cz+radius;z++)for(let x=cx-radius;x<=cx+radius;x++)needed.set(x+','+z,[x,z]);
+  for(const [id,g] of this.chunks)if(!needed.has(id)){disposeChunk(g);this.group.remove(g);this.chunks.delete(id)}
+  this.pendingChunks=[...needed].filter(([id])=>!this.chunks.has(id))
+   .sort(([,a],[,b])=>Math.max(Math.abs(a[0]-cx),Math.abs(a[1]-cz))-Math.max(Math.abs(b[0]-cx),Math.abs(b[1]-cz)));
+  this.visibilityAt=null;
+ }
+ let outerBudget=incremental?2:Infinity;
+ while(this.pendingChunks?.length){
+  const [id,[x,z]]=this.pendingChunks[0];
+  const nearby=Math.abs(x-cx)<=1&&Math.abs(z-cz)<=1;
+  if(!nearby&&outerBudget--<=0)break;
+  this.pendingChunks.shift();
+  const g=this.make(body,x,z);
+  this.chunks.set(id,g);this.group.add(g);this.visibilityAt=null;
+ }
  this.view.cloudField?.sync(this.chunks,pos,this.view.cloudTime||0,graphicsPolicy(quality).clouds);
  const economy=this.view.session.prospecting?.economy,revision=(economy?.cycle||0)+':'+(economy?.treeRevision||0);if(revision!==this.treeRevision){this.collisionRevision++;this.treeRevision=revision;for(const g of this.chunks.values()){const mesh=g.userData.scenery;if(mesh){disposeChunk(mesh);g.remove(mesh);g.userData.scenery=null}}this.visibilityAt=null}
  // Avoid touching scene visibility every frame while standing still.

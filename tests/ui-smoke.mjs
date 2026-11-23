@@ -39,6 +39,8 @@ if(process.argv.includes('--home-only')){
  home.openMenu('mapBtn');assert($('mapDialog').hasAttribute('open'),'reuse real Universe Map');$('mapDialog').close();home.openMenu('inventoryBtn');assert($('inventoryDialog').hasAttribute('open'));$('inventoryDialog').close();
  home.customize(true);home.modelButtons[0].click();const custom=home.shipCustom;assert(custom,'ship exposes a built-in picker');custom.click();assert(!home.picker.hidden);assert(!home.customPanel.contains(home.picker));home.pickerHex.value='#35b6a4';home.pickerHex.oninput();home.closePicker();
  if(desktop){
+  home.partList.querySelector('[data-part=cockpitWindow]').click();
+  assert(home.paintGroups.get('cockpitWindow').meshes.length>0,'Cockpit Window can be painted independently');
   home.partList.querySelector('[data-part=redParts]').click();
   home.chooseShipColor('#aa5511');
   const reds=home.paintGroups.get('redParts').meshes;
@@ -81,6 +83,10 @@ if(process.argv.includes('--home-only')){
  const movingSeat=home.world.rig.model.localToWorld(home.shipSeat.clone());
  assert(home.cameraTarget.distanceTo(movingSeat)<1e-6,'camera follows the moving seat without trailing');
  assert(Math.abs(movingSeat.project(home.camera).x)<1e-6,'seat projects at screen center');
+ const beforeZoom=home.camera.position.distanceTo(home.cameraTarget);
+ home.zoomPreview(.75);
+ home.updateCamera(844,390,1/30);
+ assert(home.camera.position.distanceTo(home.cameraTarget)<beforeZoom,'flight preview zooms toward the seat');
  const trails=home.world.trailPreview.positions;
  for(const [wing,tip] of home.world.rig.shipTrailTips.entries()){
   assert(new THREE.Vector3().fromBufferAttribute(trails,wing*17).distanceTo(tip)<.00001,'trail head remains attached to the wingtip');

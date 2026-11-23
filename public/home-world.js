@@ -17,7 +17,6 @@ export class HomeWorld{
   this.context=context;this.character=character;
   this.flight=new Flight(context.bodies);this.session=new SurfaceSession(this.flight);
   this.rig=makeShip();this.session.shipRig=this.rig;
-  this.rig.shipTrailTips=[new T.Vector3(-3.7,-.76,2.15),new T.Vector3(3.7,-.76,2.15)];
   this.trailPreview=new WarpShipMotion(this.rig.ship);
   this.rig.trailPreview=this.trailPreview.trails;
   this.flightPreview=null;this.previewTime=0;
@@ -107,23 +106,6 @@ export class HomeWorld{
   });
   for(const {mesh,light} of this.shipLights)mesh.add(light);
 
-  const wingNames=['Wing_Tip_Red_R','Wing_Tip_Red_L'];
-  this.rig.model.updateWorldMatrix(true,true);
-  const inverse=this.rig.model.matrixWorld.clone().invert(),matrix=new T.Matrix4();
-  this.rig.model.traverse(mesh=>{
-   for(const {name,start,count} of mesh.userData.sourceParts||[]){
-    const wing=wingNames.indexOf(name);
-    if(wing<0)continue;
-    matrix.multiplyMatrices(inverse,mesh.matrixWorld);
-    const tip=this.rig.shipTrailTips[wing],positions=mesh.geometry.attributes.position;
-    let best=-Infinity;
-    for(let i=start;i<start+count;i++){
-     point.fromBufferAttribute(positions,i).applyMatrix4(matrix);
-     const score=Math.abs(point.x)+point.z*.45;
-     if(score>best){best=score;tip.copy(point);}
-    }
-   }
-  });
  }
  setFlightPreview(mode){
   if(this.flightPreview===mode)return;
@@ -157,7 +139,10 @@ export class HomeWorld{
   for(const flame of this.rig.flames)flame.scale.z=1.03+Math.sin(time*25)*.2;
   for(let wing=0;wing<2;wing++){
    const tip=this.rig.shipTrailTips[wing];
-   for(let i=0;i<17;i++)this.trailPreview.positions.setXYZ(wing*17+i,tip.x,tip.y,tip.z+i*1.5);
+   for(let i=0;i<17;i++){
+    const age=i/16,phase=time*6-age*9;
+    this.trailPreview.positions.setXYZ(wing*17+i,tip.x+Math.sin(phase)*age*.16,tip.y+Math.cos(phase)*age*.12,tip.z+i*1.5);
+   }
   }
   this.trailPreview.updateRibbon();
   this.previewStreaks.position.copy(ship.position);

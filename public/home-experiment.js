@@ -53,13 +53,14 @@ function originalShipColour(mesh,region){
 }
 const shipCategories=[
  ...shipColourGroups,
- ['body','Body'],['wings','Wings'],['cockpit','Cockpit'],['tail','Tail'],
+ ['body','Body'],['wings','Wings'],['cockpit','Cockpit'],['cockpitWindow','Cockpit Window'],['tail','Tail'],
  ['accents','Accents'],['lights','Lights'],['exhaust','Engine Fire'],['trails','Trails'],
 ];
 function materialRegion(name,mesh){
  if(mesh.userData.neonPart||/^Wing_Navigation_Light/.test(name))return 'lights';
  if(/^Wing_/.test(name))return 'wings';
  if(/^Tail_/.test(name))return 'tail';
+ if(/^(Windshield|Side_Glass|Canopy_Glass)/.test(name))return 'cockpitWindow';
  if(/^(Canopy_|Windshield|Side_Glass|Cabin_|Dashboard|Display|Seat_|Armrest|Headrest|Joystick|Rudder|Switch_Shelf)/.test(name))return 'cockpit';
  if(/Red|Band|Collar|Rim/.test(name)||mesh.name.startsWith('Carbon'))return 'accents';
  return 'body';
@@ -202,9 +203,9 @@ export function applyShipPaint(rig,paint,selectedRegion){
 }
 
 export class HomeExperiment{
- constructor({debug,character,shipRig,setTrailColor=()=>{},trailTips,account=()=>null,economy,backgroundBody=()=>null,worldContext=()=>null,openInventory,clearInputs=()=>{},notify=()=>{}}){
-  Object.assign(this,{debug,character,shipRig,setTrailColor,trailTips,account,economy,backgroundBody,worldContext,openInventory,clearInputs,notify});this.active=false;this.busy=false;this.customizing=false;this.yaw=0;this.orbit=0;this.pitch=.12;this.distance=5.8;this.smoother=new GyroSmoother();this.cameraTarget=new T.Vector3();this.nextPosition=new T.Vector3();this.nextTarget=new T.Vector3();this.offset=new T.Vector3();this.markerPoint=new T.Vector3();this.shipPaint=readShipPaint();shipRig?.ready.then(()=>applyShipPaint(shipRig,this.shipPaint));this.setTrailColor(this.shipPaint.trails);this.face=localStorage.getItem('tzg-character-face')||'Neutral';applyCharacterFace(character,this.face);this.color=savedCharacterColor();this.characterPaint=readCharacterPaint();applyCharacterColor(character,this.color,this.characterPaint);
-  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=258';document.head.append(sheet);
+ constructor({debug,character,shipRig,setTrailColor=()=>{},trailTips,account=()=>null,economy,backgroundBody=()=>null,worldContext=()=>null,openInventory,closeMenus=()=>{},clearInputs=()=>{},notify=()=>{}}){
+  Object.assign(this,{debug,character,shipRig,setTrailColor,trailTips,account,economy,backgroundBody,worldContext,openInventory,closeMenus,clearInputs,notify});this.active=false;this.busy=false;this.customizing=false;this.yaw=0;this.orbit=0;this.pitch=.12;this.distance=5.8;this.smoother=new GyroSmoother();this.cameraTarget=new T.Vector3();this.nextPosition=new T.Vector3();this.nextTarget=new T.Vector3();this.offset=new T.Vector3();this.markerPoint=new T.Vector3();this.shipPaint=readShipPaint();shipRig?.ready.then(()=>applyShipPaint(shipRig,this.shipPaint));this.setTrailColor(this.shipPaint.trails);this.face=localStorage.getItem('tzg-character-face')||'Neutral';applyCharacterFace(character,this.face);this.color=savedCharacterColor();this.characterPaint=readCharacterPaint();applyCharacterColor(character,this.color,this.characterPaint);
+  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=264';document.head.append(sheet);
   this.root=document.createElement('section');this.root.id='homeExperiment';this.root.hidden=true;this.root.setAttribute('aria-label','Home Page experiment');
   this.root.innerHTML=`<div class="homeScene" aria-label="Drag to rotate character"></div><div class="homeChrome"><div class="homeTop"><div class="homeBrand"></div><nav class="homeQuick" aria-label="Home menus"></nav></div><aside class="homeLeft"><button class="homeIdentity" type="button"><strong class="homeName"></strong><span class="homeId"></span><span class="homeBalance"></span></button><nav class="homeLinks" aria-label="Player menus"></nav></aside><aside class="homeNews"><small>Explore our universe</small><h2>Time Travel</h2><p>Discover the Proto Solar System</p><button type="button" data-home="mapBtn">Universe Map →</button></aside><footer class="homeBottom"><button type="button" data-home="chatToggle">Global Chat</button><button type="button" class="homePlay">▶ Play</button><button type="button" class="homeCustomize">Customization</button><button type="button" data-home="mapBtn">Universe Map</button></footer></div><section class="homeCustomization" hidden aria-label="Character customization"><header><h2>Character Customization</h2><button type="button" class="homeCustomClose" aria-label="Close customization">✕</button></header><p>Body Color</p><div class="homeColors" role="group" aria-label="Character colors"></div><p class="homeCustomHint">Drag your character to rotate · Saved on this device</p><div class="homeCustomActions"><button type="button" class="homeReset">Reset</button><button type="button" class="homeSave">Save</button></div></section><div class="homeNotice" role="status"></div>`;
   document.body.append(this.root);this.host=this.root.querySelector('.homeScene');
@@ -212,6 +213,7 @@ export class HomeExperiment{
   const brand=document.getElementById('brand')?.cloneNode(true);if(brand){brand.id='homeGameTitle';brand.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));brand.removeAttribute('style');brand.onclick=null;brand.setAttribute('aria-label','The Zero Gravity Web Edition');this.root.querySelector('.homeBrand').append(brand)}
   const add=(selector,label,id)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.home=id;const source=document.getElementById(id),icon=source?.querySelector('img');if(icon){const copy=icon.cloneNode(true);copy.removeAttribute('id');b.prepend(copy)}this.root.querySelector(selector).append(b)};
   for(const [label,id] of [['Friends','friendsBtn'],['Account','accountBtn'],['Help','helpBtn'],['More','menuBtn']])add('.homeQuick',label,id);
+  add('.homeQuick','Debug','home-debug');
   for(const [label,id] of [['Achievements','achievementsBtn'],['Daily Rewards','dailyRewardsOpen'],['Inventory','inventoryBtn'],['Settings','home-settings']])add('.homeLinks',label,id);
   this.root.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>this.openMenu(b.dataset.home));
   this.root.querySelector('.homeIdentity').onclick=()=>this.openMenu('accountBtn');this.root.querySelector('.homePlay').onclick=()=>this.play();this.root.querySelector('.homeCustomize').onclick=()=>this.customize(true);
@@ -237,7 +239,7 @@ export class HomeExperiment{
   const end=e=>{if(this.drag?.id===e.pointerId)this.drag=null};
   for(const type of ['pointerup','pointercancel','lostpointercapture'])this.host.addEventListener(type,end);
   this.sensor=deviceGyro();this.unsubscribe=this.sensor.subscribe(sample=>{if(!this.active)return;if(!this.gyroOrigin)this.gyroOrigin=sample;const axes=this.sensor.axes(this.gyroOrigin,sample);this.gyro={x:T.MathUtils.clamp(axes.roll,-.08,.08),y:T.MathUtils.clamp(axes.pitch,-.06,.06)}});
-  this.onKey=e=>{if(!this.active)return;if(e.code==='Escape'&&this.picker&&!this.picker.hidden){e.preventDefault();e.stopImmediatePropagation();this.closePicker();return}if(e.target.closest?.('input,textarea,select'))return;if(e.code==='Escape'&&this.gradientEditor&&!this.gradientEditor.hidden){e.preventDefault();this.closeGradientEditor();return}if(e.code==='Escape'&&this.customizing){e.preventDefault();this.customize(false)}if(!e.target.closest?.('dialog,[role="dialog"],#friendsPanel,#globalChat'))e.stopImmediatePropagation()};window.addEventListener('keydown',this.onKey,true);this.upgradeLayout();this.installCustomization();this.installShipCustomization();this.installColorPicker();this.refresh();
+  this.onKey=e=>{if(!this.active||e.target.closest?.('#debugWindow,#debugAuthorization'))return;if(e.code==='Escape'&&this.picker&&!this.picker.hidden){e.preventDefault();e.stopImmediatePropagation();this.closePicker();return}if(e.target.closest?.('input,textarea,select'))return;if(e.code==='Escape'&&this.gradientEditor&&!this.gradientEditor.hidden){e.preventDefault();this.closeGradientEditor();return}if(e.code==='Escape'&&this.customizing){e.preventDefault();this.customize(false)}if(!e.target.closest?.('dialog,[role="dialog"],#friendsPanel,#globalChat'))e.stopImmediatePropagation()};window.addEventListener('keydown',this.onKey,true);this.upgradeLayout();this.installCustomization();this.installShipCustomization();this.installColorPicker();this.refresh();
  }
  hitsCharacter(x,y){
   const group=this.preview?.group;
@@ -271,9 +273,31 @@ export class HomeExperiment{
   const help=document.createElement('button');help.type='button';help.id='homeMoreHelp';help.textContent='Help';help.hidden=true;help.onclick=()=>document.getElementById('helpBtn')?.click();document.getElementById('utilityMenu')?.append(help);
   this.chatDock=document.createElement('section');this.chatDock.className='homeChatDock';this.chatDock.setAttribute('aria-label','Home Global Chat');this.root.append(this.chatDock);
   this.root.querySelector('.homeQuick [data-home="mapBtn"]')?.remove();const mapButton=this.root.querySelector('.homeBottom [data-home="mapBtn"]');if(mapButton)mapButton.classList.add('homeMapButton');this.root.querySelector('.homeBottom [data-home="chatToggle"]')?.remove();
-  this.host.addEventListener('wheel',e=>{if(!this.active||this.customizing)return;e.preventDefault();this.distance=T.MathUtils.clamp(this.distance+e.deltaY*.008,4,16)},{passive:false});
+  this.host.addEventListener('wheel',e=>{
+   if(!this.active)return;
+   if(this.world?.flightPreview){e.preventDefault();this.zoomPreview(Math.exp(e.deltaY*.0018));}
+   else if(!this.customizing){e.preventDefault();this.distance=T.MathUtils.clamp(this.distance+e.deltaY*.008,4,16);}
+  },{passive:false});
+  const touches=new Map();
+  this.host.addEventListener('pointerdown',e=>{
+   if(e.pointerType!=='touch'||!this.world?.flightPreview)return;
+   touches.set(e.pointerId,new T.Vector2(e.clientX,e.clientY));
+   this.host.setPointerCapture?.(e.pointerId);
+   if(touches.size===2)this.drag=null;
+  },true);
+  this.host.addEventListener('pointermove',e=>{
+   const point=touches.get(e.pointerId);
+   if(!point)return;
+   const other=[...touches.entries()].find(([id])=>id!==e.pointerId)?.[1];
+   const before=other?point.distanceTo(other):0;
+   point.set(e.clientX,e.clientY);
+   const after=other?point.distanceTo(other):0;
+   if(before>0&&after>0)this.zoomPreview(before/after);
+  });
+  for(const type of ['pointerup','pointercancel','lostpointercapture'])this.host.addEventListener(type,e=>touches.delete(e.pointerId));
  }
  dockBrand(){if(!this.brand||!this.brandOrigin)return;const map=document.getElementById('mapDialog');if(map?.open||map?.hasAttribute('open'))return;const parent=this.active?this.root.querySelector('.homeBrand'):this.brandOrigin.parent;if(this.brand.parentElement!==parent)parent.insertBefore(this.brand,this.active?null:this.brandOrigin.next?.parentElement===parent?this.brandOrigin.next:null)}
+ zoomPreview(factor){this.previewZoom=T.MathUtils.clamp((this.previewZoom??1)*factor,.55,2.2)}
  dockChat(on){const toggle=document.getElementById('chatToggle');if(!toggle)return;if(on){this.chatOrigin={parent:toggle.parentElement,next:toggle.nextSibling};this.root.querySelector('.homeTitleActions').append(toggle)}else if(this.chatOrigin){const o=this.chatOrigin;o.parent.insertBefore(toggle,o.next?.parentElement===o.parent?o.next:null);this.chatOrigin=null}}
  installCustomization(){
   const panel=this.root.querySelector('.homeCustomization');
@@ -686,6 +710,7 @@ export class HomeExperiment{
   for(const button of this.shipColors.querySelectorAll('[data-ship-color]'))button.setAttribute('aria-pressed',String(button.dataset.shipColor===color));
  }
  showShipEffectPreview(region){
+  if(!this.world?.flightPreview)this.previewZoom=1;
   this.world?.setFlightPreview(region==='trails'||region==='exhaust'?region:null);
   this.world?.trailPreview.setColor(this.draftShipPaint?.trails);
  }
@@ -723,7 +748,7 @@ export class HomeExperiment{
  async transition(change){if(this.busy)return;this.busy=true;this.fade.hidden=false;this.fade.classList.remove('homeFadeBlack');await new Promise(r=>requestAnimationFrame(()=>{this.fade.classList.add('homeFadeBlack');setTimeout(r,230)}));try{await change()}finally{await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));this.fade.classList.remove('homeFadeBlack');await new Promise(r=>setTimeout(r,230));this.fade.hidden=true;this.busy=false}}
  async open(){if(!this.debug.active||this.active||this.busy)return;this.sensor.request();await this.transition(async()=>{this.clearInputs();this.debug.root.hidden=true;this.active=true;this.root.hidden=false;document.body.classList.add('homeExperimentOpen');this.refresh();await this.initScene();this.root.classList.remove('homeChromeVisible');this.dockChat(true);this.dockBrand();this.setGround();const help=document.getElementById('homeMoreHelp');if(help)help.hidden=false;this.customizing=false;this.root.classList.remove('homeIsCustomizing');this.root.querySelector('.homeCustomization').hidden=true;this.gyroOrigin=null;this.smoother.reset();this.last=performance.now();this.frame()});requestAnimationFrame(()=>requestAnimationFrame(()=>this.root.classList.add('homeChromeVisible')))}
  async play(){if(!this.active||this.busy||this.leaving)return;this.leaving=true;try{this.root.classList.remove('homeChromeVisible');if(this.root.animate&&!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches)await this.root.animate([{opacity:1},{opacity:1}],{duration:320}).finished.catch(()=>{});await this.transition(()=>{this.customize(false);this.active=false;this.dockChat(false);this.dockBrand();this.restoreCanvas();const help=document.getElementById('homeMoreHelp');if(help)help.hidden=true;const more=document.getElementById('utilityMenu');if(more)more.hidden=true;this.root.hidden=true;document.body.classList.remove('homeExperimentOpen');globalThis.cancelAnimationFrame?.(this.raf);this.drag=null;this.clearInputs()})}finally{this.leaving=false}}
- openMenu(id){if(this.customizing||this.busy)return;if(id==='home-settings'){document.getElementById('brand')?.click();return}if(id==='inventoryBtn'){this.openInventory();return}const original=document.getElementById(id);if(original&&!original.disabled)original.click();else this.notify('This menu is not available for this account.')}
+ openMenu(id){if(this.customizing||this.busy)return;if(id==='home-debug'){if(this.debug.active)this.debug.open();return}if(id==='home-settings'){document.getElementById('brand')?.click();return}if(id==='inventoryBtn'){this.openInventory();return}const original=document.getElementById(id);if(original&&!original.disabled)original.click();else this.notify('This menu is not available for this account.')}
  customize(open){
   if(!this.active)return;
   this.customizing=open;
@@ -731,6 +756,7 @@ export class HomeExperiment{
   this.root.querySelector('.homeCustomClose').hidden=!open;
   this.drag=null;
   if(open){
+   this.closeMenus();
    this.draftShipPaint={...this.shipPaint};this.draftCharacterPaint={...this.characterPaint};this.yaw=0;
    this.draft=this.color;this.chooseFace(this.face);this.selectCustomView('overview');
   }else{
@@ -771,7 +797,7 @@ export class HomeExperiment{
   }else if(view==='ship'){
    this.world.rig.model.localToWorld(target.copy(this.shipSeat||this.world.rig.subjectCenter));
    const focused=this.shipRegion==='cockpit';
-   const distance=focused?9.5:14;
+   const distance=(focused?9.5:14)*(flyingPreview?(this.previewZoom??1):1);
    const elevation=this.shipOrbitPitch??.36;
    const angle=this.shipOrbitYaw??-.65;
    const flat=distance*Math.cos(elevation);
@@ -784,6 +810,10 @@ export class HomeExperiment{
    }else target.copy(character).add(this.offset.set(0,.8,0));
    position.copy(target).add(this.offset.set(0,.38,-3.6));
    fov=38;
+  }else if(this.world.centers?.visible&&this.centerMenu){
+   const index=this.centerMenu.id==='inventoryDialog'?0:1;
+   target.copy(this.world.centers.children[index].position).add(this.offset.set(0,3,0));
+   position.copy(target).add(this.offset.set(-12,8,-18));
   }else{
    const finger=this.drag?{
     x:T.MathUtils.clamp((this.drag.x/w-.5)*.16,-.08,.08),
@@ -798,7 +828,7 @@ export class HomeExperiment{
    const panelKey=w+':'+h+':'+view;
    if(this.cameraPanelKey!==panelKey){
     this.cameraPanelKey=panelKey;
-    this.cameraPanelWidth=this.customPanel.offsetWidth||this.customPanel.getBoundingClientRect().width||Math.min(340,w*.34);
+    this.cameraPanelWidth=this.customPanel.offsetWidth||this.customPanel.getBoundingClientRect().width||(w<=480?w*.31:Math.min(180,w*.26));
     this.cameraPartsWidth=this.partsPanel.offsetWidth||this.partsPanel.getBoundingClientRect().width||Math.min(200,w*.22);
    }
    const left=this.cameraPartsWidth+8,right=this.cameraPanelWidth+8;
@@ -808,7 +838,7 @@ export class HomeExperiment{
    const tangent=Math.tan(T.MathUtils.degToRad(fov/2));
    const currentDistance=position.distanceTo(target);
    const width=view==='character'?1.0:this.shipRegion==='cockpit'?6:11;
-   const distance=Math.max(currentDistance,width/(2*tangent*(w/h)*available));
+   const distance=flyingPreview?currentDistance:Math.max(currentDistance,width/(2*tangent*(w/h)*available));
    if(distance>currentDistance)position.sub(target).multiplyScalar(distance/currentDistance).add(target);
   }
   const blend=flyingPreview||!this.cameraReady||globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches?1:1-Math.exp(-dt*7);
@@ -860,9 +890,13 @@ export class HomeExperiment{
   if(w<1||h<1)return;
   if(this.width!==w||this.height!==h){this.width=w;this.height=h;this.renderer.setSize(w,h)}
   this.world.syncSettings(context);
+  this.centerMenu=this.customizing?null:document.querySelector('#inventoryDialog[open],#dailyRewards[open]');
+  const background=this.centerMenu?context.earth:this.backgroundBody();
+  if(background&&this.world.session.body!==background)this.world.enter(background);
   this.world.animateFlightPreview(dt);
   this.preview.group.rotation.y=this.yaw;
   this.updateCamera(w,h,dt,now);
+  if(this.world.flightPreview)this.world.trailPreview.updateRibbon(this.camera);
   if(!this.drag)this.preview.torso.position.y=Math.sin(now*.002)*.012;
   this.world.update(now*.001,dt,this.camera,{interacting:!!this.drag||this.cameraMoving});
   context.effects.entryHeat=0;context.effects.mobile=context.mobile;

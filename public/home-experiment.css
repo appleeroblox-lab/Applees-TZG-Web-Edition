@@ -61,15 +61,15 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(490px,82dvw)!imp
  box-shadow: none;
 }
 #homeExperiment .homeCustomization {
- right: max(5px, env(safe-area-inset-right)); top: 52%;
- width: min(242px, 30vw); max-height: min(82dvh, calc(100dvh - 66px));
+ right: calc(10px + env(safe-area-inset-right, 0px)); top: 52%;
+ width: min(180px, 26vw); max-height: min(82dvh, calc(100dvh - 66px));
  padding: 8px; gap: 6px;
 }
 #homeExperiment .homeCustomization h2,.homeParts h2 {font-size: clamp(12px, 1.8vw, 17px); margin: 0}
 .homeParts {
  position: absolute;
- left: max(3px, env(safe-area-inset-left, 0px)); top: 52%; transform: translateY(-50%);
- width: min(130px, 20vw); max-height: min(82dvh, calc(100dvh - 52px));
+ left: calc(10px + env(safe-area-inset-left, 0px)); top: 52%; transform: translateY(-50%);
+ width: min(130px, 20vw); max-height: 52dvh;
  padding: 7px; display: flex; flex-direction: column; gap: 6px;
  z-index: 2; pointer-events: auto;
 }
@@ -86,7 +86,10 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(490px,82dvw)!imp
 #homeExperiment .homePartList button:not(#brand):not(#chatToggle)[aria-pressed=true] {background: #249ed8; border-color: #c7f0ff}
 #homeExperiment .homeParts .homeCustomBack {margin-left: 0}
 .homePartDescription {font-size: clamp(10px, 1.5vw, 13px); padding-bottom: 4px; border-bottom: 1px solid #e4f7ff99}
-#homeExperiment .homeCustomization .homeColors {grid-template-columns: repeat(4,minmax(0,1fr)); gap: 5px}
+#homeExperiment .homeCustomization .homeColors {
+ width: min(100%, 150px); margin-inline: auto;
+ grid-template-columns: repeat(4,minmax(0,1fr)); gap: 5px;
+}
 #homeExperiment .homeCustomization .homeColors button:not(#brand):not(#chatToggle) {height: clamp(17px, 5dvh, 31px); min-height: 0; padding: 0}
 #homeExperiment .homeCustomization .homeCustomColor {width: 100%; margin: 0}
 .homePaintColors {min-height: 0}
@@ -130,7 +133,7 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(490px,82dvw)!imp
 .homeHueWheel i {left: var(--hue-x,88%); top: var(--hue-y,50%)}
 .homeColorPlane i {left: var(--color-x,100%); top: var(--color-y,0%)}
 @media (max-width: 480px) {
- #homeExperiment .homeCustomization {width: 34vw; padding: 6px}
+ #homeExperiment .homeCustomization {width: 31vw; padding: 6px}
  .homeParts {width: 22vw; padding: 5px}
  #homeExperiment .homeCustomization .homeColors {gap: 3px}
 }
@@ -145,3 +148,10 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(490px,82dvw)!imp
 #homeExperiment .homeGradientTrack button:not(#brand):not(#chatToggle) {position:absolute;bottom:-11px;transform:translateX(-50%);width:17px;min-height:17px;padding:0;border-radius:4px;border:2px solid #e8f9ff}
 #homeExperiment .homeGradientTrack button[aria-pressed=true]:not(#brand):not(#chatToggle) {outline:2px solid #133d63}
 .homeGradientActions {display:flex;gap:6px;flex-wrap:wrap}
+
+body.referenceHUD.homeExperimentOpen #homeExperiment.homeIsCustomizing #chatToggle{display:none!important}
+body.homeExperimentOpen #debugWindow{z-index:2500}
+body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid{grid-template-columns:repeat(auto-fill,minmax(86px,1fr))!important;gap:10px!important;align-content:start}
+body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemCard{min-height:0;aspect-ratio:1;border-radius:4px}
+body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemEquip{height:100%!important;min-height:0!important;padding:4px!important;gap:3px!important}
+body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemEquip>.itemThumb{height:50%!important}

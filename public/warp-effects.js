@@ -178,13 +178,23 @@ export class WarpShipMotion {
   this.updateRibbon();
  }
 
- updateRibbon(){
+ updateRibbon(camera){
   this.positions.needsUpdate=true;
+  const eye=camera?this.ship.worldToLocal(camera.getWorldPosition(new T.Vector3())):null;
+  const right=new T.Vector3(),point=new T.Vector3(),tangent=new T.Vector3(),view=new T.Vector3();
   for(let i=0;i<this.positions.count;i++){
    const x=this.positions.getX(i),y=this.positions.getY(i),z=this.positions.getZ(i);
    const width=.085*(1-(i%17)/16);
-   this.ribbonPositions.setXYZ(i*2,x-width,y,z);
-   this.ribbonPositions.setXYZ(i*2+1,x+width,y,z);
+   right.set(1,0,0);
+   if(eye){
+    point.set(x,y,z);
+    const next=i%17===16?i-1:i+1;
+    tangent.fromBufferAttribute(this.positions,next).sub(point).multiplyScalar(next<i?-1:1);
+    right.crossVectors(tangent,view.copy(eye).sub(point)).normalize();
+    if(right.lengthSq()<.001)right.set(1,0,0);
+   }
+   this.ribbonPositions.setXYZ(i*2,x-right.x*width,y-right.y*width,z-right.z*width);
+   this.ribbonPositions.setXYZ(i*2+1,x+right.x*width,y+right.y*width,z+right.z*width);
   }
   this.ribbonPositions.needsUpdate=true;
  }

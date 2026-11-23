@@ -158,10 +158,11 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(360px,76dvw)!imp
 
 body.referenceHUD.homeExperimentOpen #homeExperiment.homeIsCustomizing #chatToggle{display:none!important}
 body.homeExperimentOpen #debugWindow{z-index:2500}
-body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr))!important;grid-auto-rows:auto!important;gap:4px!important;align-content:start}
-body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemCard{min-height:0;aspect-ratio:1;border-radius:4px}
-body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemEquip{height:100%!important;min-height:0!important;padding:4px!important;gap:3px!important}
-body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemEquip>.itemThumb{height:50%!important}
+body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr))!important;grid-auto-rows:auto!important;gap:4px!important;align-content:start;align-items:start}
+body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemCard{position:relative;min-height:0!important;height:auto!important;aspect-ratio:1;border-radius:4px;overflow:hidden}
+body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemEquip{position:absolute!important;inset:0;height:auto!important;min-height:0!important;flex-direction:column!important;padding:3px!important;gap:2px!important}
+body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemEquip>.itemThumb{flex:0 0 45%!important;height:45%!important;min-height:0!important}
+body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemEquip>strong{font-size:clamp(9px,1.45vw,12px);line-height:1.05;white-space:normal;overflow-wrap:anywhere}
 
 body.referenceHUD.homeExperimentOpen :is(#achievementsMenu,#dailyRewards){
  width:min(360px,76dvw)!important;max-height:72dvh!important;padding:9px!important;

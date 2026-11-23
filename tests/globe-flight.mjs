@@ -25,4 +25,32 @@ for(const name of ['Moon','Jupiter']){const b=bodies.find(b=>b.name===name),f=ne
 const f=new Flight(bodies),s=new SurfaceSession(f);s.enter(earth,true);assert(advanceLocalDay(s,{cover:{mode:'ground'}}));s.pos.y=s.floor+4500;assert(!advanceLocalDay(s,{cover:{mode:'ground'}}));
 const rig={ship:new T.Group(),model:new T.Group()},fx=new ShipFlightEffects(rig,new T.Scene()),flight={vel:new T.Vector3(0,0,-100000),pos:new T.Vector3(1e10,0,1e10),q:new T.Quaternion()},surface={active:false,vel:new T.Vector3()},crew={onFoot:false},camera=new T.PerspectiveCamera();
 for(let i=0;i<15;i++){flight.pos.addScaledVector(flight.vel,1/30);fx.update(1/30,i/30,{flight,surface,crew,camera,quality:'Ultra+'});assert(fx.geometry.drawRange.count<=4,'high-speed trail clips once per wing instead of bunching old endpoints');const a=fx.geometry.attributes.alpha,p=fx.geometry.attributes.position;for(let j=1;j<fx.geometry.drawRange.count;j+=2){assert.equal(a.getX(j),0);const end=new T.Vector3().fromBufferAttribute(p,j),start=new T.Vector3().fromBufferAttribute(p,j-1);assert(Math.abs(start.distanceTo(end)-65)<.01);assert(start.distanceTo(fx.tips[(j-1)/2])<.01)}}
+const surfaceScene=new T.Scene();
+surfaceScene.add(rig.ship);
+rig.ship.add(rig.model);
+rig.shipTrailTips=fx.tips;
+rig.model.rotation.x=.2;
+rig.ship.rotation.z=.4;
+rig.ship.position.set(20,30,40);
+Object.assign(surface,{active:true,body:earth,launched:true,pos:rig.ship.position});
+surface.vel.set(0,0,-30);
+for(let i=0;i<3;i++){
+ rig.ship.position.addScaledVector(surface.vel,1/30);
+ fx.update(1/30,1+i/30,{flight,surface,crew,camera,quality:'High'});
+}
+assert.equal(fx.trails.parent,surfaceScene);
+assert(fx.trails.visible);
+const renderedHeads=rig.shipTrailTips.map(tip=>rig.model.localToWorld(tip.clone()));
+const points=fx.geometry.attributes.position;
+for(const head of renderedHeads){
+ let found=false;
+ for(let i=0;i<fx.geometry.drawRange.count;i+=2){
+  if(new T.Vector3().fromBufferAttribute(points,i).distanceTo(head)<.001)found=true;
+ }
+ assert(found,'surface trail starts at the corresponding transformed wing light');
+}
+surface.active=false;
+fx.update(1/30,2,{flight,surface,crew,camera,quality:'High'});
+assert.equal(fx.trails.parent,fx.scene);
+assert.equal(fx.geometry.drawRange.count,0,'returning to space clears local surface samples');
 console.log('PASS per-body and new atmosphere palettes, opaque lower fog, unwashed globe textures, silhouette-only limb, reversible ship-driven globe motion, paused orbital clock, landing visibility eligibility, safe space exit and bounded high-speed trail tails.');

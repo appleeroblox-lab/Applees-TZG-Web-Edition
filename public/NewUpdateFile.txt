@@ -1,4 +1,3 @@
-v0.0.287
-- Home Page background audio now stops when you sign out.
-- The sign-in fade now waits for the Home Page to load.
-- Improved mobile recovery when returning to the game after switching apps.
+v0.0.288
+- Reduced terrain and scenery rendering load on mobile while flying over bodies or exploring on foot.
+- Optimized on-foot camera collision near ships and reduced repeated label and ground-weather updates.

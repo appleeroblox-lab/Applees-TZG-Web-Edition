@@ -27,4 +27,24 @@ export function shipVerticalHit(surface,x,z,from,to){
  return result;
 }
 
+// Use the same cached hull index as walking collisions for the camera corridor.
+const sightStart=new T.Vector3(),sightEnd=new T.Vector3(),sightBounds=new T.Box3();
+export function shipCameraHit(surface,start,end){
+ const entry=prepare(surface);
+ if(!entry)return null;
+ const a=sightStart.copy(start).applyMatrix4(inverse),b=sightEnd.copy(end).applyMatrix4(inverse);
+ const length=a.distanceTo(b);
+ if(length<.05)return null;
+ sightBounds.setFromPoints([a,b]);
+ ray.set(a,direction.copy(b).sub(a).divideScalar(length));
+ let nearest=null;
+ for(const triangle of triangles(entry,sightBounds)){
+  const hit=ray.intersectTriangle(triangle.a,triangle.b,triangle.c,false,point);
+  if(!hit)continue;
+  const distance=hit.distanceTo(a);
+  if(distance>=.05&&distance<=length&&(nearest===null||distance<nearest))nearest=distance;
+ }
+ return nearest;
+}
+
 export function warmShipHull(model){if(model)hull(model)}

@@ -1,5 +1,5 @@
 {
-  "version": 271,
+  "version": 272,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -368,6 +368,7 @@
     "sounds/ambience-night.ogg",
     "sounds/ambience-nightDeep.ogg",
     "sounds/ambience-space.ogg",
+    "sounds/ambience-home.m4a",
     "sounds/ambience-spaceDeep.ogg",
     "sounds/delete.wav",
     "sounds/jump-grass.wav",
@@ -896,7 +897,7 @@
     "flight.js": 199,
     "forestry.js": 182,
     "friends-ui.js": 223,
-    "game.js": 268,
+    "game.js": 272,
     "gif-gallery.js": 96,
     "ground-weather.js": 170,
     "identity-ui.js": 91,
@@ -919,7 +920,8 @@
     "settlements.js": 195,
     "ship-respawn.js": 182,
     "social-ui.js": 240,
-    "sound.js": 201,
+    "sound.js": 272,
+    "sounds/ambience-home.m4a": 272,
     "stellar-glare.js": 196,
     "supabase-config.js": 61,
     "supabase-debug.js": 251,
@@ -1010,9 +1012,9 @@
     "vendor/html2canvas.LICENSE": 102,
     "game-screenshot.js": 200,
     "vendor/html2canvas.min.js": 102,
-    "update-logs.js": 271,
+    "update-logs.js": 272,
     "legacy-ui.js": 102,
-    "update-history.json": 271,
+    "update-history.json": 272,
     "update-logs.css": 103,
     "mobile-notifications.js": 246,
     "free-camera.js": 105,
@@ -1051,7 +1053,7 @@
     "surface-palette.js": 195,
     "minimap.js": 198,
     "minimap.css": 127,
-    "index.html": 271,
+    "index.html": 272,
     "warp-effects.js": 264,
     "reentry-plume.js": 182,
     "textures/reentry-shine.png": 128,
@@ -1162,9 +1164,9 @@
     "home-world.js": 264,
     "panel-drag.js": 269,
     "paint-gradient.js": 263,
-    "runtime-versions.js": 271,
+    "runtime-versions.js": 272,
     "paint-geometry.js": 258
   },
-  "publicReleaseVersion": 271,
-  "clientVersion": "v0.0.271"
+  "publicReleaseVersion": 272,
+  "clientVersion": "v0.0.272"
 }

@@ -1,5 +1,5 @@
 import {storedGuestName} from './guest-profile.js';
-import {installRuntimeVersions,installUpdateCheck} from './runtime-versions.js?v=242';
+import {installRuntimeVersions,installUpdateCheck} from './runtime-versions.js?v=284';
 import {HomeExperiment} from './home-experiment.js?v=242';
 import {installFlightAutosave} from './flight-autosave.js?v=220';
 import {readFlightSave,writeFlightSave} from './flight-save.js?v=213';
@@ -45,7 +45,7 @@ import {installMenuSizes} from './menu-sizes.js?v=144';
 import {ensureGraphicsControls} from './graphics-controls.js?v=194';
 import {destinationOffset,destinationLightYears} from './warp-pricing.js?v=105';
 import {payFreeCamera,installFreeCameraConfirmation} from './free-camera.js?v=105';
-import {installUpdateLogs} from './update-logs.js?v=194';
+import {installUpdateLogs} from './update-logs.js?v=284';
 import {installCaptureMethods,installVideoRecorder} from './game-capture.js?v=200';
 import {installScreenshot} from './game-screenshot.js?v=102';
 import {AsteroidBelts} from './asteroid-belts.js?v=105';
@@ -590,7 +590,14 @@ $('atlasFit').onclick=()=>systemAtlas.fit(true);$('atlasFocus').onclick=()=>syst
 $('freeSpeed').oninput=e=>{explorer.exponent=+e.target.value;syncExplorer()};
 $('graphicsPreset').onchange=e=>{if(!GRAPHICS_MODES.includes(e.target.value))return;graphics=e.target.value;applyGraphics();save()};
 $('graphicsSlider').oninput=e=>{graphics=GRAPHICS_MODES[clamp(Math.round(+e.target.value),0,4)];applyGraphics();save()};
-$('resumeGame').onclick=()=>{paused=false;closeDialog($('settingsDialog'));clock.getDelta()};$('settingsHomePage').onclick=async()=>{closeDialog($('settingsDialog'),true);if(!homeExperiment||homeExperiment.active||homeExperiment.busy)return;closeGameMenus();paused=true;try{await homeExperiment.open()}finally{paused=false}};installLeaveGame($('leaveGame'),{save,flush:async()=>{if(playerAccount?.ready&&!playerAccount.guest)await playerAccount.cloud?.flush()},onLeave:()=>{closeDialog($('settingsDialog'));clearInputs();started=false;paused=false},notify:toast});
+$('resumeGame').onclick=()=>{paused=false;closeDialog($('settingsDialog'));clock.getDelta()};$('settingsHomePage').onclick=async()=>{closeDialog($('settingsDialog'),true);if(!homeExperiment||homeExperiment.active||homeExperiment.busy)return;closeGameMenus();paused=true;try{await homeExperiment.open()}finally{paused=false}};const leaveStatus=$('leaveStatus');
+installLeaveGame($('leaveGame'),{
+ save,
+ flush:async()=>{if(playerAccount?.ready&&!playerAccount.guest)await playerAccount.cloud?.flush()},
+ onLeave:()=>{closeDialog($('settingsDialog'),true);clearInputs();started=false;paused=false},
+ notify:message=>{leaveStatus.textContent=message;leaveStatus.hidden=false}
+});
+$('leaveGame').addEventListener('click',()=>{leaveStatus.hidden=true},true);
 
 $('utilityMenu').addEventListener('click',e=>{if(e.target.closest('button')){$('utilityMenu').hidden=true;$('menuBtn').setAttribute('aria-expanded','false')}});
 
@@ -620,7 +627,7 @@ function saveVisualSettings(){try{localStorage.setItem('zero-gravity-visual-sett
 $('globalShadow').checked=globalShadow;$('globalShadow').onchange=e=>{globalShadow=e.target.checked;globalShadows.set(globalShadow,graphics,touch);saveVisualSettings()};
 
 if(cloudAccounts){
- playerAccount=new PlayerAccount({config:supabaseConfig,notify:toast,onEventWarp:applyEventWarp,applyReward:(fp,rc,items=[])=>{economy.fp+=fp;economy.rc+=rc;for(const item of items)economy.add(item.type,item.qty);updateEconomyHUD();inventoryUI?.render(true)},onGuestStart:()=>{flightOwner=null;unlockedSystems=[];flightRestored=true;crew.onFoot=false;surface.enter(earth,true);flight.system=earth.system;setTarget(earth,true)},onMemberStart:()=>{crew.onFoot=false;surface.enter(earth,true);},progressSnapshot:()=>[...economy.visited],clearControls:clearInputs,resumeLandscape:landscape,snapshot:()=>cloudInventory(economy),hydrate:async(state,uid)=>{const changeFlight=!!uid&&flightOwner!==uid;if(changeFlight)flightRestored=false;unlockedSystems=[];if(playerAccount)playerAccount.pricingVersion=0;if(uid){try{const unlockState=await playerAccount.rpc('tzg_system_unlock_state');unlockedSystems=unlockState.systems||[];playerAccount.pricingVersion=unlockState.pricingVersion}catch(e){toast('System unlocks are temporarily unavailable. Your inventory and currencies are kept.')}}let world={};if(uid)try{world=JSON.parse(localStorage.getItem('tzg-world-'+uid))||{}}catch{}const onChange=economy.onChange,onBlast=economy.onBlast,onFuseTick=economy.onFuseTick;Object.assign(economy,new Economy(bodies,{...world,fp:state.fp,rc:state.rc,inventory:state.inventory}),{onChange,onBlast,onFuseTick});soundState={fp:economy.fp,rc:economy.rc,items:new Map([...economy.inventory].map(([key,row])=>[key,row.qty]))};inventoryUI?.render(true);if(uid){if(changeFlight){resetAccountFlight();load();}flightOwner=uid;flightRestored=true;setTarget(target,true);updateSurfaceControls();syncExplorer();camQ.copy(flight.q)}updateEconomyHUD()},block:value=>{const continued=accountLocked&&!value;accountLocked=value;if(value)clearInputs();else if(continued&&homeExperiment&&$('boot').classList.contains('hidden'))void $('launchBtn').onclick()},onLogout:async()=>{save();debugMenu.active=false;await debugMenu.api('logout',{}).catch(()=>{})}});
+ playerAccount=new PlayerAccount({config:supabaseConfig,notify:toast,onEventWarp:applyEventWarp,applyReward:(fp,rc,items=[])=>{economy.fp+=fp;economy.rc+=rc;for(const item of items)economy.add(item.type,item.qty);updateEconomyHUD();inventoryUI?.render(true)},onGuestStart:()=>{flightOwner=null;unlockedSystems=[];flightRestored=true;crew.onFoot=false;surface.enter(earth,true);flight.system=earth.system;setTarget(earth,true)},onMemberStart:()=>{crew.onFoot=false;surface.enter(earth,true);},progressSnapshot:()=>[...economy.visited],clearControls:clearInputs,resumeLandscape:landscape,snapshot:()=>cloudInventory(economy),hydrate:async(state,uid)=>{const changeFlight=!!uid&&flightOwner!==uid;if(changeFlight)flightRestored=false;unlockedSystems=[];if(playerAccount)playerAccount.pricingVersion=0;if(uid){try{const unlockState=await playerAccount.rpc('tzg_system_unlock_state');unlockedSystems=unlockState.systems||[];playerAccount.pricingVersion=unlockState.pricingVersion}catch(e){toast('System unlocks are temporarily unavailable. Your inventory and currencies are kept.')}}let world={};if(uid)try{world=JSON.parse(localStorage.getItem('tzg-world-'+uid))||{}}catch{}if(state.inventory?.some(row=>row.body?.startsWith('Proto '))&&!bodies.some(body=>body.proto&&body.solid))installProtoBodies(createProtoBodies(bodies));const onChange=economy.onChange,onBlast=economy.onBlast,onFuseTick=economy.onFuseTick;Object.assign(economy,new Economy(bodies,{...world,fp:state.fp,rc:state.rc,inventory:state.inventory}),{onChange,onBlast,onFuseTick});soundState={fp:economy.fp,rc:economy.rc,items:new Map([...economy.inventory].map(([key,row])=>[key,row.qty]))};inventoryUI?.render(true);if(uid){if(changeFlight){resetAccountFlight();load();}flightOwner=uid;flightRestored=true;setTarget(target,true);updateSurfaceControls();syncExplorer();camQ.copy(flight.q)}updateEconomyHUD()},block:value=>{const continued=accountLocked&&!value;accountLocked=value;if(value)clearInputs();else if(continued&&homeExperiment&&$('boot').classList.contains('hidden'))void $('launchBtn').onclick()},onLogout:async()=>{save();debugMenu.active=false;await debugMenu.api('logout',{}).catch(()=>{})}});
  const achievements=new Achievements({account:playerAccount,sound:sfx});
  achievementTracking=new AchievementTracking({account:playerAccount,achievements,economy,flight,surface,crew,shipBoost,context:()=>({experimental:!!experimental?.isolated,debug:!!(debugMenu?.active&&!debugMenu.root.hidden),free:!!explorer.enabled,paused:!started||paused||accountLocked||webglLost||layoutMode||!!document.querySelector('#settingsDialog[open]')})});
  await playerAccount.init();

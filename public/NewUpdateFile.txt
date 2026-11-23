@@ -1,4 +1,3 @@
-v0.0.283
-- Sign-in now opens the Home Page. Select Play to enter gameplay.
-- Open Home Page from Settings without resetting your flight.
-- Removed the Home Page shortcut from Experiments.
+v0.0.284
+- Fixed Home Page purchases for the Gradient Editor, Custom Colours, and Faces when your inventory includes items from other worlds, including the Proto Solar System.
+- Fixed Leave from the Home Page and made save errors visible in Settings so you can retry.

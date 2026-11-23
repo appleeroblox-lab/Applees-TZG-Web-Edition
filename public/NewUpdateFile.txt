@@ -1,4 +1,4 @@
-v0.0.278
+v0.0.279
 - The Play camera starts immediately, and the black frames cover a smaller transition title on mobile.
-- Inventory and Daily Rewards now move the lobby camera when opened from space.
+- When opened from space, Inventory faces the Trade Center entrance and Daily Rewards faces the Crafting Center entrance.
 - Redesigned the customization review to show each change, its price, and the total FP.

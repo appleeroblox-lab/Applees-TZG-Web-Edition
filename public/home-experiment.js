@@ -1069,15 +1069,11 @@ export class HomeExperiment{
    }else target.copy(character).add(this.offset.set(0,.8,0));
    position.copy(target).add(this.offset.set(0,.38,-3.6));
    fov=38;
-  }else if(this.centerMenu&&this.menuOnEarth&&this.world.centers?.visible){
+  }else if(this.centerMenu&&this.world.centers?.visible){
    const index=this.centerMenu.id==='inventoryDialog'?0:1;
    target.copy(this.world.centers.children[index].position).add(this.offset.set(0,3,0));
    this.offset.set(0,2.2,18).applyQuaternion(this.world.centers.children[index].quaternion);
    position.copy(target).add(this.offset);
-  }else if(this.centerMenu){
-   const inventory=this.centerMenu.id==='inventoryDialog';
-   target.copy(ship);target.y+=2;
-   position.copy(target).add(this.offset.set(inventory?-7:7,3,-13));
   }else{
    const finger=this.drag?{
     x:T.MathUtils.clamp((this.drag.x/w-.5)*.16,-.08,.08),
@@ -1173,9 +1169,8 @@ export class HomeExperiment{
   if(this.width!==w||this.height!==h){this.width=w;this.height=h;this.renderer.setSize(w,h)}
   this.world.syncSettings(context);
   const background=this.backgroundBody();
-  this.menuOnEarth=context.playerOnEarth===true;
-  this.centerMenu=!this.customizing?document.querySelector('#inventoryDialog[open],#dailyRewards[open]'):null;
   if(background&&this.world.session.body!==background)this.world.enter(background);
+  this.centerMenu=!this.customizing&&this.world.centers?.visible?document.querySelector('#inventoryDialog[open],#dailyRewards[open]'):null;
   this.world.animateFlightPreview(dt);
   this.preview.group.rotation.y=this.yaw;
   this.updateCamera(w,h,dt,now);

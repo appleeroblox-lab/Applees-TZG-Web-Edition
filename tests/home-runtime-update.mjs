@@ -15,21 +15,24 @@ HomeExperiment.prototype.updateCamera.call(move,844,390,0,1700);
 assert(Math.abs(playCamera.position.distanceTo(move.playCamera.origin)-7)<1e-8);
 assert(playCamera.quaternion.equals(initialRotation),'Play camera translates without rotation');
 const ship=new T.Vector3(5,1,6);
+const trade=new T.Group(),craft=new T.Group();
+trade.position.set(-25,0,15);
+craft.position.set(30,0,22);craft.rotation.y=Math.PI;
 const spaceMenuCamera={
  camera:new T.PerspectiveCamera(),cameraTarget:new T.Vector3(),cameraReady:true,
- world:{rig:{ship:{position:ship}},centers:{visible:true,children:[]}},
+ world:{rig:{ship:{position:ship}},centers:{visible:true,children:[trade,craft]}},
  preview:{group:{position:new T.Vector3()}},
  nextPosition:new T.Vector3(),nextTarget:new T.Vector3(),offset:new T.Vector3(),
- cameraMenu:null,menuOnEarth:false,centerMenu:{id:'inventoryDialog'}
+ cameraMenu:null,centerMenu:{id:'inventoryDialog'}
 };
 const updateMenuCamera=dt=>HomeExperiment.prototype.updateCamera.call(spaceMenuCamera,844,390,dt);
 updateMenuCamera(.425);
-assert(spaceMenuCamera.camera.position.equals(new T.Vector3(-1,3,-3.5)),'inventory tweens toward the ship in space');
+assert(spaceMenuCamera.camera.position.equals(new T.Vector3(-12.5,2.6,16.5)),'inventory tweens toward the front of Trade Center');
 updateMenuCamera(.425);
-assert(spaceMenuCamera.camera.position.equals(new T.Vector3(-2,6,-7)));
+assert(spaceMenuCamera.camera.position.equals(new T.Vector3(-25,5.2,33)));
 spaceMenuCamera.centerMenu={id:'dailyRewards'};
 updateMenuCamera(.85);
-assert(spaceMenuCamera.camera.position.equals(new T.Vector3(12,6,-7)),'daily rewards uses its own ship angle in space');
+assert(spaceMenuCamera.camera.position.distanceTo(new T.Vector3(30,5.2,4))<1e-8,'daily rewards views Crafting Center from its front');
 assert.equal(semanticVersion(242),'v0.0.242');assert.equal(semanticVersion('0.1.2'),'v0.1.2');assert.equal(semanticVersion('bad'),null);
 const {document}=parseHTML('<html><body><div class="entryRelease"></div></body></html>');let requests=0;
 const tracker=installRuntimeVersions(document,async url=>{requests++;assert(url.endsWith('/rpc/tzg_backend_version'));return {ok:true,json:async()=>({version:'v0.0.1'})}});await tracker.ready;

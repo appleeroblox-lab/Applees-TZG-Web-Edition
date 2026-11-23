@@ -101,11 +101,9 @@ if(process.argv.includes('--home-only')){
  home.partList.querySelector('[data-part=torso]').click();home.characterCustom.click();
  home.pickerHex.value='#56b8fe';home.pickerHex.oninput();home.chooseFace('Happy');home.saveColor();assert.equal(state.capsuleCharacter.face,'Happy','saved face reaches the gameplay character');assert.equal(state.capsuleCharacter.body.material.color.getHexString(),'56b8fe');assert.equal(state.capsuleCharacter.paintParts.leftLeg.material.color.getHexString(),'fc0656');assert.notEqual(state.capsuleCharacter.paintParts.rightLeg.material.color.getHexString(),'fc0656');await home.play();assert(!home.active);assert(home.root.hidden);assert.equal(home.renderer.domElement.parentElement,document.body,'gameplay canvas is restored');assert.doesNotThrow(()=>queued());await home.open();assert(home.active,'reopening Home reuses the native world safely');home.world.update(2,1/60,home.camera);await home.play();
  await home.open();
- const member={ready:true,guest:true,loadedId:'pilot',rpc:async(name,args)=>{
-  if(name==='tzg_customization_state')return {unlocks:[],character:{face:'Neutral',paint:{}},ship:{}};
-  assert.equal(name,'tzg_customization_save');assert.equal(args.p_section,'character');
-  assert.equal(args.p_paint.torso,'#57b9ff');
-  return {unlocks:['character:custom'],character:{face:'Neutral',paint:args.p_paint},ship:{}};
+ const member={ready:true,guest:true,loadedId:'pilot',rpc:async name=>{
+  assert.equal(name,'tzg_customization_state');
+  return {unlocks:[],character:{face:'Neutral',paint:{}},ship:{}};
  }};
  home.account=()=>member;home.accountCustomization=true;home.customize(true);
  assert(!home.customizing,'guest cannot open customization');
@@ -114,8 +112,15 @@ if(process.argv.includes('--home-only')){
  home.customize(true);home.modelButtons[1].click();
  let purchase;
  member.cloud={serverMutation:async(name,args,apply)=>{
-  assert.equal(name,'tzg_customization_unlock');assert.equal(args.p_kind,'character:custom');
   const before={fp:home.economy.fp,rc:home.economy.rc};
+  if(name==='tzg_customization_save_paid'){
+   assert.equal(args.p_section,'character');
+   assert.equal(args.p_paint.torso,'#57b9ff');
+   assert.equal(args.p_cost,20);
+   apply({...before,fp:before.fp-20},before);
+   return {unlocks:['character:custom'],character:{face:'Neutral',paint:args.p_paint},ship:{}};
+  }
+  assert.equal(name,'tzg_customization_unlock');assert.equal(args.p_kind,'character:custom');
   apply({...before,rc:before.rc-200},before);
   return {unlocks:[args.p_kind]};
  }};
@@ -133,7 +138,11 @@ if(process.argv.includes('--home-only')){
  assert(!home.characterCustom.querySelector('.systemLockCover'));
  assert(home.shipCustom.querySelector('.systemLockCover'),'ship unlock remains independent');
  home.draftCharacterPaint={torso:'#57b9ff'};
+ home.refreshPaintPrice();
+ assert.equal(home.root.querySelector('.homeSave').textContent,'Save · 20 FP');
+ const fpBeforePaint=home.economy.fp;
  await home.saveCustomization();
+ assert.equal(home.economy.fp,fpBeforePaint-20);
  assert.equal(state.capsuleCharacter.body.material.color.getHexString(),'57b9ff');
  console.log('PASS live Home experiment authorization, paused/restored flight, shared Map/Inventory and saved gameplay character color');process.exit(0);
 }

@@ -17,7 +17,7 @@ import {FriendsUI} from './friends-ui.js?v=187';
 import {AvatarCropEditor} from './avatar-crop.js?v=187';
 import {PhotoLibrary} from './photo-library.js?v=187';
 import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=187';
-import {CloudSave} from './cloud-save.js?v=268';
+import {CloudSave} from './cloud-save.js?v=270';
 const $=id=>document.getElementById(id);
 const escapeError=e=>String(e?.message||'Account service unavailable. Please retry.');
 export class PlayerAccount{

@@ -245,17 +245,17 @@ body.homeExperimentOpen #dailyRewards .rewardItem img{width:24px;height:24px}
 body.homeExperimentOpen:has(#homeExperiment.homePlayLeaving) #runtimeVersions {transform:translateY(30px);transition:transform .32s ease}
 .homePlayTransition {
  position:fixed;inset:0;z-index:2147483645;overflow:hidden;pointer-events:auto;
- color:#fff;font-family:Fredoka,system-ui,sans-serif;
+ color:#fff;font-family:'Fredoka One',sans-serif;font-synthesis:none;
 }
 .homePlayStage,.homePlayFrames,.homePlayFlash,.homePlayCover {position:absolute;inset:0}
-.homePlayFrameTop,.homePlayFrameBottom {position:absolute;left:-2px;right:-2px;height:calc(50% + 2px);background:#082745}
+.homePlayFrameTop,.homePlayFrameBottom {position:absolute;left:-2px;right:-2px;height:calc(50% + 2px);background:#000}
 .homePlayFrameTop {top:-1px;transform:translateY(-101%)}
 .homePlayFrameBottom {bottom:-1px;transform:translateY(101%)}
 .homePlayTitles {
  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
  gap:4px;text-align:center;text-shadow:0 3px 12px #04152b,0 0 3px #7dcdf8;
 }
-.homePlayTitles strong {font-size:clamp(30px,8vw,80px);font-weight:700;transform:translateX(-110vw)}
-.homePlayTitles span {font-size:clamp(15px,3vw,30px);font-weight:600;letter-spacing:.16em;transform:translateX(110vw)}
+.homePlayTitles strong {font-size:clamp(30px,8vw,80px);font-weight:400;transform:translateX(-110vw)}
+.homePlayTitles span {font-size:clamp(15px,3vw,30px);font-weight:400;letter-spacing:.16em;transform:translateX(110vw)}
 .homePlayFlash {opacity:0;background:white}
-.homePlayCover {opacity:0;background:#14557e}
+.homePlayCover {opacity:0;background:#000}

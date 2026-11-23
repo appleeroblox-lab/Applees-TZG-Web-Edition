@@ -38,20 +38,22 @@ const playDoc=parseHTML('<html><body><div id="lobby"><div class="homeChrome"></d
 const previousDocument=globalThis.document;
 globalThis.document=playDoc;
 Object.defineProperty(playDoc,'hidden',{value:true});
-const steps=[];
+const steps=[];let lobby;
 playDoc.defaultView.HTMLElement.prototype.animate=function(keyframes,options){
+ if(this.className==='homePlayFrameTop')assert(lobby.playCamera,'frame collision and camera movement start together');
+ if(this.textContent==='The Zero Gravity')assert(!lobby.playCamera,'the title starts before the camera moves');
  steps.push([this.className||this.textContent,options.duration,keyframes]);
  return {finished:Promise.resolve()};
 };
 try{
- const lobby={root:playDoc.getElementById('lobby'),active:true,clearInputs(){},customize(){},dockChat(){},
+ lobby={root:playDoc.getElementById('lobby'),active:true,cameraReady:true,camera:new T.PerspectiveCamera(),updateCamera:HomeExperiment.prototype.updateCamera,clearInputs(){},customize(){},dockChat(){},
   dockBrand(){},restoreCanvas(){
    assert(playDoc.querySelector('.homePlayStage').hidden,'old layers are hidden only after the cover arrives');
    steps.push(['gameplay']);
   }};
  await HomeExperiment.prototype.play.call(lobby);
- assert.deepEqual(steps.slice(0,5).map(([name,duration])=>[name,duration]),[
-  ['homePlayTransition',1600],['The Zero Gravity',460],['Web Edition',460],['homePlayFrameTop',300],['homePlayFrameBottom',300]
+ assert.deepEqual(steps.slice(0,4).map(([name,duration])=>[name,duration]),[
+  ['The Zero Gravity',460],['Web Edition',460],['homePlayFrameTop',300],['homePlayFrameBottom',300]
  ]);
  assert.equal(steps.find(([name])=>name==='homePlayFlash')[2][0].opacity,.95);
  assert.deepEqual(steps.slice(-4).map(([name])=>name),['homePlayFrames','homePlayCover','gameplay','homePlayCover']);

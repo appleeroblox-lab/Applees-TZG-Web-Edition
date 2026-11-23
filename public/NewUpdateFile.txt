@@ -1,2 +1,4 @@
-v0.0.275
-- Added a Play transition with sliding lobby controls, a backward and upward camera move, animated titles, and a blue gameplay reveal.
+v0.0.276
+- The Play transition now starts the frame collision and camera move together right after the title enters.
+- Both collision frames and the gameplay cover are black.
+- Both title lines use Fredoka One.

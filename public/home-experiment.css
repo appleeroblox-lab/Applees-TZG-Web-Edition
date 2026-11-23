@@ -196,3 +196,22 @@ body.homeExperimentOpen :is(#dailyRewards,#inventoryDialog,#achievementsMenu){ba
 body.homeExperimentOpen #dailyRewards .dailyRewardGrid{gap:5px}
 body.homeExperimentOpen #dailyRewards .dailyRewardCard{gap:3px;padding:5px}
 body.homeExperimentOpen #dailyRewards .rewardItem img{width:24px;height:24px}
+
+#homeExperiment .homeColorPicker:not([hidden]) {
+ animation: homePickerSlideUp 240ms cubic-bezier(.22,.7,.25,1) both;
+}
+@keyframes homePickerSlideUp {from {transform:translateY(100dvh)} to {transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce) {#homeExperiment .homeColorPicker:not([hidden]) {animation:none}}
+.homePaintConfirmation {
+ display:grid; gap:6px; list-style:none; margin:10px 0; padding:0;
+ max-height:min(35dvh,220px); overflow:auto;
+}
+.homePaintConfirmation li {
+ display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:6px;
+ padding:5px 0; border-bottom:1px solid #e4f7ff66;
+}
+.homeConfirmPreview {display:flex; align-items:center; gap:3px}
+.homeConfirmSwatch {
+ display:grid; place-items:center; min-width:15px; min-height:15px;
+ padding:0 2px; border:1px solid #d9f3ff; border-radius:4px; font-size:9px;
+}

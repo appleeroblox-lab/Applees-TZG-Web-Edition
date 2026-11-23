@@ -39,7 +39,9 @@ if(process.argv.includes('--home-only')){
  home.openMenu('mapBtn');assert($('mapDialog').hasAttribute('open'),'reuse real Universe Map');$('mapDialog').close();home.openMenu('inventoryBtn');assert($('inventoryDialog').hasAttribute('open'));$('inventoryDialog').close();
  home.customize(true);home.modelButtons[0].click();const custom=home.shipCustom;assert(custom,'ship exposes a built-in picker');custom.click();assert(!home.picker.hidden);assert(!home.customPanel.contains(home.picker));home.pickerHex.value='#35b6a4';home.pickerHex.oninput();home.closePicker();
  if(desktop){
-  home.partList.querySelector('[data-part=cockpitWindow]').click();
+  const windowPart=home.partList.querySelector('[data-part=cockpitWindow]');
+  assert.equal(windowPart.textContent,'Window');
+  windowPart.click();
   assert(home.paintGroups.get('cockpitWindow').meshes.length>0,'Cockpit Window can be painted independently');
   home.partList.querySelector('[data-part=redParts]').click();
   home.chooseShipColor('#aa5511');
@@ -138,10 +140,17 @@ if(process.argv.includes('--home-only')){
  assert(!home.characterCustom.querySelector('.systemLockCover'));
  assert(home.shipCustom.querySelector('.systemLockCover'),'ship unlock remains independent');
  home.draftCharacterPaint={torso:'#57b9ff'};
- home.refreshPaintPrice();
- assert.equal(home.root.querySelector('.homeSave').textContent,'Save · 20 FP');
+ assert.equal(home.root.querySelector('.homeSave').textContent,'Save');
  const fpBeforePaint=home.economy.fp;
- await home.saveCustomization();
+ const saving=home.saveCustomization();
+ const confirmation=document.querySelector('.customizationConfirm');
+ assert.match(confirmation.textContent,/Total · 20 FP/);
+ assert.match(confirmation.querySelector('.homePaintConfirmation').textContent,/Torso.*20 FP/);
+ assert.equal(home.economy.fp,fpBeforePaint,'showing confirmation does not charge');
+ await confirmation.querySelector('form').onsubmit({preventDefault(){}});
+ await saving;
+ home.draftCharacterPaint={};
+ assert.equal(home.customizationPaint('character').cost,0,'resetting to the original colour is free');
  assert.equal(home.economy.fp,fpBeforePaint-20);
  assert.equal(state.capsuleCharacter.body.material.color.getHexString(),'57b9ff');
  console.log('PASS live Home experiment authorization, paused/restored flight, shared Map/Inventory and saved gameplay character color');process.exit(0);

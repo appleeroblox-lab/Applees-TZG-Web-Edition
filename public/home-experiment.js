@@ -55,7 +55,7 @@ function originalShipColour(mesh,region){
 }
 const shipCategories=[
  ...shipColourGroups,
- ['body','Body'],['wings','Wings'],['cockpit','Cockpit'],['cockpitWindow','Cockpit Window'],['tail','Tail'],
+ ['body','Body'],['wings','Wings'],['cockpit','Cockpit'],['cockpitWindow','Window'],['tail','Tail'],
  ['accents','Accents'],['lights','Lights'],['exhaust','Engine Fire'],['trails','Trails'],
 ];
 function materialRegion(name,mesh){
@@ -207,7 +207,7 @@ export function applyShipPaint(rig,paint,selectedRegion){
 export class HomeExperiment{
  constructor({debug,character,shipRig,setTrailColor=()=>{},trailTips,account=()=>null,accountCustomization=false,economy,backgroundBody=()=>null,worldContext=()=>null,openInventory,closeMenus=()=>{},applyExposure=()=>{},clearInputs=()=>{},notify=()=>{}}){
   Object.assign(this,{debug,character,shipRig,setTrailColor,trailTips,account,accountCustomization,economy,backgroundBody,worldContext,openInventory,closeMenus,applyExposure,clearInputs,notify});this.active=false;this.busy=false;this.customizing=false;this.yaw=0;this.orbit=0;this.pitch=.12;this.distance=5.8;this.smoother=new GyroSmoother();this.cameraTarget=new T.Vector3();this.nextPosition=new T.Vector3();this.nextTarget=new T.Vector3();this.offset=new T.Vector3();this.markerPoint=new T.Vector3();this.ownedCustomizations=new Set();this.shipPaint=accountCustomization?{}:readShipPaint();shipRig?.ready.then(()=>applyShipPaint(shipRig,this.shipPaint));this.setTrailColor(this.shipPaint.trails);this.face=accountCustomization?'Neutral':localStorage.getItem('tzg-character-face')||'Neutral';applyCharacterFace(character,this.face);this.color=accountCustomization?CHARACTER_COLORS[0]:savedCharacterColor();this.characterPaint=accountCustomization?{}:readCharacterPaint();applyCharacterColor(character,this.color,this.characterPaint);
-  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=268';document.head.append(sheet);
+  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=271';document.head.append(sheet);
   this.root=document.createElement('section');this.root.id='homeExperiment';this.root.hidden=true;this.root.setAttribute('aria-label','Home Page experiment');
   this.root.innerHTML=`<div class="homeScene" aria-label="Drag to rotate character"></div><div class="homeChrome"><div class="homeTop"><div class="homeBrand"></div><nav class="homeQuick" aria-label="Home menus"></nav></div><aside class="homeLeft"><button class="homeIdentity" type="button"><strong class="homeName"></strong><span class="homeId"></span><span class="homeBalance"></span></button><nav class="homeLinks" aria-label="Player menus"></nav></aside><aside class="homeNews"><small>Explore our universe</small><h2>Time Travel</h2><p>Discover the Proto Solar System</p><button type="button" data-home="mapBtn">Universe Map →</button></aside><footer class="homeBottom"><button type="button" data-home="chatToggle">Global Chat</button><button type="button" class="homePlay">▶ Play</button><button type="button" class="homeCustomize">Customization</button><button type="button" data-home="mapBtn">Universe Map</button></footer></div><section class="homeCustomization" hidden aria-label="Character customization"><header><h2>Character Customization</h2><button type="button" class="homeCustomClose" aria-label="Close customization">✕</button></header><p>Body Color</p><div class="homeColors" role="group" aria-label="Character colors"></div><p class="homeCustomHint">Drag your character to rotate · Saved on this device</p><div class="homeCustomActions"><button type="button" class="homeReset">Reset</button><button type="button" class="homeSave">Save</button></div></section><div class="homeNotice" role="status"></div>`;
   document.body.append(this.root);this.host=this.root.querySelector('.homeScene');
@@ -389,7 +389,6 @@ export class HomeExperiment{
   this.closePicker();
   this.setCustomPanelsVisible(!overview);
   this.root.classList.toggle('homeCustomDetail',!overview);
-  this.refreshPaintPrice();
   this.customHeading.textContent=ship?'Ship Customization':'Character Customization';
   this.partsPanel.querySelector('h2').textContent=ship?'Ship Parts':'Character Parts';
   this.paintControls.hidden=!ship;
@@ -619,7 +618,6 @@ export class HomeExperiment{
   this.syncCharacterSwatches();
  }
  syncCharacterSwatches(){
-  this.refreshPaintPrice();
   for(const button of this.characterColors.querySelectorAll('[data-color]'))button.setAttribute('aria-pressed',String(button.dataset.color===this.draft));
  }
  prepareShipSections(){
@@ -694,7 +692,6 @@ export class HomeExperiment{
   return this.draftShipPaint[key]||(key==='trails'?TRAIL_DEFAULT:key==='exhaust'?EXHAUST_DEFAULT:this.paintGroups.get(key)?.base||CHARACTER_COLORS[0]);
  }
  renderShipPaint(){
-  this.refreshPaintPrice();
   this.shipColors.replaceChildren();
   this.shipCustom.hidden=!this.paintKey;this.shipGradient.hidden=!this.paintKey;
   if(!this.paintKey){
@@ -716,7 +713,6 @@ export class HomeExperiment{
   delete this.draftShipPaint[this.paintKey];
   this.draftShipPaint[this.paintKey]=color;
   applyShipPaint(this.world?.rig,this.draftShipPaint,this.paintKey);
-  this.refreshPaintPrice();
   this.world?.trailPreview?.setColor(this.draftShipPaint.trails);
   for(const button of this.shipColors.querySelectorAll('[data-ship-color]'))button.setAttribute('aria-pressed',String(button.dataset.shipColor===color));
  }
@@ -820,40 +816,78 @@ export class HomeExperiment{
   const paint=normalize(draft);
   const saved=normalize(section==='ship'?this.shipPaint:this.characterPaint);
   const parts=new Set([...Object.keys(saved),...Object.keys(paint)]);
-  const cost=[...parts].reduce((total,part)=>{
-   if(JSON.stringify(saved[part])===JSON.stringify(paint[part]))return total;
-   return total+(section==='character'?20:part==='trails'?200:part==='exhaust'?150:100);
-  },0);
-  return {paint,cost};
+  const changes=[...parts].flatMap(part=>{
+   if(JSON.stringify(saved[part])===JSON.stringify(paint[part]))return [];
+   const cost=paint[part]===undefined?0:section==='character'?20:part==='trails'?200:part==='exhaust'?150:100;
+   return [{part,before:saved[part],after:paint[part],cost}];
+  });
+  return {paint,changes,cost:changes.reduce((total,change)=>total+change.cost,0)};
  }
- refreshPaintPrice(){
-  if(!this.accountCustomization||!['character','ship'].includes(this.customView))return;
-  const {cost}=this.customizationPaint(this.customView);
-  this.root.querySelector('.homeSave').textContent=cost?'Save · '+cost.toLocaleString()+' FP':'Save';
+ paintConfirmation(section,changes,face){
+  const list=document.createElement('ul');
+  list.className='homePaintConfirmation';
+  const names=new Map(section==='ship'?shipCategories:characterParts);
+  const swatch=value=>{
+   const node=document.createElement('span');
+   node.className='homeConfirmSwatch';
+   const gradient=paintGradient(value);
+   const label=gradient?'Gradient '+gradient.map(stop=>stop.color).join(', '):value||'Original';
+   node.title=label;
+   node.setAttribute('aria-label',label);
+   node.setAttribute('role','img');
+   if(gradient)node.style.background='linear-gradient(90deg,'+gradient.map(stop=>stop.color+' '+stop.position*100+'%').join(',')+')';
+   else if(value)node.style.backgroundColor=value;
+   else node.textContent='Original';
+   return node;
+  };
+  for(const {part,before,after,cost} of changes){
+   const row=document.createElement('li'),label=document.createElement('strong'),preview=document.createElement('span'),price=document.createElement('span');
+   label.textContent=names.get(part)||part;
+   preview.className='homeConfirmPreview';
+   preview.append(swatch(before),' → ',swatch(after));
+   price.textContent=cost.toLocaleString()+' FP';
+   row.append(label,preview,price);list.append(row);
+  }
+  if(section==='character'&&face!==this.face){
+   const row=document.createElement('li');
+   row.textContent='Face · '+face+' · 0 FP';
+   list.append(row);
+  }
+  if(!list.children.length){
+   const row=document.createElement('li');row.textContent='No changes';list.append(row);
+  }
+  return list;
  }
  async saveAccountCustomization(section){
-  if(this.customizationSaving)return;
+  if(this.customizationSaving||this.purchaseOpen)return;
   const account=this.account(),owner=account?.loadedId;
   if(!account?.ready||account.guest||!owner||this.customizationOwner!==owner)return;
-  const {paint,cost}=this.customizationPaint(section);
+  const {paint,changes,cost}=this.customizationPaint(section);
+  const face=section==='character'?this.draftFace:null;
   const pending=account.cloud.externalPending;
-  if(!pending&&this.economy.fp<cost){
-   this.root.querySelector('.homeNotice').textContent='You need '+cost.toLocaleString()+' FP to save these colours.';
-   return;
-  }
+  const hasChanges=changes.length>0||(section==='character'&&face!==this.face);
   this.customizationSaving=true;
   const button=this.root.querySelector('.homeSave');button.disabled=true;
   try{
-   const state=await account.cloud.serverMutation('tzg_customization_save_paid',{
-    p_section:section,p_paint:paint,p_face:section==='character'?this.draftFace:null,
-    p_order:section==='ship'?Object.keys(paint):null,p_cost:cost
-   },(wallet,before)=>{this.economy.fp+=wallet.fp-before.fp;});
-   this.drawCurrencies();
-   if(account.ready&&!account.guest&&account.loadedId===owner){
-    this.applyAccountCustomization(state);this.customize(false);
-   }
-  }catch(error){this.root.querySelector('.homeNotice').textContent=error.message||'Could not save customization. Please try again.';}
-  finally{this.customizationSaving=false;button.disabled=false;}
+   const saved=await chatDialog({
+    title:'Confirm colour changes',className:'customizationPurchase customizationConfirm',
+    text:'Total · '+cost.toLocaleString()+' FP'+(!pending&&this.economy.fp<cost?' · Not enough FP':''),
+    content:this.paintConfirmation(section,changes,face),submit:'Confirm',
+    submitDisabled:!pending&&this.economy.fp<cost,
+    onSubmit:async()=>{
+     if(!account.ready||account.guest||account.loadedId!==owner)throw Error('Sign in again to continue.');
+     if(!hasChanges&&!pending)return;
+     const state=await account.cloud.serverMutation('tzg_customization_save_paid',{
+      p_section:section,p_paint:paint,p_face:face,
+      p_order:section==='ship'?Object.keys(paint):null,p_cost:cost
+     },(wallet,before)=>{this.economy.fp+=wallet.fp-before.fp;});
+     if(account.ready&&!account.guest&&account.loadedId===owner){
+      this.applyAccountCustomization(state);this.drawCurrencies();
+     }
+    }
+   });
+   if(saved&&account.ready&&!account.guest&&account.loadedId===owner)this.customize(false);
+  }finally{this.customizationSaving=false;button.disabled=false;}
  }
  saveCustomization(){
   if(this.accountCustomization)return this.saveAccountCustomization(this.customView==='ship'?'ship':'character');
@@ -906,7 +940,6 @@ export class HomeExperiment{
    this.draftShipPaint={...this.shipPaint};this.draftCharacterPaint={...this.characterPaint};this.yaw=0;
    this.draft=this.color;this.chooseFace(this.face);this.selectCustomView('overview');
   }else{
-   this.root.querySelector('.homeSave').textContent='Save';
    this.customView=null;this.closePicker();this.closeGradientEditor();this.clearShipOutline();this.showShipEffectPreview(null);this.customChoices.hidden=true;this.setCustomPanelsVisible(false);
    this.root.classList.remove('homeCustomDetail');
    this.draft=this.color;applyCharacterColor(this.preview,this.color,this.characterPaint);applyCharacterFace(this.preview,this.face);applyShipPaint(this.world?.rig,this.shipPaint);

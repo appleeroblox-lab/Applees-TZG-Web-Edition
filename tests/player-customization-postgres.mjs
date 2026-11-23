@@ -68,6 +68,13 @@ await db.query('update tzg_private.player_saves set fp=19 where user_id=$1',[acc
 await login(0);
 await assert.rejects(save('character',five,20,'Happy'),/Not enough FP/);
 assert.equal((await state()).character.paint.head,'#123456','insufficient funds leaves paint untouched');
+const resetCharacter=await save('character',{},0,'Happy');
+assert.equal(resetCharacter.state.fp,19);
+assert.deepEqual(resetCharacter.character.paint,{});
+const resetShip=await save('ship',{exhaust:'#57b9ff'},0,null,['exhaust']);
+assert.equal(resetShip.state.fp,19);
+assert.deepEqual(resetShip.shipOrder,['exhaust']);
+assert.deepEqual(resetShip.ship,{exhaust:'#57b9ff'});
 await assert.rejects(db.query('select * from tzg_private.player_customization'),/permission/);
 await login(1);
 assert.deepEqual(await state(),{unlocks:[],ship:{},shipOrder:[],character:{face:'Neutral',paint:{}}});

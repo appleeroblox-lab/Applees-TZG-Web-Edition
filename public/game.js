@@ -226,10 +226,10 @@ function sampleRenderBudget(frameSeconds){
  const ratio=renderer.getPixelRatio();
  if(ratio>.45)renderer.setPixelRatio(Math.max(.45,ratio*(touch ? .80 : .86)));
 }
-let homeWasActive=false,surfaceWasRendered=false;
-function render(){requestAnimationFrame(render);if(homeExperiment?.active){
+let homeWasActive=false,surfaceWasRendered=false,renderFrameId;
+function render(){renderFrameId=requestAnimationFrame(render);if(homeExperiment?.active){
  if(!homeWasActive){homeWasActive=true;clearInputs();sfx.weather(null,false);sfx.airflow(0);if(audio?.gain)audio.gain.gain.setTargetAtTime(0,audio.currentTime,.05)}
- sfx.ambience(!document.hidden,'home');
+ sfx.ambience(!document.hidden&&!accountLocked,'home');
  clock.getDelta();return;
 }
  if(homeWasActive){homeWasActive=false;sfx.stopAmbience('home');resetFrameTiming();}footControls?.sync();tntIgnitePrompt?.update();crew.shiftLocked=crew.onFoot&&onFootCamera.locked;if(document.hidden||webglLost||window.__tzgFilePickerOpen){achievementTracking?.activityMode('paused');clock.getDelta();return}if(innerWidth!==lastViewportWidth||innerHeight!==lastViewportHeight)queueViewportResize();const frameSeconds=clock.getDelta();sampleRenderBudget(frameSeconds);const dt=Math.min(frameSeconds,.08);if(flight.nav?.kind==='warp')setWarpControls(true);const blocked=isBlocked();if(proto?.transit){setWarpControls(true);achievementTracking?.activityMode('debug');debugMenu?.update(dt);proto.frame(dt,accountLocked||paused||webglLost||!!$('settingsDialog').open||layoutMode,tunnelRollInput());return;}if(started&&!paused&&!webglLost&&!$('settingsDialog').open)surfaceView.environment.step(dt);const experimentalWarp=!!experimental?.runtime?.transit||experimental?.runtime?.returnFade!==undefined;
@@ -292,8 +292,14 @@ $('rotateBtn').onclick=$('landscapeBtn').onclick=()=>landscape();$('fullscreenBt
  if(touch)void landscape();
  started=false;paused=false;
  document.body.classList.add('gameplayReady');
- await homeExperiment.open({animate:false});
- $('boot').classList.add('hidden');updateRotate();
+ window.dispatchEvent(new window.Event('tzg-home-loading'));
+ try{
+  await homeExperiment.open({animate:false});
+  if(homeExperiment.active)$('boot').classList.add('hidden');
+  updateRotate();
+ }finally{
+  window.dispatchEvent(new window.Event('tzg-home-ready'));
+ }
 };
 function enterGameplayFromHome(){
  paused=false;clock.getDelta();clearInputs();
@@ -379,6 +385,19 @@ canvas.addEventListener('webglcontextrestored',()=>{
  resetFrameTiming();
  updateGraphicsRecovery();
 });
+let backgrounded=false;
+function suspendGame(){backgrounded=true;syncGameLifecycle(false)}
+function restoreGame(){
+ if(document.hidden)return;
+ if(backgrounded){
+  backgrounded=false;
+  globalThis.cancelAnimationFrame?.(renderFrameId);
+  renderFrameId=requestAnimationFrame(render);
+  homeExperiment?.resume();
+  for(const animation of $('restartFade')?.getAnimations?.()||[])animation.finish();
+ }
+ syncGameLifecycle(true);
+}
 function syncGameLifecycle(active){
  resetLifecycleInput(active);
  sfx.setActive(active);
@@ -392,12 +411,20 @@ function syncGameLifecycle(active){
  updateGraphicsRecovery();
 }
 addEventListener('blur',()=>syncGameLifecycle(false));
-addEventListener('focus',()=>syncGameLifecycle(!document.hidden));
-addEventListener('pageshow',()=>syncGameLifecycle(!document.hidden));
-addEventListener('pagehide',()=>{syncGameLifecycle(false);save()});
+addEventListener('focus',restoreGame);
+addEventListener('pageshow',restoreGame);
+addEventListener('pagehide',()=>{suspendGame();save()});
+document.addEventListener('freeze',suspendGame);
+document.addEventListener('resume',restoreGame);
 document.addEventListener('visibilitychange',()=>{
- syncGameLifecycle(!document.hidden);
- if(document.hidden&&!window.__tzgFilePickerOpen)save();
+ if(document.hidden){suspendGame();if(!window.__tzgFilePickerOpen)save()}
+ else restoreGame();
+});
+window.addEventListener('tzg-signed-out',()=>{
+ started=false;paused=false;
+ sfx.stopAmbience('home');
+ closeGameMenus();homeExperiment?.close();
+ document.body.classList.remove('gameplayReady');
 });
 clampLayouts();updateJournal();$('bootStatus').textContent=surface.active?'Ready · '+surface.body.name+' / Pad 01':'Ready · '+flight.system+(flight.system===PROTO_SYSTEM?'':' system');if(!window.__loadingSources)$('launchBtn').disabled=false;$('launchBtn').textContent='PLAY';$('rendererNote').textContent=compatibility?'Compatibility renderer · simplified graphics': '3D renderer · adaptive terrain';
 
@@ -637,7 +664,7 @@ installFlightAutosave({save,ready:()=>started&&!accountLocked&&(!cloudAccounts||
 
 // Schedule frames only after every state variable, handler and the ship are ready.
 await shipRig.ready;warmShipHull(shipRig.model);shipFlightFX.bind();
-requestAnimationFrame(render);
+renderFrameId=requestAnimationFrame(render);
 
 // Device UI preferences are independent of the flight/world save.
 let deviceStorage;try{deviceStorage=localStorage}catch{deviceStorage={getItem(){return null},setItem(){throw Error('Device storage unavailable')}}}

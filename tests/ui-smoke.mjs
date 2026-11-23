@@ -162,6 +162,15 @@ if(process.argv.includes('--home-only')){
  assert.equal(home.customizationPaint('character').cost,0,'resetting to the original colour is free');
  assert.equal(home.economy.fp,fpBeforePaint-20);
  assert.equal(state.capsuleCharacter.body.material.color.getHexString(),'57b9ff');
+ let stoppedAmbience;
+ const originalStopAmbience=state.sfx.stopAmbience;
+ state.sfx.stopAmbience=name=>{stoppedAmbience=name};
+ dom.dispatchEvent(new dom.Event('tzg-signed-out'));
+ assert.equal(stoppedAmbience,'home','sign-out immediately stops Home ambience');
+ assert(home.root.hidden&&!home.active,'sign-out closes Home and restores the canvas');
+ state.sfx.stopAmbience=originalStopAmbience;
+ await $('launchBtn').onclick();
+ assert(home.active,'Home opens again after sign-out');
  home.customize(false);
  $('brand').click();
  assert($('settingsDialog').hasAttribute('open'),'Home game title opens Settings');
@@ -305,6 +314,14 @@ if(process.argv.includes('--ship-cockpit-only')){
  state.surface.enter(state.flight.bodies.find(b=>b.name==='Earth'),true);queued();$('cameraBtn').onclick();queued();assert(state.cockpit);assert(state.shipRig.ship.visible);assert(Math.abs(state.shipRig.model.rotation.x-Math.PI/2)<1e-6);const expected=state.shipRig.cockpitPosition.clone().applyQuaternion(state.shipRig.model.quaternion).applyQuaternion(state.flight.q).add(state.surface.pos);assert(state.camera.position.distanceTo(expected)<1e-6,'ground camera guard must not move the pilot above the roof');assert.equal(state.shipRig.flames.length,2);assert(state.shipRig.flames.every(f=>!f.visible),'no parked fire');const shipQ=state.flight.q.clone(),viewQ=state.camera.quaternion.clone();const canvas=$('space');canvas.onpointerdown({button:0,pointerId:901,clientX:100,clientY:100});canvas.onpointermove({pointerId:901,clientX:145,clientY:120});canvas.onpointerup({pointerId:901,clientX:145,clientY:120});queued();assert(state.flight.q.angleTo(shipQ)<1e-7,'cockpit look never rotates ship');assert(state.camera.quaternion.angleTo(viewQ)>.03,'cockpit drag rotates view');assert(state.camera.position.distanceTo(expected)<1e-6,'free look stays in seat');console.log('PASS: exact in-cabin pilot position on the pad, upright hull, visible 3D cockpit, twin engine sockets and no parked fire.');process.exit(0)
 }
 if(process.argv.includes('--resume-only')){
+ document.hidden=true;
+ document.dispatchEvent(new dom.Event('visibilitychange'));
+ queued=null;
+ document.hidden=false;
+ dom.dispatchEvent(new dom.Event('pageshow'));
+ assert.equal(typeof queued,'function','app return rearms a dropped render callback');
+ const beforeResume=draws;queued();
+ assert(draws>beforeResume,'returning to the mobile page draws gameplay again');
  const quality=$('graphicsPreset');
  quality.value='High';
  quality.onchange({target:quality});

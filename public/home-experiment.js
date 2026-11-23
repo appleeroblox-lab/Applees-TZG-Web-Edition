@@ -950,7 +950,10 @@ export class HomeExperiment{
   const enter=async()=>{
    this.clearInputs();this.active=true;this.root.hidden=false;
    document.body.classList.add('homeExperimentOpen');
-   this.refresh();await this.initScene();this.root.classList.remove('homeChromeVisible');
+   this.refresh();await this.initScene();
+   if(!this.active)return;
+   if(this.renderer)this.mountCanvas();
+   this.root.classList.remove('homeChromeVisible');
    this.dockChat(true);this.dockBrand();this.setGround();
    const help=document.getElementById('homeMoreHelp');if(help)help.hidden=false;
    this.customizing=false;this.root.classList.remove('homeIsCustomizing');
@@ -959,7 +962,22 @@ export class HomeExperiment{
   };
   if(animate)await this.transition(enter);
   else{this.busy=true;try{await enter()}finally{this.busy=false}}
-  requestAnimationFrame(()=>requestAnimationFrame(()=>this.root.classList.add('homeChromeVisible')));
+  if(this.active)requestAnimationFrame(()=>{if(this.active)this.root.classList.add('homeChromeVisible')});
+ }
+ close(){
+  if(!this.active)return;
+  this.customize(false);this.active=false;this.dockChat(false);this.dockBrand();this.restoreCanvas();
+  for(const id of ['homeMoreHelp','utilityMenu']){
+   const element=document.getElementById(id);if(element)element.hidden=true;
+  }
+  this.root.hidden=true;document.body.classList.remove('homeExperimentOpen');
+  this.root.classList.remove('homeChromeVisible');
+  globalThis.cancelAnimationFrame?.(this.raf);this.clearInputs();
+ }
+ resume(){
+  if(this.leaving){this.skipPlayAnimation=true;for(const animation of document.querySelector('.homePlayTransition')?.getAnimations?.({subtree:true})||[])animation.finish()}
+  this.drag=null;this.last=performance.now();this.lastDraw=0;this.width=0;this.height=0;
+  if(this.active&&!this.busy){globalThis.cancelAnimationFrame?.(this.raf);this.frame()}
  }
  async play(){
   if(!this.active||this.busy||this.leaving)return;
@@ -971,12 +989,8 @@ export class HomeExperiment{
   this.drag=null;
   this.clearInputs();
   const handoff=()=>{
-   this.customize(false);this.active=false;this.dockChat(false);this.dockBrand();this.restoreCanvas();
-   for(const id of ['homeMoreHelp','utilityMenu']){
-    const element=document.getElementById(id);if(element)element.hidden=true;
-   }
-   this.root.hidden=true;document.body.classList.remove('homeExperimentOpen');
-   globalThis.cancelAnimationFrame?.(this.raf);this.clearInputs();this.onPlay?.();
+   if(!this.active)return;
+   this.close();this.onPlay?.();
   };
   let overlay;
   try{
@@ -991,7 +1005,7 @@ export class HomeExperiment{
    const [title,edition]=overlay.querySelectorAll('.homePlayTitles > *');
    const [top,bottom]=frames.children;
    const animate=(element,keyframes,duration,easing='cubic-bezier(.22,.61,.36,1)')=>
-    element.animate(keyframes,{duration,easing,fill:'both'}).finished.catch(()=>{});
+    this.skipPlayAnimation?Promise.resolve():element.animate(keyframes,{duration,easing,fill:'both'}).finished.catch(()=>{});
    if(this.cameraReady&&this.camera){
     const offset=this.camera.getWorldDirection(new T.Vector3()).negate();
     offset.y=0;
@@ -1019,7 +1033,7 @@ export class HomeExperiment{
    await animate(cover,[{opacity:1,transform:'scale(1.01)'},{opacity:0,transform:'scale(1.01)'}],360);
   }finally{
    if(this.active)handoff();
-   overlay?.remove();this.playCamera=null;chrome.inert=false;
+   overlay?.remove();this.playCamera=null;this.skipPlayAnimation=false;chrome.inert=false;
    this.root.classList.remove('homePlayLeaving');this.leaving=false;
   }
  }
@@ -1078,7 +1092,7 @@ export class HomeExperiment{
    this.customize(false);
   }catch{this.root.querySelector('.homeNotice').textContent='Could not save on this device. Please try again.'}
  }
- async initScene(){const context=this.worldContext();if(this.world){this.mountCanvas();return}try{const {HomeWorld}=await import('./home-world.js?v=259');this.renderer=context.renderer;this.camera=new T.PerspectiveCamera(50,1,.05,300000);this.preview=new CapsuleCharacter();applyCharacterColor(this.preview,this.color,this.characterPaint);applyCharacterFace(this.preview,this.face);this.world=new HomeWorld(context,this.preview);this.scene=this.world.scene;await this.world.rig.ready;applyShipPaint(this.world.rig,this.shipPaint);this.prepareShipSections();this.world.prepareShipDetails();this.mountCanvas()}catch(error){this.renderer=null;this.notify('Home preview could not load: '+error.message)}}
+ async initScene(){const context=this.worldContext();if(this.world)return;try{const {HomeWorld}=await import('./home-world.js?v=259');this.renderer=context.renderer;this.camera=new T.PerspectiveCamera(50,1,.05,300000);this.preview=new CapsuleCharacter();applyCharacterColor(this.preview,this.color,this.characterPaint);applyCharacterFace(this.preview,this.face);this.world=new HomeWorld(context,this.preview);this.scene=this.world.scene;await this.world.rig.ready;applyShipPaint(this.world.rig,this.shipPaint);this.prepareShipSections();this.world.prepareShipDetails()}catch(error){this.renderer=null;this.notify('Home preview could not load: '+error.message)}}
  mountCanvas(){const canvas=this.renderer?.domElement||this.renderer?.canvas;if(!canvas)return;if(canvas.parentElement!==this.host){this.canvasOrigin={parent:canvas.parentElement,next:canvas.nextSibling};this.homePixelRatio=this.renderer.getPixelRatio?.();this.host.append(canvas);if(this.worldContext()?.mobile&&this.homePixelRatio)this.renderer.setPixelRatio?.(this.homePixelRatio*.78)}}
  restoreCanvas(){const canvas=this.renderer?.domElement||this.renderer?.canvas,o=this.canvasOrigin;if(canvas&&o?.parent)o.parent.insertBefore(canvas,o.next?.parentElement===o.parent?o.next:null);if(this.homePixelRatio)this.renderer.setPixelRatio?.(this.homePixelRatio);this.homePixelRatio=null;this.canvasOrigin=null;this.width=0;this.height=0;this.cameraReady=false}
  updateCamera(w,h,dt=0,now=performance.now()){

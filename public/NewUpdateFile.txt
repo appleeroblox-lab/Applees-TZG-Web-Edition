@@ -1,2 +1,4 @@
-v0.0.286
-- Player request: Ixion and Varuna are now landable, spherical dwarf planets in the Kuiper Belt, each with its own surface texture.
+v0.0.287
+- Home Page background audio now stops when you sign out.
+- The sign-in fade now waits for the Home Page to load.
+- Improved mobile recovery when returning to the game after switching apps.

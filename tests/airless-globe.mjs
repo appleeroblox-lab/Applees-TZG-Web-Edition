@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import * as T from '../public/vendor/three.module.js';
 import {bodies} from '../public/catalog.js';
 import {Flight} from '../public/flight.js';
@@ -13,6 +14,21 @@ import {SYSTEM_ORDER,systemUnlocked,systemUnlockQuote} from '../public/system-un
 assert.deepEqual(new Set(SYSTEM_ORDER),new Set([...new Set(bodies.map(b=>b.system))].filter(s=>s!=='Sol')));
 assert(!systemUnlocked('TRAPPIST-1',['TRAPPIST-1']));assert(systemUnlocked('TRAPPIST-1',['Proxima','TRAPPIST-1']));
 assert.equal(systemUnlockQuote('Proxima').fp,1000);assert.equal(systemUnlockQuote('Blackholes').fp,10000);
+const makemake=bodies.find(body=>body.name==='Makemake');
+for(const name of ['Ixion','Varuna']){
+ const matches=bodies.filter(body=>body.id===name);
+ assert.equal(matches.length,1);
+ const [body]=matches;
+ assert.equal(body.type,makemake.type);
+ assert.equal(body.r,makemake.r);
+ assert.equal(body.landable,true);
+ assert.equal(body.belt,'kuiper');
+ assert(!body.smallBody&&!body.modelFile);
+ assert(hasGlobeMode(body)&&!hasAtmosphere(body));
+ assert.equal(body.texture,name.toLowerCase()+'.webp');
+ const texture=readFileSync(new URL('../public/textures/'+body.texture,import.meta.url));
+ assert.equal(texture.toString('ascii',8,12),'WEBP');
+}
 const airless=bodies.filter(b=>hasGlobeMode(b)&&!hasAtmosphere(b));assert(airless.length>30);
 for(const body of airless){
  const f=new Flight(bodies),s=new SurfaceSession(f);s.enter(body);assert.equal(s.exitHeight,4500,body.name);assert.equal(globeHeight(body),2000);

@@ -84,6 +84,15 @@ for(const b of bodies.filter(b=>b.type==='GALAXY')){b.system='Galaxy:'+galaxyNam
 // M87's black hole belongs to its external-galaxy scene.
 bodies.find(b=>b.name==='M87*').system='Galaxy:M87';
 
+for(const [name,r,a,phase,texture,color] of [
+ ['Ixion',3.5,39.7,2.2,'ixion.webp','#867d6b'],
+ ['Varuna',4,43.2,-.4,'varuna.webp','#ccb08c']
+]){
+ const distance=a*AU;
+ const pos=[Math.cos(phase)*distance-AU,Math.sin(phase*2.3)*distance*.045,Math.sin(phase)*distance];
+ body(name,'DWARF PLANET',r,color,pos,{belt:'kuiper',landable:true,texture,mapKind:'user-supplied-preview',
+  desc:'A Kuiper Belt dwarf planet candidate. Its spherical shape and surface artwork are game representations.'});
+}
 for(const b of bodies){if(b.solid){const p=surfacePalette(b);if(p.observed)b.color=p.ground;}else if(b.type==='STAR')b.color=starShineColor(b).getStyle();}
 
 // Named additions requested with Roblox texture IDs. Positions/sizes are schematic.

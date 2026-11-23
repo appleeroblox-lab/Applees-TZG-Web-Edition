@@ -7,3 +7,16 @@ console.log('PASS Daily Rewards toggle/race, five-second lifecycle autosaves and
 
 document.hidden=false;for(const id of ['chatOnlinePlayers','debugOnlinePlayers']){const node=document.createElement('span');node.id=id;document.body.append(node)}let online=50;const activity=Object.create(PlayerActivity.prototype);activity.activeClient={async rpc(name){assert.equal(name,'tzg_online_players');return{data:online}}};await activity.refreshOnlineCount();assert.equal(document.getElementById('chatOnlinePlayers').textContent,'Onlines: 50');online=1250;await activity.refreshOnlineCount();assert.equal(document.getElementById('debugOnlinePlayers').textContent,'Onlines: 1.25k');
 const releasedHTML=fs.readFileSync('public/index.html','utf8'),manifest=JSON.parse(fs.readFileSync('public/source-manifest.json','utf8')),releaseImports=JSON.parse(releasedHTML.match(/id="releaseModuleMap">(.*?)<\/script>/s)[1]).imports;assert.equal(releaseImports['./game.js'],'./game.js?v='+manifest.fileVersions['game.js'],'game import resolves to the released file version');
+
+for(const guest of [false,true]){
+ const calls=[];
+ const client={async rpc(name,args){calls.push([name,args]);return {data:name==='tzg_online_players'?12:null}}};
+ const presence=new PlayerActivity(guest?{guest,guestAccess:{client}}:{guest,client});
+ presence.start();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(document.getElementById('chatOnlinePlayers').textContent,'Onlines: 12');
+ assert.deepEqual(calls.map(([name])=>name),['tzg_activity','tzg_online_players'],'Home presence starts before Play');
+ window.dispatchEvent(new window.Event('tzg-signed-out'));
+ assert.equal(presence.session,null);
+ assert.equal(calls.at(-1)[1].p_end,true);
+}

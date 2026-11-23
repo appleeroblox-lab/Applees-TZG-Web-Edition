@@ -1,3 +1,5 @@
-v0.0.284
+v0.0.285
+- Fixed the online player count in Global Chat and the Debug Panel before you press Play.
+- Fixed the Global Chat message More menu appearing behind the chat panel on the Home Page.
 - Fixed Home Page purchases for the Gradient Editor, Custom Colours, and Faces when your inventory includes items from other worlds, including the Proto Solar System.
 - Fixed Leave from the Home Page and made save errors visible in Settings so you can retry.

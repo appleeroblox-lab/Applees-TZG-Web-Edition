@@ -1,5 +1,5 @@
 import {storedGuestName} from './guest-profile.js';
-import {installRuntimeVersions,installUpdateCheck} from './runtime-versions.js?v=284';
+import {installRuntimeVersions,installUpdateCheck} from './runtime-versions.js?v=285';
 import {HomeExperiment} from './home-experiment.js?v=242';
 import {installFlightAutosave} from './flight-autosave.js?v=220';
 import {readFlightSave,writeFlightSave} from './flight-save.js?v=213';
@@ -45,7 +45,7 @@ import {installMenuSizes} from './menu-sizes.js?v=144';
 import {ensureGraphicsControls} from './graphics-controls.js?v=194';
 import {destinationOffset,destinationLightYears} from './warp-pricing.js?v=105';
 import {payFreeCamera,installFreeCameraConfirmation} from './free-camera.js?v=105';
-import {installUpdateLogs} from './update-logs.js?v=284';
+import {installUpdateLogs} from './update-logs.js?v=285';
 import {installCaptureMethods,installVideoRecorder} from './game-capture.js?v=200';
 import {installScreenshot} from './game-screenshot.js?v=102';
 import {AsteroidBelts} from './asteroid-belts.js?v=105';

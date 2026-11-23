@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {parseHTML} from 'linkedom';
-import {CLIENT_VERSION,semanticVersion,installRuntimeVersions} from '../public/runtime-versions.js';
+import {CLIENT_VERSION,semanticVersion,installRuntimeVersions,installUpdateCheck} from '../public/runtime-versions.js';
 import {HomeExperiment} from '../public/home-experiment.js';
 import {mixCameraInput} from '../public/device-gyro.js';
 import {TerrainClouds} from '../public/terrain-clouds.js';
@@ -9,6 +9,22 @@ assert.equal(semanticVersion(242),'v0.0.242');assert.equal(semanticVersion('0.1.
 const {document}=parseHTML('<html><body><div class="entryRelease"></div></body></html>');let requests=0;
 const tracker=installRuntimeVersions(document,async url=>{requests++;assert(url.endsWith('/rpc/tzg_backend_version'));return {ok:true,json:async()=>({version:'v0.0.1'})}});await tracker.ready;
 assert(document.querySelector('.entryRelease').textContent.includes('Client Version: '+CLIENT_VERSION));assert(document.querySelector('.entryRelease').textContent.includes('Backend Version: v0.0.1'));
+let published=CLIENT_VERSION,tick,refreshed=false;
+const update=installUpdateCheck({doc:document,playerName:()=> 'Applee',refreshGame:()=>{refreshed=true},schedule:(check,ms)=>{
+ assert.equal(ms,5000);tick=check;
+},fetcher:async url=>url.endsWith('.txt')?{ok:true,text:async()=>published+'\n- Camera fix'}:{ok:true,json:async()=>({clientVersion:published})}});
+await tick();
+assert.equal(document.querySelector('#newUpdateDialog'),null);
+published='v9.9.9';await update.check();
+const prompt=document.querySelector('#newUpdateDialog');
+assert.match(prompt.querySelector('[data-message]').textContent,/Applee.*v9\.9\.9/);
+const cancel=new document.defaultView.Event('cancel',{cancelable:true});prompt.dispatchEvent(cancel);assert(cancel.defaultPrevented);
+await prompt.querySelector('[data-list]').onclick();
+assert.equal(prompt.querySelector('[data-notes]').textContent,'Camera fix');
+assert(prompt.querySelector('[data-refresh]').closest('section').hidden);
+prompt.querySelector('[data-back]').onclick();
+assert(!prompt.querySelector('[data-refresh]').closest('section').hidden);
+await prompt.querySelector('[data-refresh]').onclick();assert(refreshed);
 const label=document.createElement('small');label.id='runtimeVersions';document.body.append(label);installRuntimeVersions(document);assert.equal(requests,1,'reuse the backend result instead of polling each frame');assert(label.textContent.includes('v0.0.1'));
 const offline=parseHTML('<html><body><div class="entryRelease"></div></body></html>').document;await installRuntimeVersions(offline,async()=>{throw Error('offline')}).ready;assert(offline.querySelector('.entryRelease').textContent.endsWith('Backend Version: —'),'never invent a backend version from the client build');
 assert.deepEqual(mixCameraInput({roll:.2,pitch:.3},{x:.4,y:-.1}),{roll:.6000000000000001,pitch:.19999999999999998});assert.deepEqual(mixCameraInput({roll:1,pitch:-1},{x:1,y:-1}),{roll:1,pitch:-1});assert.deepEqual(mixCameraInput(null,null),{roll:0,pitch:0});

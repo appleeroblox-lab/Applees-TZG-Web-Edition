@@ -183,9 +183,11 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemEquip>
  margin: 0; padding: 0; background: rgba(0,0,0,.35); border-radius: inherit; pointer-events: none;
 }
 #homeExperiment .systemLockCover svg {
- display: block; width: 26px; height: 26px; max-height: 90%; margin: 0; color: #fff;
+ display:block!important; position:absolute!important; inset:0!important; margin:auto!important;
+ width:26px!important; height:26px!important; max-height:90%; transform:none!important; color:#fff;
 }
 body.homeExperimentOpen .chatActionBackdrop:has(.customizationPurchase) {z-index: 2600}
+body.homeExperimentOpen .chatActionBackdrop:has(.customizationUnlock) {background:transparent;backdrop-filter:none}
 
 body.referenceHUD.homeExperimentOpen :is(#achievementsMenu,#dailyRewards){
  width:min(360px,76dvw)!important;max-height:72dvh!important;padding:9px!important;
@@ -215,3 +217,24 @@ body.homeExperimentOpen #dailyRewards .rewardItem img{width:24px;height:24px}
  display:grid; place-items:center; min-width:15px; min-height:15px;
  padding:0 2px; border:1px solid #d9f3ff; border-radius:4px; font-size:9px;
 }
+
+#newUpdateDialog {
+ position:fixed; inset:0; margin:auto; padding:0; width:min(390px, calc(100vw - 32px));
+ max-height:calc(100dvh - 24px); overflow:visible; border:0; background:transparent;
+ color:#fff; font:inherit; z-index:3000;
+}
+#newUpdateDialog::backdrop {background:#03152299}
+#newUpdateDialog .newUpdateCard {
+ padding:16px; border:2px solid #d1f1ff; border-radius:12px;
+ background:linear-gradient(145deg,#0d779f,#084367); box-shadow:0 14px 40px #00152466;
+}
+#newUpdateDialog h2 {margin:0 0 8px}
+#newUpdateDialog p {margin:8px 0 12px}
+#newUpdateDialog header,#newUpdateDialog .newUpdateActions {
+ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
+}
+#newUpdateDialog header {position:static; inset:auto; height:auto; padding:0; background:none}
+#newUpdateDialog header h2 {margin:0}
+#newUpdateDialog button {min-height:34px; padding:4px 10px}
+#newUpdateDialog ul {max-height:38dvh; overflow:auto; padding-inline-start:22px}
+#newUpdateDialog li+li {margin-top:6px}

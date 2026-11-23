@@ -1,0 +1,6 @@
+v0.0.274
+- Added a New Update prompt that checks for new game versions every five seconds.
+- Added Update Lists so players can read the latest changes before refreshing.
+- Fixed the screen shifting when opening the Custom Colour picker.
+- Removed background dimming from Custom Colour and Gradient Editor purchase prompts.
+- Centered the lock icons on locked customization buttons.

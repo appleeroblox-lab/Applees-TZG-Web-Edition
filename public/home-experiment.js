@@ -207,7 +207,7 @@ export function applyShipPaint(rig,paint,selectedRegion){
 export class HomeExperiment{
  constructor({debug,character,shipRig,setTrailColor=()=>{},trailTips,account=()=>null,accountCustomization=false,economy,backgroundBody=()=>null,worldContext=()=>null,openInventory,closeMenus=()=>{},applyExposure=()=>{},clearInputs=()=>{},notify=()=>{}}){
   Object.assign(this,{debug,character,shipRig,setTrailColor,trailTips,account,accountCustomization,economy,backgroundBody,worldContext,openInventory,closeMenus,applyExposure,clearInputs,notify});this.active=false;this.busy=false;this.customizing=false;this.yaw=0;this.orbit=0;this.pitch=.12;this.distance=5.8;this.smoother=new GyroSmoother();this.cameraTarget=new T.Vector3();this.nextPosition=new T.Vector3();this.nextTarget=new T.Vector3();this.offset=new T.Vector3();this.markerPoint=new T.Vector3();this.ownedCustomizations=new Set();this.shipPaint=accountCustomization?{}:readShipPaint();shipRig?.ready.then(()=>applyShipPaint(shipRig,this.shipPaint));this.setTrailColor(this.shipPaint.trails);this.face=accountCustomization?'Neutral':localStorage.getItem('tzg-character-face')||'Neutral';applyCharacterFace(character,this.face);this.color=accountCustomization?CHARACTER_COLORS[0]:savedCharacterColor();this.characterPaint=accountCustomization?{}:readCharacterPaint();applyCharacterColor(character,this.color,this.characterPaint);
-  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=271';document.head.append(sheet);
+  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=274';document.head.append(sheet);
   this.root=document.createElement('section');this.root.id='homeExperiment';this.root.hidden=true;this.root.setAttribute('aria-label','Home Page experiment');
   this.root.innerHTML=`<div class="homeScene" aria-label="Drag to rotate character"></div><div class="homeChrome"><div class="homeTop"><div class="homeBrand"></div><nav class="homeQuick" aria-label="Home menus"></nav></div><aside class="homeLeft"><button class="homeIdentity" type="button"><strong class="homeName"></strong><span class="homeId"></span><span class="homeBalance"></span></button><nav class="homeLinks" aria-label="Player menus"></nav></aside><aside class="homeNews"><small>Explore our universe</small><h2>Time Travel</h2><p>Discover the Proto Solar System</p><button type="button" data-home="mapBtn">Universe Map →</button></aside><footer class="homeBottom"><button type="button" data-home="chatToggle">Global Chat</button><button type="button" class="homePlay">▶ Play</button><button type="button" class="homeCustomize">Customization</button><button type="button" data-home="mapBtn">Universe Map</button></footer></div><section class="homeCustomization" hidden aria-label="Character customization"><header><h2>Character Customization</h2><button type="button" class="homeCustomClose" aria-label="Close customization">✕</button></header><p>Body Color</p><div class="homeColors" role="group" aria-label="Character colors"></div><p class="homeCustomHint">Drag your character to rotate · Saved on this device</p><div class="homeCustomActions"><button type="button" class="homeReset">Reset</button><button type="button" class="homeSave">Save</button></div></section><div class="homeNotice" role="status"></div>`;
   document.body.append(this.root);this.host=this.root.querySelector('.homeScene');
@@ -240,7 +240,7 @@ export class HomeExperiment{
   const end=e=>{if(this.drag?.id===e.pointerId)this.drag=null};
   for(const type of ['pointerup','pointercancel','lostpointercapture'])this.host.addEventListener(type,end);
   this.sensor=deviceGyro();this.unsubscribe=this.sensor.subscribe(sample=>{if(!this.active)return;if(!this.gyroOrigin)this.gyroOrigin=sample;const axes=this.sensor.axes(this.gyroOrigin,sample);this.gyro={x:T.MathUtils.clamp(axes.roll,-.08,.08),y:T.MathUtils.clamp(axes.pitch,-.06,.06)}});
-  this.onKey=e=>{if(!this.active||e.target.closest?.('#debugWindow,#debugAuthorization,.customizationPurchase'))return;if(e.code==='Escape'&&this.picker&&!this.picker.hidden){e.preventDefault();e.stopImmediatePropagation();this.closePicker();return}if(e.target.closest?.('input,textarea,select'))return;if(e.code==='Escape'&&this.gradientEditor&&!this.gradientEditor.hidden){e.preventDefault();this.closeGradientEditor();return}if(e.code==='Escape'&&this.customizing){e.preventDefault();this.customize(false)}if(!e.target.closest?.('dialog,[role="dialog"],#friendsPanel,#globalChat'))e.stopImmediatePropagation()};window.addEventListener('keydown',this.onKey,true);this.upgradeLayout();this.installCustomization();this.installShipCustomization();this.installColorPicker();this.refresh();
+  this.onKey=e=>{if(!this.active||e.target.closest?.('#debugWindow,#debugAuthorization,.customizationPurchase,#newUpdateDialog'))return;if(e.code==='Escape'&&this.picker&&!this.picker.hidden){e.preventDefault();e.stopImmediatePropagation();this.closePicker();return}if(e.target.closest?.('input,textarea,select'))return;if(e.code==='Escape'&&this.gradientEditor&&!this.gradientEditor.hidden){e.preventDefault();this.closeGradientEditor();return}if(e.code==='Escape'&&this.customizing){e.preventDefault();this.customize(false)}if(!e.target.closest?.('dialog,[role="dialog"],#friendsPanel,#globalChat'))e.stopImmediatePropagation()};window.addEventListener('keydown',this.onKey,true);this.upgradeLayout();this.installCustomization();this.installShipCustomization();this.installColorPicker();this.refresh();
   if(this.accountCustomization){
    window.addEventListener('tzg-signed-in',()=>this.loadCustomization().catch(()=>{}));
    for(const event of ['tzg-guest-start','tzg-signed-out'])window.addEventListener(event,()=>this.clearAccountCustomization());
@@ -502,7 +502,7 @@ export class HomeExperiment{
    this.gradientStop=0;this.applyGradient=apply;this.gradientFocus=button;
    this.gradientEditor.hidden=false;this.pickerShade.hidden=false;
    for(const panel of [this.partsPanel,this.customPanel,this.host,this.root.querySelector('.homeCustomClose')])panel.inert=true;
-   this.renderGradientEditor();this.gradientEditor.querySelector('button').focus();
+   this.renderGradientEditor();this.gradientEditor.querySelector('button').focus({preventScroll:true});
   });
   return button;
  }
@@ -593,19 +593,19 @@ export class HomeExperiment{
   if(!this.gradientEditor||this.gradientEditor.hidden)return;
   this.gradientEditor.hidden=true;this.gradientEditor.style.translate='';this.pickerShade.hidden=true;
   for(const panel of [this.partsPanel,this.customPanel,this.host,this.root.querySelector('.homeCustomClose')])panel.inert=false;
-  this.gradientFocus?.focus();
+  this.gradientFocus?.focus({preventScroll:true});
  }
  openPicker(color,choose){
   this.pickerFocus=document.activeElement;
   this.pickColor=choose;this.syncPicker(color);this.picker.hidden=false;this.pickerShade.hidden=false;
   for(const panel of [this.partsPanel,this.customPanel,this.host,this.root.querySelector('.homeCustomClose')])panel.inert=true;
-  this.picker.querySelector('button').focus();
+  this.picker.querySelector('button').focus({preventScroll:true});
  }
  closePicker(){
   if(!this.picker||this.picker.hidden)return;
   this.picker.hidden=true;this.pickerShade.hidden=this.gradientEditor?.hidden!==false;this.pickColor=null;this.picker.style.translate='';
   for(const panel of [this.partsPanel,this.customPanel,this.host,this.root.querySelector('.homeCustomClose')])panel.inert=this.gradientEditor?.hidden===false;
-  this.pickerFocus?.focus();this.pickerFocus=null;
+  this.pickerFocus?.focus({preventScroll:true});this.pickerFocus=null;
  }
  selectCharacterPart(part){
   this.closePicker();this.characterPart=part;
@@ -789,7 +789,7 @@ export class HomeExperiment{
   const balance=this.economy[currency.toLowerCase()];
   this.purchaseOpen=true;
   try{
-   const bought=await chatDialog({title:'Unlock '+label,className:'customizationPurchase',
+   const bought=await chatDialog({title:'Unlock '+label,className:'customizationPurchase customizationUnlock',
     text:cost.toLocaleString()+' '+currency+' · Balance '+balance.toLocaleString()+' '+currency,
     submit:'Unlock',submitDisabled:balance<cost,
     onSubmit:async()=>{

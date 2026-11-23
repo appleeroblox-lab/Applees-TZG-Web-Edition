@@ -205,7 +205,7 @@ export function applyShipPaint(rig,paint,selectedRegion){
 export class HomeExperiment{
  constructor({debug,character,shipRig,setTrailColor=()=>{},trailTips,account=()=>null,economy,backgroundBody=()=>null,worldContext=()=>null,openInventory,closeMenus=()=>{},clearInputs=()=>{},notify=()=>{}}){
   Object.assign(this,{debug,character,shipRig,setTrailColor,trailTips,account,economy,backgroundBody,worldContext,openInventory,closeMenus,clearInputs,notify});this.active=false;this.busy=false;this.customizing=false;this.yaw=0;this.orbit=0;this.pitch=.12;this.distance=5.8;this.smoother=new GyroSmoother();this.cameraTarget=new T.Vector3();this.nextPosition=new T.Vector3();this.nextTarget=new T.Vector3();this.offset=new T.Vector3();this.markerPoint=new T.Vector3();this.shipPaint=readShipPaint();shipRig?.ready.then(()=>applyShipPaint(shipRig,this.shipPaint));this.setTrailColor(this.shipPaint.trails);this.face=localStorage.getItem('tzg-character-face')||'Neutral';applyCharacterFace(character,this.face);this.color=savedCharacterColor();this.characterPaint=readCharacterPaint();applyCharacterColor(character,this.color,this.characterPaint);
-  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=264';document.head.append(sheet);
+  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=265';document.head.append(sheet);
   this.root=document.createElement('section');this.root.id='homeExperiment';this.root.hidden=true;this.root.setAttribute('aria-label','Home Page experiment');
   this.root.innerHTML=`<div class="homeScene" aria-label="Drag to rotate character"></div><div class="homeChrome"><div class="homeTop"><div class="homeBrand"></div><nav class="homeQuick" aria-label="Home menus"></nav></div><aside class="homeLeft"><button class="homeIdentity" type="button"><strong class="homeName"></strong><span class="homeId"></span><span class="homeBalance"></span></button><nav class="homeLinks" aria-label="Player menus"></nav></aside><aside class="homeNews"><small>Explore our universe</small><h2>Time Travel</h2><p>Discover the Proto Solar System</p><button type="button" data-home="mapBtn">Universe Map →</button></aside><footer class="homeBottom"><button type="button" data-home="chatToggle">Global Chat</button><button type="button" class="homePlay">▶ Play</button><button type="button" class="homeCustomize">Customization</button><button type="button" data-home="mapBtn">Universe Map</button></footer></div><section class="homeCustomization" hidden aria-label="Character customization"><header><h2>Character Customization</h2><button type="button" class="homeCustomClose" aria-label="Close customization">✕</button></header><p>Body Color</p><div class="homeColors" role="group" aria-label="Character colors"></div><p class="homeCustomHint">Drag your character to rotate · Saved on this device</p><div class="homeCustomActions"><button type="button" class="homeReset">Reset</button><button type="button" class="homeSave">Save</button></div></section><div class="homeNotice" role="status"></div>`;
   document.body.append(this.root);this.host=this.root.querySelector('.homeScene');
@@ -813,7 +813,8 @@ export class HomeExperiment{
   }else if(this.world.centers?.visible&&this.centerMenu){
    const index=this.centerMenu.id==='inventoryDialog'?0:1;
    target.copy(this.world.centers.children[index].position).add(this.offset.set(0,3,0));
-   position.copy(target).add(this.offset.set(-12,8,-18));
+   this.offset.set(0,2.2,18).applyQuaternion(this.world.centers.children[index].quaternion);
+   position.copy(target).add(this.offset);
   }else{
    const finger=this.drag?{
     x:T.MathUtils.clamp((this.drag.x/w-.5)*.16,-.08,.08),
@@ -841,7 +842,25 @@ export class HomeExperiment{
    const distance=flyingPreview?currentDistance:Math.max(currentDistance,width/(2*tangent*(w/h)*available));
    if(distance>currentDistance)position.sub(target).multiplyScalar(distance/currentDistance).add(target);
   }
-  const blend=flyingPreview||!this.cameraReady||globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches?1:1-Math.exp(-dt*7);
+  const menu=this.centerMenu?.id??null;
+  const snap=flyingPreview||!this.cameraReady||globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  if(this.cameraMenu!==menu){
+   if(!snap&&!view){
+    this.menuTween={time:0,position:this.camera.position.clone(),target:this.cameraTarget.clone()};
+   }
+   this.cameraMenu=menu;
+  }
+  if(view||snap)this.menuTween=null;
+  const tween=this.menuTween;
+  if(tween){
+   tween.time+=dt;
+   const progress=Math.min(1,tween.time/.85);
+   const ease=progress*progress*(3-2*progress);
+   position.lerpVectors(tween.position,position,ease);
+   target.lerpVectors(tween.target,target,ease);
+   if(progress===1)this.menuTween=null;
+  }
+  const blend=snap||tween?1:1-Math.exp(-dt*7);
   this.cameraMoving=this.camera.position.distanceToSquared(position)>.001||this.cameraTarget.distanceToSquared(target)>.001;
   this.camera.position.lerp(position,blend);
   this.cameraTarget.lerp(target,blend);
@@ -882,7 +901,7 @@ export class HomeExperiment{
   this.raf=requestAnimationFrame(()=>this.frame());
   if(!this.renderer||document.hidden||this.renderer.getContext?.()?.isContextLost?.())return;
   const now=performance.now(),context=this.worldContext();
-  if(context.mobile&&this.lastDraw&&now-this.lastDraw<30)return;
+  if(context.mobile&&!this.menuTween&&this.lastDraw&&now-this.lastDraw<30)return;
   this.lastDraw=now;
   const dt=Math.min(.08,(now-this.last)/1000);this.last=now;
   if(!this.refreshed||now-this.refreshed>1000){this.refresh();this.refreshed=now}

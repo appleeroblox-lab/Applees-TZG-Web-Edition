@@ -37,7 +37,7 @@ body.referenceHUD.homeExperimentOpen #chatToggle{display:flex!important;align-it
 body.homeExperimentOpen:has(#homeExperiment.homeIsCustomizing) #globalChat{visibility:hidden;pointer-events:none}
 body.referenceHUD.homeExperimentOpen #globalChat{left:auto!important;right:14px!important;top:80px!important;bottom:auto!important;transform:none!important}body.homeExperimentOpen :is(#globalChat,#chatPanel,#chatPlayerProfile,#friendsPanel){z-index:600!important}body.homeExperimentOpen>dialog[open]{z-index:600!important}body.referenceHUD.homeExperimentOpen #mapDialog[open]{z-index:2000!important}
 body.homeExperimentOpen #utilityMenu{z-index:900!important;top:76px!important;right:14px!important;left:auto!important;bottom:auto!important;width:190px!important;grid-template-columns:1fr!important}body.homeExperimentOpen #utilityMenu>*:not(#homeMoreHelp){display:none!important}body.homeExperimentOpen :is(#flightPad,#flightRight,#speedGauge,#shipPanel,#shipStatusPanel,#targetPanel,#missionPanel,#crewControls,#planetMapMenu,#minimapOpen){visibility:hidden!important}
-body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(490px,82dvw)!important;height:86dvh!important;max-height:86dvh!important;display:flex;flex-direction:column}body.referenceHUD.homeExperimentOpen #inventoryDialog:not([open]){display:none!important}body.homeExperimentOpen #inventoryGrid{flex:1;min-height:0;overflow-y:auto;max-height:none!important}
+body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(360px,76dvw)!important;height:min(360px,72dvh)!important;max-height:72dvh!important;display:flex;flex-direction:column}body.referenceHUD.homeExperimentOpen #inventoryDialog:not([open]){display:none!important}body.homeExperimentOpen #inventoryGrid{flex:1;min-height:0;overflow-y:auto;max-height:none!important}
 @media(max-height:550px){.homeTop{top:8px;left:10px;right:10px}.homeQuick{gap:6px;padding:3px}.homeQuick img{width:18px;height:18px}.homeLeft{left:10px;top:57px;width:195px}#homeExperiment .homeIdentity{grid-template-columns:35px minmax(0,1fr);padding:8px;gap:4px 7px}.homeAvatar{width:35px;height:35px}.homeName{font-size:14px}.homeId{font-size:10px;padding:3px 5px}.homeBalance{padding:5px;font-size:12px}.homeBalance img{width:19px;height:19px}.homeProgress{gap:3px}.homeLinks{gap:7px;margin-top:8px}#homeExperiment .homeLinks button{padding:6px 10px;font-size:12px;min-height:31px}.homeBottom{bottom:24px;grid-template-columns:1fr 150px 1fr;gap:10px}.homeBottom .homePlay{min-height:46px!important;font-size:25px!important}.homeBottom>button{font-size:12px!important}.homeCustomization{width:min(380px,46vw);max-height:calc(100dvh - 78px);padding:12px;gap:9px}.homeCustomization h2{font-size:17px}.homeCustomLayout{grid-template-columns:78px minmax(0,1fr);gap:10px}.homeColors{gap:9px}#homeExperiment .homeColors button{height:30px;min-height:30px}.homeFaces button{min-height:37px!important}#homeExperiment .homeCustomClose{top:12px;right:16px}.homeQuick button:not(#chatToggle){min-height:34px!important}.homeQuick #chatToggle{height:34px!important}body.referenceHUD.homeExperimentOpen #globalChat{top:66px!important}}
 @media(max-width:600px) and (min-height:551px){.homeTop{gap:8px}.homeQuick{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.homeQuick button{font-size:10px!important}.homeLeft{top:130px;width:175px}.homeBottom{grid-template-columns:1fr 100px 1fr;gap:7px;left:8px;right:8px}.homeBottom .homePlay{font-size:23px!important}.homeBottom>button{padding:7px!important;font-size:10px!important}.homeCustomization{width:60vw;right:10px}.homeCustomLayout{grid-template-columns:65px minmax(0,1fr);gap:8px}.homeColors{grid-template-columns:repeat(2,minmax(0,1fr))}.homeCustomTabs button{font-size:11px!important}.homeCustomization h2{font-size:16px}body.referenceHUD.homeExperimentOpen #globalChat{top:136px!important}}
 @media(prefers-reduced-motion:reduce){.homeLeft,.homeQuick,.homeBottom,.homeCustomization,#homeExperimentFade{transition-duration:.01s}}
@@ -60,16 +60,19 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(490px,82dvw)!imp
  background: var(--ui-panel, linear-gradient(140deg,#6fcaffd9,#1375b6e8));
  box-shadow: none;
 }
+#homeExperiment :is(.homeParts,.homeCustomization) {
+ height: min(300px, 72dvh); max-height: calc(100dvh - 66px);
+}
 #homeExperiment .homeCustomization {
- right: calc(10px + env(safe-area-inset-right, 0px)); top: 52%;
- width: min(180px, 26vw); max-height: min(82dvh, calc(100dvh - 66px));
+ right: calc(2px + env(safe-area-inset-right, 0px)); top: 52%;
+ width: min(180px, 26vw); overflow-y: auto;
  padding: 8px; gap: 6px;
 }
 #homeExperiment .homeCustomization h2,.homeParts h2 {font-size: clamp(12px, 1.8vw, 17px); margin: 0}
 .homeParts {
  position: absolute;
- left: calc(10px + env(safe-area-inset-left, 0px)); top: 52%; transform: translateY(-50%);
- width: min(130px, 20vw); max-height: 52dvh;
+ left: calc(2px + env(safe-area-inset-left, 0px)); top: 52%; transform: translateY(-50%);
+ width: min(130px, 20vw);
  padding: 7px; display: flex; flex-direction: column; gap: 6px;
  z-index: 2; pointer-events: auto;
 }
@@ -151,7 +154,17 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(490px,82dvw)!imp
 
 body.referenceHUD.homeExperimentOpen #homeExperiment.homeIsCustomizing #chatToggle{display:none!important}
 body.homeExperimentOpen #debugWindow{z-index:2500}
-body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid{grid-template-columns:repeat(auto-fill,minmax(86px,1fr))!important;gap:10px!important;align-content:start}
+body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr))!important;gap:8px!important;align-content:start}
 body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemCard{min-height:0;aspect-ratio:1;border-radius:4px}
 body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemEquip{height:100%!important;min-height:0!important;padding:4px!important;gap:3px!important}
 body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemEquip>.itemThumb{height:50%!important}
+
+body.referenceHUD.homeExperimentOpen :is(#achievementsMenu,#dailyRewards){
+ width:min(360px,76dvw)!important;max-height:72dvh!important;padding:9px!important;
+}
+body.referenceHUD.homeExperimentOpen #achievementsMenu{height:min(350px,72dvh)!important}
+body.homeExperimentOpen #achievementsMenu .achievementCard{content-visibility:auto;contain-intrinsic-block-size:auto 78px}
+body.homeExperimentOpen :is(#dailyRewards,#inventoryDialog,#achievementsMenu){backdrop-filter:none!important}
+body.homeExperimentOpen #dailyRewards .dailyRewardGrid{gap:5px}
+body.homeExperimentOpen #dailyRewards .dailyRewardCard{gap:3px;padding:5px}
+body.homeExperimentOpen #dailyRewards .rewardItem img{width:24px;height:24px}

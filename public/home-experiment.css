@@ -64,14 +64,14 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(360px,76dvw)!imp
  height: min(300px, 72dvh); max-height: calc(100dvh - 66px);
 }
 #homeExperiment .homeCustomization {
- right: calc(2px + env(safe-area-inset-right, 0px)); top: 52%;
- width: min(180px, 26vw); overflow-y: auto;
+ right: 8px; top: 52%;
+ width: min(180px, 26vw); overflow-y: auto; overscroll-behavior: contain;
  padding: 8px; gap: 6px;
 }
 #homeExperiment .homeCustomization h2,.homeParts h2 {font-size: clamp(12px, 1.8vw, 17px); margin: 0}
 .homeParts {
  position: absolute;
- left: calc(2px + env(safe-area-inset-left, 0px)); top: 52%; transform: translateY(-50%);
+ left: 8px; top: 52%; transform: translateY(-50%);
  width: min(130px, 20vw);
  padding: 7px; display: flex; flex-direction: column; gap: 6px;
  z-index: 2; pointer-events: auto;
@@ -85,7 +85,10 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(360px,76dvw)!imp
  font-size: clamp(10px, 1.5vw, 13px); border-radius: 7px;
  box-shadow: none;
 }
-#homeExperiment .homePartList button:not(#brand):not(#chatToggle) {width: 100%; text-align: left}
+#homeExperiment .homePartList button:not(#brand):not(#chatToggle) {
+ width: 100%; min-width: 0; height: auto; text-align: left;
+ white-space: normal; overflow-wrap: anywhere; line-height: 1.15;
+}
 #homeExperiment .homePartList button:not(#brand):not(#chatToggle)[aria-pressed=true] {background: #249ed8; border-color: #c7f0ff}
 #homeExperiment .homeParts .homeCustomBack {margin-left: 0}
 .homePartDescription {font-size: clamp(10px, 1.5vw, 13px); padding-bottom: 4px; border-bottom: 1px solid #e4f7ff99}
@@ -95,8 +98,9 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(360px,76dvw)!imp
 }
 #homeExperiment .homeCustomization .homeColors button:not(#brand):not(#chatToggle) {height: clamp(17px, 5dvh, 31px); min-height: 0; padding: 0}
 #homeExperiment .homeCustomization .homeCustomColor {width: 100%; margin: 0}
-.homePaintColors {min-height: 0}
-.homeShipPaint {padding: 2px 3px; min-height: 0}
+#homeExperiment .homeCustomization > * {flex-shrink: 0}
+.homeShipPaint {display:flex; flex-direction:column; gap:6px; padding:2px 3px; overflow:visible}
+.homePaintColors {display:flow-root; padding:3px}
 .homePickerShade {
  position: absolute; inset: 0; z-index: 8;
  display: grid; place-items: center; padding: 8px;
@@ -154,7 +158,7 @@ body.referenceHUD.homeExperimentOpen #inventoryDialog{width:min(360px,76dvw)!imp
 
 body.referenceHUD.homeExperimentOpen #homeExperiment.homeIsCustomizing #chatToggle{display:none!important}
 body.homeExperimentOpen #debugWindow{z-index:2500}
-body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr))!important;gap:8px!important;align-content:start}
+body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr))!important;grid-auto-rows:auto!important;gap:4px!important;align-content:start}
 body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemCard{min-height:0;aspect-ratio:1;border-radius:4px}
 body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemEquip{height:100%!important;min-height:0!important;padding:4px!important;gap:3px!important}
 body.referenceHUD.homeExperimentOpen #inventoryDialog #inventoryGrid .itemEquip>.itemThumb{height:50%!important}

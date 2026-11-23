@@ -1,5 +1,5 @@
 {
-  "version": 265,
+  "version": 266,
   "files": [
     "account-auth-flow.js",
     "account-birthday.js",
@@ -1010,9 +1010,9 @@
     "vendor/html2canvas.LICENSE": 102,
     "game-screenshot.js": 200,
     "vendor/html2canvas.min.js": 102,
-    "update-logs.js": 265,
+    "update-logs.js": 266,
     "legacy-ui.js": 102,
-    "update-history.json": 265,
+    "update-history.json": 266,
     "update-logs.css": 103,
     "mobile-notifications.js": 246,
     "free-camera.js": 105,
@@ -1051,7 +1051,7 @@
     "surface-palette.js": 195,
     "minimap.js": 198,
     "minimap.css": 127,
-    "index.html": 265,
+    "index.html": 266,
     "warp-effects.js": 264,
     "reentry-plume.js": 182,
     "textures/reentry-shine.png": 128,
@@ -1157,14 +1157,14 @@
     "guest-profile.js": 232,
     "connection-warning.js": 243,
     "social-refresh.css": 236,
-    "home-experiment.js": 265,
-    "home-experiment.css": 265,
+    "home-experiment.js": 266,
+    "home-experiment.css": 266,
     "home-world.js": 264,
     "panel-drag.js": 260,
     "paint-gradient.js": 263,
-    "runtime-versions.js": 265,
+    "runtime-versions.js": 266,
     "paint-geometry.js": 258
   },
-  "publicReleaseVersion": 265,
-  "clientVersion": "v0.0.265"
+  "publicReleaseVersion": 266,
+  "clientVersion": "v0.0.266"
 }

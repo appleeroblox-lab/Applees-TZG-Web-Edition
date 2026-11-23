@@ -1089,8 +1089,8 @@ export class HomeExperiment{
   if(w<1||h<1)return;
   if(this.width!==w||this.height!==h){this.width=w;this.height=h;this.renderer.setSize(w,h)}
   this.world.syncSettings(context);
-  this.centerMenu=this.customizing?null:document.querySelector('#inventoryDialog[open],#dailyRewards[open]');
-  const background=this.centerMenu?context.earth:this.backgroundBody();
+  const background=this.backgroundBody();
+  this.centerMenu=!this.customizing&&context.playerOnEarth===true?document.querySelector('#inventoryDialog[open],#dailyRewards[open]'):null;
   if(background&&this.world.session.body!==background)this.world.enter(background);
   this.world.animateFlightPreview(dt);
   this.preview.group.rotation.y=this.yaw;

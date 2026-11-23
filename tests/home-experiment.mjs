@@ -11,7 +11,7 @@ const debug={active:false,root:document.getElementById('debugWindow')},character
 const home=new HomeExperiment({debug,character,economy:{fp:2000,rc:50},account:()=>({profile:{display_name:'Applee',public_id:7}}),clearInputs:()=>cleared++,openInventory:()=>inventory++});
 home.transition=async fn=>fn();home.initScene=()=>{};home.frame=()=>{};
 assert.equal(CHARACTER_COLORS.length,16);assert.equal(new Set(CHARACTER_COLORS).size,16);assert.equal(home.root.querySelectorAll('[data-color]').length,16);assert.equal(current,CHARACTER_COLORS[0]);
-await home.open();assert(!home.active,'authorization required');debug.active=true;await home.open();assert(home.active);assert(debug.root.hidden);assert.equal(home.root.querySelector('.homeName').textContent,'Applee');assert.equal(home.root.querySelector('.homeId').textContent,'TZG-Id_7');
+await home.open();assert(home.active,'Home is available without debug authorization');assert(!document.getElementById('debugHomeExperiment'));assert.equal(home.root.querySelector('.homeName').textContent,'Applee');assert.equal(home.root.querySelector('.homeId').textContent,'TZG-Id_7');
 assert.equal(home.root.querySelector('.homeNews'),null);assert(home.root.querySelector('.homeAvatar').src);assert.equal(home.root.querySelector('.homeLevel').textContent,'Level 12');assert.equal(home.root.querySelector('.homeXPTrack i').style.width,'25%');assert.equal(chatToggle.parentElement,home.root.querySelector('.homeTitleActions'));assert.equal(chat.parentElement,document.body);assert(chat.hidden);home.openMenu('menuBtn');assert(!more.hidden);assert(!document.getElementById('homeMoreHelp').hidden);assert.equal(home.root.querySelector('.homeQuick [data-home="helpBtn"]'),null);
 home.openMenu('dailyRewardsOpen');assert.equal(daily,1);home.openMenu('inventoryBtn');assert.equal(inventory,1);
 home.customize(true);assert(home.root.classList.contains('homeIsCustomizing'));assert.deepEqual([...home.modelButtons].map(button=>button.textContent),['Ship','Character']);home.modelButtons[1].click();const pointer=(type,x)=>{const e=new window.Event(type,{bubbles:true,cancelable:true});Object.assign(e,{pointerId:7,button:0,clientX:x,clientY:100});home.host.dispatchEvent(e)};const yaw=home.yaw;
@@ -39,7 +39,7 @@ for(const [w,h]of [[844,390],[1280,720],[390,844]]){assert.equal(style(home.root
 const title=document.getElementById('brand'),originalTitleParent=title.parentElement,header=document.createElement('header');header.id='gameTop';document.body.append(header);for(const [w,h]of [[844,390],[1280,720],[390,844]]){header.append(title);const gameplayCorner=style(title,'border-radius',w,h);home.root.querySelector('.homeBrand').append(title);assert.equal(style(title,'border-radius',w,h),gameplayCorner,'same gameplay title corners after portaling')}originalTitleParent.append(title);
 assert.equal(home.root.querySelector('[data-color]').style.background,CHARACTER_COLORS[0]);
 assert.equal(compactCurrency(10560),'10.56k');assert.equal(home.root.querySelectorAll('[data-face]').length,CHARACTER_FACES.length);assert.equal(home.root.querySelector('.homeCustomClose').parentElement,home.root);
-console.log('PASS authorized Home experiment, existing menu actions, 16 colors, preview/cancel, device save, gameplay color and Play restoration');
+console.log('PASS public Home Page, existing menu actions, 16 colors, preview/cancel, device save, gameplay color and Play restoration');
 
 const {CapsuleCharacter}=await import('../public/capsule-character.js');
 const capsule=new CapsuleCharacter(),vertex=new T.Vector3();

@@ -1,4 +1,4 @@
-v0.0.282
-- Custom Colour Picker, Gradient Editor, and Save Confirmation open without dimming or blocking the surrounding UI.
-- Redesigned the purchase menus for faces, Custom Colour, and the Gradient Editor.
-- The Play title and camera start together, and the camera keeps pulling away through the frame collision.
+v0.0.283
+- Sign-in now opens the Home Page. Select Play to enter gameplay.
+- Open Home Page from Settings without resetting your flight.
+- Removed the Home Page shortcut from Experiments.

@@ -1,8 +1,20 @@
 {
-  "currentVersion": "v0.0.282",
+  "currentVersion": "v0.0.283",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 283,
+      "version": "v0.0.283",
+      "date": "2026-11-23",
+      "title": "Home Page is now the main menu",
+      "changes": [
+        "Sign-in opens the Home Page. Select Play to enter gameplay.",
+        "Settings now opens the Home Page from gameplay and keeps your current flight.",
+        "The Home Page shortcut has moved out of Experiments."
+      ],
+      "source": {"kind": "current release"}
+    },
     {
       "legacyVersion": 262,
       "version": "v0.0.262",

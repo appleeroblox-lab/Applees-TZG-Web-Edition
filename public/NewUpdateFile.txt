@@ -1,4 +1,2 @@
-v0.0.276
-- The Play transition now starts the frame collision and camera move together right after the title enters.
-- Both collision frames and the gameplay cover are black.
-- Both title lines use Fredoka One.
+v0.0.277
+- Fixed the Play transition so the camera starts moving as soon as you click Play.

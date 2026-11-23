@@ -207,7 +207,7 @@ export function applyShipPaint(rig,paint,selectedRegion){
 export class HomeExperiment{
  constructor({debug,character,shipRig,setTrailColor=()=>{},trailTips,account=()=>null,accountCustomization=false,economy,backgroundBody=()=>null,worldContext=()=>null,openInventory,closeMenus=()=>{},applyExposure=()=>{},clearInputs=()=>{},notify=()=>{}}){
   Object.assign(this,{debug,character,shipRig,setTrailColor,trailTips,account,accountCustomization,economy,backgroundBody,worldContext,openInventory,closeMenus,applyExposure,clearInputs,notify});this.active=false;this.busy=false;this.customizing=false;this.yaw=0;this.orbit=0;this.pitch=.12;this.distance=5.8;this.smoother=new GyroSmoother();this.cameraTarget=new T.Vector3();this.nextPosition=new T.Vector3();this.nextTarget=new T.Vector3();this.offset=new T.Vector3();this.markerPoint=new T.Vector3();this.ownedCustomizations=new Set();this.shipPaint=accountCustomization?{}:readShipPaint();shipRig?.ready.then(()=>applyShipPaint(shipRig,this.shipPaint));this.setTrailColor(this.shipPaint.trails);this.face=accountCustomization?'Neutral':localStorage.getItem('tzg-character-face')||'Neutral';applyCharacterFace(character,this.face);this.color=accountCustomization?CHARACTER_COLORS[0]:savedCharacterColor();this.characterPaint=accountCustomization?{}:readCharacterPaint();applyCharacterColor(character,this.color,this.characterPaint);
-  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=276';document.head.append(sheet);
+  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=277';document.head.append(sheet);
   this.root=document.createElement('section');this.root.id='homeExperiment';this.root.hidden=true;this.root.setAttribute('aria-label','Home Page experiment');
   this.root.innerHTML=`<div class="homeScene" aria-label="Drag to rotate character"></div><div class="homeChrome"><div class="homeTop"><div class="homeBrand"></div><nav class="homeQuick" aria-label="Home menus"></nav></div><aside class="homeLeft"><button class="homeIdentity" type="button"><strong class="homeName"></strong><span class="homeId"></span><span class="homeBalance"></span></button><nav class="homeLinks" aria-label="Player menus"></nav></aside><aside class="homeNews"><small>Explore our universe</small><h2>Time Travel</h2><p>Discover the Proto Solar System</p><button type="button" data-home="mapBtn">Universe Map →</button></aside><footer class="homeBottom"><button type="button" data-home="chatToggle">Global Chat</button><button type="button" class="homePlay">▶ Play</button><button type="button" class="homeCustomize">Customization</button><button type="button" data-home="mapBtn">Universe Map</button></footer></div><section class="homeCustomization" hidden aria-label="Character customization"><header><h2>Character Customization</h2><button type="button" class="homeCustomClose" aria-label="Close customization">✕</button></header><p>Body Color</p><div class="homeColors" role="group" aria-label="Character colors"></div><p class="homeCustomHint">Drag your character to rotate · Saved on this device</p><div class="homeCustomActions"><button type="button" class="homeReset">Reset</button><button type="button" class="homeSave">Save</button></div></section><div class="homeNotice" role="status"></div>`;
   document.body.append(this.root);this.host=this.root.querySelector('.homeScene');
@@ -937,10 +937,6 @@ export class HomeExperiment{
    const [top,bottom]=frames.children;
    const animate=(element,keyframes,duration,easing='cubic-bezier(.22,.61,.36,1)')=>
     element.animate(keyframes,{duration,easing,fill:'both'}).finished.catch(()=>{});
-   await Promise.all([
-    animate(title,[{transform:'translateX(-110vw)'},{transform:'translateX(0)'}],460),
-    animate(edition,[{transform:'translateX(110vw)'},{transform:'translateX(0)'}],460)
-   ]);
    if(this.cameraReady&&this.camera){
     const offset=this.camera.getWorldDirection(new T.Vector3()).negate();
     offset.y=0;
@@ -948,6 +944,10 @@ export class HomeExperiment{
     offset.normalize().multiplyScalar(7*Math.cos(Math.PI/6));offset.y=7*Math.sin(Math.PI/6);
     this.playCamera={start:performance.now(),origin:this.camera.position.clone(),offset};
    }
+   await Promise.all([
+    animate(title,[{transform:'translateX(-110vw)'},{transform:'translateX(0)'}],460),
+    animate(edition,[{transform:'translateX(110vw)'},{transform:'translateX(0)'}],460)
+   ]);
    await Promise.all([
     animate(top,[{transform:'translateY(-101%)'},{transform:'translateY(0)'}],300,'cubic-bezier(.42,0,.65,1)'),
     animate(bottom,[{transform:'translateY(101%)'},{transform:'translateY(0)'}],300,'cubic-bezier(.42,0,.65,1)')
@@ -957,7 +957,7 @@ export class HomeExperiment{
     animate(stage,[{transform:'translate(0)'},{transform:'translate(4px,-2px)'},{transform:'translate(-3px,2px)'},{transform:'translate(2px,0)'},{transform:'translate(0)'}],180,'linear')
    ]);
    await animate(frames,[{transform:'scale(1)'},{transform:'scale(1.12)'}],220);
-   await animate(cover,[{opacity:1,transform:'scale(.8)'},{opacity:1,transform:'scale(1.01)'}],900);
+   await animate(cover,[{opacity:1,transform:'scale(.8)'},{opacity:1,transform:'scale(1.01)'}],440);
    stage.hidden=true;
    if(this.playCamera)this.updateCamera(0,0,0,this.playCamera.start+1600);
    handoff();

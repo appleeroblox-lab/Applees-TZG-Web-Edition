@@ -40,8 +40,8 @@ globalThis.document=playDoc;
 Object.defineProperty(playDoc,'hidden',{value:true});
 const steps=[];let lobby;
 playDoc.defaultView.HTMLElement.prototype.animate=function(keyframes,options){
- if(this.className==='homePlayFrameTop')assert(lobby.playCamera,'frame collision and camera movement start together');
- if(this.textContent==='The Zero Gravity')assert(!lobby.playCamera,'the title starts before the camera moves');
+ if(this.className==='homePlayFrameTop')assert(lobby.playCamera,'the camera is still moving during frame entry');
+ if(this.textContent==='The Zero Gravity')assert(lobby.playCamera,'camera starts with the title on Play');
  steps.push([this.className||this.textContent,options.duration,keyframes]);
  return {finished:Promise.resolve()};
 };

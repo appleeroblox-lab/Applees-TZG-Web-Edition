@@ -20,13 +20,18 @@ export function dragPanel(handle,panel,{margin=0,onEnd,blocked=()=>false}={}){
   handle.setPointerCapture?.(e.pointerId);
   e.preventDefault();
  };
+ const track=e=>{
+  const latest=e.getCoalescedEvents?.().at(-1)||e;
+  drag.x=latest.clientX-drag.startX;drag.y=latest.clientY-drag.startY;
+ };
  handle.onpointermove=e=>{
   if(drag?.id!==e.pointerId)return;
-  drag.x=e.clientX-drag.startX;drag.y=e.clientY-drag.startY;
+  track(e);
   if(frame===null)frame=requestAnimationFrame(draw);
  };
  handle.onpointerup=handle.onpointercancel=handle.onlostpointercapture=e=>{
   if(drag?.id!==e.pointerId)return;
+  if(e.type==='pointerup')track(e);
   if(frame!==null)globalThis.cancelAnimationFrame?.(frame);
   draw();
   const {leftNow,topNow}=drag;

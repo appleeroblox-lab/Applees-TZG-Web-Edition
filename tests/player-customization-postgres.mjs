@@ -17,6 +17,8 @@ async function login(i){
  await rpc('tzg_player_session_start');
  return rpc('tzg_player_load');
 }
+const transactionMode=await db.query("select provolatile from pg_proc where oid='public.tzg_customization_state()'::regprocedure");
+assert.equal(transactionMode.rows[0].provolatile,'v','PostgREST must allow the account guard to write');
 await login(0);
 await db.exec('reset role');
 await db.query('update tzg_private.player_saves set fp=1000,rc=1000 where user_id=$1',[accounts[0]]);
@@ -36,7 +38,8 @@ await assert.rejects(buy('face:Sleepy',player.revision,mutation),/same pending p
 await save('character',{head:'#57b9ff'},'Happy');
 const custom=await buy('character:custom',face.revision);
 assert.equal(custom.state.rc,800);
-await save('character',{head:'#123456'},'Happy');
+const savedCharacter=await save('character',{head:'#123456'},'Happy');
+assert.equal(savedCharacter.character.paint.head,'#123456','save returns the newly written paint');
 await assert.rejects(save('ship',{wings:'#123456'}),/Unlock Custom Colours/);
 const gradient=await buy('ship:gradient',custom.revision);
 assert.equal(gradient.state.rc,300);

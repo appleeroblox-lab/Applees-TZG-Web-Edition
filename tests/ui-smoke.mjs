@@ -100,6 +100,41 @@ if(process.argv.includes('--home-only')){
  home.pickerHex.value='#fc0656';home.pickerHex.oninput();
  home.partList.querySelector('[data-part=torso]').click();home.characterCustom.click();
  home.pickerHex.value='#56b8fe';home.pickerHex.oninput();home.chooseFace('Happy');home.saveColor();assert.equal(state.capsuleCharacter.face,'Happy','saved face reaches the gameplay character');assert.equal(state.capsuleCharacter.body.material.color.getHexString(),'56b8fe');assert.equal(state.capsuleCharacter.paintParts.leftLeg.material.color.getHexString(),'fc0656');assert.notEqual(state.capsuleCharacter.paintParts.rightLeg.material.color.getHexString(),'fc0656');await home.play();assert(!home.active);assert(home.root.hidden);assert.equal(home.renderer.domElement.parentElement,document.body,'gameplay canvas is restored');assert.doesNotThrow(()=>queued());await home.open();assert(home.active,'reopening Home reuses the native world safely');home.world.update(2,1/60,home.camera);await home.play();
+ await home.open();
+ const member={ready:true,guest:true,loadedId:'pilot',rpc:async(name,args)=>{
+  if(name==='tzg_customization_state')return {unlocks:[],character:{face:'Neutral',paint:{}},ship:{}};
+  assert.equal(name,'tzg_customization_save');assert.equal(args.p_section,'character');
+  assert.equal(args.p_paint.torso,'#57b9ff');
+  return {unlocks:['character:custom'],character:{face:'Neutral',paint:args.p_paint},ship:{}};
+ }};
+ home.account=()=>member;home.accountCustomization=true;home.customize(true);
+ assert(!home.customizing,'guest cannot open customization');
+ member.guest=false;
+ await home.loadCustomization();
+ home.customize(true);home.modelButtons[1].click();
+ let purchase;
+ member.cloud={serverMutation:async(name,args,apply)=>{
+  assert.equal(name,'tzg_customization_unlock');assert.equal(args.p_kind,'character:custom');
+  const before={fp:home.economy.fp,rc:home.economy.rc};
+  apply({...before,rc:before.rc-200},before);
+  return {unlocks:[args.p_kind]};
+ }};
+ home.economy.rc=1000;
+ for(const [button,key,label] of [[home.characterCustom,'character:custom','Character Custom Colours'],[home.shipCustom,'ship:custom','Ship Custom Colours']]){
+  home.bindCustomizationLock(button,key,label,200,'RC',()=>{purchase=key;});
+  assert(button.querySelector('.systemLockCover'),'paid button has the map lock overlay');
+ }
+ const buying=home.characterCustom.onclick();
+ const purchaseForm=document.querySelector('.customizationPurchase form');
+ assert(purchaseForm,'locked button opens a purchase confirmation');
+ await purchaseForm.onsubmit({preventDefault(){}});
+ await buying;
+ assert.equal(purchase,'character:custom');assert.equal(home.economy.rc,800);
+ assert(!home.characterCustom.querySelector('.systemLockCover'));
+ assert(home.shipCustom.querySelector('.systemLockCover'),'ship unlock remains independent');
+ home.draftCharacterPaint={torso:'#57b9ff'};
+ await home.saveCustomization();
+ assert.equal(state.capsuleCharacter.body.material.color.getHexString(),'57b9ff');
  console.log('PASS live Home experiment authorization, paused/restored flight, shared Map/Inventory and saved gameplay character color');process.exit(0);
 }
 if(process.argv.includes('--events-only')){

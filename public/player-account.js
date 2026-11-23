@@ -17,7 +17,7 @@ import {FriendsUI} from './friends-ui.js?v=187';
 import {AvatarCropEditor} from './avatar-crop.js?v=187';
 import {PhotoLibrary} from './photo-library.js?v=187';
 import {GlobalChat,setAvatar,prepareAvatar,APPEAL_URL} from './social-ui.js?v=187';
-import {CloudSave} from './cloud-save.js?v=171';
+import {CloudSave} from './cloud-save.js?v=268';
 const $=id=>document.getElementById(id);
 const escapeError=e=>String(e?.message||'Account service unavailable. Please retry.');
 export class PlayerAccount{
@@ -75,7 +75,7 @@ export class PlayerAccount{
  changed(){if(this.guest)return;this.cloud?.changed();this.pages?.recordProgress(this.progressSnapshot?.()||[])}
  async retry(){if(this.busy)return;this.busy=true;try{if(this.cloud?.ready){await this.rpc('tzg_player_heartbeat');await this.cloud.flush();this.ready=true;this.block(!this.gate.hidden);$('accountStatus').textContent='Server save confirmed. You can continue.';this.renderConnected()}else if(this.client)await this.connect();else await this.init()}catch(e){this.error(e)}finally{this.busy=false}}
  accountChanged(){this.notifications?.disconnect();this.ready=false;this.needsReload=true;this.cloud?.dispose();this.chat.stop();this.loadedId=null;this.error(Error('Account changed in another tab. Reload to load the correct account.'))}
- async logout(){if(this.busy)return;this.busy=true;try{if(this.cloud?.ready&&!this.needsReload)await this.cloud.flush();await this.onLogout?.();try{await this.rpc('tzg_player_session_end')}catch{}await this.notifications?.disconnect();this.loadedId=null;const {error}=await this.client.auth.signOut({scope:'local'});if(error)throw error;this.cloud?.dispose();this.chat.stop();this.ready=false;this.user=null;this.profile=null;this.loadedId=null;this.moderation=null;this.duplicate=false;this.needsReload=false;this.setMode('login');this.gate.dataset.entry='welcome';this.show();this.gate.dataset.entry='welcome'}catch(e){this.error(e)}finally{this.busy=false}}
+ async logout(){if(this.busy)return;this.busy=true;try{if(this.cloud?.ready&&!this.needsReload)await this.cloud.flush();await this.onLogout?.();try{await this.rpc('tzg_player_session_end')}catch{}await this.notifications?.disconnect();this.loadedId=null;const {error}=await this.client.auth.signOut({scope:'local'});if(error)throw error;this.cloud?.dispose();this.chat.stop();this.ready=false;this.user=null;this.profile=null;this.loadedId=null;this.moderation=null;this.duplicate=false;this.needsReload=false;window.dispatchEvent(new window.Event('tzg-signed-out'));this.setMode('login');this.gate.dataset.entry='welcome';this.show();this.gate.dataset.entry='welcome'}catch(e){this.error(e)}finally{this.busy=false}}
 }
 
 

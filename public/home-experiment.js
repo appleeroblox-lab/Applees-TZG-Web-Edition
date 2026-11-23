@@ -1,3 +1,5 @@
+import {chatDialog} from './chat-dialog.js?v=187';
+import {setSystemLock} from './system-unlock-ui.js';
 import {applyPaintGradient,isPaintHex,paintColor,paintGradient} from './paint-gradient.js';
 import {dragPanel} from './panel-drag.js';
 import * as T from './vendor/three.module.js';
@@ -203,9 +205,9 @@ export function applyShipPaint(rig,paint,selectedRegion){
 }
 
 export class HomeExperiment{
- constructor({debug,character,shipRig,setTrailColor=()=>{},trailTips,account=()=>null,economy,backgroundBody=()=>null,worldContext=()=>null,openInventory,closeMenus=()=>{},applyExposure=()=>{},clearInputs=()=>{},notify=()=>{}}){
-  Object.assign(this,{debug,character,shipRig,setTrailColor,trailTips,account,economy,backgroundBody,worldContext,openInventory,closeMenus,applyExposure,clearInputs,notify});this.active=false;this.busy=false;this.customizing=false;this.yaw=0;this.orbit=0;this.pitch=.12;this.distance=5.8;this.smoother=new GyroSmoother();this.cameraTarget=new T.Vector3();this.nextPosition=new T.Vector3();this.nextTarget=new T.Vector3();this.offset=new T.Vector3();this.markerPoint=new T.Vector3();this.shipPaint=readShipPaint();shipRig?.ready.then(()=>applyShipPaint(shipRig,this.shipPaint));this.setTrailColor(this.shipPaint.trails);this.face=localStorage.getItem('tzg-character-face')||'Neutral';applyCharacterFace(character,this.face);this.color=savedCharacterColor();this.characterPaint=readCharacterPaint();applyCharacterColor(character,this.color,this.characterPaint);
-  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=267';document.head.append(sheet);
+ constructor({debug,character,shipRig,setTrailColor=()=>{},trailTips,account=()=>null,accountCustomization=false,economy,backgroundBody=()=>null,worldContext=()=>null,openInventory,closeMenus=()=>{},applyExposure=()=>{},clearInputs=()=>{},notify=()=>{}}){
+  Object.assign(this,{debug,character,shipRig,setTrailColor,trailTips,account,accountCustomization,economy,backgroundBody,worldContext,openInventory,closeMenus,applyExposure,clearInputs,notify});this.active=false;this.busy=false;this.customizing=false;this.yaw=0;this.orbit=0;this.pitch=.12;this.distance=5.8;this.smoother=new GyroSmoother();this.cameraTarget=new T.Vector3();this.nextPosition=new T.Vector3();this.nextTarget=new T.Vector3();this.offset=new T.Vector3();this.markerPoint=new T.Vector3();this.ownedCustomizations=new Set();this.shipPaint=accountCustomization?{}:readShipPaint();shipRig?.ready.then(()=>applyShipPaint(shipRig,this.shipPaint));this.setTrailColor(this.shipPaint.trails);this.face=accountCustomization?'Neutral':localStorage.getItem('tzg-character-face')||'Neutral';applyCharacterFace(character,this.face);this.color=accountCustomization?CHARACTER_COLORS[0]:savedCharacterColor();this.characterPaint=accountCustomization?{}:readCharacterPaint();applyCharacterColor(character,this.color,this.characterPaint);
+  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=268';document.head.append(sheet);
   this.root=document.createElement('section');this.root.id='homeExperiment';this.root.hidden=true;this.root.setAttribute('aria-label','Home Page experiment');
   this.root.innerHTML=`<div class="homeScene" aria-label="Drag to rotate character"></div><div class="homeChrome"><div class="homeTop"><div class="homeBrand"></div><nav class="homeQuick" aria-label="Home menus"></nav></div><aside class="homeLeft"><button class="homeIdentity" type="button"><strong class="homeName"></strong><span class="homeId"></span><span class="homeBalance"></span></button><nav class="homeLinks" aria-label="Player menus"></nav></aside><aside class="homeNews"><small>Explore our universe</small><h2>Time Travel</h2><p>Discover the Proto Solar System</p><button type="button" data-home="mapBtn">Universe Map →</button></aside><footer class="homeBottom"><button type="button" data-home="chatToggle">Global Chat</button><button type="button" class="homePlay">▶ Play</button><button type="button" class="homeCustomize">Customization</button><button type="button" data-home="mapBtn">Universe Map</button></footer></div><section class="homeCustomization" hidden aria-label="Character customization"><header><h2>Character Customization</h2><button type="button" class="homeCustomClose" aria-label="Close customization">✕</button></header><p>Body Color</p><div class="homeColors" role="group" aria-label="Character colors"></div><p class="homeCustomHint">Drag your character to rotate · Saved on this device</p><div class="homeCustomActions"><button type="button" class="homeReset">Reset</button><button type="button" class="homeSave">Save</button></div></section><div class="homeNotice" role="status"></div>`;
   document.body.append(this.root);this.host=this.root.querySelector('.homeScene');
@@ -239,7 +241,12 @@ export class HomeExperiment{
   const end=e=>{if(this.drag?.id===e.pointerId)this.drag=null};
   for(const type of ['pointerup','pointercancel','lostpointercapture'])this.host.addEventListener(type,end);
   this.sensor=deviceGyro();this.unsubscribe=this.sensor.subscribe(sample=>{if(!this.active)return;if(!this.gyroOrigin)this.gyroOrigin=sample;const axes=this.sensor.axes(this.gyroOrigin,sample);this.gyro={x:T.MathUtils.clamp(axes.roll,-.08,.08),y:T.MathUtils.clamp(axes.pitch,-.06,.06)}});
-  this.onKey=e=>{if(!this.active||e.target.closest?.('#debugWindow,#debugAuthorization'))return;if(e.code==='Escape'&&this.picker&&!this.picker.hidden){e.preventDefault();e.stopImmediatePropagation();this.closePicker();return}if(e.target.closest?.('input,textarea,select'))return;if(e.code==='Escape'&&this.gradientEditor&&!this.gradientEditor.hidden){e.preventDefault();this.closeGradientEditor();return}if(e.code==='Escape'&&this.customizing){e.preventDefault();this.customize(false)}if(!e.target.closest?.('dialog,[role="dialog"],#friendsPanel,#globalChat'))e.stopImmediatePropagation()};window.addEventListener('keydown',this.onKey,true);this.upgradeLayout();this.installCustomization();this.installShipCustomization();this.installColorPicker();this.refresh();
+  this.onKey=e=>{if(!this.active||e.target.closest?.('#debugWindow,#debugAuthorization,.customizationPurchase'))return;if(e.code==='Escape'&&this.picker&&!this.picker.hidden){e.preventDefault();e.stopImmediatePropagation();this.closePicker();return}if(e.target.closest?.('input,textarea,select'))return;if(e.code==='Escape'&&this.gradientEditor&&!this.gradientEditor.hidden){e.preventDefault();this.closeGradientEditor();return}if(e.code==='Escape'&&this.customizing){e.preventDefault();this.customize(false)}if(!e.target.closest?.('dialog,[role="dialog"],#friendsPanel,#globalChat'))e.stopImmediatePropagation()};window.addEventListener('keydown',this.onKey,true);this.upgradeLayout();this.installCustomization();this.installShipCustomization();this.installColorPicker();this.refresh();
+  if(this.accountCustomization){
+   window.addEventListener('tzg-signed-in',()=>this.loadCustomization().catch(()=>{}));
+   for(const event of ['tzg-guest-start','tzg-signed-out'])window.addEventListener(event,()=>this.clearAccountCustomization());
+   this.loadCustomization().catch(()=>{});
+  }
  }
  hitsCharacter(x,y){
   const group=this.preview?.group;
@@ -315,7 +322,7 @@ export class HomeExperiment{
   CHARACTER_FACES.forEach((face,i)=>{
    const button=document.createElement('button');button.type='button';button.dataset.face=face;
    button.textContent=['• •  ─','⌒ ⌒  ◡','• •  O','─ ─  ─','• ─  ◡','• •  ━'][i];
-   button.setAttribute('aria-label',face);button.title=face;button.onclick=()=>this.chooseFace(face);
+   button.setAttribute('aria-label',face);button.title=face;this.bindCustomizationLock(button,face==='Neutral'?null:'face:'+face,face+' Face',250,'FP',()=>this.chooseFace(face));
    this.characterFaces.append(button);
   });
 
@@ -335,7 +342,7 @@ export class HomeExperiment{
   this.shipColors=document.createElement('div');this.shipColors.className='homePaintColors';
   this.shipCustom=document.createElement('button');
   this.shipCustom.type='button';this.shipCustom.className='homeCustomColor';this.shipCustom.textContent='Custom Colour';
-  this.shipCustom.onclick=()=>this.openPicker(paintColor(this.shipColor()),color=>this.chooseShipColor(color));
+  this.bindCustomizationLock(this.shipCustom,'ship:custom','Ship Custom Colours',200,'RC',()=>this.openPicker(paintColor(this.shipColor()),color=>this.chooseShipColor(color)));
   this.paintControls.append(this.shipColors,this.shipCustom);
   this.shipGradient=this.installGradientButton(this.shipCustom,()=>this.shipColor(),value=>this.chooseShipColor(value));this.customActions.before(this.paintControls);
   this.customChoices=document.createElement('nav');
@@ -408,7 +415,7 @@ export class HomeExperiment{
   this.characterCustom.type='button';this.characterCustom.className='homeCustomColor';
   this.characterCustom.textContent='Custom Colour';
   this.characterColors.after(this.characterCustom);
-  this.characterCustom.onclick=()=>this.openPicker(paintColor(this.draft),color=>this.choose(color));
+  this.bindCustomizationLock(this.characterCustom,'character:custom','Character Custom Colours',200,'RC',()=>this.openPicker(paintColor(this.draft),color=>this.choose(color)));
   this.characterGradient=this.installGradientButton(this.characterCustom,()=>this.draft,value=>this.choose(value));
   this.picker=document.createElement('section');
   this.picker.className='homeColorPicker';this.picker.hidden=true;
@@ -489,14 +496,15 @@ export class HomeExperiment{
   const button=document.createElement('button');
   button.type='button';button.className='homeCustomColor';button.textContent='Gradient Editor';
   after.after(button);
-  button.onclick=()=>{
+  const section=after===this.shipCustom?'ship':'character';
+  this.bindCustomizationLock(button,section+':gradient',(section==='ship'?'Ship':'Character')+' Gradient Editor',500,'RC',()=>{
    const current=value(),color=paintColor(current)||CHARACTER_COLORS[0];
    this.gradientStops=(paintGradient(current)||[{position:0,color},{position:1,color}]).map(stop=>({...stop}));
    this.gradientStop=0;this.applyGradient=apply;this.gradientFocus=button;
    this.gradientEditor.hidden=false;this.pickerShade.hidden=false;
    for(const panel of [this.partsPanel,this.customPanel,this.host,this.root.querySelector('.homeCustomClose')])panel.inert=true;
    this.renderGradientEditor();this.gradientEditor.querySelector('button').focus();
-  };
+  });
   return button;
  }
  installGradientEditor(){
@@ -731,7 +739,90 @@ export class HomeExperiment{
    this.syncCharacterSwatches();
   }
  }
+ bindCustomizationLock(button,key,label,cost,currency,activate){
+  if(!this.accountCustomization||!key){button.onclick=activate;return;}
+  this.customizationButtons??=new Map();
+  this.customizationButtons.set(button,{key,label});
+  button.onclick=()=>this.ownedCustomizations.has(key)?activate():this.purchaseCustomization(key,label,cost,currency,activate);
+  this.refreshCustomizationLocks();
+ }
+ refreshCustomizationLocks(){
+  for(const [button,{key,label}] of this.customizationButtons||[]){
+   const locked=!this.ownedCustomizations.has(key);
+   setSystemLock(button,locked);
+   button.setAttribute('aria-label',label+(locked?' · Locked':''));
+  }
+ }
+ applyAccountCustomization(state){
+  this.ownedCustomizations=new Set(state?.unlocks||[]);
+  this.characterPaint=state?.character?.paint||{};
+  this.face=state?.character?.face||'Neutral';
+  this.shipPaint=Object.fromEntries((state?.shipOrder||Object.keys(state?.ship||{})).map(key=>[key,state.ship[key]]));
+  applyCharacterFace(this.character,this.face);applyCharacterColor(this.character,this.color,this.characterPaint);
+  applyCharacterFace(this.preview,this.face);applyCharacterColor(this.preview,this.color,this.characterPaint);
+  applyShipPaint(this.shipRig,this.shipPaint);applyShipPaint(this.world?.rig,this.shipPaint);
+  this.setTrailColor(this.shipPaint.trails);
+  this.refreshCustomizationLocks();
+ }
+ clearAccountCustomization(){
+  this.customizationOwner=null;
+  if(this.customizing)this.customize(false);
+  this.applyAccountCustomization(null);
+ }
+ async loadCustomization(){
+  const account=this.account(),owner=account?.loadedId;
+  if(!account?.ready||account.guest||!owner){this.clearAccountCustomization();return;}
+  if(this.customizationOwner===owner)return;
+  if(this.customizationLoad?.owner===owner)return this.customizationLoad.promise;
+  this.clearAccountCustomization();
+  const promise=account.rpc('tzg_customization_state').then(state=>{
+   if(!account.ready||account.guest||account.loadedId!==owner)return;
+   this.applyAccountCustomization(state);
+   this.customizationOwner=owner;
+  }).finally(()=>{if(this.customizationLoad?.promise===promise)this.customizationLoad=null;});
+  this.customizationLoad={owner,promise};
+  return promise;
+ }
+ async purchaseCustomization(key,label,cost,currency,activate){
+  if(this.purchaseOpen||this.customizationSaving)return;
+  const account=this.account(),owner=account?.loadedId;
+  if(!account?.ready||account.guest||!owner)return;
+  const balance=this.economy[currency.toLowerCase()];
+  this.purchaseOpen=true;
+  try{
+   const bought=await chatDialog({title:'Unlock '+label,className:'customizationPurchase',
+    text:cost.toLocaleString()+' '+currency+' · Balance '+balance.toLocaleString()+' '+currency,
+    submit:'Unlock',submitDisabled:balance<cost,
+    onSubmit:async()=>{
+     if(!account.ready||account.guest||account.loadedId!==owner)throw Error('Sign in again to continue.');
+     const result=await account.cloud.serverMutation('tzg_customization_unlock',{p_kind:key},(state,before)=>{
+      this.economy.fp+=state.fp-before.fp;this.economy.rc+=state.rc-before.rc;
+     });
+     this.ownedCustomizations=new Set(result.unlocks);
+     this.refreshCustomizationLocks();
+     this.drawCurrencies();
+    }});
+   if(bought&&this.customizing&&account.loadedId===owner)activate();
+  }finally{this.purchaseOpen=false;}
+ }
+ async saveAccountCustomization(section){
+  if(this.customizationSaving)return;
+  const account=this.account(),owner=account?.loadedId;
+  if(!account?.ready||account.guest||!owner||this.customizationOwner!==owner)return;
+  const draft=section==='ship'?this.draftShipPaint:this.draftCharacterPaint;
+  const paint=Object.fromEntries(Object.entries(draft).filter(([,value])=>isPaint(value)));
+  this.customizationSaving=true;
+  const button=this.root.querySelector('.homeSave');button.disabled=true;
+  try{
+   const state=await account.rpc('tzg_customization_save',{p_section:section,p_paint:paint,p_face:section==='character'?this.draftFace:null,p_order:section==='ship'?Object.keys(paint):null});
+   if(account.ready&&!account.guest&&account.loadedId===owner){
+    this.applyAccountCustomization(state);this.customize(false);
+   }
+  }catch(error){this.root.querySelector('.homeNotice').textContent=error.message||'Could not save customization. Please try again.';}
+  finally{this.customizationSaving=false;button.disabled=false;}
+ }
  saveCustomization(){
+  if(this.accountCustomization)return this.saveAccountCustomization(this.customView==='ship'?'ship':'character');
   if(this.customView!=='ship'){this.saveColor();return}
   try{
    localStorage.setItem(SHIP_PAINT_KEY,JSON.stringify(this.draftShipPaint));
@@ -751,6 +842,27 @@ export class HomeExperiment{
  openMenu(id){if(this.customizing||this.busy)return;if(id==='home-debug'){if(this.debug.active)this.debug.open();return}if(id==='home-settings'){document.getElementById('brand')?.click();return}if(id==='inventoryBtn'){this.openInventory();return}const original=document.getElementById(id);if(original&&!original.disabled)original.click();else this.notify('This menu is not available for this account.')}
  customize(open){
   if(!this.active)return;
+  if(open&&this.account()?.guest){
+   this.root.querySelector('.homeNotice').textContent='Sign in to customize your character and ship.';
+   return;
+  }
+  if(open&&this.accountCustomization){
+   const account=this.account();
+   if(!account?.ready||account.guest){
+    this.root.querySelector('.homeNotice').textContent='Sign in to customize your character and ship.';
+    return;
+   }
+   if(this.customizationOwner!==account.loadedId){
+    if(this.customizationLoading)return;
+    this.customizationLoading=true;
+    this.loadCustomization().then(()=>{
+     if(this.active&&this.customizationOwner&&this.customizationOwner===account.loadedId)this.customize(true);
+    }).catch(error=>{this.root.querySelector('.homeNotice').textContent=error.message||'Could not load customization.';})
+     .finally(()=>{this.customizationLoading=false;});
+    return;
+   }
+  }
+  this.root.querySelector('.homeNotice').textContent='';
   this.customizing=open;
   this.root.classList.toggle('homeIsCustomizing',open);
   this.root.querySelector('.homeCustomClose').hidden=!open;

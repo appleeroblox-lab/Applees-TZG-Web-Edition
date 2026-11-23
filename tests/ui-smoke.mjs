@@ -144,7 +144,7 @@ if(process.argv.includes('--home-only')){
  const fpBeforePaint=home.economy.fp;
  const saving=home.saveCustomization();
  const confirmation=document.querySelector('.customizationConfirm');
- assert.match(confirmation.textContent,/Total · 20 FP/);
+ assert.equal(confirmation.querySelector('.homeConfirmTotal strong').textContent,'20 FP');
  assert.match(confirmation.querySelector('.homePaintConfirmation').textContent,/Torso.*20 FP/);
  assert.equal(home.economy.fp,fpBeforePaint,'showing confirmation does not charge');
  await confirmation.querySelector('form').onsubmit({preventDefault(){}});

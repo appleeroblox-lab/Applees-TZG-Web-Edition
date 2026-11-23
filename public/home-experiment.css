@@ -204,16 +204,36 @@ body.homeExperimentOpen #dailyRewards .rewardItem img{width:24px;height:24px}
 }
 @keyframes homePickerSlideUp {from {transform:translateY(100dvh)} to {transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce) {#homeExperiment .homeColorPicker:not([hidden]) {animation:none}}
+body.homeExperimentOpen .chatActionDialog.customizationUnlock,
 body.homeExperimentOpen .chatActionDialog.customizationConfirm {
  width:min(400px,100%);font-family:'Fredoka One',sans-serif;
 }
-.customizationConfirm .messageEditorActions {
+:is(.customizationUnlock,.customizationConfirm) .messageEditorActions {
  display:grid;grid-template-columns:1fr 1fr;gap:8px;
 }
-.customizationConfirm button {min-height:34px}
-.customizationConfirm button[type=submit]:enabled {background:#075a8b}
-.customizationConfirm button:disabled {opacity:.55}
-.customizationConfirm [role=status]:empty {display:none}
+:is(.customizationUnlock,.customizationConfirm) button {min-height:34px}
+:is(.customizationUnlock,.customizationConfirm) button[type=submit]:enabled {background:#075a8b}
+:is(.customizationUnlock,.customizationConfirm) button:disabled {opacity:.55}
+:is(.customizationUnlock,.customizationConfirm) [role=status]:empty {display:none}
+.homeUnlockSummary {display:grid;gap:8px;margin-bottom:10px}
+.homeUnlockPreview {
+ display:grid;place-items:center;text-align:center;min-height:42px;padding:4px 8px;
+ border-radius:8px;background:#153f62;font-size:22px;
+}
+.homeUnlockPreview:is(.homeUnlockColours,.homeUnlockGradient) {
+ padding-top:11px;font-size:12px;
+ background:linear-gradient(90deg,#f88171 25%,#ffa85b 25% 50%,#71deac 50% 75%,#8cb8fa 75%) top/100% 5px no-repeat,#153f62;
+}
+.homeUnlockPreview.homeUnlockGradient {
+ background:linear-gradient(90deg,#8cb8fa,#a890fa,#f881a6) top/100% 5px no-repeat,#153f62;
+}
+.homeUnlockSummary dl {
+ display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 8px;
+ margin:0;padding:8px;border-radius:8px;background:#09395e99;
+}
+.homeUnlockSummary dd {margin:0;text-align:right}
+.homeUnlockSummary dt:first-child,.homeUnlockSummary dd:nth-child(2) {color:#fff0ba}
+.homeUnlockSummary .homeConfirmWarning {margin:0}
 .homeConfirmTotal {
  display:flex;justify-content:space-between;gap:8px;
  padding:9px;margin-bottom:10px;border-radius:7px;background:#09395e99;

@@ -207,7 +207,7 @@ export function applyShipPaint(rig,paint,selectedRegion){
 export class HomeExperiment{
  constructor({debug,character,shipRig,setTrailColor=()=>{},trailTips,account=()=>null,accountCustomization=false,economy,backgroundBody=()=>null,worldContext=()=>null,openInventory,closeMenus=()=>{},applyExposure=()=>{},clearInputs=()=>{},notify=()=>{}}){
   Object.assign(this,{debug,character,shipRig,setTrailColor,trailTips,account,accountCustomization,economy,backgroundBody,worldContext,openInventory,closeMenus,applyExposure,clearInputs,notify});this.active=false;this.busy=false;this.customizing=false;this.yaw=0;this.orbit=0;this.pitch=.12;this.distance=5.8;this.smoother=new GyroSmoother();this.cameraTarget=new T.Vector3();this.nextPosition=new T.Vector3();this.nextTarget=new T.Vector3();this.offset=new T.Vector3();this.markerPoint=new T.Vector3();this.ownedCustomizations=new Set();this.shipPaint=accountCustomization?{}:readShipPaint();shipRig?.ready.then(()=>applyShipPaint(shipRig,this.shipPaint));this.setTrailColor(this.shipPaint.trails);this.face=accountCustomization?'Neutral':localStorage.getItem('tzg-character-face')||'Neutral';applyCharacterFace(character,this.face);this.color=accountCustomization?CHARACTER_COLORS[0]:savedCharacterColor();this.characterPaint=accountCustomization?{}:readCharacterPaint();applyCharacterColor(character,this.color,this.characterPaint);
-  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=278';document.head.append(sheet);
+  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=280';document.head.append(sheet);
   this.root=document.createElement('section');this.root.id='homeExperiment';this.root.hidden=true;this.root.setAttribute('aria-label','Home Page experiment');
   this.root.innerHTML=`<div class="homeScene" aria-label="Drag to rotate character"></div><div class="homeChrome"><div class="homeTop"><div class="homeBrand"></div><nav class="homeQuick" aria-label="Home menus"></nav></div><aside class="homeLeft"><button class="homeIdentity" type="button"><strong class="homeName"></strong><span class="homeId"></span><span class="homeBalance"></span></button><nav class="homeLinks" aria-label="Player menus"></nav></aside><aside class="homeNews"><small>Explore our universe</small><h2>Time Travel</h2><p>Discover the Proto Solar System</p><button type="button" data-home="mapBtn">Universe Map →</button></aside><footer class="homeBottom"><button type="button" data-home="chatToggle">Global Chat</button><button type="button" class="homePlay">▶ Play</button><button type="button" class="homeCustomize">Customization</button><button type="button" data-home="mapBtn">Universe Map</button></footer></div><section class="homeCustomization" hidden aria-label="Character customization"><header><h2>Character Customization</h2><button type="button" class="homeCustomClose" aria-label="Close customization">✕</button></header><p>Body Color</p><div class="homeColors" role="group" aria-label="Character colors"></div><p class="homeCustomHint">Drag your character to rotate · Saved on this device</p><div class="homeCustomActions"><button type="button" class="homeReset">Reset</button><button type="button" class="homeSave">Save</button></div></section><div class="homeNotice" role="status"></div>`;
   document.body.append(this.root);this.host=this.root.querySelector('.homeScene');
@@ -782,6 +782,35 @@ export class HomeExperiment{
   this.customizationLoad={owner,promise};
   return promise;
  }
+ customizationUnlockSummary(key,cost,currency,balance){
+  const summary=document.createElement('div'),preview=document.createElement('div');
+  summary.className='homeUnlockSummary';preview.className='homeUnlockPreview';
+  const separator=key.indexOf(':');
+  const section=key.slice(0,separator),feature=key.slice(separator+1);
+  if(section==='face'){
+   preview.textContent=feature;
+  }else{
+   const gradient=feature==='gradient';
+   preview.classList.add(gradient?'homeUnlockGradient':'homeUnlockColours');
+   preview.textContent=gradient?'Blend colours across your parts':'Choose any colour for your parts';
+  }
+  const amounts=document.createElement('dl');
+  const rows=[['Price',cost],['Your balance',balance]];
+  if(balance>=cost)rows.push(['After purchase',balance-cost]);
+  for(const [label,value] of rows){
+   const term=document.createElement('dt'),amount=document.createElement('dd');
+   term.textContent=label;amount.textContent=value.toLocaleString()+' '+currency;
+   amounts.append(term,amount);
+  }
+  summary.append(preview,amounts);
+  if(balance<cost){
+   const warning=document.createElement('p');
+   warning.className='homeConfirmWarning';
+   warning.textContent='You need '+(cost-balance).toLocaleString()+' more '+currency+'.';
+   summary.append(warning);
+  }
+  return summary;
+ }
  async purchaseCustomization(key,label,cost,currency,activate){
   if(this.purchaseOpen||this.customizationSaving)return;
   const account=this.account(),owner=account?.loadedId;
@@ -790,7 +819,7 @@ export class HomeExperiment{
   this.purchaseOpen=true;
   try{
    const bought=await chatDialog({title:'Unlock '+label,className:'customizationPurchase customizationUnlock',
-    text:cost.toLocaleString()+' '+currency+' · Balance '+balance.toLocaleString()+' '+currency,
+    content:this.customizationUnlockSummary(key,cost,currency,balance),
     submit:'Unlock',submitDisabled:balance<cost,
     onSubmit:async()=>{
      if(!account.ready||account.guest||account.loadedId!==owner)throw Error('Sign in again to continue.');
@@ -951,7 +980,7 @@ export class HomeExperiment{
     const offset=this.camera.getWorldDirection(new T.Vector3()).negate();
     offset.y=0;
     if(offset.lengthSq()<1e-6)offset.set(0,0,1);
-    offset.normalize().multiplyScalar(7*Math.cos(Math.PI/6));offset.y=7*Math.sin(Math.PI/6);
+    offset.normalize().multiplyScalar(3.5*Math.cos(Math.PI/6));offset.y=3.5*Math.sin(Math.PI/6);
     this.playCamera={start:performance.now(),origin:this.camera.position.clone(),offset};
    }
    await Promise.all([
@@ -969,7 +998,6 @@ export class HomeExperiment{
    await animate(frames,[{transform:'scale(1)'},{transform:'scale(1.12)'}],220);
    await animate(cover,[{opacity:1,transform:'scale(.8)'},{opacity:1,transform:'scale(1.01)'}],440);
    stage.hidden=true;
-   if(this.playCamera)this.updateCamera(0,0,0,this.playCamera.start+1600);
    handoff();
    if(!document.hidden)await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
    await animate(cover,[{opacity:1,transform:'scale(1.01)'},{opacity:0,transform:'scale(1.01)'}],360);
@@ -1040,8 +1068,9 @@ export class HomeExperiment{
  updateCamera(w,h,dt=0,now=performance.now()){
   if(this.playCamera){
    const {start,origin,offset}=this.playCamera;
-   const progress=T.MathUtils.clamp((now-start)/1600,0,1);
-   this.camera.position.copy(origin).addScaledVector(offset,(1-Math.cos(Math.PI*progress))/2);
+   const seconds=Math.max(0,(now-start)/1000);
+   const travel=seconds+.18*Math.expm1(-seconds/.18);
+   this.camera.position.copy(origin).addScaledVector(offset,travel);
    this.camera.updateMatrixWorld();
    return;
   }

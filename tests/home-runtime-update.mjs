@@ -10,9 +10,13 @@ playCamera.rotation.set(.2,.4,0);
 const initialRotation=playCamera.quaternion.clone();
 const move={camera:playCamera,playCamera:{start:100,origin:new T.Vector3(1,2,3),offset:new T.Vector3(0,3.5,7*Math.cos(Math.PI/6))}};
 HomeExperiment.prototype.updateCamera.call(move,844,390,0,900);
-assert(Math.abs(playCamera.position.y-3.75)<1e-8,'Sine InOut is halfway after 800 ms');
+const firstPosition=playCamera.position.clone();
+assert(firstPosition.y>2,'camera starts pulling away during the title');
 HomeExperiment.prototype.updateCamera.call(move,844,390,0,1700);
-assert(Math.abs(playCamera.position.distanceTo(move.playCamera.origin)-7)<1e-8);
+const secondPosition=playCamera.position.clone();
+HomeExperiment.prototype.updateCamera.call(move,844,390,0,2500);
+assert(secondPosition.y>firstPosition.y&&playCamera.position.y>secondPosition.y,
+ 'camera keeps moving even beyond the nominal transition duration');
 assert(playCamera.quaternion.equals(initialRotation),'Play camera translates without rotation');
 const ship=new T.Vector3(5,1,6);
 const trade=new T.Group(),craft=new T.Group();
@@ -71,6 +75,11 @@ try{
    steps.push(['gameplay']);
   }};
  await HomeExperiment.prototype.play.call(lobby);
+ const unlock=HomeExperiment.prototype.customizationUnlockSummary('face:-_-',250,'FP',100);
+ assert.equal(unlock.querySelector('.homeUnlockPreview').textContent,'-_-');
+ assert.match(unlock.querySelector('.homeConfirmWarning').textContent,/150 more FP/);
+ const gradient=HomeExperiment.prototype.customizationUnlockSummary('ship:gradient',500,'RC',800);
+ assert.equal(gradient.querySelector('dd:last-child').textContent,'300 RC');
  const review=HomeExperiment.prototype.paintConfirmation.call({face:'-_-',economy:{fp:10}},'character',[
   {part:'head',before:undefined,after:'#ffffff',cost:20}
  ],'•_•',20,true);

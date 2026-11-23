@@ -14,6 +14,22 @@ assert(Math.abs(playCamera.position.y-3.75)<1e-8,'Sine InOut is halfway after 80
 HomeExperiment.prototype.updateCamera.call(move,844,390,0,1700);
 assert(Math.abs(playCamera.position.distanceTo(move.playCamera.origin)-7)<1e-8);
 assert(playCamera.quaternion.equals(initialRotation),'Play camera translates without rotation');
+const ship=new T.Vector3(5,1,6);
+const spaceMenuCamera={
+ camera:new T.PerspectiveCamera(),cameraTarget:new T.Vector3(),cameraReady:true,
+ world:{rig:{ship:{position:ship}},centers:{visible:true,children:[]}},
+ preview:{group:{position:new T.Vector3()}},
+ nextPosition:new T.Vector3(),nextTarget:new T.Vector3(),offset:new T.Vector3(),
+ cameraMenu:null,menuOnEarth:false,centerMenu:{id:'inventoryDialog'}
+};
+const updateMenuCamera=dt=>HomeExperiment.prototype.updateCamera.call(spaceMenuCamera,844,390,dt);
+updateMenuCamera(.425);
+assert(spaceMenuCamera.camera.position.equals(new T.Vector3(-1,3,-3.5)),'inventory tweens toward the ship in space');
+updateMenuCamera(.425);
+assert(spaceMenuCamera.camera.position.equals(new T.Vector3(-2,6,-7)));
+spaceMenuCamera.centerMenu={id:'dailyRewards'};
+updateMenuCamera(.85);
+assert(spaceMenuCamera.camera.position.equals(new T.Vector3(12,6,-7)),'daily rewards uses its own ship angle in space');
 assert.equal(semanticVersion(242),'v0.0.242');assert.equal(semanticVersion('0.1.2'),'v0.1.2');assert.equal(semanticVersion('bad'),null);
 const {document}=parseHTML('<html><body><div class="entryRelease"></div></body></html>');let requests=0;
 const tracker=installRuntimeVersions(document,async url=>{requests++;assert(url.endsWith('/rpc/tzg_backend_version'));return {ok:true,json:async()=>({version:'v0.0.1'})}});await tracker.ready;
@@ -52,6 +68,12 @@ try{
    steps.push(['gameplay']);
   }};
  await HomeExperiment.prototype.play.call(lobby);
+ const review=HomeExperiment.prototype.paintConfirmation.call({face:'-_-',economy:{fp:10}},'character',[
+  {part:'head',before:undefined,after:'#ffffff',cost:20}
+ ],'•_•',20,true);
+ assert.match(review.querySelector('li').textContent,/Original.*20 FP/);
+ assert.equal(review.querySelector('.homeConfirmTotal strong').textContent,'20 FP');
+ assert.match(review.querySelector('.homeConfirmWarning').textContent,/10 more FP/);
  assert.deepEqual(steps.slice(0,4).map(([name,duration])=>[name,duration]),[
   ['The Zero Gravity',460],['Web Edition',460],['homePlayFrameTop',300],['homePlayFrameBottom',300]
  ]);

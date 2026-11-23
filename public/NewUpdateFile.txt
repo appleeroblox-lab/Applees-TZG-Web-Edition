@@ -1,2 +1,4 @@
-v0.0.277
-- Fixed the Play transition so the camera starts moving as soon as you click Play.
+v0.0.278
+- The Play camera starts immediately, and the black frames cover a smaller transition title on mobile.
+- Inventory and Daily Rewards now move the lobby camera when opened from space.
+- Redesigned the customization review to show each change, its price, and the total FP.

@@ -207,7 +207,7 @@ export function applyShipPaint(rig,paint,selectedRegion){
 export class HomeExperiment{
  constructor({debug,character,shipRig,setTrailColor=()=>{},trailTips,account=()=>null,accountCustomization=false,economy,backgroundBody=()=>null,worldContext=()=>null,openInventory,closeMenus=()=>{},applyExposure=()=>{},clearInputs=()=>{},notify=()=>{}}){
   Object.assign(this,{debug,character,shipRig,setTrailColor,trailTips,account,accountCustomization,economy,backgroundBody,worldContext,openInventory,closeMenus,applyExposure,clearInputs,notify});this.active=false;this.busy=false;this.customizing=false;this.yaw=0;this.orbit=0;this.pitch=.12;this.distance=5.8;this.smoother=new GyroSmoother();this.cameraTarget=new T.Vector3();this.nextPosition=new T.Vector3();this.nextTarget=new T.Vector3();this.offset=new T.Vector3();this.markerPoint=new T.Vector3();this.ownedCustomizations=new Set();this.shipPaint=accountCustomization?{}:readShipPaint();shipRig?.ready.then(()=>applyShipPaint(shipRig,this.shipPaint));this.setTrailColor(this.shipPaint.trails);this.face=accountCustomization?'Neutral':localStorage.getItem('tzg-character-face')||'Neutral';applyCharacterFace(character,this.face);this.color=accountCustomization?CHARACTER_COLORS[0]:savedCharacterColor();this.characterPaint=accountCustomization?{}:readCharacterPaint();applyCharacterColor(character,this.color,this.characterPaint);
-  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=277';document.head.append(sheet);
+  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=278';document.head.append(sheet);
   this.root=document.createElement('section');this.root.id='homeExperiment';this.root.hidden=true;this.root.setAttribute('aria-label','Home Page experiment');
   this.root.innerHTML=`<div class="homeScene" aria-label="Drag to rotate character"></div><div class="homeChrome"><div class="homeTop"><div class="homeBrand"></div><nav class="homeQuick" aria-label="Home menus"></nav></div><aside class="homeLeft"><button class="homeIdentity" type="button"><strong class="homeName"></strong><span class="homeId"></span><span class="homeBalance"></span></button><nav class="homeLinks" aria-label="Player menus"></nav></aside><aside class="homeNews"><small>Explore our universe</small><h2>Time Travel</h2><p>Discover the Proto Solar System</p><button type="button" data-home="mapBtn">Universe Map →</button></aside><footer class="homeBottom"><button type="button" data-home="chatToggle">Global Chat</button><button type="button" class="homePlay">▶ Play</button><button type="button" class="homeCustomize">Customization</button><button type="button" data-home="mapBtn">Universe Map</button></footer></div><section class="homeCustomization" hidden aria-label="Character customization"><header><h2>Character Customization</h2><button type="button" class="homeCustomClose" aria-label="Close customization">✕</button></header><p>Body Color</p><div class="homeColors" role="group" aria-label="Character colors"></div><p class="homeCustomHint">Drag your character to rotate · Saved on this device</p><div class="homeCustomActions"><button type="button" class="homeReset">Reset</button><button type="button" class="homeSave">Save</button></div></section><div class="homeNotice" role="status"></div>`;
   document.body.append(this.root);this.host=this.root.querySelector('.homeScene');
@@ -823,7 +823,8 @@ export class HomeExperiment{
   });
   return {paint,changes,cost:changes.reduce((total,change)=>total+change.cost,0)};
  }
- paintConfirmation(section,changes,face){
+ paintConfirmation(section,changes,face,cost,insufficient){
+  const summary=document.createElement('div');
   const list=document.createElement('ul');
   list.className='homePaintConfirmation';
   const names=new Map(section==='ship'?shipCategories:characterParts);
@@ -850,13 +851,22 @@ export class HomeExperiment{
   }
   if(section==='character'&&face!==this.face){
    const row=document.createElement('li');
-   row.textContent='Face · '+face+' · 0 FP';
+   const label=document.createElement('strong'),preview=document.createElement('span'),price=document.createElement('span');
+   label.textContent='Face';preview.textContent=this.face+' → '+face;price.textContent='0 FP';
+   row.append(label,preview,price);
    list.append(row);
   }
   if(!list.children.length){
    const row=document.createElement('li');row.textContent='No changes';list.append(row);
   }
-  return list;
+  const total=document.createElement('div'),amount=document.createElement('strong');
+  total.className='homeConfirmTotal';amount.textContent=cost.toLocaleString()+' FP';
+  total.append('Total cost',amount);summary.append(list,total);
+  if(insufficient){
+   const warning=document.createElement('p');warning.className='homeConfirmWarning';
+   warning.textContent='You need '+(cost-this.economy.fp).toLocaleString()+' more FP.';summary.append(warning);
+  }
+  return summary;
  }
  async saveAccountCustomization(section){
   if(this.customizationSaving||this.purchaseOpen)return;
@@ -865,15 +875,15 @@ export class HomeExperiment{
   const {paint,changes,cost}=this.customizationPaint(section);
   const face=section==='character'?this.draftFace:null;
   const pending=account.cloud.externalPending;
+  const insufficient=!pending&&this.economy.fp<cost;
   const hasChanges=changes.length>0||(section==='character'&&face!==this.face);
   this.customizationSaving=true;
   const button=this.root.querySelector('.homeSave');button.disabled=true;
   try{
    const saved=await chatDialog({
-    title:'Confirm colour changes',className:'customizationPurchase customizationConfirm',
-    text:'Total · '+cost.toLocaleString()+' FP'+(!pending&&this.economy.fp<cost?' · Not enough FP':''),
-    content:this.paintConfirmation(section,changes,face),submit:'Confirm',
-    submitDisabled:!pending&&this.economy.fp<cost,
+    title:section==='ship'?'Review ship changes':'Review character changes',className:'customizationPurchase customizationConfirm',
+    content:this.paintConfirmation(section,changes,face,cost,insufficient),submit:'Save changes',
+    submitDisabled:insufficient,
     onSubmit:async()=>{
      if(!account.ready||account.guest||account.loadedId!==owner)throw Error('Sign in again to continue.');
      if(!hasChanges&&!pending)return;
@@ -1059,11 +1069,15 @@ export class HomeExperiment{
    }else target.copy(character).add(this.offset.set(0,.8,0));
    position.copy(target).add(this.offset.set(0,.38,-3.6));
    fov=38;
-  }else if(this.world.centers?.visible&&this.centerMenu){
+  }else if(this.centerMenu&&this.menuOnEarth&&this.world.centers?.visible){
    const index=this.centerMenu.id==='inventoryDialog'?0:1;
    target.copy(this.world.centers.children[index].position).add(this.offset.set(0,3,0));
    this.offset.set(0,2.2,18).applyQuaternion(this.world.centers.children[index].quaternion);
    position.copy(target).add(this.offset);
+  }else if(this.centerMenu){
+   const inventory=this.centerMenu.id==='inventoryDialog';
+   target.copy(ship);target.y+=2;
+   position.copy(target).add(this.offset.set(inventory?-7:7,3,-13));
   }else{
    const finger=this.drag?{
     x:T.MathUtils.clamp((this.drag.x/w-.5)*.16,-.08,.08),
@@ -1159,7 +1173,8 @@ export class HomeExperiment{
   if(this.width!==w||this.height!==h){this.width=w;this.height=h;this.renderer.setSize(w,h)}
   this.world.syncSettings(context);
   const background=this.backgroundBody();
-  this.centerMenu=!this.customizing&&context.playerOnEarth===true?document.querySelector('#inventoryDialog[open],#dailyRewards[open]'):null;
+  this.menuOnEarth=context.playerOnEarth===true;
+  this.centerMenu=!this.customizing?document.querySelector('#inventoryDialog[open],#dailyRewards[open]'):null;
   if(background&&this.world.session.body!==background)this.world.enter(background);
   this.world.animateFlightPreview(dt);
   this.preview.group.rotation.y=this.yaw;

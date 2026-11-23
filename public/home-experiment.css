@@ -204,17 +204,32 @@ body.homeExperimentOpen #dailyRewards .rewardItem img{width:24px;height:24px}
 }
 @keyframes homePickerSlideUp {from {transform:translateY(100dvh)} to {transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce) {#homeExperiment .homeColorPicker:not([hidden]) {animation:none}}
+body.homeExperimentOpen .chatActionDialog.customizationConfirm {
+ width:min(400px,100%);font-family:'Fredoka One',sans-serif;
+}
+.customizationConfirm .messageEditorActions {
+ display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.customizationConfirm button {min-height:34px}
+.customizationConfirm button[type=submit]:enabled {background:#075a8b}
+.customizationConfirm button:disabled {opacity:.55}
+.customizationConfirm [role=status]:empty {display:none}
+.homeConfirmTotal {
+ display:flex;justify-content:space-between;gap:8px;
+ padding:9px;margin-bottom:10px;border-radius:7px;background:#09395e99;
+}
+.homeConfirmWarning {margin:0 0 10px;color:#fff0ba}
 .homePaintConfirmation {
  display:grid; gap:6px; list-style:none; margin:10px 0; padding:0;
  max-height:min(35dvh,220px); overflow:auto;
 }
 .homePaintConfirmation li {
  display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:6px;
- padding:5px 0; border-bottom:1px solid #e4f7ff66;
+ padding:6px 8px; border-radius:6px; background:#12456d66; overflow-wrap:anywhere;
 }
 .homeConfirmPreview {display:flex; align-items:center; gap:3px}
 .homeConfirmSwatch {
- display:grid; place-items:center; min-width:15px; min-height:15px;
+ display:grid; place-items:center; min-width:20px; min-height:20px;
  padding:0 2px; border:1px solid #d9f3ff; border-radius:4px; font-size:9px;
 }
 
@@ -248,6 +263,7 @@ body.homeExperimentOpen:has(#homeExperiment.homePlayLeaving) #runtimeVersions {t
  color:#fff;font-family:'Fredoka One',sans-serif;font-synthesis:none;
 }
 .homePlayStage,.homePlayFrames,.homePlayFlash,.homePlayCover {position:absolute;inset:0}
+.homePlayFrames {z-index:1}
 .homePlayFrameTop,.homePlayFrameBottom {position:absolute;left:-2px;right:-2px;height:calc(50% + 2px);background:#000}
 .homePlayFrameTop {top:-1px;transform:translateY(-101%)}
 .homePlayFrameBottom {bottom:-1px;transform:translateY(101%)}
@@ -257,5 +273,10 @@ body.homeExperimentOpen:has(#homeExperiment.homePlayLeaving) #runtimeVersions {t
 }
 .homePlayTitles strong {font-size:clamp(30px,8vw,80px);font-weight:400;transform:translateX(-110vw)}
 .homePlayTitles span {font-size:clamp(15px,3vw,30px);font-weight:400;letter-spacing:.16em;transform:translateX(110vw)}
-.homePlayFlash {opacity:0;background:white}
-.homePlayCover {opacity:0;background:#000}
+@media(max-width:600px),(max-height:550px),(pointer:coarse) {
+ .homePlayTitles strong {font-size:clamp(24px,6vw,46px)}
+ .homePlayTitles span {font-size:clamp(12px,2.5vw,20px)}
+}
+.homePlayStage {z-index:0}
+.homePlayFlash {z-index:1;opacity:0;background:white}
+.homePlayCover {z-index:2;opacity:0;background:#000}

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import * as T from '../public/vendor/three.module.js';
 import {GRAPHICS_MODES,graphicsPolicy} from '../public/graphics-policy.js';
-import {resolutionRatio} from '../public/performance.js';
+import {resolutionRatio,surfaceResolutionRatio,touchDevice} from '../public/performance.js';
 import {warpQuote,destinationLightYears} from '../public/warp-pricing.js';
 import {pickSpaceBody,labelProjection} from '../public/body-labels.js';
 import {applyAtmosphericFog,AIRLESS_FOG_COLOR} from '../public/atmosphere-effects.js';
@@ -11,6 +11,13 @@ const policies=['High','Ultra','Ultra+'].map(graphicsPolicy);assert.equal(GRAPHI
 for(let i=1;i<policies.length;i++)for(const field of ['clouds','sceneryDistance','stars','grass','mobileGrass','shadowSize','mobileShadowSize','sharpness'])assert(policies[i][field]>policies[i-1][field],field+' increases with Ultra tiers');
 assert.equal(graphicsPolicy('Ultra+').scenery,graphicsPolicy('Ultra+').mobileScenery,'Ultra+ tree counts match mobile');assert.deepEqual(sceneryBudget('Ultra+',false),sceneryBudget('Ultra+',true),'Ultra+ visible scenery budget matches across devices');
 for(const mobile of [false,true]){let last=0;for(const quality of ['High','Ultra','Ultra+']){const ratio=resolutionRatio(1280,720,3,quality,mobile);assert(ratio>last);last=ratio;assert(sceneryBudget(quality,mobile).count>0)}}
+assert(touchDevice({userAgent:'Android Tablet'},()=>({matches:false})));
+assert(touchDevice({userAgent:'Macintosh',maxTouchPoints:5},()=>({matches:false})));
+assert(!touchDevice({userAgent:'Macintosh',maxTouchPoints:0},()=>({matches:false})));
+assert.equal(surfaceResolutionRatio(844,390,.9,true),.9,'phone render budget stays the same');
+assert.equal(surfaceResolutionRatio(1400,900,1,false),1,'desktop keeps its graphics preset');
+const tabletRatio=surfaceResolutionRatio(1400,900,.9,true);
+assert(1400*900*tabletRatio**2<=580001,'tablet surface pixel count stays within budget');
 assert.equal(parseDebugCommand('graphics ultra+').value,'ultra+');
 const target={id:'Proxima b',system:'Proxima',r:60,pos:new T.Vector3(72000,0,0)},walletPosition=new T.Vector3();
 const first=warpQuote(target,'Sol',walletPosition);assert.deepEqual(first,{fp:1000,rc:5});assert.deepEqual(warpQuote(target,'Sol',new T.Vector3(1e14,-5e12,0)),first,'return-trip coordinates do not discount intersystem travel');

@@ -994,7 +994,7 @@ export class HomeExperiment{
   };
   let overlay;
   try{
-   if(!this.root.animate||globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){handoff();return;}
+   if(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){handoff();return;}
    overlay=document.createElement('div');overlay.className='homePlayTransition';overlay.setAttribute('aria-hidden','true');
    overlay.innerHTML='<div class="homePlayStage"><div class="homePlayFrames"><div class="homePlayFrameTop"></div><div class="homePlayFrameBottom"></div></div><div class="homePlayTitles"><strong>The Zero Gravity</strong><span>Web Edition</span></div></div><div class="homePlayFlash"></div><div class="homePlayCover"></div>';
    document.body.append(overlay);
@@ -1004,8 +1004,18 @@ export class HomeExperiment{
    const cover=overlay.querySelector('.homePlayCover');
    const [title,edition]=overlay.querySelectorAll('.homePlayTitles > *');
    const [top,bottom]=frames.children;
-   const animate=(element,keyframes,duration,easing='cubic-bezier(.22,.61,.36,1)')=>
-    this.skipPlayAnimation?Promise.resolve():element.animate(keyframes,{duration,easing,fill:'both'}).finished.catch(()=>{});
+   const animate=(element,keyframes,duration,easing='cubic-bezier(.22,.61,.36,1)')=>{
+    if(this.skipPlayAnimation)return Promise.resolve();
+    const animation=element.animate?.(keyframes,{duration,easing,fill:'both'});
+    if(animation?.finished)return animation.finished.catch(()=>{});
+    // Some tablet browsers expose CSS transitions without a usable animation promise.
+    animation?.cancel?.();
+    Object.assign(element.style,keyframes[0]);
+    element.getBoundingClientRect();
+    element.style.transition='all '+duration+'ms '+easing;
+    Object.assign(element.style,keyframes.at(-1));
+    return new Promise(resolve=>setTimeout(resolve,duration));
+   };
    if(this.cameraReady&&this.camera){
     const offset=this.camera.getWorldDirection(new T.Vector3()).negate();
     offset.y=0;
@@ -1229,7 +1239,9 @@ export class HomeExperiment{
   this.world.syncSettings(context);
   const background=this.backgroundBody();
   if(background&&this.world.session.body!==background)this.world.enter(background);
-  this.centerMenu=!this.customizing&&this.world.centers?.visible?document.querySelector('#inventoryDialog[open],#dailyRewards[open]'):null;
+  const centerMenu=!this.customizing&&this.world.centers?.visible?
+   ['inventoryDialog','dailyRewards'].map(id=>document.getElementById(id)).find(panel=>panel&&(panel.open||panel.hasAttribute('open'))):null;
+  this.centerMenu=centerMenu||null;
   this.world.animateFlightPreview(dt);
   this.preview.group.rotation.y=this.yaw;
   this.updateCamera(w,h,dt,now);
@@ -1239,6 +1251,6 @@ export class HomeExperiment{
   context.effects.entryHeat=0;context.effects.mobile=context.mobile;
   const scene=this.world.flightPreview?this.world.spaceScene:this.scene;
   this.applyExposure(this.world.flightPreview?context.spaceExposure??1.5:1.2);
-  context.effects.render(scene,this.camera,context.quality);
+  context.effects.render(scene,this.camera,context.quality,{surface:!this.world.flightPreview});
  }
 }

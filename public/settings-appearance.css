@@ -167,3 +167,15 @@ body.referenceHUD #settingsDialog[data-appearance] .settingsRangeRow>input[type=
  :is(input[type="checkbox"], button[role="switch"]),
  :is(input[type="checkbox"], button[role="switch"])::after { transition: none !important; }
 }
+
+#settingsDialog .terrainAnimationSetting {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ gap: 12px;
+ min-height: 30px;
+}
+#settingsDialog .terrainAnimationSetting label {
+ min-width: 0;
+ margin: 0;
+}

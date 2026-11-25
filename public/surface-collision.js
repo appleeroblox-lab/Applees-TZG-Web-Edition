@@ -11,7 +11,8 @@ export class SurfaceCollisions{
  constructor(surface){this.surface=surface;surface.collisions=this;this.cells=new Map();this.key='';this.stats={boxes:0,queries:0,candidates:0}}
  ensure(){const s=this.surface,e=s.building?.economy||s.prospecting?.economy,key=[s.body?.id,(e?.placementRevision??e?.worldRevision),e?.placements.length,s.stream?.collisionRevision,s.baseRevision].join(':');if(key===this.key)return;this.key=key;this.cells.clear();this.stats.boxes=0;if(!s.body?.solid)return;
   for(const p of e?.placements||[])if(p.body===s.body.id&&isSolidBlock(p))this.add({...blockBounds(p),kind:p.origin==='village'?'house/block':'block'});
-  for(const g of s.stream?.chunks.values()||[]){const mesh=g.userData.scenery;if(mesh?.visible)for(const b of mesh.userData.colliders||[])this.add(b)}
+  if(s.stream?.viewStreaming){for(const bounds of s.stream.collisionBoxes)this.add(bounds)}
+  else for(const g of s.stream?.chunks.values()||[]){const mesh=g.userData.scenery;if(mesh?.visible)for(const b of mesh.userData.colliders||[])this.add(b)}
   for(const b of s.baseColliders||[])this.add(b);if(s.padSign){s.padSign.updateWorldMatrix(true,true);for(const child of s.padSign.children){if(!child.isMesh)continue;const bounds=new T.Box3().setFromObject(child);this.add({min:bounds.min,max:bounds.max,kind:'pad sign'})}}
   this.add(box(12,surfaceHeight(12,0)+padHeightAt(12,0)+.65,0,1, .65,1,'ship station'));
   const ground=surfaceHeight;

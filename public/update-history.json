@@ -1,8 +1,22 @@
 {
-  "currentVersion": "v0.0.291",
+  "currentVersion": "v0.0.292",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 292,
+      "version": "v0.0.292",
+      "date": "2026-11-25",
+      "title": "Camera-based terrain streaming",
+      "changes": [
+        "Planet terrain streams around your camera, with low-detail ground filling in while detailed chunks load.",
+        "Distant trees use camera-facing billboards, while nearby rocks and grass render only within view.",
+        "Four new World settings let you control terrain motion, terrain fades, unload fades and tree transitions independently."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 291,
       "version": "v0.0.291",

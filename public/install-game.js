@@ -9,11 +9,11 @@ export function installGameUI(win=window,doc=document){
  if(win.isSecureContext&&win.navigator?.serviceWorker)win.navigator.serviceWorker.register('./service-worker.js',{scope:'./',updateViaCache:'none'}).catch(()=>{});
  const refresh=()=>{button.textContent=installed?'Game Installed':'Install Game';button.disabled=installed||busy;button.title=deferred?'Install this game':/iPad|iPhone|iPod/.test(win.navigator?.userAgent||'')?'Share → Add to Home Screen':'Browser menu → Install app / Add to Home screen'};
  const prompt=async()=>{if(installed||busy)return;if(!deferred){instructions();return}const event=deferred;deferred=null;busy=true;attempted=true;refresh();try{await event.prompt();const choice=await event.userChoice;if(choice?.outcome==='accepted')installed=true}catch{deferred=event;instructions()}finally{busy=false;refresh();win.dispatchEvent(new doc.defaultView.Event('tzg-install-prompt-closed'))}};
- const maybeAuto=()=>{if(deferred&&signed&&!attempted&&!installed&&!win.__loadingSources&&!doc.hidden&&!doc.querySelector('dialog[open]')&&win.navigator?.userActivation?.isActive)return prompt()};
+ const maybeAuto=(gesture=false)=>{if(deferred&&signed&&!attempted&&!installed&&!win.__loadingSources&&!doc.hidden&&!doc.querySelector('dialog[open]')&&(gesture===true||win.navigator?.userActivation?.isActive))return prompt()};
  const available=event=>{event.preventDefault();deferred=event;refresh();maybeAuto()};
  const onInstalled=()=>{installed=true;deferred=null;refresh()};
  const onSigned=()=>{signed=true;maybeAuto()};
- const onGesture=event=>{if(event.isTrusted===false||event.defaultPrevented)return;return maybeAuto()};
+ const onGesture=event=>{if(event.isTrusted===false||event.defaultPrevented)return;return maybeAuto(true)};
  button.onclick=prompt;
  win.addEventListener('beforeinstallprompt',available);win.addEventListener('appinstalled',onInstalled);win.addEventListener('tzg-signed-in',onSigned);win.addEventListener('tzg-ready',maybeAuto);doc.addEventListener('click',onGesture);refresh();
  return {dispose(){win.removeEventListener('beforeinstallprompt',available);win.removeEventListener('appinstalled',onInstalled);win.removeEventListener('tzg-signed-in',onSigned);win.removeEventListener('tzg-ready',maybeAuto);doc.removeEventListener('click',onGesture);button.onclick=null}};

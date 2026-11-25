@@ -278,13 +278,13 @@ export class SurfaceStream{
  }
  get collisionBoxes(){return [...this.collisionChunks.values()].flatMap(chunk=>chunk.colliders)}
  billboards(body,cx,cz,count){
-  const geometry=new T.BufferGeometry(),positions=[],centers=[],colors=[],segments=[];
+  const geometry=new T.BufferGeometry(),positions=[],centers=[],colors=[],normals=[],segments=[];
   const depleted=this.view.session.prospecting?.economy.depleted;
   for(const tree of sceneryPoints(body,cx,cz,count)){
    if(!(tree.tree||tree.alien)||depleted?.has(tree.id))continue;
    const {x,y,z,vegetation,alien,i}=tree;
    const start=positions.length/3;
-   const vertex=(dx,dy,c)=>{positions.push(x+dx,y+dy,z);centers.push(x,z);colors.push(c.r,c.g,c.b)};
+   const vertex=(dx,dy,c)=>{positions.push(x+dx,y+dy,z);centers.push(x,z);colors.push(c.r,c.g,c.b);normals.push(0,1,0)};
    const shape=(points,color)=>{
     const c=new T.Color(color);
     for(let n=1;n<points.length-1;n++)for(const [dx,dy] of [points[0],points[n],points[n+1]])vertex(dx,dy,c);
@@ -301,7 +301,9 @@ export class SurfaceStream{
   geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));
   geometry.setAttribute('centerXZ',new T.Float32BufferAttribute(centers,2));
   geometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));
-  const material=new T.MeshBasicMaterial({vertexColors:true,side:T.DoubleSide});
+  // Upward lighting stays stable as the tree silhouette turns toward the camera.
+  geometry.setAttribute('normal',new T.Float32BufferAttribute(normals,3));
+  const material=new T.MeshLambertMaterial({vertexColors:true,side:T.DoubleSide});
   material.onBeforeCompile=shader=>{
    shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nattribute vec2 centerXZ;').replace('#include <begin_vertex>',`#include <begin_vertex>
     vec2 viewXZ = cameraPosition.xz - centerXZ;

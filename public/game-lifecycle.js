@@ -102,11 +102,13 @@ export function gameLifecycle(win = window, doc = win.document) {
   reconcile('visibilitychange');
  });
  win.addEventListener('blur', () => { blurred = true; reconcile('blur'); });
- win.addEventListener('focus', () => {
+ const restoreFocus = event => {
   visible = !doc.hidden;
   if (visible) { blurred = background = frozen = false; }
-  reconcile('focus');
- });
+  reconcile(event.type, event.type === 'tzg-install-prompt-closed');
+ };
+ win.addEventListener('focus', restoreFocus);
+ win.addEventListener('tzg-install-prompt-closed', restoreFocus);
  win.addEventListener('pagehide', () => { background = true; reconcile('pagehide'); });
  win.addEventListener('pageshow', () => {
   visible = !doc.hidden; background = frozen = blurred = false;

@@ -1,4 +1,4 @@
-v0.0.292
-- Planet terrain streams around your camera, with low-detail ground filling in while detailed chunks load.
-- Distant trees use camera-facing billboards, while nearby rocks and grass render only within view.
-- Four new World settings let you control terrain motion, terrain fades, unload fades and tree transitions independently.
+v0.0.293
+- Returning to the game through the rotate prompt releases the previous menu backdrop so buttons respond again.
+- All Settings switches share the same design and use different knob colors for On and Off.
+- Distant trees now follow the environment lighting and darken at night.

@@ -104,9 +104,9 @@ label:has(> input[type="checkbox"]) {
  right: auto !important;
  transform: translateY(-50%) !important;
  border-radius: 50% !important;
- background: #f3fcff !important;
+ background: #adc0ce !important;
  box-shadow: 0 1px 3px #001c3f40;
- transition: left .16s ease;
+ transition: left .16s ease, background .16s ease;
 }
 
 :is(input[type="checkbox"]:checked, button[role="switch"][aria-checked="true"]) {
@@ -115,6 +115,7 @@ label:has(> input[type="checkbox"]) {
 
 :is(input[type="checkbox"]:checked, button[role="switch"][aria-checked="true"])::after {
  left: 25px !important;
+ background: #e4ffff !important;
 }
 
 :is(input[type="checkbox"], button[role="switch"]):focus-visible {
@@ -168,14 +169,5 @@ body.referenceHUD #settingsDialog[data-appearance] .settingsRangeRow>input[type=
  :is(input[type="checkbox"], button[role="switch"])::after { transition: none !important; }
 }
 
-#settingsDialog .terrainAnimationSetting {
- display: flex;
- align-items: center;
- justify-content: space-between;
- gap: 12px;
- min-height: 30px;
-}
-#settingsDialog .terrainAnimationSetting label {
- min-width: 0;
- margin: 0;
-}
+#settingsShield[hidden]{display:none!important}
+body:has(dialog[open][data-fallback-modal]:not([hidden])) #settingsShield[hidden]{display:block!important}

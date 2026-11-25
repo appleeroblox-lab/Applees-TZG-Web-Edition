@@ -13,7 +13,7 @@ import {WorldLabelDepth} from './world-label-depth.js?v=182';
 import {installUpdateIcons} from './update-icons.js?v=185';
 import {installRestartFade} from './restart-fade.js?v=187';
 import {closeChatDialogs} from './chat-dialog.js?v=187';
-import {menuMotion,menuVisible,showMenu,hideMenu} from './menu-motion.js?v=187';
+import {recoverMenuDialogs,menuMotion,menuVisible,showMenu,hideMenu} from './menu-motion.js?v=187';
 import {CockpitLook} from './cockpit-look.js?v=182';
 import {installTNTIgnitePrompt} from './tnt-ignite-prompt.js?v=181';
 import {mountAtGrip} from './character-grip.js?v=180';
@@ -80,7 +80,7 @@ import {updateWarpHUD} from './warp-hud.js';
 import {graphicsPolicy,GRAPHICS_MODES} from './graphics-policy.js?v=182';
 import {TradeUI} from './trade-ui.js';
 import {Building} from './building.js?v=267';
-import {SurfaceStream} from './surface-streaming.js?v=190';
+import {SurfaceStream} from './surface-streaming.js?v=293';
 import * as T from './vendor/three.module.js';
 import {bodies,earth,AU} from './catalog.js?v=100';
 import {Flight,V,attitude,clearance,safeArrival} from './flight.js?v=170';
@@ -286,9 +286,9 @@ function render(){
 function updateHUD(){updateEconomyHUD();updateSurfaceControls();if(surface.active){updateSurfaceHUD();return}updateExplorerHUD();const n=flight.nav,d=target.system===flight.system?Math.max(0,flight.pos.distanceTo(target.pos)-target.r):Infinity;const range=Number.isFinite(d)?distanceText(d):destinationLightYears(target,flight.system,flight.pos).toFixed(2)+' Ly';$('range').textContent=range;const speed=flight.vel.length();$('speed').innerHTML=(speed*100).toFixed(1)+' <small>km/s</small>';$('speedBar').style.width=clamp(speed/3.2,0,100)+'%';$('eta').textContent=n?.kind==='warp'?Math.max(0,Math.ceil(n.duration-n.elapsed))+' s':n?Math.ceil(flight.pos.distanceTo(n.end)/Math.max(speed,.1))+' s':'—';const near=flight.nearest(),alt=Math.max(0,flight.pos.distanceTo(near.pos)-near.r-clearance);$('altitude').textContent=distanceText(alt);$('nearest').textContent='ABOVE '+near.name.toUpperCase();$('modeText').textContent=paused?'PAUSED':layoutMode?'MOVE HUD':n?.kind==='warp'?'WARP ACTIVE':n?'AUTOPILOT · '+n.mode.toUpperCase():flight.landed?'SURFACE PARKED':flight.assist?'FLIGHT ASSIST':'INERTIAL FLIGHT';$('gearStatus').textContent='LANDING GEAR '+(flight.gear?'DEPLOYED':'RETRACTED');$('gearBtn').classList.toggle('active',flight.gear);$('assistBtn').classList.toggle('active',flight.assist);$('shipStatus').textContent=flight.landed?'TOUCHDOWN':n?.kind==='warp'?'WARP DRIVE':'NOMINAL';$('heading').textContent=String(Math.round((T.MathUtils.radToDeg(new T.Euler().setFromQuaternion(flight.q,'YXZ').y)+360)%360)).padStart(3,'0');$('navInfo').style.display=n?'flex':'none';$('navText').textContent=n?(n.kind==='warp'?'Warp to ':'Guided '+n.mode+' · ')+n.b.name:'';
 
 }
-function open(id){if(proto?.transit||flight.nav?.kind==='warp'||experimentalWarpActive)return;if(!$(id)?.open)sfx.play('uiOpen');if(id!=='inventoryDialog')clearInputs();if(id!=='inventoryDialog'&&$('inventoryDialog').open)closeDialog($('inventoryDialog'));if(id==='settingsDialog'){const radius=surfaceStream.radius??(graphicsPolicy(graphics).terrainRadius);$('terrainSize').value=radius;$('terrainSizeValue').textContent=((2*radius+1)*96)+' m across';const env=surfaceView.environment;$('earthTime').value=env.hour;syncRangeFill($('earthTime'));$('earthTimeValue').textContent=env.sample().clock;$('earthCycle').checked=env.running;$('earthWeatherMode').value=env.weather;$('earthDayMinutes').value=env.dayMinutes;$('shipMaxSpeed').value=flight.maxSpeedC;$('shipMaxSpeedValue').textContent=flight.maxSpeedC+' c';}const dialog=$(id);if(!dialog.dataset.motionCancel){dialog.dataset.motionCancel='true';dialog.addEventListener('cancel',e=>{e.preventDefault();closeDialog(dialog)})}if(dialog.open){if(!menuVisible(dialog))menuMotion(dialog,true);return}try{if(id==='accountDialog'||id==='mapDialog'){if(dialog.show)dialog.show();else{dialog.setAttribute('open','');dialog.classList.add('fallbackDialog')}}else if(id==='inventoryDialog'&&dialog.show)dialog.show();else dialog.showModal()}catch{dialog.setAttribute('open','');dialog.classList.add('fallbackDialog');$('settingsShield').hidden=id==='accountDialog'||id==='mapDialog'}if(id!=='mapDialog')menuMotion(dialog,true);if(id==='mapDialog')$('systemFilter').value=target.system;if(id==='mapDialog'){showMenu($('selection'),'x');syncMapBrand();selected=target;tab=target.system;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));renderCatalog();selectInfo();drawAtlas();requestAnimationFrame(()=>requestAnimationFrame(drawAtlas));$('search').blur?.()}}
-function closeDialog(d,complete=false){if(!d||d.id==='newUpdateDialog')return;if(!complete&&d.id!=='mapDialog'&&d.open){menuMotion(d,false,()=>closeDialog(d,true));return}if(d.open||d.hasAttribute('open'))sfx.play('uiClose');if(d.id==='inventoryDialog')$('inventoryBtn').textContent='Open Inventory';if(typeof d.close==='function')d.close();else d.removeAttribute('open');if(d.id==='mapDialog')syncMapBrand();$('settingsShield').hidden=true;if(d.id!=='inventoryDialog')clearInputs()}
-$('settingsShield').onclick=()=>document.querySelectorAll('dialog[open]').forEach(d=>closeDialog(d));
+function open(id){if(proto?.transit||flight.nav?.kind==='warp'||experimentalWarpActive)return;if(!$(id)?.open)sfx.play('uiOpen');if(id!=='inventoryDialog')clearInputs();if(id!=='inventoryDialog'&&$('inventoryDialog').open)closeDialog($('inventoryDialog'));if(id==='settingsDialog'){const radius=surfaceStream.radius??(graphicsPolicy(graphics).terrainRadius);$('terrainSize').value=radius;$('terrainSizeValue').textContent=((2*radius+1)*96)+' m across';const env=surfaceView.environment;$('earthTime').value=env.hour;syncRangeFill($('earthTime'));$('earthTimeValue').textContent=env.sample().clock;$('earthCycle').checked=env.running;$('earthWeatherMode').value=env.weather;$('earthDayMinutes').value=env.dayMinutes;$('shipMaxSpeed').value=flight.maxSpeedC;$('shipMaxSpeedValue').textContent=flight.maxSpeedC+' c';}const dialog=$(id);if(!dialog.dataset.motionCancel){dialog.dataset.motionCancel='true';dialog.addEventListener('cancel',e=>{e.preventDefault();closeDialog(dialog)})}if(dialog.open){if(!menuVisible(dialog))menuMotion(dialog,true);return}try{if(id==='accountDialog'||id==='mapDialog'){if(dialog.show)dialog.show();else{dialog.setAttribute('open','');dialog.classList.add('fallbackDialog')}}else if(id==='inventoryDialog'&&dialog.show)dialog.show();else dialog.showModal()}catch{dialog.setAttribute('open','');dialog.classList.add('fallbackDialog');if(id!=='accountDialog'&&id!=='mapDialog'&&id!=='inventoryDialog')dialog.dataset.fallbackModal=''}if(id!=='mapDialog')menuMotion(dialog,true);if(id==='mapDialog')$('systemFilter').value=target.system;if(id==='mapDialog'){showMenu($('selection'),'x');syncMapBrand();selected=target;tab=target.system;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));renderCatalog();selectInfo();drawAtlas();requestAnimationFrame(()=>requestAnimationFrame(drawAtlas));$('search').blur?.()}}
+function closeDialog(d,complete=false){if(!d||d.id==='newUpdateDialog')return;if(!complete&&d.id!=='mapDialog'&&d.open){menuMotion(d,false,()=>closeDialog(d,true));return}if(d.open||d.hasAttribute('open'))sfx.play('uiClose');if(d.id==='inventoryDialog')$('inventoryBtn').textContent='Open Inventory';if(typeof d.close==='function')d.close();else d.removeAttribute('open');if(d.id==='mapDialog')syncMapBrand();delete d.dataset.fallbackModal;if(d.id!=='inventoryDialog')clearInputs()}
+$('settingsShield').onclick=()=>closeDialog([...document.querySelectorAll('dialog[open][data-fallback-modal]:not([hidden])')].at(-1));
 function toggleAssist(){flight.assist=!flight.assist;$('assistCheck').checked=flight.assist;toast(flight.assist?'Flight assist enabled':'Inertial flight enabled');save()}
 function toggleGear(){if(surface.onGround)return toast('Landing gear supports the ship on the ground');flight.gear=!flight.gear;toast('Landing gear '+(flight.gear?'deployed':'retracted'))}
 const restartFade=installRestartFade();
@@ -410,7 +410,8 @@ lifecycle.subscribe(active=>{
   if(!window.__tzgFilePickerOpen)save();
  }else{
   if($('audioCheck').checked)audio?.resume().catch(()=>{});
-  if(!$('settingsDialog').open)$('settingsShield').hidden=true;
+  recoverMenuDialogs(document);
+  $('settingsShield').hidden=true;
   resetFrameTiming();
   resizeViewport();
   homeExperiment?.resume();
@@ -418,6 +419,20 @@ lifecycle.subscribe(active=>{
   if(!webglLost&&$('mapDialog').open)drawAtlas();
  }
  updateGraphicsRecovery();
+});
+window.addEventListener('tzg-landscape-shown',()=>{
+ if(!started&&!homeExperiment?.active)return;
+ for(const dialog of document.querySelectorAll('dialog[open]')){
+  if(dialog.matches('#startupLandscape,.avatarCropPanel'))continue;
+  if(dialog.dataset.fallbackModal===undefined&&!dialog.matches(':modal'))continue;
+  if(dialog.dispatchEvent(new window.Event('cancel',{cancelable:true})))dialog.close?.();
+ }
+ recoverMenuDialogs(document);
+});
+window.addEventListener('tzg-landscape-dismissed',()=>{
+ recoverMenuDialogs(document);
+ $('settingsShield').hidden=true;
+ resetLifecycleInput(lifecycle.active());
 });
 window.addEventListener('tzg-signed-out',()=>{
  started=false;paused=false;
@@ -658,13 +673,11 @@ const terrainAnimationLabels={
 };
 const terrainSettings=$('terrainSize').closest('.settingsSection');
 for(const [option,title] of Object.entries(terrainAnimationLabels)){
- const row=document.createElement('div'),label=document.createElement('label'),toggle=document.createElement('button');
- row.className='terrainAnimationSetting';
- toggle.type='button';toggle.id='terrainAnimation-'+option;toggle.setAttribute('role','switch');
- label.htmlFor=toggle.id;label.textContent=title;
- const sync=()=>toggle.setAttribute('aria-checked',String(surfaceStream.animations[option]));
- toggle.onclick=()=>{surfaceStream.setAnimation(option,!surfaceStream.animations[option]);sync()};
- sync();row.append(label,toggle);terrainSettings?.append(row);
+ const label=document.createElement('label'),toggle=document.createElement('input');
+ toggle.type='checkbox';toggle.id='terrainAnimation-'+option;toggle.setAttribute('role','switch');
+ toggle.checked=surfaceStream.animations[option];
+ toggle.onchange=()=>surfaceStream.setAnimation(option,toggle.checked);
+ label.append(title,toggle);terrainSettings?.append(label);
 }
 $('terrainSize').value=surfaceStream.radius??(graphicsPolicy(graphics).terrainRadius);$('terrainSizeValue').textContent=((2*Number($('terrainSize').value)+1)*96)+' m across';$('terrainSize').oninput=e=>{surfaceStream.setRadius(e.target.value);$('terrainSizeValue').textContent=((2*surfaceStream.radius+1)*96)+' m across';save()};
 

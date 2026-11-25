@@ -1,4 +1,4 @@
-v0.0.291
-- Improved control and menu recovery after switching apps, locking your screen, or returning from a call.
-- The game now resumes interrupted flight, on-foot movement, and warp animations with your progress and position intact.
-- Improved graphics, audio, and online status recovery when returning to the game.
+v0.0.292
+- Planet terrain streams around your camera, with low-detail ground filling in while detailed chunks load.
+- Distant trees use camera-facing billboards, while nearby rocks and grass render only within view.
+- Four new World settings let you control terrain motion, terrain fades, unload fades and tree transitions independently.

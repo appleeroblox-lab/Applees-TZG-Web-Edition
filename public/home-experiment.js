@@ -1,3 +1,4 @@
+import {gameLifecycle,afterPaint} from './game-lifecycle.js?v=290';
 import {chatDialog} from './chat-dialog.js?v=282';
 import {setSystemLock} from './system-unlock-ui.js';
 import {applyPaintGradient,isPaintHex,paintColor,paintGradient} from './paint-gradient.js';
@@ -211,7 +212,7 @@ export class HomeExperiment{
   this.root=document.createElement('section');this.root.id='homeExperiment';this.root.hidden=true;this.root.setAttribute('aria-label','Home Page');
   this.root.innerHTML=`<div class="homeScene" aria-label="Drag to rotate character"></div><div class="homeChrome"><div class="homeTop"><div class="homeBrand"></div><nav class="homeQuick" aria-label="Home menus"></nav></div><aside class="homeLeft"><button class="homeIdentity" type="button"><strong class="homeName"></strong><span class="homeId"></span><span class="homeBalance"></span></button><nav class="homeLinks" aria-label="Player menus"></nav></aside><aside class="homeNews"><small>Explore our universe</small><h2>Time Travel</h2><p>Discover the Proto Solar System</p><button type="button" data-home="mapBtn">Universe Map →</button></aside><footer class="homeBottom"><button type="button" data-home="chatToggle">Global Chat</button><button type="button" class="homePlay">▶ Play</button><button type="button" class="homeCustomize">Customization</button><button type="button" data-home="mapBtn">Universe Map</button></footer></div><section class="homeCustomization" hidden aria-label="Character customization"><header><h2>Character Customization</h2><button type="button" class="homeCustomClose" aria-label="Close customization">✕</button></header><p>Body Color</p><div class="homeColors" role="group" aria-label="Character colors"></div><p class="homeCustomHint">Drag your character to rotate · Saved on this device</p><div class="homeCustomActions"><button type="button" class="homeReset">Reset</button><button type="button" class="homeSave">Save</button></div></section><div class="homeNotice" role="status"></div>`;
   document.body.append(this.root);this.host=this.root.querySelector('.homeScene');
-  this.fade=document.createElement('div');this.fade.id='homeExperimentFade';this.fade.hidden=true;document.body.append(this.fade);
+  this.fade=document.createElement('div');this.fade.id='homeExperimentFade';this.fade.dataset.recoveryFade='';this.fade.hidden=true;document.body.append(this.fade);
   const brand=document.getElementById('brand')?.cloneNode(true);if(brand){brand.id='homeGameTitle';brand.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));brand.removeAttribute('style');brand.onclick=null;brand.setAttribute('aria-label','The Zero Gravity Web Edition');this.root.querySelector('.homeBrand').append(brand)}
   const add=(selector,label,id)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.home=id;const source=document.getElementById(id),icon=source?.querySelector('img');if(icon){const copy=icon.cloneNode(true);copy.removeAttribute('id');b.prepend(copy)}this.root.querySelector(selector).append(b)};
   for(const [label,id] of [['Friends','friendsBtn'],['Account','accountBtn'],['Help','helpBtn'],['More','menuBtn']])add('.homeQuick',label,id);
@@ -283,7 +284,7 @@ export class HomeExperiment{
    if(this.world?.flightPreview){e.preventDefault();this.zoomPreview(Math.exp(e.deltaY*.0018));}
    else if(!this.customizing){e.preventDefault();this.distance=T.MathUtils.clamp(this.distance+e.deltaY*.008,4,16);}
   },{passive:false});
-  const touches=new Map();
+  const touches=this.previewTouches=new Map();
   this.host.addEventListener('pointerdown',e=>{
    if(e.pointerType!=='touch'||!this.world?.flightPreview)return;
    touches.set(e.pointerId,new T.Vector2(e.clientX,e.clientY));
@@ -943,7 +944,22 @@ export class HomeExperiment{
  chooseFace(face){if(!CHARACTER_FACES.includes(face))return;this.draftFace=face;this.yaw=0;applyCharacterFace(this.preview,face);this.root.querySelectorAll('[data-face]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.face===face)))}
 
  refresh(){const a=this.account(),profile=a?.profile;this.root.querySelector('.homeName').textContent=profile?.display_name||(a?.guest?storedGuestName():'')||'Guest';this.root.querySelector('.homeId').textContent=a?.guest?'Guest':profile?.public_id?'TZG-Id_'+profile.public_id:'';this.drawCurrencies();const avatar=this.root.querySelector('.homeAvatar');if(avatar&&avatar.dataset.value!==String(profile?.avatar)){setAvatar(avatar,profile?.avatar);avatar.dataset.value=String(profile?.avatar)}const p=globalThis.tzgPlayerProgress||a?.pages?.dashboard?.progress;if(this.root.querySelector('.homeLevel')){this.root.querySelector('.homeLevel').textContent=a?.guest?'Guest explorer':p?'Level '+p.level:'Explorer';this.root.querySelector('.homeXPText').textContent=p?Number(p.level_xp||0).toLocaleString()+' / '+(p.required_xp??'MAX')+' XP':'';this.root.querySelector('.homeXPTrack i').style.width=(p?Math.min(100,p.required_xp?(p.level_xp||0)/p.required_xp*100:100):0)+'%'}}
- async transition(change){if(this.busy)return;this.busy=true;this.fade.hidden=false;this.fade.classList.remove('homeFadeBlack');await new Promise(r=>requestAnimationFrame(()=>{this.fade.classList.add('homeFadeBlack');setTimeout(r,230)}));try{await change()}finally{await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));this.fade.classList.remove('homeFadeBlack');await new Promise(r=>setTimeout(r,230));this.fade.hidden=true;this.busy=false}}
+ async transition(change){
+  if(this.busy)return;
+  this.busy=true;this.fade.hidden=false;this.fade.style.pointerEvents='auto';
+  try{
+   await afterPaint(window);
+   this.fade.classList.add('homeFadeBlack');
+   await new Promise(resolve=>setTimeout(resolve,230));
+   await change();
+  }finally{
+   await afterPaint(window);
+   this.fade.classList.remove('homeFadeBlack');
+   this.fade.style.pointerEvents='none';
+   await new Promise(resolve=>setTimeout(resolve,230));
+   this.fade.hidden=true;this.busy=false;
+  }
+ }
  async open({animate=true}={}){
   if(this.active||this.busy||this.leaving)return;
   this.sensor.request();
@@ -958,11 +974,11 @@ export class HomeExperiment{
    const help=document.getElementById('homeMoreHelp');if(help)help.hidden=false;
    this.customizing=false;this.root.classList.remove('homeIsCustomizing');
    this.root.querySelector('.homeCustomization').hidden=true;
-   this.gyroOrigin=null;this.smoother.reset();this.last=performance.now();this.frame();
+   this.gyroOrigin=null;this.smoother.reset();this.last=performance.now();this.loop??=gameLifecycle().frameLoop('home',()=>this.frame(),()=>{this.last=performance.now();this.lastDraw=0});this.loop.start();
   };
   if(animate)await this.transition(enter);
   else{this.busy=true;try{await enter()}finally{this.busy=false}}
-  if(this.active)requestAnimationFrame(()=>{if(this.active)this.root.classList.add('homeChromeVisible')});
+  if(this.active){await afterPaint(window);if(this.active)this.root.classList.add('homeChromeVisible')}
  }
  close(){
   if(!this.active)return;
@@ -972,12 +988,12 @@ export class HomeExperiment{
   }
   this.root.hidden=true;document.body.classList.remove('homeExperimentOpen');
   this.root.classList.remove('homeChromeVisible');
-  globalThis.cancelAnimationFrame?.(this.raf);this.clearInputs();
+  this.loop?.stop();this.clearInputs();
  }
  resume(){
-  if(this.leaving){this.skipPlayAnimation=true;for(const animation of document.querySelector('.homePlayTransition')?.getAnimations?.({subtree:true})||[])animation.finish()}
-  this.drag=null;this.last=performance.now();this.lastDraw=0;this.width=0;this.height=0;
-  if(this.active&&!this.busy){globalThis.cancelAnimationFrame?.(this.raf);this.frame()}
+  if(this.leaving){this.skipPlayAnimation=true;this.finishPlayAnimations?.()}
+  this.drag=null;this.previewTouches?.clear();this.last=performance.now();this.lastDraw=0;this.width=0;this.height=0;
+
  }
  async play(){
   if(!this.active||this.busy||this.leaving)return;
@@ -995,7 +1011,7 @@ export class HomeExperiment{
   let overlay;
   try{
    if(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){handoff();return;}
-   overlay=document.createElement('div');overlay.className='homePlayTransition';overlay.setAttribute('aria-hidden','true');
+   overlay=document.createElement('div');overlay.className='homePlayTransition';overlay.style.pointerEvents='none';overlay.setAttribute('aria-hidden','true');
    overlay.innerHTML='<div class="homePlayStage"><div class="homePlayFrames"><div class="homePlayFrameTop"></div><div class="homePlayFrameBottom"></div></div><div class="homePlayTitles"><strong>The Zero Gravity</strong><span>Web Edition</span></div></div><div class="homePlayFlash"></div><div class="homePlayCover"></div>';
    document.body.append(overlay);
    const stage=overlay.querySelector('.homePlayStage');
@@ -1004,10 +1020,12 @@ export class HomeExperiment{
    const cover=overlay.querySelector('.homePlayCover');
    const [title,edition]=overlay.querySelectorAll('.homePlayTitles > *');
    const [top,bottom]=frames.children;
+   const finishers=new Set();
+   this.finishPlayAnimations=()=>{for(const finish of [...finishers])finish()};
    const animate=(element,keyframes,duration,easing='cubic-bezier(.22,.61,.36,1)')=>{
     if(this.skipPlayAnimation)return Promise.resolve();
     const animation=element.animate?.(keyframes,{duration,easing,fill:'both'});
-    if(animation?.finished)return animation.finished.catch(()=>{});
+    if(animation?.finished)return new Promise(resolve=>{const finish=()=>{finishers.delete(finish);clearTimeout(timer);resolve()};const timer=setTimeout(finish,duration+250);finishers.add(finish);animation.finished.then(finish,finish)});
     // Some tablet browsers expose CSS transitions without a usable animation promise.
     animation?.cancel?.();
     Object.assign(element.style,keyframes[0]);
@@ -1039,11 +1057,11 @@ export class HomeExperiment{
    await animate(cover,[{opacity:1,transform:'scale(.8)'},{opacity:1,transform:'scale(1.01)'}],440);
    stage.hidden=true;
    handoff();
-   if(!document.hidden)await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   if(!document.hidden)await afterPaint(window);
    await animate(cover,[{opacity:1,transform:'scale(1.01)'},{opacity:0,transform:'scale(1.01)'}],360);
   }finally{
    if(this.active)handoff();
-   overlay?.remove();this.playCamera=null;this.skipPlayAnimation=false;chrome.inert=false;
+   overlay?.remove();this.finishPlayAnimations=null;this.playCamera=null;this.skipPlayAnimation=false;chrome.inert=false;
    this.root.classList.remove('homePlayLeaving');this.leaving=false;
   }
  }
@@ -1226,7 +1244,6 @@ export class HomeExperiment{
  setGround(){this.world?.enter(this.backgroundBody())}
  frame(){
   if(!this.active)return;
-  this.raf=requestAnimationFrame(()=>this.frame());
   if(!this.renderer||document.hidden||this.renderer.getContext?.()?.isContextLost?.())return;
   const now=performance.now(),context=this.worldContext();
   if(context.mobile&&!this.menuTween&&this.lastDraw&&now-this.lastDraw<30)return;

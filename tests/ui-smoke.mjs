@@ -14,6 +14,16 @@ class Loader{load(url,ok){const map=new THREE.Texture({width:1024,height:512});m
 class Clock{getDelta(){return 1/60}}
 let runLeaveTimer=false;
 const storage=new Map([['tzg-system-unlocks-v168',JSON.stringify(process.argv.includes('--progression-only')?[]:SYSTEM_ORDER)],['cosmic-economy-v8',JSON.stringify({fp:10000,rc:1000})]]),context=vm.createContext({fetch:async()=>{throw Error('No network in UI fixture')},...((startupRace||desktop)?{fetch:async url=>{if(url.includes('player-ship.json'))return desktop?{ok:true,json:async()=>JSON.parse(fs.readFileSync(root+'/models/player-ship.json','utf8'))}:delayedShip;throw Error('No network in startup fixture')}}:{}),console,crypto,CustomEvent:dom.CustomEvent,queueMicrotask,URL,URLSearchParams,Blob,File,AbortController,document,window:dom,screen:{orientation:{addEventListener(){},async lock(){throw Error('Unsupported')}}},innerWidth:desktop?1280:844,innerHeight:desktop?720:390,devicePixelRatio:desktop?1:3,matchMedia:()=>({matches:!desktop}),localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)},performance,requestAnimationFrame:f=>{if(f.name==='render')queued=f;else f()},setTimeout:(callback,delay)=>{if(runLeaveTimer&&delay===180)callback();else if([180,220,300,360,440,460].includes(delay)&&document.querySelector('.homePlayTransition'))queueMicrotask(callback);return 1},clearTimeout(){},addEventListener:dom.addEventListener.bind(dom),location:{reload(){reloads++}},setInterval(){}});
+// Keep gameplay frames manually stepable while separately scheduling the Home loop.
+let nextFrame=0,gameplayFrameId=null,frameTarget=null;
+Object.assign(dom,{performance,requestAnimationFrame(callback){
+ const id=++nextFrame;
+ if(callback.name!=='frameTick'){callback();return id}
+ if(!queued||frameTarget==='gameplay'){
+  gameplayFrameId=id;queued=()=>{frameTarget='gameplay';try{callback()}finally{frameTarget=null}};
+ }
+ return id;
+},cancelAnimationFrame(id){if(id===gameplayFrameId){queued=null;gameplayFrameId=null}},setInterval(){return 1},clearInterval(){},setTimeout:context.setTimeout,clearTimeout:context.clearTimeout});
 if(process.argv.includes('--proto-resume-only')||process.argv.includes('--proto-resume-space-only'))storage.set('cosmic-flight-v6',JSON.stringify({version:6,system:'Proto Solar System',target:'Proto Earth',pos:[500,2000,3000],q:[0,0,0,1],temporal:{version:1,owner:'local',velocity:[2,0,-3],cruiseSpeed:3.6},surface:process.argv.includes('--proto-resume-only')?{body:'Proto Earth',pos:[0,2,0],q:[0,0,0,1],phase:'parked',orientation:'forward'}:null}));
 const exports={...THREE,WebGLRenderer:Renderer,TextureLoader:Loader,Clock};const tm=new vm.SyntheticModule(Object.keys(exports),function(){for(const [k,v]of Object.entries(exports))this.setExport(k,v)},{context});
 const modules=new Map();function get(file){if(file.endsWith('three.module.js'))return tm;if(modules.has(file))return modules.get(file);const m=new vm.SourceTextModule(fs.readFileSync(file,'utf8')+(file.endsWith('/game.js')?'\nexport {homeExperiment,ship,scene,applyEventWarp,proto,sky,stars,effectStars,tntIgnitePrompt,onFootCamera,footControls,capsuleCharacter,flight,surface,crew,camQ,stableCamera,economy,inventoryUI,systemAtlas,shipRig,orbitDistance,explorer,surfaceView,shipBoost,building,surfaceStream,enterSurface,camera,cockpit,setTarget,forestry,debugMenu,executeDebugCommand,earthWeatherFX,groundWeather,digSnow,sfx,prospecting,handleSurfaceEvent,graphics,open,setMode,target,updateObjectLabels,minimap,isBlocked,warpTunnel,warpLines,routeActive,experimental,shipCameras,shipFlightFX,save,select,load,requireSystemUnlock};':''),{context,identifier:file,importModuleDynamically:async(specifier,from)=>{const m=get(path.resolve(path.dirname(from.identifier),specifier.split('?')[0]));if(m.status==='unlinked')await m.link((specifier,from)=>get(path.resolve(path.dirname(from.identifier),specifier.split('?')[0])));if(m.status==='linked')await m.evaluate();return m},initializeImportMeta(meta){meta.url='file://'+file}});modules.set(file,m);return m}
@@ -30,6 +40,14 @@ const rendered=draws;
 if(process.argv.includes('--home-only')){
  const home=state.homeExperiment;home.transition=async change=>change();home.frame=()=>{};
  assert(!state.debugMenu.active);assert(!$('debugHomeExperiment'));assert(!$('restartGame'));assert.equal($('settingsHomePage').textContent,'Home Page');assert(home.active);assert(!home.root.hidden);assert(state.isBlocked());assert(home.world,'native gameplay background loads');assert.equal(home.renderer,home.world.context.renderer,'Home shares the gameplay graphics renderer');assert.equal(home.renderer.domElement.parentElement,home.host);assert.equal(home.world.session.body.name,'Earth');home.world.update(1,1/60,home.camera);assert(home.scene.getObjectByName('Center launch pad'));
+ for(let i=0;i<3;i++){
+  document.hidden=true;document.dispatchEvent(new dom.Event('visibilitychange'));
+  dom.dispatchEvent(new dom.Event('pagehide'));
+  document.hidden=false;dom.dispatchEvent(new dom.Event('pageshow'));
+  assert(home.active&&!home.root.hidden,'Home remains interactive after app switching');
+  assert.equal(home.renderer.domElement.parentElement,home.host);
+ }
+
  home.customize(true);
  assert.equal(home.modelButtons.map(button=>button.textContent).join(','),'Ship,Character');
  for(const [width,height] of [[844,390],[1280,720],[390,844]]){
@@ -330,6 +348,7 @@ if(process.argv.includes('--resume-only')){
  assert.equal(quality.value,'High','GPU suspension preserves the selected preset');
  assert($('fatal').hidden,'GPU suspension does not open the fatal overlay');
  $('settingsShield').hidden=false;
+ dom.dispatchEvent(new dom.Event('pagehide'));
  dom.dispatchEvent(new dom.Event('pageshow'));
  assert($('settingsShield').hidden,'a stray shield cannot intercept touch after restoring the page');
  canvas.dispatchEvent(new dom.Event('webglcontextrestored'));
@@ -337,7 +356,54 @@ if(process.argv.includes('--resume-only')){
  assert($('graphicsRecovery').hidden);
  $('brand').onclick();
  assert($('settingsDialog').open||$('settingsDialog').hasAttribute('open'),'Settings remains accessible after restoring WebGL');
- console.log('PASS page resume preserves graphics and restores menu input after context loss');
+ const interrupt=()=>{
+  const pending=queued, previous=draws;
+  dom.dispatchEvent(new dom.Event('blur'));
+  document.hidden=true;document.dispatchEvent(new dom.Event('visibilitychange'));
+  document.dispatchEvent(new dom.Event('freeze'));
+  pending();
+  assert.equal(draws,previous,'suspend invalidates a queued frame even if it still fires');
+  document.hidden=false;document.dispatchEvent(new dom.Event('visibilitychange'));
+  document.dispatchEvent(new dom.Event('resume'));dom.dispatchEvent(new dom.Event('focus'));
+  assert.equal(typeof queued,'function');
+ };
+ const balance=state.economy.fp, inventory=JSON.stringify([...state.economy.inventory]);
+ for(let i=0;i<3;i++){
+  interrupt();
+  assert($('settingsDialog').hasAttribute('open'),'Settings remains open through repeated interruptions');
+  queued();
+ }
+ $('settingsDialog').close();
+ state.surface.body=null;state.crew.reset();state.explorer.enabled=false;
+ state.flight.pos.set(0,10000,0);state.flight.vel.set(0,0,0);
+ state.flight.cruiseSpeed=0;state.flight.nav=null;
+ keyboardEvent('keydown','KeyW');queued();assert.equal(state.flight.input.pitch,-1);
+ interrupt();queued();assert.equal(state.flight.input.pitch,0,'release a held flight key without keyup');
+ const target=state.flight.bodies.find(body=>body.name==='Mars');
+ const originalGate=state.flight.beforeNavigate;state.flight.beforeNavigate=null;
+ assert(state.flight.navigate(target,'warp'));
+ state.flight.beforeNavigate=originalGate;
+ queued();
+ const warp=state.flight.nav, elapsed=warp.elapsed, position=state.flight.pos.clone();
+ interrupt();interrupt();
+ assert.equal(state.flight.nav,warp);
+ assert.equal(warp.elapsed,elapsed,'warp time does not advance in the background');
+ assert(state.flight.pos.equals(position),'recovery preserves position in the tunnel');
+ queued();
+ assert(warp.elapsed>elapsed);
+ state.flight.cancel();
+ state.surface.enter(state.flight.bodies.find(body=>body.name==='Earth'),true);
+ state.crew.leave();
+ const stick=$('moveStick');
+ stick.onpointerdown({pointerId:751,button:0,clientX:150,clientY:100});
+ queued();assert(state.flight.input.x>0);
+ interrupt();queued();assert.equal(state.flight.input.x,0,'release a held joystick without pointerup');
+ stick.onpointerdown({pointerId:752,button:0,clientX:150,clientY:100});
+ queued();assert(state.flight.input.x>0,'a fresh touch moves the player after recovery');
+ stick.onpointerup({pointerId:752});
+ assert.equal(state.economy.fp,balance);assert.equal(JSON.stringify([...state.economy.inventory]),inventory);
+ assert.equal(reloads,0);
+ console.log('PASS repeated app switching during flight, on-foot play, warp, and open Settings; GPU recovery and progress retention.');
  process.exit(0);
 }
 if(process.argv.includes('--landing-warp-only')){
@@ -475,7 +541,7 @@ state.crew.reset();state.enterSurface(catalog.find(b=>b.name==='Earth'),true);st
 state.economy.add('tree-log',1);state.economy.equipped='Earth|tree-log';queued();assert(state.building.heldItem.group.visible);assert.equal(state.building.heldItem.mesh.geometry.type,'CylinderGeometry');assert(!state.surface.prospecting.heldRock.visible,'TreeLog no longer renders as a mineral');for(const type of ['log-block','wood-planks']){state.economy.add(type,1);state.economy.equipped='Earth|'+type;queued();assert.equal(state.building.heldItem.type,type);assert(state.building.heldItem.mesh.material.map.isDataTexture);state.inventoryUI.render(true);assert(document.querySelector('img[src="items/'+type+'.svg"]'),'wood block item image present')}console.log('PASS: proper first-person TreeLog with no mineral duplicate, textured held LogBlock/WoodPlanks and both inventory images.');
 state.crew.onFoot=true;state.economy.add('torch',1);state.economy.equipped='Earth|torch';queued();assert(state.building.heldTorchLight.isPointLight);assert(state.building.heldTorchLight.intensity>0);assert(state.building.heldTorchLight.distance>=18);state.economy.equipped='pickaxe';queued();assert.equal(state.building.heldTorchLight.intensity,0);state.crew.reset();state.enterSurface(catalog.find(b=>b.name==='Earth'));assert.equal($('bodyTransition').dataset.direction,'enter');state.surface.pos.y=state.surface.floor+state.surface.exitHeight+1;queued();assert.equal($('bodyTransition').dataset.direction,'leave');assert.equal(state.building.heldTorchLight.intensity,0);console.log('PASS: held torch omnidirectional point light, unequip/space cleanup, and body entry/exit fade triggers.');
 state.enterSurface(catalog.find(b=>b.name==='Earth'),true);const villageModule=get(root+'/settlements.js').namespace,site=villageModule.settlementSites(state.surface.body).find(s=>!s.nearPad);state.economy.discoverVillages(state.surface.body,new THREE.Vector3(site.x,0,site.z));state.crew.onFoot=true;state.crew.pos.set(site.x,50,site.z);state.building.key='';state.building.sync();const villageBatches=state.building.meshes.filter(m=>m.isInstancedMesh);assert(villageBatches.length>0&&villageBatches.length<8);assert(state.building.meshes.length<55,'village blocks use a small draw budget');const targetBlock=state.economy.placements.filter(p=>p.origin==='village'&&p.type==='log-block').sort((a,b)=>b.y-a.y||a.x-b.x)[0];state.camera.position.set(targetBlock.x-5,targetBlock.y,targetBlock.z);state.camera.lookAt(targetBlock.x,targetBlock.y,targetBlock.z);state.camera.updateMatrixWorld();state.crew.pos.copy(state.camera.position).add(new THREE.Vector3(0,-1.68,0));state.building.key='';state.building.sync();const aim=state.building.aim(state.camera);assert(aim.hit?.object.isInstancedMesh,'ray hits a batched house block');const id=aim.hit.block.id;state.economy.add('shovel',1);state.economy.equipped='Earth|shovel';state.building.use(state.camera);state.building.use(state.camera);assert(!state.economy.placements.some(p=>p.id===id));assert(state.economy.removedVillageBlocks.has(id));console.log('PASS: streamed village uses instanced cube batches, block-level aiming and shovel recovery from a batched house.');
-state.surface.body=null;state.crew.reset();state.explorer.enabled=false;state.flight.nav=null;state.flight.pos.set(0,10000,0);state.flight.vel.set(0,0,0);state.flight.cruiseSpeed=0;state.flight.q.identity();keyboardEvent('keydown','KeyW');keyboardEvent('keydown','KeyD');for(let i=0;i<10;i++)queued();assert.equal(state.flight.input.pitch,-1);assert.equal(state.flight.input.yaw,-1);dom.dispatchEvent(new dom.Event('blur'));queued();assert.equal(state.flight.input.pitch,0);assert.equal(state.flight.input.yaw,0);const blurQ=state.flight.q.clone();dom.dispatchEvent(new dom.Event('focus'));const repeated=new dom.Event('keydown',{bubbles:true,cancelable:true});Object.defineProperty(repeated,'code',{value:'KeyW'});Object.defineProperty(repeated,'repeat',{value:true});document.body.dispatchEvent(repeated);for(let i=0;i<20;i++)queued();assert.equal(state.flight.input.pitch,0);assert(state.flight.q.angleTo(blurQ)<1e-6,'focus return does not restart held W');keyboardEvent('keyup','KeyW');keyboardEvent('keyup','KeyD');keyboardEvent('keydown','KeyW');queued();assert.equal(state.flight.input.pitch,-1);keyboardEvent('keyup','KeyW');queued();assert.equal(state.flight.input.pitch,0);$('shipRotationSpeed').value='1.75';$('shipRotationSpeed').oninput({target:$('shipRotationSpeed')});assert.equal(state.flight.rotationSpeed,1.75);assert.equal($('shipRotationSpeedValue').textContent,'1.75×');assert.equal(JSON.parse(storage.get('cosmic-flight-v6')).rotationSpeed,1.75);console.log('PASS: W+D clears on window blur, stale repeats do not restart steering after focus return, fresh key presses work, and ship rotation speed saves independently.');
+state.surface.body=null;state.crew.reset();state.explorer.enabled=false;state.flight.nav=null;state.flight.pos.set(0,10000,0);state.flight.vel.set(0,0,0);state.flight.cruiseSpeed=0;state.flight.q.identity();keyboardEvent('keydown','KeyW');keyboardEvent('keydown','KeyD');for(let i=0;i<10;i++)queued();assert.equal(state.flight.input.pitch,-1);assert.equal(state.flight.input.yaw,-1);dom.dispatchEvent(new dom.Event('blur'));assert.equal(queued,null,'window blur cancels the pending game frame');assert.equal(state.flight.input.pitch,0);assert.equal(state.flight.input.yaw,0);const blurQ=state.flight.q.clone();dom.dispatchEvent(new dom.Event('focus'));const repeated=new dom.Event('keydown',{bubbles:true,cancelable:true});Object.defineProperty(repeated,'code',{value:'KeyW'});Object.defineProperty(repeated,'repeat',{value:true});document.body.dispatchEvent(repeated);for(let i=0;i<20;i++)queued();assert.equal(state.flight.input.pitch,0);assert(state.flight.q.angleTo(blurQ)<1e-6,'focus return does not restart held W');keyboardEvent('keyup','KeyW');keyboardEvent('keyup','KeyD');keyboardEvent('keydown','KeyW');queued();assert.equal(state.flight.input.pitch,-1);keyboardEvent('keyup','KeyW');queued();assert.equal(state.flight.input.pitch,0);$('shipRotationSpeed').value='1.75';$('shipRotationSpeed').oninput({target:$('shipRotationSpeed')});assert.equal(state.flight.rotationSpeed,1.75);assert.equal($('shipRotationSpeedValue').textContent,'1.75×');assert.equal(JSON.parse(storage.get('cosmic-flight-v6')).rotationSpeed,1.75);console.log('PASS: W+D clears on window blur, stale repeats do not restart steering after focus return, fresh key presses work, and ship rotation speed saves independently.');
 
 contextMenuRegression();
 

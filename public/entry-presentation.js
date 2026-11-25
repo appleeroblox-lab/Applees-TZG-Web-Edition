@@ -1,5 +1,14 @@
 import {deviceGyro} from './device-gyro.js?v=207';
-const animate=async(node,frames,options)=>{if(!node?.animate)return;try{await node.animate(frames,{duration:650,easing:'cubic-bezier(.2,.8,.2,1)',...options}).finished}catch{}};
+const animate=async(node,frames,options)=>{
+ if(!node?.animate)return;
+ let timer;
+ try{
+  const timing={duration:650,easing:'cubic-bezier(.2,.8,.2,1)',...options};
+  const animation=node.animate(frames,timing);
+  await Promise.race([animation.finished,new Promise(resolve=>{timer=setTimeout(resolve,timing.duration+(timing.delay||0)+250)})]);
+  if(animation.playState!=='finished')animation.cancel();
+ }catch{}finally{clearTimeout(timer)}
+};
 export function installEntryPresentation(root){
  if(root.entryPresentation)return root.entryPresentation;
  const doc=root.ownerDocument,win=doc.defaultView||globalThis.window;
@@ -11,8 +20,8 @@ export function installEntryPresentation(root){
  // Cover the handoff before showing the loading UI; leave game-entry fades alone.
  const blackFade=async action=>{
   if(reduced()||!doc.createElement||!doc.body)return action();
-  const shade=doc.createElement('div');shade.id='entryLoadingFade';shade.setAttribute('aria-hidden','true');shade.style.cssText='position:fixed;inset:0;background:#000;opacity:0;z-index:2147483647;pointer-events:auto';doc.body.append(shade);
-  try{await animate(shade,[{opacity:0},{opacity:1}],{duration:260});shade.style.opacity='1';const result=action();await animate(shade,[{opacity:1},{opacity:0}],{duration:380});shade.style.opacity='0';return await result}finally{shade.remove()}
+  const shade=doc.createElement('div');shade.id='entryLoadingFade';shade.dataset.recoveryFade='';shade.setAttribute('aria-hidden','true');shade.style.cssText='position:fixed;inset:0;background:#000;opacity:0;z-index:2147483647;pointer-events:auto';doc.body.append(shade);
+  try{await animate(shade,[{opacity:0},{opacity:1}],{duration:260});shade.style.opacity='1';const result=action();await animate(shade,[{opacity:1},{opacity:0}],{duration:380});shade.style.opacity='0';shade.style.pointerEvents='none';return await result}finally{shade.remove()}
  };
  const startLoading=async()=>{await blackFade(()=>{root.hidden=true;return revealLoading()})};
  let loading=false;

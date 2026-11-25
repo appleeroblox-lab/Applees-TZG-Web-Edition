@@ -21,4 +21,4 @@ npm test
 
 The browser game lives in `public/`. Supabase provides accounts, social features, and saved progress. Database setup is documented in `docs/PLAYER_ACCOUNTS_SETUP.md`.
 
-Created by Applee · Meowple Studios. Hosted with Cloudflare & GitHub Pages.
+Created by Applee · Applee Studios. Hosted with Cloudflare & GitHub Pages.

@@ -721,7 +721,7 @@
       "changes": [
         "Separated email verification fields and Verify/Cancel buttons with comfortable spacing.",
         "Displayed each credit as Role: Name, with separate Gameplay and Scripter roles.",
-        "Updated the community credit to Meowple Studios."
+        "Updated the community credit to Applee Studios."
       ],
       "source": {
         "path": "public/account-pages.js",

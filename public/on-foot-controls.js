@@ -23,6 +23,6 @@ export function installOnFootControls({doc=document,canvas,camera,active,look,bl
  canvas.addEventListener('wheel',e=>{if(!active()||blocked())return;e.preventDefault();e.stopImmediatePropagation();camera.zoom(e.deltaY)}, {capture:true,passive:false});
  doc.addEventListener('mousemove',e=>{if(active()&&camera.locked&&doc.pointerLockElement===canvas&&!blocked())look(e.movementX*.002*sensitivity(),e.movementY*.002*sensitivity())});
  doc.addEventListener('pointerlockchange',()=>{if(doc.pointerLockElement!==canvas&&camera.locked&&!mobile){camera.locked=false;sync()}});
- const clear=()=>{pointers.clear();touches.clear();gesture=false;touchGesture=false;camera.locked=false;releaseLock();sync()};globalThis.addEventListener?.('blur',clear);doc.addEventListener('visibilitychange',()=>{if(doc.hidden)clear()});
- return {setting,button,toggle,sync};
+ const clear=()=>{pointers.clear();touches.clear();gesture=false;nativeTouch=false;touchGesture=false;camera.locked=false;releaseLock();sync()};globalThis.addEventListener?.('blur',clear);doc.addEventListener('visibilitychange',()=>{if(doc.hidden)clear()});
+ return {setting,button,toggle,sync,clear};
 }

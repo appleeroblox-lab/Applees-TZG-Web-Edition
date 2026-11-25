@@ -1,3 +1,4 @@
+import {gameLifecycle} from './game-lifecycle.js?v=290';
 export const INTRO_HOLD_MS=1000,INTRO_FADE_MS=650;
 // The sign-in flow is created behind the fade, only after the studio video ends.
 export function playStartupIntro({doc=document,beforeReveal=()=>{},setTimer=setTimeout,clearTimer=clearTimeout,landscape=null}={}){
@@ -22,6 +23,14 @@ export function playStartupIntro({doc=document,beforeReveal=()=>{},setTimer=setT
   listen(video,'ended',()=>finish(INTRO_HOLD_MS));listen(video,'error',()=>finish());
   listen(video,'playing',cancelWatch);listen(video,'timeupdate',cancelWatch);listen(video,'waiting',watch);listen(video,'stalled',watch);
   listen(root,'click',playInline);listen(root,'keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();playInline()}});
-  const autoplay=()=>{if(finishing||landscape&&!landscape.isLandscape())return;watch();play().catch(error=>{if(finishing)return;if(error?.name!=='NotAllowedError'){finish();return}showTap()})};if(landscape)listeners.push(landscape.onChange(wide=>{if(finishing)return;if(wide)autoplay();else{cancelWatch();video.pause?.()}}));autoplay();
+  const autoplay=()=>{if(finishing||landscape&&!landscape.isLandscape())return;watch();play().catch(error=>{if(finishing)return;if(error?.name!=='NotAllowedError'){finish();return}showTap()})};
+  const win=doc.defaultView;
+  if(win===globalThis.window&&win?.document===doc){
+   listeners.push(gameLifecycle(win,doc).subscribe(active=>{
+    if(!active){cancelWatch();video.pause?.();return}
+    if(!finishing&&!video.ended&&(!tap||tap.hidden)&&video.paused)autoplay();
+   }));
+  }
+  if(landscape)listeners.push(landscape.onChange(wide=>{if(finishing)return;if(wide)autoplay();else{cancelWatch();video.pause?.()}}));autoplay();
  });
 }

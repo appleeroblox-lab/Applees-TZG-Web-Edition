@@ -39,4 +39,5 @@ export function installTouchButtons(doc,win){
  win.addEventListener('blur',reset);
  win.addEventListener('pagehide',reset);
  doc.addEventListener('visibilitychange',reset);
+ return reset;
 }

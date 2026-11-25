@@ -1,8 +1,22 @@
 {
-  "currentVersion": "v0.0.289",
+  "currentVersion": "v0.0.291",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 291,
+      "version": "v0.0.291",
+      "date": "2026-11-25",
+      "title": "Mobile app-switch recovery",
+      "changes": [
+        "Improved control and menu recovery after switching apps, locking your screen, or returning from a call.",
+        "The game now resumes interrupted flight, on-foot movement, and warp animations with your progress and position intact.",
+        "Improved graphics, audio, and online status recovery when returning to the game."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 289,
       "version": "v0.0.289",

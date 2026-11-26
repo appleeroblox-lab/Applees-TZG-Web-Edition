@@ -1,4 +1,2 @@
-v0.0.302
-- Moved the multiplayer status bar into Settings → Players and added server latency for solo hosts.
-- Global room admission works independently of direct connections to nearby players.
-- Quick Join plays the launch cutscene. Moved Quick Join and the intro Skip button away from nearby controls and screen edges.
+v0.0.303
+- Added breathing room around the status bar in the Players tab.

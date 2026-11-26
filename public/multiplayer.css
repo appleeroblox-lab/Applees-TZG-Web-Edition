@@ -65,13 +65,13 @@ body.referenceHUD #multiplayerLobby>.dialogHead h2{font-size:18px}
 #multiplayerLobby footer button{width:100%}
 .multiplayerLoadingActions{display:grid;width:min(320px,calc(100vw - 48px));gap:8px;margin-inline:auto;text-align:center}
 .multiplayerLoadingActions button{width:100%;box-sizing:border-box}
-#settingsPlayersPage .multiplayerRosterStatus{margin:0 0 8px;padding:7px 8px;font-variant-numeric:tabular-nums}
+#settingsPlayersPage .multiplayerRosterStatus{margin:8px 3px;padding:7px 8px;font-variant-numeric:tabular-nums}
 #settingsPlayersPage .multiplayerRosterRow{grid-template-columns:1.4em minmax(0,1.35fr) minmax(0,.7fr) minmax(3em,.5fr) minmax(5.75em,auto)}
 #settingsPlayersPage .multiplayerRosterActions{justify-content:flex-end;gap:3px}
 #settingsDialog #settingsPlayersPage .multiplayerRosterActions button{min-width:26px;width:2em;padding:0}
 #settingsPlayersPage .multiplayerRosterHeading span:last-child{text-align:right}
 #settingsPlayersPage .multiplayerRosterStatus{
- position:static;box-sizing:border-box;width:100%;
+ position:static;box-sizing:border-box;
  display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;
  border:1px solid var(--account-border);border-radius:9px;background:var(--account-field)
 }

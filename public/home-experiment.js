@@ -995,7 +995,7 @@ export class HomeExperiment{
   this.drag=null;this.previewTouches?.clear();this.last=performance.now();this.lastDraw=0;this.width=0;this.height=0;
 
  }
- async play(){
+ async play(onCovered=null){
   if(!this.active||this.busy||this.leaving)return;
   this.leaving=true;
   this.root.classList.remove('homeChromeVisible');
@@ -1004,13 +1004,16 @@ export class HomeExperiment{
   chrome.inert=true;
   this.drag=null;
   this.clearInputs();
-  const handoff=()=>{
-   if(!this.active)return;
+  let handedOff=false;
+  const handoff=async()=>{
+   if(!this.active||handedOff)return;
+   handedOff=true;
+   if(onCovered){await onCovered();return}
    this.close();this.onPlay?.();
   };
   let overlay;
   try{
-   if(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){handoff();return;}
+   if(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){await handoff();return;}
    overlay=document.createElement('div');overlay.className='homePlayTransition';overlay.style.pointerEvents='none';overlay.setAttribute('aria-hidden','true');
    overlay.innerHTML='<div class="homePlayStage"><div class="homePlayFrames"><div class="homePlayFrameTop"></div><div class="homePlayFrameBottom"></div></div><div class="homePlayTitles"><strong>The Zero Gravity</strong><span>Web Edition</span></div></div><div class="homePlayFlash"></div><div class="homePlayCover"></div>';
    document.body.append(overlay);
@@ -1056,13 +1059,13 @@ export class HomeExperiment{
    await animate(frames,[{transform:'scale(1)'},{transform:'scale(1.12)'}],220);
    await animate(cover,[{opacity:1,transform:'scale(.8)'},{opacity:1,transform:'scale(1.01)'}],440);
    stage.hidden=true;
-   handoff();
+   await handoff();
    if(!document.hidden)await afterPaint(window);
    await animate(cover,[{opacity:1,transform:'scale(1.01)'},{opacity:0,transform:'scale(1.01)'}],360);
   }finally{
-   if(this.active)handoff();
+   if(this.active&&!handedOff&&!onCovered)await handoff();
    overlay?.remove();this.finishPlayAnimations=null;this.playCamera=null;this.skipPlayAnimation=false;chrome.inert=false;
-   this.root.classList.remove('homePlayLeaving');this.leaving=false;
+   this.root.classList.remove('homePlayLeaving');this.leaving=false;if(this.active)this.root.classList.add('homeChromeVisible');
   }
  }
  openMenu(id){if(this.customizing||this.busy)return;if(id==='home-settings'){document.getElementById('brand')?.click();return}if(id==='inventoryBtn'){this.openInventory();return}const original=document.getElementById(id);if(original&&!original.disabled)original.click();else this.notify('This menu is not available for this account.')}

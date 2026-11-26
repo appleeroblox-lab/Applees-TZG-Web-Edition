@@ -1,8 +1,9 @@
 {
-  "currentVersion": "v0.0.297",
+  "currentVersion": "v0.0.298",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {"legacyVersion": 298, "version": "v0.0.298", "date": "2026-11-26", "title": "Multiplayer layout and Global Servers", "changes": ["Matched the Multiplayer lobby to the Friends and Parties menu and fixed overlapping buttons.", "New rooms are listed as Global Servers and still have a player host.", "Moved the server timer and player count into the Players page header."], "source": {"kind": "current release"}},
     {"legacyVersion": 297, "version": "v0.0.297", "date": "2026-11-26", "title": "Multiplayer Play menu and player nameplates", "changes": ["Play now opens a choice between SinglePlayer and Multiplayer.", "Quick Join finds an open server or offers to create a server when there is room.", "Nearby multiplayer ships and characters display names, device type, level and distance."], "source": {"kind": "current release"}},
     {"legacyVersion":296,"version":"v0.0.296","date":"2026-11-26","title":"Experimental Multiplayer","changes":["Signed-in players can create or join free experimental multiplayer servers from Home."],"source":{"kind":"current release"}},
     {

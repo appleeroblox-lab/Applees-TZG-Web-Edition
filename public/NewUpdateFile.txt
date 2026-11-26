@@ -1,5 +1,4 @@
-v0.0.297
-- Play now opens a choice between SinglePlayer and Multiplayer.
-- Quick Join finds an open server or offers to create a server when there is room.
-- Nearby multiplayer ships and characters display names, device type, level and distance.
-- The Players tab shows the server timer and roster in join order, with player and host actions.
+v0.0.298
+- Matched the Multiplayer lobby to the Friends and Parties menu and fixed overlapping buttons.
+- New rooms are listed as Global Servers and still have a player host.
+- Moved the server timer and player count into the Players page header.

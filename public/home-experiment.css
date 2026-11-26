@@ -310,3 +310,9 @@ body.homeExperimentOpen:has(#homeExperiment.homePlayLeaving) #runtimeVersions {t
 #homeExperiment .homeMultiplayerChoice{position:relative}
 #homeExperiment .homePlayChoices button{min-height:46px}
 #homeExperiment .homePlayChoices .homeModeBack{position:absolute;right:-10px;top:-12px;min-height:0;width:24px;height:24px;padding:0;border-radius:4px;line-height:1}
+
+#homeExperiment .homePlayChoices {--play-mode-width:210px;--play-mode-height:58px;--play-mode-bottom:30px;bottom:var(--play-mode-bottom);gap:14px}
+#homeExperiment .homePlayChoices :is(.homeSingleplayer,.homeMultiplayer){box-sizing:border-box;width:var(--play-mode-width)!important;height:var(--play-mode-height)!important;min-height:var(--play-mode-height)!important;max-height:none!important;white-space:nowrap}
+#homeExperiment .homePlayChoices .homeModeBack{right:-28px;top:-16px;min-width:0!important;max-width:24px!important;width:24px!important;height:24px!important;min-height:24px!important;max-height:24px!important;padding:0!important}
+@media(max-height:550px){#homeExperiment .homePlayChoices{--play-mode-width:150px;--play-mode-height:46px;--play-mode-bottom:24px;gap:10px}}
+@media(max-width:600px) and (min-height:551px){#homeExperiment .homePlayChoices{--play-mode-width:100px;gap:7px}#homeExperiment .homePlayChoices :is(.homeSingleplayer,.homeMultiplayer){font-size:10px!important;padding:7px!important}}

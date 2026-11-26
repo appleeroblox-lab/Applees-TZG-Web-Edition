@@ -69,7 +69,7 @@ playDoc.defaultView.HTMLElement.prototype.animate=function(keyframes,options){
  return {finished:Promise.resolve()};
 };
 try{
- lobby={close:HomeExperiment.prototype.close,root:playDoc.getElementById('lobby'),active:true,cameraReady:true,camera:new T.PerspectiveCamera(),updateCamera:HomeExperiment.prototype.updateCamera,clearInputs(){},customize(){},dockChat(){},
+ lobby={setPlayChoices:HomeExperiment.prototype.setPlayChoices,close:HomeExperiment.prototype.close,root:playDoc.getElementById('lobby'),active:true,cameraReady:true,camera:new T.PerspectiveCamera(),updateCamera:HomeExperiment.prototype.updateCamera,clearInputs(){},customize(){},dockChat(){},
   dockBrand(){},restoreCanvas(){
    assert(playDoc.querySelector('.homePlayStage').hidden,'old layers are hidden only after the cover arrives');
    steps.push(['gameplay']);

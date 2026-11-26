@@ -1,3 +1,5 @@
-v0.0.299
-- Spread terrain and scenery updates across frames on mobile to reduce stutter when crossing chunks.
-- Improved on-foot animation when blocked by terrain and other obstacles.
+v0.0.301
+- Updated the multiplayer Players tab with room status, time remaining, player locations, ping, friend requests, reports, and host controls.
+- Spread horizon updates across frames on mobile and corrected on-foot terrain and ladder contact.
+- Added Skip to the studio intro and made game installation prompt only when you choose Install Game.
+- Raised the SinglePlayer and Multiplayer buttons and made their closing slide visible.

@@ -34,8 +34,6 @@ body.referenceHUD .multiplayerPanel{width:min(290px,calc(100vw - 32px));max-heig
 .multiplayerNameplate{position:fixed;z-index:75;transform:translate(-50%,-100%);display:grid;text-align:center;gap:2px;white-space:nowrap;pointer-events:none;color:#fff;font:12px 'Fredoka One',sans-serif;text-shadow:0 1px 3px #000,0 0 3px #000}
 .multiplayerNameplate span{font-size:10px}
 .multiplayerNameplate .verifiedBadge img{width:12px;height:12px;vertical-align:middle}
-#settingsPlayersPage .multiplayerRosterHeader{display:flex;align-items:center;flex-wrap:wrap;gap:7px 14px;margin-bottom:10px;padding:8px;border-radius:8px;background:var(--account-field)}
-#settingsPlayersPage .multiplayerRosterHeader h3{margin:0 auto 0 0}
 .multiplayerRosterList{display:grid;gap:5px}
 .multiplayerRosterRow{display:grid;grid-template-columns:1.4em minmax(0,1.35fr) minmax(0,.7fr) minmax(3em,.5fr) auto;align-items:center;gap:6px;padding:5px 7px;border:1px solid var(--account-border);border-radius:8px;background:var(--account-field)}
 .multiplayerRosterHeading{margin-bottom:5px}
@@ -67,5 +65,37 @@ body.referenceHUD #multiplayerLobby>.dialogHead h2{font-size:18px}
 #multiplayerLobby footer button{width:100%}
 .multiplayerLoadingActions{display:grid;width:min(320px,calc(100vw - 48px));gap:8px;margin-inline:auto;text-align:center}
 .multiplayerLoadingActions button{width:100%;box-sizing:border-box}
-#settingsPlayersPage .multiplayerRosterHeader{width:100%;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center}
-#settingsPlayersPage .multiplayerRosterHeader span:last-child{font-variant-numeric:tabular-nums}
+#settingsPlayersPage .multiplayerRosterStatus{margin:0 0 8px;padding:7px 8px;font-variant-numeric:tabular-nums}
+#settingsPlayersPage .multiplayerRosterRow{grid-template-columns:1.4em minmax(0,1.35fr) minmax(0,.7fr) minmax(3em,.5fr) minmax(5.75em,auto)}
+#settingsPlayersPage .multiplayerRosterActions{justify-content:flex-end;gap:3px}
+#settingsDialog #settingsPlayersPage .multiplayerRosterActions button{min-width:26px;width:2em;padding:0}
+#settingsPlayersPage .multiplayerRosterHeading span:last-child{text-align:right}
+#settingsPlayersPage .multiplayerRosterStatus{
+ display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;
+ border:1px solid var(--account-border);border-radius:9px;background:var(--account-field)
+}
+#settingsDialog #settingsPlayersPage .multiplayerRosterStatus h3{display:flex;align-items:center;gap:6px;margin:0 auto 0 0!important;padding:0!important;background:none;border:0}
+.multiplayerRosterStatus h3 img{width:1.4em;height:1.4em}
+.multiplayerRosterCount{white-space:nowrap}
+.multiplayerRosterCount::before{
+ content:'';display:inline-block;width:.55em;height:.55em;margin-right:.35em;
+ border-radius:50%;background:#47ed87;vertical-align:.1em
+}
+.multiplayerRosterTime{white-space:nowrap}
+.multiplayerRosterRow>span:nth-child(3){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.multiplayerHostMark{min-width:.85em;color:#ffda64;text-align:center}
+.multiplayerYou{color:#80ecff}
+.multiplayerRosterIdentity>img{flex:none;border:1px solid var(--account-border);box-sizing:border-box}
+.multiplayerRosterPing{display:flex;align-items:center;gap:4px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.multiplayerSignal{display:inline-flex;align-items:flex-end;gap:1px;color:#57e88c}
+.multiplayerSignal i{width:2px;height:4px;border-radius:2px;background:currentColor}
+.multiplayerSignal i:nth-child(2){height:7px}
+.multiplayerSignal i:nth-child(3){height:10px}
+.multiplayerSignal[data-strength=fair]{color:#ffd558}
+.multiplayerSignal[data-strength=poor]{color:#ff9182}
+.multiplayerSignal[data-strength=fair] i:last-child,.multiplayerSignal[data-strength=poor] i:not(:first-child){opacity:.3}
+.multiplayerSignal[data-strength=unknown]{display:none}
+@media(max-width:600px){
+ .multiplayerRosterIdentity>img{width:20px;height:20px}
+ .multiplayerHostMark:empty{display:none}
+}

@@ -44,7 +44,11 @@ for(let i=0;i<96;i++){
  assert(visible().every(g=>stream.inView(g.userData.cx,g.userData.cz,0)));
  assert(stream.chunks.size<=61,'moving through the view retains a bounded inactive cache');
 }
+const oldHorizon=stream.distant.mesh.geometry;
 pos.set(4800,240,-12000);point(0,-3,-1);frame();
+assert.equal(stream.distant.mesh.geometry,oldHorizon,'mobile horizon sampling keeps the old mesh during a cell change');
+for(let i=0;i<16;i++)frame();
+assert.notEqual(stream.distant.mesh.geometry,oldHorizon,'the rebuilt horizon eventually replaces the old mesh');
 assert(stream.distant.mesh.visible,'flight and rapid motion keep a low-detail surface');
 assert(visible().every(g=>!g.userData.props?.visible),'nearby detail is not drawn from high altitude');
 const spruce={id:'spruce',x:0,y:0,z:-130};

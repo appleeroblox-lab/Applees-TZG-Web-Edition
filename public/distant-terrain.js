@@ -9,9 +9,51 @@ const rings=[0,48,96,144,192,240,288,384,512,768,1024,1536,2048,3072,4096,6144,8
 // One low-detail draw, no collision/scenery copies; detail chunks keep their existing budgets.
 export class DistantTerrain{
  constructor(scene){this.scene=scene;this.mesh=null;this.key=''}
- update(body,pos){if(!body?.solid){this.clear();return}const cx=Math.round(pos.x/512)*512,cz=Math.round(pos.z/512)*512,key=body.id+':'+cx+':'+cz;if(key===this.key)return;this.key=key;const airless=!hasAtmosphere(body),ringList=airless?[...Array.from({length:33},(_,i)=>i*24),1024,1536,2048,3072,4096,6144,8192,12288,16384,24576,32768,45000,60000,100000,150000]:rings,positions=[],colors=[],indices=[];
- for(const radius of ringList)for(let i=0;i<=segments;i++){const a=i/segments*Math.PI*2,x=cx+Math.cos(a)*radius,z=cz+Math.sin(a)*radius;positions.push(x,surfaceHeight(x,z)-(airless?.04:2),z);const c=body.name==='Earth'?new T.Color(biomeColor(x,z)):terrainColor(body,x,z);colors.push(c.r,c.g,c.b)}
- for(let ring=0;ring<ringList.length-1;ring++)for(let i=0;i<segments;i++){const a=ring*(segments+1)+i,b=a+segments+1;indices.push(a,a+1,b,a+1,b+1,b)}
- const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));geometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));geometry.setIndex(indices);geometry.computeVertexNormals();geometry.computeBoundingSphere();if(airless)addTerrainDetail(geometry,body);if(this.mesh){this.mesh.geometry.dispose();this.mesh.geometry=geometry}else{this.mesh=new T.Mesh(geometry,airless?terrainMaterial(body):new T.MeshStandardMaterial({vertexColors:true,roughness:1,fog:true}));this.mesh.name='Extended low-detail world terrain';this.mesh.userData.terrain=true;this.scene.add(this.mesh)}}
- clear(){if(this.mesh){this.scene.remove(this.mesh);this.mesh.geometry.dispose();this.mesh.material.dispose();this.mesh=null}this.key=''}
+ update(body,pos,{incremental=false}={}){
+  if(!body?.solid){this.clear();return false}
+  const cx=Math.round(pos.x/512)*512,cz=Math.round(pos.z/512)*512;
+  const key=body.id+':'+cx+':'+cz;
+  if(key===this.key&&!this.pending)return false;
+  if(!this.pending||this.pending.body!==body){
+   this.pending={body,build:this.build(body,cx,cz,key)};
+  }
+  // Keep the previous horizon visible while sampling the next one.
+  const budget=incremental&&this.mesh?4:Infinity;
+  for(let i=0;i<budget;i++){
+   if(this.pending.build.next().done){this.pending=null;return true}
+  }
+  return true;
+ }
+ *build(body,cx,cz,key){
+  const airless=!hasAtmosphere(body);
+  const ringList=airless?[...Array.from({length:33},(_,i)=>i*24),1024,1536,2048,3072,4096,6144,8192,12288,16384,24576,32768,45000,60000,100000,150000]:rings;
+  const positions=[],colors=[],indices=[];
+  for(const radius of ringList){
+   for(let i=0;i<=segments;i++){
+    const angle=i/segments*Math.PI*2,x=cx+Math.cos(angle)*radius,z=cz+Math.sin(angle)*radius;
+    positions.push(x,surfaceHeight(x,z)-(airless?.04:2),z);
+    const color=body.name==='Earth'?new T.Color(biomeColor(x,z)):terrainColor(body,x,z);
+    colors.push(color.r,color.g,color.b);
+   }
+   yield;
+  }
+  for(let ring=0;ring<ringList.length-1;ring++)for(let i=0;i<segments;i++){
+   const a=ring*(segments+1)+i,b=a+segments+1;
+   indices.push(a,a+1,b,a+1,b+1,b);
+  }
+  const geometry=new T.BufferGeometry();
+  geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));
+  geometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));
+  geometry.setIndex(indices);geometry.computeVertexNormals();geometry.computeBoundingSphere();
+  if(airless)addTerrainDetail(geometry,body);
+  if(this.mesh){
+   this.mesh.geometry.dispose();this.mesh.geometry=geometry;
+  }else{
+   this.mesh=new T.Mesh(geometry,airless?terrainMaterial(body):new T.MeshStandardMaterial({vertexColors:true,roughness:1,fog:true}));
+   this.mesh.name='Extended low-detail world terrain';this.mesh.userData.terrain=true;this.scene.add(this.mesh);
+  }
+  this.key=key;
+ }
+
+ clear(){this.pending=null;if(this.mesh){this.scene.remove(this.mesh);this.mesh.geometry.dispose();this.mesh.material.dispose();this.mesh=null}this.key=''}
 }

@@ -26,7 +26,7 @@ function closePanel(element){
 }
 
 export function installMultiplayer({home,account,bodies,pose,enter,leave,model,notify,ready=()=>{},active=()=>true,lifecycle}){
- const style=node('link');style.rel='stylesheet';style.href='./multiplayer.css?v=299';document.head.append(style);
+ const style=node('link');style.rel='stylesheet';style.href='./multiplayer.css?v=301';document.head.append(style);
  const launch=home.multiplayerButton;
  const menu=node('section',null,'multiplayerPanel');menu.id='multiplayerLobby';menu.hidden=true;menu.setAttribute('role','dialog');menu.setAttribute('aria-label','Multiplayer');
  const header=node('header',null,'dialogHead'),close=node('button','×');close.setAttribute('aria-label','Close multiplayer');
@@ -47,20 +47,35 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
  const loadingActions=node('div',null,'multiplayerLoadingActions');loadingActions.append(create,retry,back);
  loadingTitle.setAttribute('role','status');loading.append(loadingTitle,loadingActions);document.body.append(loading);
  const roster=document.getElementById('settingsPlayersPage'),playersTab=document.getElementById('settingsTab-players');
- const banner=node('header',null,'multiplayerRosterHeader'),server=node('span'),serverTime=node('span');
- banner.append(node('h3','Players'),serverTime,server);
+ const banner=node('header',null,'multiplayerRosterStatus');
+ const title=node('h3','Players (Multiplayer)');
+ const groupIcon=node('img');groupIcon.src='./icons/group.svg';groupIcon.alt='';title.prepend(groupIcon);
+ const server=node('span',null,'multiplayerRosterServer'),count=node('span',null,'multiplayerRosterCount'),serverTime=node('span',null,'multiplayerRosterTime');
+ banner.append(title,server,count,serverTime);
  const heading=node('div',null,'multiplayerRosterRow multiplayerRosterHeading');
  for(const title of ['#','Player','Location','Ping','Actions'])heading.append(node('span',title));
  const rows=node('div',null,'multiplayerRosterList');
  roster?.append(banner,heading,rows);
  let rosterSignature='',more=null;
+ const playerCells=new Map();
+ function closeOptions(){
+  more?.remove();more=null;
+  document.removeEventListener('pointerdown',dismissOptions,true);
+ }
+ function dismissOptions(event){
+  if(more&&!more.contains(event.target)&&!event.target.closest?.('[data-player-options]'))closeOptions();
+ }
+ const settings=roster?.closest('dialog');
+ settings?.addEventListener('close',closeOptions);
+ settings?.querySelector('.settingsTabs')?.addEventListener('click',closeOptions);
  const tokens=async()=>{
   const player=account();
   if(!player?.ready||player.guest||!player.client)return null;
   const {data}=await player.client.auth.getSession();
   return data?.session?.access_token||null;
  };
- const network=new MultiplayerNetwork({endpoint,token:tokens,onChange:renderMenu,onError:error=>{message.textContent=error},onNotice:notify,onExit:reason=>returnHome(reason)});
+ const network=new MultiplayerNetwork({endpoint,token:tokens,onChange:renderMenu,onError:error=>{message.textContent=error;if(entered)notify(error)},onNotice:notify,onExit:reason=>returnHome(reason)});
+ const sendAction=payload=>{if(!network.send(payload))throw Error('Multiplayer is reconnecting. Try again shortly.')};
  const ghosts=new Map();
  let busy=false,operation=null,roomId=null,approved=null,checking=null,lastPaint=0,statsTime=0,sample=null,entered=false;
  async function checkAccess(force=false){
@@ -93,21 +108,37 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
   }
   renderRoster(time);
  }
+ function updatePlayerCells(player){
+  const {location,signal,ping}=playerCells.get(player.id);
+  const place=player.location?locationName(player.location,bodies):'Connecting';
+  if(location.textContent!==place)location.textContent=location.title=place;
+  const latency=Number.isFinite(player.ping)?player.ping:null;
+  const label=latency===null?'—':latency+' ms';
+  if(ping.textContent!==label){
+   ping.textContent=label;
+   signal.dataset.strength=latency===null?'unknown':latency<120?'good':latency<200?'fair':'poor';
+  }
+ }
  function renderRoster(time){
   if(!roster||!playersTab)return;
   const room=entered?network.room:null;
   playersTab.hidden=!room;
   if(!room){
-   rosterSignature='';rows.replaceChildren();more?.remove();more=null;
+   rosterSignature='';rows.replaceChildren();playerCells.clear();closeOptions();
    if(playersTab.getAttribute('aria-selected')==='true')document.getElementById('settingsTab-game')?.click();
    return;
   }
-  server.textContent=room.count+'/'+room.capacity;
-  serverTime.textContent='Server time · '+roomTime(room.expires-time);
+  server.textContent='Server: '+room.name;
+  count.textContent=room.count+'/'+room.capacity;
+  count.setAttribute('aria-label',room.count+' of '+room.capacity+' players');
+  serverTime.textContent=roomTime(room.expires-time).padStart(5,'0')+' left';
   const ordered=[...room.players].sort((a,b)=>(a.joined||0)-(b.joined||0));
-  const signature=JSON.stringify([room.hostId,ordered.map(({id,name,username,avatar,verified,joined,location,ping})=>[id,name,username,avatar,verified,joined,location,ping])]);
-  if(signature===rosterSignature||more?.isConnected)return;
-  rosterSignature=signature;rows.replaceChildren();
+  const signature=JSON.stringify([room.hostId,ordered.map(({id,name,username,avatar,verified})=>[id,name,username,avatar,verified])]);
+  if(signature===rosterSignature){
+   for(const player of ordered)updatePlayerCells(player);
+   return;
+  }
+  rosterSignature=signature;closeOptions();rows.replaceChildren();playerCells.clear();
   const action=(label,text,run)=>{
    const button=node('button',text);button.title=label;button.setAttribute('aria-label',label);
    button.onclick=async()=>{try{await run()}catch(error){notify(error.message)}};
@@ -117,40 +148,46 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
    const row=node('div',null,'multiplayerRosterRow'),identity=node('div',null,'multiplayerRosterIdentity');
    const name=node('strong'),details=node('div'),avatar=node('img');
    avatar.alt='';avatar.referrerPolicy='no-referrer';
-   if(player.avatar?.startsWith('https://'))avatar.src=player.avatar;else avatar.hidden=true;
+   const defaultAvatar='./icons/person.svg';
+   avatar.src=player.avatar?.startsWith('https://')?player.avatar:defaultAvatar;
+   avatar.onerror=()=>{avatar.onerror=null;avatar.src=defaultAvatar};
    setVerifiedName(name,player.name,player.verified);
-   if(player.id===network.self)name.append(document.createTextNode(' (You)'));
+   if(player.id===network.self)name.append(node('span',' (You)','multiplayerYou'));
    details.append(name);if(player.id===room.hostId)details.append(node('small','Host'));
-   identity.append(avatar,details);
+   const hostMark=node('span',player.id===room.hostId?'♛':'','multiplayerHostMark');hostMark.setAttribute('aria-hidden','true');
+   identity.append(hostMark,avatar,details);
    const actions=node('div',null,'multiplayerRosterActions');
    if(player.id!==network.self){
     const add=action('Add friend','+',async()=>{await account().rpc('tzg_social_action',{p_action:'request',p_username:player.username});notify('Friend request sent.')});
     add.disabled=!player.username;
-    actions.append(add,action('Report player','⚑',()=>{
+    actions.append(add,action('Report player','⚠',()=>{
      const reason=globalThis.prompt('Why are you reporting '+player.name+'?');
-     if(reason?.trim())network.send({type:'report',to:player.id,reason:reason.trim().slice(0,300)});
+     if(reason?.trim())sendAction({type:'report',to:player.id,reason:reason.trim().slice(0,300)});
     }));
     const options=action('More player actions','⋯',()=>{
-     const previous=more;previous?.remove();more=null;
-     if(previous?.dataset.player===player.id)return;
+     const wasOpen=more?.dataset.player===player.id;closeOptions();
+     if(wasOpen||network.room?.hostId!==network.self||!settings)return;
      const popup=node('div',null,'multiplayerPlayerOptions');popup.dataset.player=player.id;more=popup;
-     const anchor=options.getBoundingClientRect(),panel=roster.closest('dialog');
-     if(!panel)return;
+     const anchor=options.getBoundingClientRect(),panel=settings;
      panel.append(popup);
-     const send=type=>{popup.remove();more=null;if(globalThis.confirm((type==='kick'?'Kick ':'Transfer host to ')+player.name+'?'))network.send({type,to:player.id})};
+     const send=type=>{closeOptions();if(network.room?.hostId===network.self&&globalThis.confirm((type==='kick'?'Kick ':'Transfer host to ')+player.name+'?'))sendAction({type,to:player.id})};
      popup.append(action('Transfer Host','Transfer Host',()=>send('transfer')),action('Kick','Kick',()=>send('kick')));
      const box=popup.getBoundingClientRect(),bounds=panel.getBoundingClientRect();
      popup.style.left=Math.max(4,Math.min(bounds.width-box.width-4,anchor.right-bounds.left-box.width))+'px';
      popup.style.top=Math.max(4,Math.min(bounds.height-box.height-4,anchor.bottom-bounds.top))+'px';
-     requestAnimationFrame(()=>document.addEventListener('pointerdown',function dismiss(event){
-      if(popup.contains(event.target)||options.contains(event.target))return;
-      popup.remove();if(more===popup)more=null;document.removeEventListener('pointerdown',dismiss,true);
-     },true));
+     document.addEventListener('pointerdown',dismissOptions,true);
     });
+    options.dataset.playerOptions='';
     options.disabled=room.hostId!==network.self;
     actions.append(options);
    }
-   row.append(node('span',String(index+1)),identity,node('span',player.location?locationName(player.location,bodies):'Connecting'),node('span',Number.isFinite(player.ping)?player.ping+' ms':'—'),actions);
+   const location=node('span'),pingCell=node('span',null,'multiplayerRosterPing');
+   const signal=node('span',null,'multiplayerSignal'),ping=node('span');
+   signal.setAttribute('aria-hidden','true');signal.append(node('i'),node('i'),node('i'));
+   pingCell.append(signal,ping);
+   playerCells.set(player.id,{location,signal,ping});
+   updatePlayerCells(player);
+   row.append(node('span',String(index+1)),identity,location,pingCell,actions);
    rows.append(row);
   });
  }
@@ -191,7 +228,7 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
   }finally{busy=false;renderMenu()}
  }
 
- function disconnect(){entered=false;network.leave();clearGhosts();more?.remove();more=null;loading.hidden=true}
+ function disconnect(){entered=false;network.leave();clearGhosts();closeOptions();loading.hidden=true}
  async function returnHome(reason){
   disconnect();
   await leave();if(reason)notify(reason);
@@ -253,11 +290,10 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
  close.onclick=()=>{closePanel(menu);if(!network.room)network.close()};
  quick.onclick=()=>start('quick');create.onclick=()=>start('create');
  retry.onclick=()=>start(operation,roomId);back.onclick=()=>{loading.hidden=true};
- document.getElementById('settingsDialog')?.addEventListener('close',()=>{more?.remove();more=null});
  const timer=setInterval(()=>{if(!menu.hidden||entered)renderMenu()},1000);timer.unref?.();
  window.addEventListener('tzg-home-ready',()=>checkAccess());
  window.addEventListener('tzg-signed-in',()=>checkAccess());
- window.addEventListener('tzg-signed-out',()=>{approved=null;launch.disabled=true;entered=false;network.leave();clearGhosts();more?.remove();more=null;menu.hidden=loading.hidden=true});
+ window.addEventListener('tzg-signed-out',()=>{approved=null;launch.disabled=true;entered=false;network.leave();clearGhosts();closeOptions();menu.hidden=loading.hidden=true});
  lifecycle?.subscribe(visible=>{if(!network.room)return;if(visible&&!network.socket)network.reconnect();if(network.local)network.update(network.local,true)});
  const debug=node('section',null,'debugCommandCard'),inspect=node('button','Check multiplayer beta access'),debugText=node('pre');
  debug.append(node('h3','Multiplayer Test'),inspect,debugText);document.getElementById('debugExperimental')?.append(debug);

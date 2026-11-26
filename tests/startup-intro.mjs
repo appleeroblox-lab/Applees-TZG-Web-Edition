@@ -20,4 +20,15 @@ const {document:missingVideo}=parseHTML('<html><body><section id="startupIntro">
 
 let wide=true,orientationListener,playCount=0;const rotating=fixture(()=>{playCount++;return Promise.resolve()},{isLandscape:()=>wide,onChange(fn){orientationListener=fn;return ()=>orientationListener=null}});rotating.video.currentTime=4.5;wide=false;orientationListener(false);assert.equal(rotating.paused,1,'pause the intro while portrait is covered');wide=true;orientationListener(true);assert.equal(playCount,2);assert.equal(rotating.video.currentTime,4.5,'resume the same video position after rotation');rotating.video.dispatchEvent(new rotating.window.Event('ended'));rotating.tick(INTRO_HOLD_MS+INTRO_FADE_MS);await rotating.done;assert.equal(orientationListener,null);
 
-const imports=JSON.parse(html.match(/<script[^>]*id="releaseModuleMap"[^>]*>(.*?)<\/script>/s)[1]).imports;assert.equal(imports['./startup-intro.js?v=153'],'./startup-intro.js?v=291','boot loader uses the patched inline playback module');
+const imports=JSON.parse(html.match(/<script[^>]*id="releaseModuleMap"[^>]*>(.*?)<\/script>/s)[1]).imports;assert.equal(imports['./startup-intro.js?v=153'],'./startup-intro.js?v='+JSON.parse(fs.readFileSync('public/source-manifest.json','utf8')).fileVersions['startup-intro.js'],'boot loader uses the patched inline playback module');
+
+
+for(const ended of [false,true]){
+ const skipped=fixture(()=>new Promise(()=>{}));
+ if(ended)skipped.video.dispatchEvent(new skipped.window.Event('ended'));
+ skipped.document.getElementById('startupIntroSkip').click();
+ assert.equal(skipped.revealed,1,'Skip starts sign-in immediately, even during the end hold');
+ assert.equal(skipped.paused,1);
+ skipped.tick(INTRO_FADE_MS);await skipped.done;
+ assert(!skipped.root.isConnected);assert.equal(skipped.timers.size,0);
+}

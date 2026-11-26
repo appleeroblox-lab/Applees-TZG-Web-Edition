@@ -280,3 +280,5 @@ body.referenceHUD #chatPlayerProfile.sharedPlayerProfile .profileActions button{
  opacity: .65;
  cursor: default;
 }
+
+#accountGate:has(#accountModeration:not([hidden])) .entryRules{display:none!important}

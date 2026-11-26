@@ -6,7 +6,7 @@ import {GuestAccess} from './guest-access.js?v=187';
 import {PlayerJourney,PlayerRewards} from './player-journey.js?v=187';
 import {PlayerActivity} from './player-activity.js?v=107';
 import {MobileNotifications} from './mobile-notifications.js?v=103';
-import {accountGate} from './account-gate.js?v=163';
+import {accountGate,renderAccountWarning} from './account-gate.js?v=163';
 import {takePreAuthClient} from './auth-first.js?v=187';
 import {configureKlipy} from './klipy-client.js?v=96';
 import {AccountPages} from './account-pages.js?v=187';
@@ -64,10 +64,7 @@ export class PlayerAccount{
   this.cloud?.dispose();
   this.chat.stop();
   this.clearControls?.();
-  $('moderationTitle').textContent='Moderation warning';
-  $('moderationSummary').textContent='You can sign in again after reading this warning.';
-  $('moderationReason').textContent=notice.reason;
-  $('moderationDate').textContent=new Date(notice.decided_at).toLocaleString();
+  renderAccountWarning(this.gate,notice);
   this.show();
   void this.signOutForWarning();
  }

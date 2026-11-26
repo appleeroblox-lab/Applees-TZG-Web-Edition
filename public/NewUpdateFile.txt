@@ -1,2 +1,3 @@
-v0.0.294
-- Moderators can issue an account warning with a reason. The game signs the player out and shows the warning, and the player can sign back in afterward.
+v0.0.295
+- Players warned while offline now see the warning before gameplay when they sign in or return with a remembered session.
+- The rules switch and its label stay hidden while a moderation notice is open.

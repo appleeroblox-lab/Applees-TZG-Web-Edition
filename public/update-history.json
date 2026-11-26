@@ -1,8 +1,21 @@
 {
-  "currentVersion": "v0.0.294",
+  "currentVersion": "v0.0.295",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {
+      "legacyVersion": 295,
+      "version": "v0.0.295",
+      "date": "2026-11-26",
+      "title": "Offline warnings and notice layout",
+      "changes": [
+        "Players warned while offline now see the warning before gameplay when they sign in or return with a remembered session.",
+        "The rules switch and its label stay hidden while a moderation notice is open."
+      ],
+      "source": {
+        "kind": "current release"
+      }
+    },
     {
       "legacyVersion": 294,
       "version": "v0.0.294",

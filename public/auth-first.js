@@ -1,6 +1,6 @@
 import {askGuestName,storedGuestName} from './guest-profile.js?v=223';
 import {AccountAuthFlow} from './account-auth-flow.js?v=187';
-import {accountGate} from './account-gate.js?v=163';
+import {accountGate,renderAccountWarning} from './account-gate.js?v=163';
 import {supabaseConfig} from './supabase-config.js?v=61';
 let authenticatedClient=null;
 export function takePreAuthClient(){const client=authenticatedClient;authenticatedClient=null;return client}
@@ -10,10 +10,52 @@ export async function authenticateFirst({doc=document,config=supabaseConfig,requ
  let flow;
  const setMode=next=>{root.querySelector('#accountConnected').hidden=true;form.hidden=false;continueButton.hidden=signOut.hidden=true;flow.setMode(next)};
  const done=new Promise(resolve=>{resolveBoot=resolve;continueButton.onclick=async()=>{if(selected||busy||!canContinue||!root.rulesAllowed?.())return;selected=true;authenticatedClient=client||null;await flow.presentation.startLoading();delete root.dataset.preload;doc.body.classList.add('authenticatedBoot');resolve()};});
- flow=new AccountAuthFlow({root,client:()=>client,onSuccess:async()=>{canContinue=true;await continueButton.onclick()}});
+ flow=new AccountAuthFlow({root,client:()=>client,onSuccess:async()=>{if(await showPendingWarning())return;canContinue=true;await continueButton.onclick()}});
  root.querySelector('#accountGuest').onclick=async()=>{if(busy||flow.busy||selected||!root.rulesAllowed?.())return;const name=storedGuestName()||await askGuestName('',true);if(!name||selected)return;selected=true;globalThis.__tzgGuest=true;authenticatedClient=client||null;for(const [id,text] of [['bootStatus','Preparing guest flight…'],['sourceDetail','Loading your ship and world'],['sourcePercent','Preparing · 0%']]){const node=doc.getElementById(id);if(node)node.textContent=text}const progress=doc.getElementById('sourceProgress');if(progress)progress.style.width='0%';await flow.presentation.startLoading();delete root.dataset.preload;doc.body.classList.add('authenticatedBoot');resolveBoot()};
  function showContinue(){canContinue=true;root.dataset.entry='form';root.querySelector('#accountConnected').hidden=false;root.querySelector('#accountRetry').hidden=true;root.querySelector('#accountReload').hidden=true;form.hidden=true;root.querySelector('nav').hidden=true;continueButton.hidden=signOut.hidden=false;root.querySelector('#accountForgot').hidden=true;}
  signOut.onclick=async()=>{if(busy||selected)return;busy=true;continueButton.disabled=true;try{const{error}=await client.auth.signOut({scope:'local'});if(error)throw error;canContinue=false;root.querySelector('nav').hidden=true;root.dataset.entry='welcome';setMode('login')}catch(e){status.textContent=e.message}finally{busy=false;flow.refreshRules?.()}};
+ async function showPendingWarning(){
+  const {data:notice}=await client.rpc('tzg_player_moderation');
+  if(selected)return true;
+  if(notice?.kind!=='warn')return false;
+  canContinue=false;
+  const panel=root.querySelector('#accountModeration'),button=root.querySelector('#accountModerationRetry'),
+   access=root.querySelector('#moderationUntil'),appeal=root.querySelector('#accountAppeal');
+  root.dataset.entry='form';
+  form.hidden=continueButton.hidden=signOut.hidden=true;
+  for(const id of ['accountConnected','accountForgot','accountHelp'])root.querySelector('#'+id).hidden=true;
+  root.querySelector('nav').hidden=true;
+  panel.hidden=appeal.hidden=false;
+  renderAccountWarning(root,notice);
+
+  async function signOutWarning(){
+   button.disabled=true;
+   button.textContent='Signing out…';
+   access.textContent='Signing out…';
+   status.textContent='';
+   try{
+    const acknowledgement=await client.rpc('tzg_player_acknowledge_warning',{p_warning:notice.id});
+    if(acknowledgement.error)throw acknowledgement.error;
+    const result=await client.auth.signOut({scope:'local'});
+    if(result.error)throw result.error;
+    access.textContent='Signed out · You can sign in again';
+    button.textContent='Back to sign in';
+    button.onclick=()=>{
+     panel.hidden=appeal.hidden=true;
+     root.querySelector('#accountHelp').hidden=false;
+     setMode('login');
+     field('email').focus?.();
+    };
+   }catch(error){
+    access.textContent='Sign out required';
+    status.textContent=error.message;
+    button.textContent='Retry sign out';
+    button.onclick=signOutWarning;
+   }finally{button.disabled=false}
+  }
+  await signOutWarning();
+  return true;
+ }
  status.textContent='Connecting to your account…';
  try{const sdk=await Promise.race([requestSDK(),done.then(()=>null)]);if(selected)return done;const{createClient}=sdk;client=createClient(config.url,config.publishableKey,{auth:{storageKey:'tzg-player-session-v1',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true},global:{fetch:async(url,options={})=>{const controller=new AbortController();let timedOut=false;const timer=setTimeout(()=>{timedOut=true;controller.abort()},15000),cancel=()=>controller.abort();options.signal?.addEventListener('abort',cancel,{once:true});if(options.signal?.aborted)cancel();try{return await fetch(url,{...options,signal:controller.signal})}catch(error){if(!timedOut)throw error;const endpoint=new URL(url,config.url);throw Error((options.method||'GET')+' '+endpoint.origin+endpoint.pathname+' — The account request timed out after 15 seconds.',{cause:error});}finally{clearTimeout(timer);options.signal?.removeEventListener('abort',cancel)}}}});try{const storage=doc.defaultView?.localStorage||globalThis.localStorage;const visitor=storage?.getItem('tzg-visitor-id')||crypto.randomUUID();storage?.setItem('tzg-visitor-id',visitor);Promise.resolve(client.rpc('tzg_visit',{p_visitor:visitor})).catch(()=>{})}catch{}const sessionResult=await Promise.race([client.auth.getSession(),done.then(()=>null)]);if(selected)return done;const{data,error}=sessionResult;if(error)throw error;
   if(data?.session){const userResult=await Promise.race([client.auth.getUser(),done.then(()=>null)]);if(selected)return done;const{data:user,error:userError}=userResult;if(userError||!user?.user){
@@ -22,7 +64,7 @@ export async function authenticateFirst({doc=document,config=supabaseConfig,requ
     if(notice?.kind==='deleted')throw Error(notice.reason);
    }
    throw userError||Error('Please sign in again.');
-  }if(recoveryRequested){root.dataset.entry='form';setMode('recovery');status.textContent='Choose a new password before loading the game.'}else if(!await flow.resumeGoogle(user.user)){status.textContent='Signed in. Accept the rules and continue to load your game.';showContinue();if(root.querySelector('#accountRulesAccepted').checked)continueButton.onclick()}}
+  }if(recoveryRequested){root.dataset.entry='form';setMode('recovery');status.textContent='Choose a new password before loading the game.'}else if(!await showPendingWarning()&&!await flow.resumeGoogle(user.user)){status.textContent='Signed in. Accept the rules and continue to load your game.';showContinue();if(root.querySelector('#accountRulesAccepted').checked)continueButton.onclick()}}
   else setMode('login');
  }catch(error){if(!selected){const message=error.message||'Could not connect. Reload to retry.';
    flow.status(message,'error');

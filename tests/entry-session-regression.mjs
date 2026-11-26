@@ -36,3 +36,46 @@ for(const match of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)){
  }
 }
 console.log('PASS remembered account → pending sign-out → welcome → fresh login → hidden game gate; stale Continue rejected and themed CSS honors hidden.');
+
+for(const restored of [true,false]){
+ const {document}=parseHTML('<html><body></body></html>');
+ const $=id=>document.getElementById(id),user={id:'warned-player'};
+ let session=restored?{user}:null,warning={kind:'warn',id:'42',reason:'Spam: repeated messages',decided_at:'2026-11-26T00:00:00Z'};
+ let signOuts=0,acks=0,started=false;
+ const client={
+  rpc:async(name,args)=>{
+   if(name==='tzg_player_moderation')return {data:warning};
+   if(name==='tzg_player_acknowledge_warning'){assert.equal(args.p_warning,'42');acks++}
+   return {};
+  },
+  auth:{
+   getSession:async()=>({data:{session}}),getUser:async()=>({data:{user}}),
+   signInWithPassword:async()=>({data:{session:session={user}}}),
+   signOut:async({scope})=>{assert.equal(scope,'local');signOuts++;session=null;warning=null;return {}}
+  }
+ };
+ const boot=authenticateFirst({doc:document,config:{},requestSDK:async()=>({createClient:()=>client})}).then(()=>started=true);
+ await tick();
+ const login=async()=>{
+  $('accountEmail').value='warned@example.test';
+  $('accountPassword').value='test-password';
+  await $('accountForm').onsubmit({preventDefault(){}});
+  await tick();
+ };
+ if(!restored){acceptRules(document);$('accountEmailLogin').click();await login()}
+ assert.equal(started,false);
+ assert.equal(acks,1, String(restored)+' '+$('accountStatus').textContent);
+ assert.equal(signOuts,1, String(restored)+' '+$('accountStatus').textContent);
+ assert(!$('accountModeration').hidden&&$('accountForm').hidden);
+ assert.equal($('moderationReason').textContent,'Spam: repeated messages');
+ assert.equal($('accountModerationRetry').textContent,'Back to sign in');
+ $('accountModerationRetry').onclick();
+ assert($('accountModeration').hidden&&!$('accountForm').hidden);
+ if(!$('accountRulesAccepted').checked)acceptRules(document);
+ await login();
+ await boot;
+ assert.equal(takePreAuthClient(),client);
+}
+const accountCss=fs.readFileSync('public/account.css','utf8');
+assert.match(accountCss,/#accountGate:has\(#accountModeration:not\(\[hidden\]\)\) \.entryRules\{display:none!important\}/);
+console.log('PASS restored and manual sign-in show an offline warning before gameplay and permit sign-in again.');

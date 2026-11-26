@@ -1,6 +1,9 @@
 {
-  "version": 295,
+  "version": 296,
   "files": [
+    "multiplayer.css",
+    "multiplayer-network.js",
+    "multiplayer.js",
     "game-lifecycle.js",
     "account-auth-flow.js",
     "account-birthday.js",
@@ -580,6 +583,9 @@
     "textures/varuna.webp"
   ],
   "versionedFiles": [
+    "multiplayer.css",
+    "multiplayer-network.js",
+    "multiplayer.js",
     "game-lifecycle.js",
     "account-auth-flow.js",
     "account-birthday.js",
@@ -870,6 +876,9 @@
     "paint-geometry.js"
   ],
   "fileVersions": {
+    "multiplayer.css": 296,
+    "multiplayer-network.js": 296,
+    "multiplayer.js": 296,
     "game-lifecycle.js": 293,
     "account-pages.js": 244,
     "atlas-3d.js": 223,
@@ -903,7 +912,7 @@
     "flight.js": 199,
     "forestry.js": 182,
     "friends-ui.js": 223,
-    "game.js": 293,
+    "game.js": 296,
     "gif-gallery.js": 96,
     "ground-weather.js": 288,
     "identity-ui.js": 91,
@@ -1165,7 +1174,7 @@
     "guest-profile.js": 232,
     "connection-warning.js": 243,
     "social-refresh.css": 236,
-    "home-experiment.js": 291,
+    "home-experiment.js": 296,
     "home-experiment.css": 285,
     "home-world.js": 264,
     "panel-drag.js": 269,
@@ -1176,6 +1185,6 @@
     "textures/ixion.webp": 286,
     "textures/varuna.webp": 286
   },
-  "publicReleaseVersion": 295,
-  "clientVersion": "v0.0.295"
+  "publicReleaseVersion": 296,
+  "clientVersion": "v0.0.296"
 }

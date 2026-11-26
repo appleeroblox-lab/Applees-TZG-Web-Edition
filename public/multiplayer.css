@@ -1,0 +1,35 @@
+#homeExperiment .homeBottom>.homeMultiplayer { grid-column:3;grid-row:2;justify-self:start }
+#homeExperiment .homeBottom:has(.homeMultiplayer:not([hidden])) { height:auto;row-gap:5px }
+.multiplayerPanel {
+ position:fixed;inset:50% auto auto 50%;transform:translate(-50%,-50%);
+ z-index:4500;width:min(700px,92vw);max-height:87dvh;overflow:auto;
+ box-sizing:border-box;padding:clamp(10px,2vw,24px);border:1px solid #3c8abb;
+ border-radius:16px;background:#0b2340f8;color:#edf8ff;font:14px 'Fredoka One',sans-serif;
+}
+.multiplayerPanel *,.multiplayerLoading *,.multiplayerInfoButton {font-family:'Fredoka One',sans-serif}
+.multiplayerPanel :is(h2,h3,p){margin:0}
+.multiplayerPanel>p {margin:8px 0;color:#bbdbef}
+.multiplayerPanel :is(header,footer,.multiplayerToolbar) {display:flex;align-items:center;justify-content:space-between;gap:8px}
+.multiplayerPanel footer {justify-content:center;margin-top:12px}
+.multiplayerStats {display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}
+.multiplayerStats span,.multiplayerServers article {background:#103456;padding:9px;border-radius:10px;border:1px solid #285c81}
+.multiplayerServers {display:grid;gap:8px;margin-top:8px}
+.multiplayerServers article {display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}
+.multiplayerServers article p {color:#d4eaff;margin-top:3px}
+.multiplayerLocations {display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.multiplayerLocations span {background:#17466b;border-radius:999px;padding:3px 7px}
+.multiplayerPanel button,.multiplayerLoading button,.multiplayerInfoButton {color:#f5fbff;background:#175787;border:1px solid #478dbb;border-radius:9px;padding:7px 12px}
+.multiplayerPanel button:disabled {opacity:.45;cursor:default}
+.multiplayerLoading {position:fixed;inset:0;z-index:2147483646;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:12px;padding:24px;text-align:center;background:#000;color:#fff;transition:opacity .35s}
+.multiplayerLoading h2 {flex:0 0 100%}.multiplayerLoading.revealed {opacity:0;pointer-events:none}
+.multiplayerInfo {width:min(440px,88vw)}
+.multiplayerInfo p {margin:5px 0}
+.multiplayerInfoButton {position:fixed;right:12px;top:68px;z-index:85}
+@media(max-height:490px){.multiplayerPanel {font-size:12px}.multiplayerPanel h2{font-size:20px}.multiplayerPanel h3{font-size:14px}}
+#homeExperiment .homeBottom>.homeMultiplayer {grid-column:1;grid-row:1;justify-self:end}
+#homeExperiment .homeBottom:has(.homeMultiplayer:not([hidden]))>.homeMapButton {grid-row:2}
+.multiplayerServers article {grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) auto}
+.multiplayerLocationBlock {padding-inline:10px;border-inline-start:1px solid #285c81}
+.multiplayerPanel footer button {width:min(100%,440px)}
+.multiplayerPanel footer small {display:block;color:#a1e4d7}
+@media(max-width:540px){.multiplayerServers article {grid-template-columns:minmax(0,1fr) auto}.multiplayerLocationBlock {grid-row:2;grid-column:1/-1;border:0;padding-inline:0}}

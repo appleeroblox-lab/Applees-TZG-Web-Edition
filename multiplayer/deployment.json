@@ -1,0 +1,15 @@
+{
+  "name": "tzg-multiplayer-beta",
+  "main_module": "worker.mjs",
+  "compatibility_date": "2026-11-26",
+  "migrations": {
+    "new_tag": "v1",
+    "steps": [{"new_sqlite_classes": ["MultiplayerLobby"]}]
+  },
+  "bindings": [
+    {"type": "durable_object_namespace", "name": "LOBBY", "class_name": "MultiplayerLobby"},
+    {"type": "plain_text", "name": "MAX_ROOMS", "text": "2"},
+    {"type": "plain_text", "name": "MAX_ROOM_PLAYERS", "text": "5"},
+    {"type": "plain_text", "name": "BETA_ENABLED", "text": "false"}
+  ]
+}

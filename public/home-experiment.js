@@ -1,3 +1,4 @@
+import {menuMotion} from './menu-motion.js?v=187';
 import {gameLifecycle,afterPaint} from './game-lifecycle.js?v=290';
 import {chatDialog} from './chat-dialog.js?v=282';
 import {setSystemLock} from './system-unlock-ui.js';
@@ -208,7 +209,7 @@ export function applyShipPaint(rig,paint,selectedRegion){
 export class HomeExperiment{
  constructor({character,shipRig,setTrailColor=()=>{},trailTips,account=()=>null,accountCustomization=false,economy,backgroundBody=()=>null,worldContext=()=>null,openInventory,closeMenus=()=>{},applyExposure=()=>{},clearInputs=()=>{},notify=()=>{},onPlay=()=>{}}){
   Object.assign(this,{character,shipRig,setTrailColor,trailTips,account,accountCustomization,economy,backgroundBody,worldContext,openInventory,closeMenus,applyExposure,clearInputs,notify,onPlay});this.active=false;this.busy=false;this.customizing=false;this.yaw=0;this.orbit=0;this.pitch=.12;this.distance=5.8;this.smoother=new GyroSmoother();this.cameraTarget=new T.Vector3();this.nextPosition=new T.Vector3();this.nextTarget=new T.Vector3();this.offset=new T.Vector3();this.markerPoint=new T.Vector3();this.ownedCustomizations=new Set();this.shipPaint=accountCustomization?{}:readShipPaint();shipRig?.ready.then(()=>applyShipPaint(shipRig,this.shipPaint));this.setTrailColor(this.shipPaint.trails);this.face=accountCustomization?'Neutral':localStorage.getItem('tzg-character-face')||'Neutral';applyCharacterFace(character,this.face);this.color=accountCustomization?CHARACTER_COLORS[0]:savedCharacterColor();this.characterPaint=accountCustomization?{}:readCharacterPaint();applyCharacterColor(character,this.color,this.characterPaint);
-  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=285';document.head.append(sheet);
+  const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='./home-experiment.css?v=297';document.head.append(sheet);
   this.root=document.createElement('section');this.root.id='homeExperiment';this.root.hidden=true;this.root.setAttribute('aria-label','Home Page');
   this.root.innerHTML=`<div class="homeScene" aria-label="Drag to rotate character"></div><div class="homeChrome"><div class="homeTop"><div class="homeBrand"></div><nav class="homeQuick" aria-label="Home menus"></nav></div><aside class="homeLeft"><button class="homeIdentity" type="button"><strong class="homeName"></strong><span class="homeId"></span><span class="homeBalance"></span></button><nav class="homeLinks" aria-label="Player menus"></nav></aside><aside class="homeNews"><small>Explore our universe</small><h2>Time Travel</h2><p>Discover the Proto Solar System</p><button type="button" data-home="mapBtn">Universe Map →</button></aside><footer class="homeBottom"><button type="button" data-home="chatToggle">Global Chat</button><button type="button" class="homePlay">▶ Play</button><button type="button" class="homeCustomize">Customization</button><button type="button" data-home="mapBtn">Universe Map</button></footer></div><section class="homeCustomization" hidden aria-label="Character customization"><header><h2>Character Customization</h2><button type="button" class="homeCustomClose" aria-label="Close customization">✕</button></header><p>Body Color</p><div class="homeColors" role="group" aria-label="Character colors"></div><p class="homeCustomHint">Drag your character to rotate · Saved on this device</p><div class="homeCustomActions"><button type="button" class="homeReset">Reset</button><button type="button" class="homeSave">Save</button></div></section><div class="homeNotice" role="status"></div>`;
   document.body.append(this.root);this.host=this.root.querySelector('.homeScene');
@@ -218,7 +219,14 @@ export class HomeExperiment{
   for(const [label,id] of [['Friends','friendsBtn'],['Account','accountBtn'],['Help','helpBtn'],['More','menuBtn']])add('.homeQuick',label,id);
   for(const [label,id] of [['Achievements','achievementsBtn'],['Daily Rewards','dailyRewardsOpen'],['Inventory','inventoryBtn'],['Settings','home-settings']])add('.homeLinks',label,id);
   this.root.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>this.openMenu(b.dataset.home));
-  this.root.querySelector('.homeIdentity').onclick=()=>this.openMenu('accountBtn');this.root.querySelector('.homePlay').onclick=()=>this.play();this.root.querySelector('.homeCustomize').onclick=()=>this.customize(true);
+  this.root.querySelector('.homeIdentity').onclick=()=>this.openMenu('accountBtn');this.root.querySelector('.homePlay').onclick=()=>this.setPlayChoices(true);this.root.querySelector('.homeCustomize').onclick=()=>this.customize(true);
+  const modes=document.createElement('div');modes.className='homePlayChoices';modes.hidden=true;
+  modes.innerHTML='<button type="button" class="homeSingleplayer">SinglePlayer</button><div class="homeMultiplayerChoice"><button type="button" class="homeMultiplayer">Multiplayer</button><button type="button" class="homeModeBack" aria-label="Back to Play">×</button></div>';
+  this.root.querySelector('.homeBottom').after(modes);
+  this.playChoices=modes;
+  this.multiplayerButton=modes.querySelector('.homeMultiplayer');this.multiplayerButton.disabled=true;
+  modes.querySelector('.homeSingleplayer').onclick=()=>this.play();
+  modes.querySelector('.homeModeBack').onclick=()=>this.setPlayChoices(false);
   this.root.querySelector('.homeCustomClose').onclick=()=>this.customize(false);this.root.querySelector('.homeReset').onclick=()=>this.resetCustomization();this.root.querySelector('.homeSave').onclick=()=>this.saveCustomization();
   CHARACTER_COLORS.forEach((color,i)=>{const b=document.createElement('button');b.type='button';b.style.setProperty('background',color,'important');b.setAttribute('aria-label','Color '+(i+1));b.dataset.color=color;b.onclick=()=>this.choose(color);this.root.querySelector('.homeColors').append(b)});
   this.host.addEventListener('pointerdown',e=>{
@@ -986,7 +994,7 @@ export class HomeExperiment{
   for(const id of ['homeMoreHelp','utilityMenu']){
    const element=document.getElementById(id);if(element)element.hidden=true;
   }
-  this.root.hidden=true;document.body.classList.remove('homeExperimentOpen');
+  this.root.hidden=true;this.setPlayChoices(false,true);document.body.classList.remove('homeExperimentOpen');
   this.root.classList.remove('homeChromeVisible');
   this.loop?.stop();this.clearInputs();
  }
@@ -994,6 +1002,19 @@ export class HomeExperiment{
   if(this.leaving){this.skipPlayAnimation=true;this.finishPlayAnimations?.()}
   this.drag=null;this.previewTouches?.clear();this.last=performance.now();this.lastDraw=0;this.width=0;this.height=0;
 
+ }
+ setPlayChoices(show,instant=false){
+  const bottom=this.root.querySelector('.homeBottom'),choices=this.playChoices;
+  if(!choices||(!instant&&this.playChoiceOpen===show))return;
+  this.playChoiceOpen=show;
+  const outgoing=show?bottom:choices,incoming=show?choices:bottom;
+  outgoing.inert=true;
+  const swap=()=>{
+   if(this.playChoiceOpen!==show)return;
+   outgoing.hidden=true;incoming.hidden=false;incoming.inert=false;
+   if(!instant)menuMotion(incoming,true,()=>{},show?'scale':'y');
+  };
+  if(instant)swap();else menuMotion(outgoing,false,swap,'y');
  }
  async play(onCovered=null){
   if(!this.active||this.busy||this.leaving)return;

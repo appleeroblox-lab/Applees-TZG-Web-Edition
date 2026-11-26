@@ -106,7 +106,7 @@ export class MultiplayerNetwork {
   try{
    await this.connect();
    if(!this.send({type:operation,id}))throw Error('Multiplayer signaling disconnected.');
-   await this.wait(()=>this.room&&(operation==='create'||this.room.id===id),8000);
+   await this.wait(()=>this.room&&(operation==='create'||operation==='quick'||this.room.id===id),8000);
    progress('Connecting to Host...');
    this.update(pose(),true);
    const relevant=()=>this.related();
@@ -220,7 +220,7 @@ export class MultiplayerNetwork {
   const nearbyGroup=this.room.players.some(p=>p.id!==this.self&&p.location===pose.group);
   if(force||pose.group!==this.presenceGroup||nearbyGroup&&signature!==this.presenceSignature&&now-(this.presenceAt||0)>8000||now-(this.presenceAt||0)>45000){
    const ping=[...this.peers.values()].find(p=>p.ping!==undefined)?.ping;
-   if(this.send({type:'presence',location:pose.group,anchor,foreground:!document.hidden,capability:navigator.hardwareConcurrency||1,ping})){
+   if(this.send({type:'presence',location:pose.group,anchor,foreground:!document.hidden,capability:navigator.hardwareConcurrency||1,device:pose.device,level:pose.level,ping})){
     this.presenceAt=now;this.presenceSignature=signature;this.presenceGroup=pose.group;
    }
   }

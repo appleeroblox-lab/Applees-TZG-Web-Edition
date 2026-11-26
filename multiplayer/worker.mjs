@@ -1,4 +1,4 @@
-export const BACKEND_VERSION = 'multiplayer-v2';
+export const BACKEND_VERSION = 'multiplayer-v3';
 const HOUR=3600000, LEASE=100000, GRACE=45000, MAX_MESSAGE=20000;
 const limits=(value,maximum,fallback)=>Math.max(1,Math.min(maximum,Number.parseInt(value)||fallback));
 const short=(value,max)=>typeof value==='string'&&value.length>0&&value.length<=max;
@@ -44,11 +44,18 @@ export class Lobby {
   let p=room.players.find(p=>p.id===user.id);
   if(!p){
    if(room.players.length>=this.capacity)throw Error('This server is full.');
-   p={id:user.id,name:user.name,joined:now,location:'',anchor:null,foreground:true};
+   p={id:user.id,name:user.name,verified:user.verified===true,joined:now,location:'',anchor:null,foreground:true};
    room.players.push(p);
   }
   Object.assign(p,{connected:true,last:now,until:now+LEASE+GRACE});
   this.elect(room,now);return room;
+ }
+ quickJoin(user,now){
+  this.prune(now);
+  const room=this.rooms.find(r=>r.players.some(p=>p.id===user.id))||
+   this.rooms.filter(r=>r.players.length<this.capacity&&r.players.some(p=>p.connected)).sort((a,b)=>b.players.length-a.players.length||a.created-b.created)[0];
+  if(room)return this.join(user,room.id,now);
+  throw Error(this.rooms.length>=this.maximum?'All server are full now, Multiplayer Unavailable.':'No active multiplayer server found.');
  }
  disconnect(id,now){
   for(const r of this.rooms){
@@ -81,7 +88,7 @@ async function authenticate(token,env){
  const name=String(profile?.display_name||u.user_metadata?.display_name||u.user_metadata?.full_name||u.user_metadata?.name||'Pilot').replace(/[\p{C}]/gu,'').trim().slice(0,40)||'Pilot';
  let expiry=Date.now()+HOUR;
  try{const payload=token.split('.')[1].replaceAll('-','+').replaceAll('_','/');const exp=JSON.parse(atob(payload)).exp;if(Number.isFinite(exp))expiry=Math.min(exp*1000,expiry)}catch{}
- return {id:u.id,name,authUntil:expiry};
+ return {id:u.id,name,verified:profile?.verified===true,authUntil:expiry};
 }
 export default {
  async fetch(request,env){
@@ -127,7 +134,7 @@ export class MultiplayerLobby {
  peers(id){return this.ctx.getWebSockets(id)}
  stateFor(user){
   const l=this.lobby,room=l.rooms.find(r=>r.players.some(p=>p.id===user));
-  return {type:'state',self:user,now:Date.now(),rooms:l.rooms.map(r=>l.summary(r)),maxRooms:l.maximum,signalingEventsToday:this.signalingEventsToday,room:room?{...l.summary(room),hostId:room.host,epoch:room.epoch,created:room.created,players:room.players.filter(p=>p.connected).map(({id,name,location,anchor,foreground})=>({id,name,location,anchor,foreground}))}:null};
+  return {type:'state',self:user,now:Date.now(),rooms:l.rooms.map(r=>l.summary(r)),maxRooms:l.maximum,signalingEventsToday:this.signalingEventsToday,room:room?{...l.summary(room),hostId:room.host,epoch:room.epoch,created:room.created,players:room.players.filter(p=>p.connected).map(({id,name,verified,device,level,location,anchor,foreground})=>({id,name,verified,device,level,location,anchor,foreground}))}:null};
  }
  broadcast(){
   for(const ws of this.ctx.getWebSockets()){
@@ -167,11 +174,12 @@ export class MultiplayerLobby {
   const p=room?.players.find(p=>p.id===a.id);
   try{
    if(m.type==='list'){this.send(ws,this.stateFor(a.id));return}
-   if(m.type==='create'||m.type==='join')this.lobby.join(a,m.id,now,m.type==='create');
+   if(m.type==='quick')this.lobby.quickJoin(a,now);
+   else if(m.type==='create'||m.type==='join')this.lobby.join(a,m.id,now,m.type==='create');
    else if(m.type==='leave')this.lobby.remove(a.id,now);
    else if(m.type==='presence'&&p&&short(m.location,100)&&finiteAnchor(m.anchor)){
     Object.assign(p,{location:m.location,anchor:m.anchor,foreground:m.foreground!==false,last:now,until:now+LEASE+GRACE,connected:true,
-     capability:Math.max(0,Math.min(32,Number(m.capability)||0)),ping:Math.max(0,Math.min(999,Number(m.ping)||999))});
+     device:['PC','Mobile','Tablet'].includes(m.device)?m.device:'Unknown',level:limits(m.level,100,1),capability:Math.max(0,Math.min(32,Number(m.capability)||0)),ping:Math.max(0,Math.min(999,Number(m.ping)||999))});
     this.lobby.elect(room,now);
    }else if(m.type==='signal'&&p&&short(m.to,80)&&m.epoch===room.epoch&&m.to!==a.id){
     const target=room.players.find(row=>row.id===m.to&&row.connected&&row.location===p.location&&p.location);

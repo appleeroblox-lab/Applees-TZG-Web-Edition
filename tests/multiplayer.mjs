@@ -10,6 +10,7 @@ assert.throws(()=>directory.join(users[5],room.id,now),/full/);
 const second=directory.join(users[5],null,now,true);
 for(let i=6;i<10;i++)directory.join(users[i],second.id,now);
 assert.throws(()=>directory.join(users[10],null,now,true),/occupied/);
+assert.throws(()=>directory.quickJoin(users[10],now),/Multiplayer Unavailable/);
 assert.throws(()=>directory.join(users[0],second.id,now),/Leave/);
 room.players[0].location='body:Earth';room.players[1].location='body:Earth';room.players[2].location='space:Sol';
 assert.equal(directory.summary(room).locations['body:Earth'],2);
@@ -19,6 +20,10 @@ assert.equal(room.host,users[1].id);assert.equal(room.epoch,2);
 directory.join(users[0],room.id,now+200);
 assert.equal(room.host,users[1].id);assert.equal(room.expires,now+3600000);
 directory.prune(now+3600001);assert.equal(directory.rooms.length,0);
+assert.throws(()=>directory.quickJoin(users[0],now),/No active multiplayer server/);
+const quickRoom=directory.join(users[0],null,now,true);
+assert.equal(directory.quickJoin(users[1],now).id,quickRoom.id);
+directory.remove(users[0].id,now);directory.remove(users[1].id,now);
 const cleanup=directory.join(users[0],null,now,true);directory.remove(users[0].id,now+200);
 assert(!directory.rooms.includes(cleanup));
 

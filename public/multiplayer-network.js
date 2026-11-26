@@ -38,8 +38,8 @@ export function readPose(value){
 }
 
 export class MultiplayerNetwork {
- constructor({endpoint,token,onChange=()=>{},onError=()=>{},onExit=()=>{}}){
-  Object.assign(this,{endpoint,token,onChange,onError,onExit});
+ constructor({endpoint,token,onChange=()=>{},onError=()=>{},onNotice=()=>{},onExit=()=>{}}){
+  Object.assign(this,{endpoint,token,onChange,onError,onNotice,onExit});
   this.peers=new Map();this.stats={sent:0,received:0,sentBytes:0,receivedBytes:0};
   this.sequence=0;this.status='Offline';this.retryDelay=700;
  }
@@ -75,6 +75,8 @@ export class MultiplayerNetwork {
      let m;try{m=JSON.parse(e.data)}catch{return}
      if(m.type==='state'){if(!this.snapshot)this.directoryPing=Math.round(clock()-sentAt);clearTimeout(timer);this.receiveState(m);resolve()}
      if(m.type==='error'){this.lastError=m.message;this.onError(m.message)}
+     if(m.type==='notice')this.onNotice(m.message);
+     if(m.type==='removed'){this.room=null;this.onExit(m.message)}
      if(m.type==='signal')this.signal(m).catch(()=>{this.lastError='Peer negotiation failed.'});
     };
     socket.onerror=fail;
@@ -106,7 +108,7 @@ export class MultiplayerNetwork {
   try{
    await this.connect();
    if(!this.send({type:operation,id}))throw Error('Multiplayer signaling disconnected.');
-   await this.wait(()=>this.room&&(operation==='create'||this.room.id===id),8000);
+   await this.wait(()=>this.room&&(operation==='create'||operation==='quick'||this.room.id===id),8000);
    progress('Connecting to Host...');
    this.update(pose(),true);
    const relevant=()=>this.related();
@@ -220,7 +222,7 @@ export class MultiplayerNetwork {
   const nearbyGroup=this.room.players.some(p=>p.id!==this.self&&p.location===pose.group);
   if(force||pose.group!==this.presenceGroup||nearbyGroup&&signature!==this.presenceSignature&&now-(this.presenceAt||0)>8000||now-(this.presenceAt||0)>45000){
    const ping=[...this.peers.values()].find(p=>p.ping!==undefined)?.ping;
-   if(this.send({type:'presence',location:pose.group,anchor,foreground:!document.hidden,capability:navigator.hardwareConcurrency||1,ping})){
+   if(this.send({type:'presence',location:pose.group,anchor,foreground:!document.hidden,capability:navigator.hardwareConcurrency||1,device:pose.device,level:pose.level,ping})){
     this.presenceAt=now;this.presenceSignature=signature;this.presenceGroup=pose.group;
    }
   }

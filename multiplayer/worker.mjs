@@ -1,4 +1,4 @@
-export const BACKEND_VERSION = 'multiplayer-v2';
+export const BACKEND_VERSION = 'multiplayer-v4';
 const HOUR=3600000, LEASE=100000, GRACE=45000, MAX_MESSAGE=20000;
 const limits=(value,maximum,fallback)=>Math.max(1,Math.min(maximum,Number.parseInt(value)||fallback));
 const short=(value,max)=>typeof value==='string'&&value.length>0&&value.length<=max;
@@ -40,15 +40,23 @@ export class Lobby {
    this.rooms.push(room);
   }
   if(!room)throw Error('This server has expired or closed.');
+  if(room.kicked?.includes(user.id))throw Error('The host removed you from this server.');
   if(current&&current!==room)throw Error('Leave your current experimental server first.');
   let p=room.players.find(p=>p.id===user.id);
   if(!p){
    if(room.players.length>=this.capacity)throw Error('This server is full.');
-   p={id:user.id,name:user.name,joined:now,location:'',anchor:null,foreground:true};
+   p={id:user.id,name:user.name,username:user.username,avatar:user.avatar,verified:user.verified===true,joined:now,location:'',anchor:null,foreground:true};
    room.players.push(p);
   }
-  Object.assign(p,{connected:true,last:now,until:now+LEASE+GRACE});
+  Object.assign(p,{name:user.name,username:user.username,avatar:user.avatar,verified:user.verified===true,connected:true,last:now,until:now+LEASE+GRACE});
   this.elect(room,now);return room;
+ }
+ quickJoin(user,now){
+  this.prune(now);
+  const room=this.rooms.find(r=>r.players.some(p=>p.id===user.id))||
+   this.rooms.filter(r=>!r.kicked?.includes(user.id)&&r.players.length<this.capacity&&r.players.some(p=>p.connected)).sort((a,b)=>b.players.length-a.players.length||a.created-b.created)[0];
+  if(room)return this.join(user,room.id,now);
+  throw Error(this.rooms.length>=this.maximum?'All server are full now, Multiplayer Unavailable.':'No active multiplayer server found.');
  }
  disconnect(id,now){
   for(const r of this.rooms){
@@ -81,7 +89,7 @@ async function authenticate(token,env){
  const name=String(profile?.display_name||u.user_metadata?.display_name||u.user_metadata?.full_name||u.user_metadata?.name||'Pilot').replace(/[\p{C}]/gu,'').trim().slice(0,40)||'Pilot';
  let expiry=Date.now()+HOUR;
  try{const payload=token.split('.')[1].replaceAll('-','+').replaceAll('_','/');const exp=JSON.parse(atob(payload)).exp;if(Number.isFinite(exp))expiry=Math.min(exp*1000,expiry)}catch{}
- return {id:u.id,name,authUntil:expiry};
+ return {id:u.id,name,verified:profile?.verified===true,username:typeof profile?.username==='string'?profile.username.slice(0,40):'',avatar:typeof profile?.avatar==='string'&&profile.avatar.startsWith('https://')?profile.avatar.slice(0,512):'',authUntil:expiry};
 }
 export default {
  async fetch(request,env){
@@ -110,6 +118,7 @@ export class MultiplayerLobby {
   ctx.blockConcurrencyWhile(async()=>{
    const state=await ctx.storage.get('rooms')||[];
    this.lobby=new Lobby(state,env);
+   ctx.storage.sql.exec('CREATE TABLE IF NOT EXISTS player_reports (room TEXT, reporter TEXT, target TEXT, reason TEXT, created INTEGER, PRIMARY KEY (room, reporter, target))');
    ctx.storage.sql.exec('CREATE TABLE IF NOT EXISTS usage (day INTEGER PRIMARY KEY, count INTEGER NOT NULL)');
   });
  }
@@ -127,7 +136,7 @@ export class MultiplayerLobby {
  peers(id){return this.ctx.getWebSockets(id)}
  stateFor(user){
   const l=this.lobby,room=l.rooms.find(r=>r.players.some(p=>p.id===user));
-  return {type:'state',self:user,now:Date.now(),rooms:l.rooms.map(r=>l.summary(r)),maxRooms:l.maximum,signalingEventsToday:this.signalingEventsToday,room:room?{...l.summary(room),hostId:room.host,epoch:room.epoch,created:room.created,players:room.players.filter(p=>p.connected).map(({id,name,location,anchor,foreground})=>({id,name,location,anchor,foreground}))}:null};
+  return {type:'state',self:user,now:Date.now(),rooms:l.rooms.map(r=>l.summary(r)),maxRooms:l.maximum,signalingEventsToday:this.signalingEventsToday,room:room?{...l.summary(room),hostId:room.host,epoch:room.epoch,created:room.created,players:room.players.filter(p=>p.connected).sort((a,b)=>a.joined-b.joined).map(({id,name,username,avatar,verified,device,level,location,anchor,foreground,joined,ping})=>({id,name,username,avatar,verified,device,level,location,anchor,foreground,joined,ping:ping===999?null:ping}))}:null};
  }
  broadcast(){
   for(const ws of this.ctx.getWebSockets()){
@@ -167,11 +176,29 @@ export class MultiplayerLobby {
   const p=room?.players.find(p=>p.id===a.id);
   try{
    if(m.type==='list'){this.send(ws,this.stateFor(a.id));return}
-   if(m.type==='create'||m.type==='join')this.lobby.join(a,m.id,now,m.type==='create');
+   if(m.type==='quick')this.lobby.quickJoin(a,now);
+   else if(m.type==='create'||m.type==='join')this.lobby.join(a,m.id,now,m.type==='create');
    else if(m.type==='leave')this.lobby.remove(a.id,now);
+   else if(['transfer','kick','report'].includes(m.type)&&p){
+    const target=room.players.find(peer=>peer.id===m.to&&peer.connected&&peer.id!==a.id);
+    if(!target)throw Error('That player is no longer in this server.');
+    if(m.type==='report'){
+     const reason=typeof m.reason==='string'?m.reason.trim():'';
+     if(!short(reason,300))throw Error('Enter a report reason up to 300 characters.');
+     this.ctx.storage.sql.exec('INSERT OR IGNORE INTO player_reports VALUES (?,?,?,?,?)',room.id,a.id,target.id,reason,now);
+     this.send(ws,{type:'notice',message:'Player report submitted.'});return;
+    }
+    if(room.host!==a.id)throw Error('Only the host can manage server players.');
+    if(m.type==='transfer'){room.host=target.id;room.epoch++}
+    else{
+     (room.kicked??=[]).push(target.id);
+     for(const peer of this.peers(target.id))this.send(peer,{type:'removed',message:'The host removed you from this server.'});
+     this.lobby.remove(target.id,now);
+    }
+   }
    else if(m.type==='presence'&&p&&short(m.location,100)&&finiteAnchor(m.anchor)){
     Object.assign(p,{location:m.location,anchor:m.anchor,foreground:m.foreground!==false,last:now,until:now+LEASE+GRACE,connected:true,
-     capability:Math.max(0,Math.min(32,Number(m.capability)||0)),ping:Math.max(0,Math.min(999,Number(m.ping)||999))});
+     device:['PC','Mobile','Tablet'].includes(m.device)?m.device:'Unknown',level:limits(m.level,100,1),capability:Math.max(0,Math.min(32,Number(m.capability)||0)),ping:Math.max(0,Math.min(999,Number(m.ping)||999))});
     this.lobby.elect(room,now);
    }else if(m.type==='signal'&&p&&short(m.to,80)&&m.epoch===room.epoch&&m.to!==a.id){
     const target=room.players.find(row=>row.id===m.to&&row.connected&&row.location===p.location&&p.location);

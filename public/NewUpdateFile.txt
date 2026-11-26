@@ -1,2 +1,5 @@
-v0.0.296
-- Signed-in players can create or join free experimental multiplayer servers from Home.
+v0.0.297
+- Play now opens a choice between SinglePlayer and Multiplayer.
+- Quick Join finds an open server or offers to create a server when there is room.
+- Nearby multiplayer ships and characters display names, device type, level and distance.
+- The Players tab shows the server timer and roster in join order, with player and host actions.

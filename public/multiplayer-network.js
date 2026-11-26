@@ -44,7 +44,7 @@ export class MultiplayerNetwork {
   this.sequence=0;this.status='Offline';this.retryDelay=700;
  }
  async authorize(){
-  if(!this.endpoint||!globalThis.RTCPeerConnection)return false;
+  if(!this.endpoint)return false;
   const jwt=await this.token();
   if(!jwt)return false;
   const response=await fetch(this.endpoint+'/access',{headers:{Authorization:'Bearer '+jwt},signal:AbortSignal.timeout(7000)});
@@ -109,14 +109,10 @@ export class MultiplayerNetwork {
    await this.connect();
    if(!this.send({type:operation,id}))throw Error('Multiplayer signaling disconnected.');
    await this.wait(()=>this.room&&(operation==='create'||operation==='quick'||this.room.id===id),8000);
-   progress('Connecting to Host...');
+   progress('Joined Global Server');
    this.update(pose(),true);
-   const relevant=()=>this.related();
-   await this.wait(()=>{this.update(pose());return relevant().every(p=>this.peers.get(p.id)?.channel?.readyState==='open')},12000,
-    'Direct connection could not be established. This beta uses STUN only.');
-   progress('Synchronizing Players...');
-   await this.wait(()=>{this.update(pose());return relevant().every(p=>this.peers.get(p.id)?.pose)},6500,
-    'A peer connected but did not send initial player state.');
+   // Admission is global. Nearby player links negotiate independently while the world loads.
+
   }catch(error){
    this.send({type:'leave'});this.close();throw error;
   }finally{this.pendingRoom=false}
@@ -145,6 +141,7 @@ export class MultiplayerNetwork {
    distance(p.anchor,local.pos)<=locationRange(local.group)*1.25);
  }
  reconcilePeers(){
+  if(typeof globalThis.RTCPeerConnection!=='function')return;
   const wanted=new Set(this.related().map(p=>p.id));
   for(const id of this.peers.keys())if(!wanted.has(id))this.drop(id);
   for(const id of wanted)if(!this.peers.has(id)&&this.self<id){this.createPeer(id,true).catch(()=>this.drop(id))}
@@ -165,7 +162,7 @@ export class MultiplayerNetwork {
  }
  relay(to,signal,epoch){this.send({type:'signal',to,signal,epoch})}
  async signal({from,epoch,signal}){
-  if(epoch!==this.room?.epoch||!this.related().some(p=>p.id===from))return;
+  if(typeof globalThis.RTCPeerConnection!=='function'||epoch!==this.room?.epoch||!this.related().some(p=>p.id===from))return;
   let peer=this.peers.get(from);
   if(!peer)peer=await this.createPeer(from,false);
   const {pc}=peer;
@@ -213,6 +210,21 @@ export class MultiplayerNetwork {
   this.stats.sent++;this.stats.sentBytes+=packet.length;
   if(now-(peer.pingAt||0)>6000){peer.pingAt=now;channel.send(JSON.stringify({p:'q',t:now}))}
  }
+ measureServerPing(now){
+  if(this.pingProbe||now-(this.pingAt??-Infinity)<45000)return;
+  this.pingAt=now;
+  const socket=this.socket,roomId=this.room.id;
+  const started=clock();
+  this.pingProbe=fetch(this.endpoint+'/health',{mode:'no-cors',cache:'no-store',signal:AbortSignal.timeout(5000)})
+   .then(response=>{
+    if(!response.ok&&response.type!=='opaque')return;
+    if(this.socket!==socket||this.room?.id!==roomId)return;
+    this.serverPing=Math.min(998,Math.max(1,Math.round(clock()-started)));
+    if(this.local)this.update(this.local,true);
+   })
+   .catch(()=>{})
+   .finally(()=>{this.pingProbe=null});
+ }
  update(pose,force=false){
   if(!pose||!this.room)return;
   if(Date.now()+(this.serverOffset||0)>=this.room.expires){this.onExit('This multiplayer server expired.');return}
@@ -221,9 +233,10 @@ export class MultiplayerNetwork {
   const signature=JSON.stringify([pose.group,anchor,!document.hidden]);
   const nearbyGroup=this.room.players.some(p=>p.id!==this.self&&p.location===pose.group);
   if(force||pose.group!==this.presenceGroup||nearbyGroup&&signature!==this.presenceSignature&&now-(this.presenceAt||0)>8000||now-(this.presenceAt||0)>45000){
-   const ping=[...this.peers.values()].find(p=>p.ping!==undefined)?.ping;
+   const ping=this.serverPing??this.directoryPing;
    if(this.send({type:'presence',location:pose.group,anchor,foreground:!document.hidden,capability:navigator.hardwareConcurrency||1,device:pose.device,level:pose.level,ping})){
     this.presenceAt=now;this.presenceSignature=signature;this.presenceGroup=pose.group;
+    this.measureServerPing(now);
    }
   }
   if(this.migrationUntil&&now>=this.migrationUntil){this.migrationUntil=0;this.status=this.socket?'Connected':'Reconnecting…';this.onChange()}
@@ -241,6 +254,7 @@ export class MultiplayerNetwork {
   clearTimeout(this.reconnectTimer);this.reconnectTimer=null;
   this.clearPeers();const socket=this.socket;this.socket=null;socket?.close();
   this.room=null;this.local=null;this.snapshot=null;this.status='Offline';
+  this.serverPing=this.directoryPing=this.pingAt=undefined;
   this.presenceSignature='';this.onChange();
  }
  leave(){this.send({type:'leave'});this.close()}

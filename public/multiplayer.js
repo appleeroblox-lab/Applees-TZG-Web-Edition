@@ -26,7 +26,7 @@ function closePanel(element){
 }
 
 export function installMultiplayer({home,account,bodies,pose,enter,leave,model,notify,ready=()=>{},active=()=>true,lifecycle}){
- const style=node('link');style.rel='stylesheet';style.href='./multiplayer.css?v=301';document.head.append(style);
+ const style=node('link');style.rel='stylesheet';style.href='./multiplayer.css?v=302';document.head.append(style);
  const launch=home.multiplayerButton;
  const menu=node('section',null,'multiplayerPanel');menu.id='multiplayerLobby';menu.hidden=true;menu.setAttribute('role','dialog');menu.setAttribute('aria-label','Multiplayer');
  const header=node('header',null,'dialogHead'),close=node('button','×');close.setAttribute('aria-label','Close multiplayer');
@@ -47,7 +47,7 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
  const loadingActions=node('div',null,'multiplayerLoadingActions');loadingActions.append(create,retry,back);
  loadingTitle.setAttribute('role','status');loading.append(loadingTitle,loadingActions);document.body.append(loading);
  const roster=document.getElementById('settingsPlayersPage'),playersTab=document.getElementById('settingsTab-players');
- const banner=node('header',null,'multiplayerRosterStatus');
+ const banner=node('div',null,'multiplayerRosterStatus');
  const title=node('h3','Players (Multiplayer)');
  const groupIcon=node('img');groupIcon.src='./icons/group.svg';groupIcon.alt='';title.prepend(groupIcon);
  const server=node('span',null,'multiplayerRosterServer'),count=node('span',null,'multiplayerRosterCount'),serverTime=node('span',null,'multiplayerRosterTime');
@@ -92,7 +92,8 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
   const snapshot=network.snapshot,rooms=snapshot?.rooms||[],time=Date.now()+(network.serverOffset||0);
   online.textContent=rooms.reduce((n,r)=>n+r.count,0)+' players online';
   servers.textContent=rooms.length+' / '+(snapshot?.maxRooms||2)+' active servers';
-  status.textContent=network.status+(network.directoryPing===undefined?'':' · '+network.directoryPing+' ms signaling');
+  const latency=network.serverPing??network.directoryPing;
+  status.textContent=network.status+(latency===undefined?'':' · '+latency+' ms signaling');
   quick.disabled=busy||!snapshot;
   if(!menu.hidden){
    list.replaceChildren();
@@ -112,11 +113,11 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
   const {location,signal,ping}=playerCells.get(player.id);
   const place=player.location?locationName(player.location,bodies):'Connecting';
   if(location.textContent!==place)location.textContent=location.title=place;
-  const latency=Number.isFinite(player.ping)?player.ping:null;
-  const label=latency===null?'—':latency+' ms';
+  const latency=player.id===network.self?(network.serverPing??network.directoryPing??player.ping):player.ping;
+  const label=!Number.isFinite(latency)?'—':latency+' ms';
   if(ping.textContent!==label){
-   ping.textContent=label;
-   signal.dataset.strength=latency===null?'unknown':latency<120?'good':latency<200?'fair':'poor';
+   ping.textContent=label;ping.title='Latency to multiplayer server';
+   signal.dataset.strength=!Number.isFinite(latency)?'unknown':latency<120?'good':latency<200?'fair':'poor';
   }
  }
  function renderRoster(time){
@@ -223,7 +224,7 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
      create.hidden=!empty;retry.hidden=empty||full;back.hidden=false;
     }
    };
-   if(action==='join')await home.play(prepare);
+   if(action==='join'||action==='quick')await home.play(prepare);
    else await prepare();
   }finally{busy=false;renderMenu()}
  }

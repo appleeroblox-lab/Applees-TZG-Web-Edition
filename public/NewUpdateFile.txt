@@ -1,5 +1,4 @@
-v0.0.301
-- Updated the multiplayer Players tab with room status, time remaining, player locations, ping, friend requests, reports, and host controls.
-- Spread horizon updates across frames on mobile and corrected on-foot terrain and ladder contact.
-- Added Skip to the studio intro and made game installation prompt only when you choose Install Game.
-- Raised the SinglePlayer and Multiplayer buttons and made their closing slide visible.
+v0.0.302
+- Moved the multiplayer status bar into Settings → Players and added server latency for solo hosts.
+- Global room admission works independently of direct connections to nearby players.
+- Quick Join plays the launch cutscene. Moved Quick Join and the intro Skip button away from nearby controls and screen edges.

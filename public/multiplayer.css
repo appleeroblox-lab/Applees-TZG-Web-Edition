@@ -61,7 +61,7 @@ body.referenceHUD #multiplayerLobby>.dialogHead h2{font-size:18px}
 #multiplayerLobby .multiplayerLobbyBody{min-height:0;overflow:auto;flex:1;padding:8px 12px 12px;touch-action:pan-y;overscroll-behavior:contain}
 #multiplayerLobby .multiplayerToolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
 #multiplayerLobby .multiplayerToolbar button,#multiplayerLobby footer button{flex:none;min-width:max-content;white-space:nowrap}
-#multiplayerLobby footer{display:grid;justify-content:stretch}
+#multiplayerLobby footer{display:grid;justify-content:stretch;margin-top:20px}
 #multiplayerLobby footer button{width:100%}
 .multiplayerLoadingActions{display:grid;width:min(320px,calc(100vw - 48px));gap:8px;margin-inline:auto;text-align:center}
 .multiplayerLoadingActions button{width:100%;box-sizing:border-box}
@@ -71,6 +71,7 @@ body.referenceHUD #multiplayerLobby>.dialogHead h2{font-size:18px}
 #settingsDialog #settingsPlayersPage .multiplayerRosterActions button{min-width:26px;width:2em;padding:0}
 #settingsPlayersPage .multiplayerRosterHeading span:last-child{text-align:right}
 #settingsPlayersPage .multiplayerRosterStatus{
+ position:static;box-sizing:border-box;width:100%;
  display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;
  border:1px solid var(--account-border);border-radius:9px;background:var(--account-field)
 }

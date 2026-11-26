@@ -1,5 +1,5 @@
 import {multiplayerPaint} from './multiplayer-network.js';
-import {installMultiplayer} from './multiplayer.js?v=301';
+import {installMultiplayer} from './multiplayer.js?v=302';
 import {gameLifecycle} from './game-lifecycle.js?v=290';
 import {storedGuestName} from './guest-profile.js';
 import {installRuntimeVersions,installUpdateCheck} from './runtime-versions.js?v=285';
@@ -768,7 +768,7 @@ installUpdateCheck({playerName:()=>playerAccount?.profile?.display_name||(player
 homeExperiment=new HomeExperiment({onPlay:enterGameplayFromHome,character:capsuleCharacter,shipRig,trailTips:shipFlightFX.tips,setTrailColor:color=>{shipFlightFX.setTrailColor(color);warpShipMotion.setColor(color)},account:()=>playerAccount,accountCustomization:cloudAccounts,economy,backgroundBody:()=>surface.active&&surface.body.solid?surface.body:earth,closeMenus:closeGameMenus,applyExposure:applySceneExposure,worldContext:()=>({renderer,effects,globalShadow,bodies,earth,surface,playerOnEarth:surface.active&&surface.body===earth,view:surfaceView,stream:surfaceStream,building,sky:milkyMap,quality:graphics,mobile:touch,compatibility,spaceExposure:explorer.exposure}),clearInputs,notify:toast,openInventory:()=>{inventoryUI.render();open('inventoryDialog')}});
 
 
-if(cloudAccounts&&typeof RTCPeerConnection==='function'){
+if(cloudAccounts){
  const rotation=new T.Quaternion(),axis=new T.Vector3(0,1,0);
  const localPose=()=>{
   const warping=proto?.transit||flight.nav?.kind==='warp';

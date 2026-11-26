@@ -90,3 +90,40 @@ channel.onmessage({data:JSON.stringify([3,'body:Mars',...wire.slice(2)])});asser
 net.self='u0';net.room={players:[{id:'u1',location:'body:Earth',anchor:[15,0,0]},{id:'u2',location:'body:Earth',anchor:[5000,0,0]}]};
 assert.deepEqual(net.related().map(v=>v.id),['u1']);
 console.log('PASS two-peer coordination, capacity 2×5, expiry, empty cleanup, authorization, relay isolation, scoped packets and host migration.');
+
+const remoteOrigin='https://eu-client.example';
+const publicEnv={...env,ALLOWED_ORIGINS:'https://beta.example,'+remoteOrigin};
+let sharedLobby;
+const publicWorker={...publicEnv,LOBBY:{getByName(name){
+ if(!sharedLobby)sharedLobby=name;
+ assert.equal(name,sharedLobby,'both origins use the same global directory');
+ return {fetch:async()=>Response.json({directory:name})};
+}}};
+globalThis.fetch=async url=>String(url).includes('/rpc/')
+ ?Response.json({display_name:'Global pilot'})
+ :Response.json({id:'global-pilot'});
+try{
+ for(const origin of ['https://beta.example',remoteOrigin]){
+  const directorySocket=new Request('https://worker.example/socket',{headers:{Origin:origin,Upgrade:'websocket','Sec-WebSocket-Protocol':'tzg-beta, token'}});
+  assert.equal((await worker.fetch(directorySocket,publicWorker)).status,200);
+ }
+}finally{globalThis.fetch=prod;}
+
+const joining=new MultiplayerNetwork({endpoint:'https://worker.example',token:async()=>''});
+const requests=[];
+const globalRoom={id:'global',expires:Date.now()+60_000,players:[{id:'host',location:'body:Earth',anchor:[0,0,0]}]};
+joining.connect=async()=>{joining.self='guest-of-room';joining.socket={readyState:1}};
+joining.send=packet=>{
+ requests.push(packet);
+ if(packet.type==='quick')joining.room=globalRoom;
+ return true;
+};
+joining.serverPing=79;
+joining.measureServerPing=()=>{};
+Object.defineProperty(globalThis,'document',{configurable:true,value:{hidden:false}});
+try{
+ await joining.enter('quick',null,()=>({group:'body:Earth',pos:[0,0,0]}),()=>{});
+ assert.equal(joining.room,globalRoom,'room admission does not require a nearby peer connection');
+ assert.equal(joining.peers.size,0);
+ assert.equal(requests.find(p=>p.type==='presence').ping,79,'send measured server latency even with no peer data channels');
+}finally{delete globalThis.document}

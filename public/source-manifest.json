@@ -876,9 +876,9 @@
     "paint-geometry.js"
   ],
   "fileVersions": {
-    "multiplayer.css": 297,
-    "multiplayer-network.js": 297,
-    "multiplayer.js": 297,
+    "multiplayer.css": 298,
+    "multiplayer-network.js": 298,
+    "multiplayer.js": 298,
     "game-lifecycle.js": 293,
     "account-pages.js": 244,
     "atlas-3d.js": 223,
@@ -1073,7 +1073,7 @@
     "reentry-plume.js": 182,
     "textures/reentry-shine.png": 128,
     "reference-ui.css": 260,
-    "settings-appearance.js": 209,
+    "settings-appearance.js": 298,
     "settings-appearance.css": 293,
     "ship-camera-modes.js": 171,
     "star-size.js": 170,

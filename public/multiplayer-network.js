@@ -38,8 +38,8 @@ export function readPose(value){
 }
 
 export class MultiplayerNetwork {
- constructor({endpoint,token,onChange=()=>{},onError=()=>{},onExit=()=>{}}){
-  Object.assign(this,{endpoint,token,onChange,onError,onExit});
+ constructor({endpoint,token,onChange=()=>{},onError=()=>{},onNotice=()=>{},onExit=()=>{}}){
+  Object.assign(this,{endpoint,token,onChange,onError,onNotice,onExit});
   this.peers=new Map();this.stats={sent:0,received:0,sentBytes:0,receivedBytes:0};
   this.sequence=0;this.status='Offline';this.retryDelay=700;
  }
@@ -75,6 +75,8 @@ export class MultiplayerNetwork {
      let m;try{m=JSON.parse(e.data)}catch{return}
      if(m.type==='state'){if(!this.snapshot)this.directoryPing=Math.round(clock()-sentAt);clearTimeout(timer);this.receiveState(m);resolve()}
      if(m.type==='error'){this.lastError=m.message;this.onError(m.message)}
+     if(m.type==='notice')this.onNotice(m.message);
+     if(m.type==='removed'){this.room=null;this.onExit(m.message)}
      if(m.type==='signal')this.signal(m).catch(()=>{this.lastError='Peer negotiation failed.'});
     };
     socket.onerror=fail;

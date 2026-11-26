@@ -651,7 +651,7 @@ $('resumeGame').onclick=()=>{paused=false;closeDialog($('settingsDialog'));clock
 installLeaveGame($('leaveGame'),{
  save,
  flush:async()=>{if(playerAccount?.ready&&!playerAccount.guest)await playerAccount.cloud?.flush()},
- onLeave:()=>{closeDialog($('settingsDialog'),true);clearInputs();started=false;paused=false},
+ onLeave:()=>{multiplayer?.disconnect();closeDialog($('settingsDialog'),true);clearInputs();started=false;paused=false},
  notify:message=>{leaveStatus.textContent=message;leaveStatus.hidden=false}
 });
 $('leaveGame').addEventListener('click',()=>{leaveStatus.hidden=true},true);

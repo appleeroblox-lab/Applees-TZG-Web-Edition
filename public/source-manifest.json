@@ -1,5 +1,5 @@
 {
-  "version": 293,
+  "version": 294,
   "files": [
     "game-lifecycle.js",
     "account-auth-flow.js",
@@ -891,7 +891,7 @@
     "debug-commands.js": 156,
     "debug-menu.js": 269,
     "debug-message-logs.js": 96,
-    "debug-moderation.js": 188,
+    "debug-moderation.js": 294,
     "debug-verified.js": 187,
     "device-settings.js": 193,
     "earth-biomes.js": 122,
@@ -916,7 +916,7 @@
     "models.js": 169,
     "night-aurora.js": 168,
     "photo-library.js": 223,
-    "player-account.js": 285,
+    "player-account.js": 294,
     "pool-shape.js": 59,
     "pool-splashes.js": 59,
     "profile-view.js": 223,
@@ -956,7 +956,7 @@
     "world-precipitation.js": 170,
     "models/crafting-center-v96.json": 97,
     "account-gate.js": 242,
-    "boot-loader.js": 293,
+    "boot-loader.js": 294,
     "polish-v96.css": 100,
     "roblox-assets.js": 97,
     "models/base-venus.json": 100,
@@ -1018,9 +1018,9 @@
     "vendor/html2canvas.LICENSE": 102,
     "game-screenshot.js": 200,
     "vendor/html2canvas.min.js": 102,
-    "update-logs.js": 293,
+    "update-logs.js": 294,
     "legacy-ui.js": 102,
-    "update-history.json": 293,
+    "update-history.json": 294,
     "update-logs.css": 103,
     "mobile-notifications.js": 246,
     "free-camera.js": 105,
@@ -1170,12 +1170,12 @@
     "home-world.js": 264,
     "panel-drag.js": 269,
     "paint-gradient.js": 263,
-    "runtime-versions.js": 293,
-    "NewUpdateFile.txt": 293,
+    "runtime-versions.js": 294,
+    "NewUpdateFile.txt": 294,
     "paint-geometry.js": 258,
     "textures/ixion.webp": 286,
     "textures/varuna.webp": 286
   },
-  "publicReleaseVersion": 293,
-  "clientVersion": "v0.0.293"
+  "publicReleaseVersion": 294,
+  "clientVersion": "v0.0.294"
 }

@@ -15,7 +15,7 @@ export function multiplayerDistance(units,space){
  return km.toFixed(1)+' km';
 }
 const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text)el.textContent=text;if(cls)el.className=cls;if(tag==='button')el.type='button';return el};
-const openPanel=element=>{element.hidden=false;menuMotion(element,true,()=>{},'scale')};
+const openPanel=element=>{element.hidden=false;menuMotion(element,true,()=>{},'y')};
 const closingPanels=new WeakMap();
 function closePanel(element){
  if(closingPanels.has(element))return closingPanels.get(element);

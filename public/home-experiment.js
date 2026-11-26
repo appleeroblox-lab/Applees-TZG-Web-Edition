@@ -1012,7 +1012,7 @@ export class HomeExperiment{
   const swap=()=>{
    if(this.playChoiceOpen!==show)return;
    outgoing.hidden=true;incoming.hidden=false;incoming.inert=false;
-   if(!instant)menuMotion(incoming,true,()=>{},show?'scale':'y');
+   if(!instant)menuMotion(incoming,true,()=>{},'y');
   };
   if(instant)swap();else menuMotion(outgoing,false,swap,'y');
  }

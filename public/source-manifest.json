@@ -1,5 +1,5 @@
 {
-  "version": 297,
+  "version": 298,
   "files": [
     "multiplayer.css",
     "multiplayer-network.js",
@@ -876,9 +876,9 @@
     "paint-geometry.js"
   ],
   "fileVersions": {
-    "multiplayer.css": 298,
+    "multiplayer.css": 299,
     "multiplayer-network.js": 298,
-    "multiplayer.js": 298,
+    "multiplayer.js": 299,
     "game-lifecycle.js": 293,
     "account-pages.js": 244,
     "atlas-3d.js": 223,
@@ -912,7 +912,7 @@
     "flight.js": 199,
     "forestry.js": 182,
     "friends-ui.js": 223,
-    "game.js": 297,
+    "game.js": 299,
     "gif-gallery.js": 96,
     "ground-weather.js": 288,
     "identity-ui.js": 91,
@@ -1027,9 +1027,9 @@
     "vendor/html2canvas.LICENSE": 102,
     "game-screenshot.js": 200,
     "vendor/html2canvas.min.js": 102,
-    "update-logs.js": 297,
+    "update-logs.js": 299,
     "legacy-ui.js": 102,
-    "update-history.json": 297,
+    "update-history.json": 299,
     "update-logs.css": 103,
     "mobile-notifications.js": 246,
     "free-camera.js": 105,
@@ -1174,17 +1174,17 @@
     "guest-profile.js": 232,
     "connection-warning.js": 243,
     "social-refresh.css": 236,
-    "home-experiment.js": 297,
-    "home-experiment.css": 297,
+    "home-experiment.js": 299,
+    "home-experiment.css": 299,
     "home-world.js": 264,
     "panel-drag.js": 269,
     "paint-gradient.js": 263,
-    "runtime-versions.js": 297,
-    "NewUpdateFile.txt": 297,
+    "runtime-versions.js": 299,
+    "NewUpdateFile.txt": 299,
     "paint-geometry.js": 258,
     "textures/ixion.webp": 286,
     "textures/varuna.webp": 286
   },
-  "publicReleaseVersion": 297,
-  "clientVersion": "v0.0.297"
+  "publicReleaseVersion": 298,
+  "clientVersion": "v0.0.298"
 }

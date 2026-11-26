@@ -15,7 +15,7 @@ export function multiplayerDistance(units,space){
  return km.toFixed(1)+' km';
 }
 const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text)el.textContent=text;if(cls)el.className=cls;if(tag==='button')el.type='button';return el};
-const openPanel=element=>{element.hidden=false;menuMotion(element,true,()=>{},'scale')};
+const openPanel=element=>{element.hidden=false;menuMotion(element,true,()=>{},'y')};
 const closingPanels=new WeakMap();
 function closePanel(element){
  if(closingPanels.has(element))return closingPanels.get(element);
@@ -26,10 +26,10 @@ function closePanel(element){
 }
 
 export function installMultiplayer({home,account,bodies,pose,enter,leave,model,notify,ready=()=>{},active=()=>true,lifecycle}){
- const style=node('link');style.rel='stylesheet';style.href='./multiplayer.css?v=298';document.head.append(style);
+ const style=node('link');style.rel='stylesheet';style.href='./multiplayer.css?v=299';document.head.append(style);
  const launch=home.multiplayerButton;
- const menu=node('section',null,'multiplayerPanel');menu.hidden=true;menu.setAttribute('role','dialog');menu.setAttribute('aria-label','Multiplayer');
- const header=node('header'),close=node('button','×');close.setAttribute('aria-label','Close multiplayer');
+ const menu=node('section',null,'multiplayerPanel');menu.id='multiplayerLobby';menu.hidden=true;menu.setAttribute('role','dialog');menu.setAttribute('aria-label','Multiplayer');
+ const header=node('header',null,'dialogHead'),close=node('button','×');close.setAttribute('aria-label','Close multiplayer');
  header.append(node('h2','Multiplayer'),close);
  const overview=node('div',null,'multiplayerStats'),online=node('span'),servers=node('span'),status=node('span');
  overview.append(online,servers,status);
@@ -37,15 +37,18 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
  toolbar.append(node('h3','Public Servers'),refresh);
  const list=node('div',null,'multiplayerServers'),quick=node('button','Quick Join'),foot=node('footer'),message=node('p');
  message.setAttribute('role','status');foot.append(quick);
- menu.append(header,node('p','Experimental Beta · Direct connections only.'),overview,toolbar,message,list,foot);
+ const lobbyBody=node('div',null,'multiplayerLobbyBody');
+ lobbyBody.append(node('p','Experimental Beta · Direct connections only.'),overview,toolbar,message,list,foot);
+ menu.append(header,lobbyBody);
  home.root.append(menu);
  const loading=node('div',null,'multiplayerLoading');loading.hidden=true;
  const loadingTitle=node('h2'),retry=node('button','Retry'),back=node('button','Back to Home');
  const create=node('button','Create new server');create.hidden=true;
- loadingTitle.setAttribute('role','status');loading.append(loadingTitle,create,retry,back);document.body.append(loading);
+ const loadingActions=node('div',null,'multiplayerLoadingActions');loadingActions.append(create,retry,back);
+ loadingTitle.setAttribute('role','status');loading.append(loadingTitle,loadingActions);document.body.append(loading);
  const roster=document.getElementById('settingsPlayersPage'),playersTab=document.getElementById('settingsTab-players');
  const banner=node('header',null,'multiplayerRosterHeader'),server=node('span'),serverTime=node('span');
- banner.append(node('h3','Players (Multiplayer)'),server,serverTime);
+ banner.append(node('h3','Players'),serverTime,server);
  const heading=node('div',null,'multiplayerRosterRow multiplayerRosterHeading');
  for(const title of ['#','Player','Location','Ping','Actions'])heading.append(node('span',title));
  const rows=node('div',null,'multiplayerRosterList');
@@ -99,8 +102,8 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
    if(playersTab.getAttribute('aria-selected')==='true')document.getElementById('settingsTab-game')?.click();
    return;
   }
-  server.textContent=room.name+' · '+room.count+' / '+room.capacity+' players';
-  serverTime.textContent=roomTime(room.expires-time)+' remaining';
+  server.textContent=room.count+'/'+room.capacity;
+  serverTime.textContent='Server time · '+roomTime(room.expires-time);
   const ordered=[...room.players].sort((a,b)=>(a.joined||0)-(b.joined||0));
   const signature=JSON.stringify([room.hostId,ordered.map(({id,name,username,avatar,verified,joined,location,ping})=>[id,name,username,avatar,verified,joined,location,ping])]);
   if(signature===rosterSignature||more?.isConnected)return;

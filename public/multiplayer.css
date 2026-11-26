@@ -45,3 +45,27 @@ body.referenceHUD .multiplayerPanel{width:min(290px,calc(100vw - 32px));max-heig
 .multiplayerRosterIdentity>img{width:28px;height:28px;object-fit:cover;border-radius:50%}
 #settingsPlayersPage .multiplayerRosterActions button{min-width:26px;min-height:26px;padding:1px 4px}
 .multiplayerPlayerOptions{position:absolute;z-index:20;display:grid;gap:4px;padding:5px;background:var(--account-surface);border:1px solid var(--account-border);border-radius:8px}
+body.referenceHUD #multiplayerLobby {
+ inset:50% auto auto 50%;transform:translate(-50%,-50%);margin:0;padding:0;
+ width:min(calc(500px * var(--party-menu-scale,.85)),calc(100vw - 24px))!important;
+ height:min(calc(410px * var(--party-menu-scale,.85)),calc(100dvh - 70px))!important;
+ max-height:calc(100dvh - 70px)!important;
+ display:flex;flex-direction:column;overflow:hidden;border:2px solid #d5f3ff;
+ border-radius:14px;background:linear-gradient(140deg,#3297ce,#176e9f);
+}
+body.referenceHUD #multiplayerLobby>.dialogHead {
+ padding:10px 12px;margin:0;flex:none;border-radius:0;
+ background:#216e9c;border-bottom:1px solid #d5f3ff77;
+}
+body.referenceHUD #multiplayerLobby>.dialogHead h2{font-size:18px}
+@media(max-height:550px){body.referenceHUD #multiplayerLobby>.dialogHead{padding:7px 10px}}
+#multiplayerLobby[hidden]{display:none!important}
+#multiplayerLobby .multiplayerLobbyBody{min-height:0;overflow:auto;flex:1;padding:8px 12px 12px;touch-action:pan-y;overscroll-behavior:contain}
+#multiplayerLobby .multiplayerToolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+#multiplayerLobby .multiplayerToolbar button,#multiplayerLobby footer button{flex:none;min-width:max-content;white-space:nowrap}
+#multiplayerLobby footer{display:grid;justify-content:stretch}
+#multiplayerLobby footer button{width:100%}
+.multiplayerLoadingActions{display:grid;width:min(320px,calc(100vw - 48px));gap:8px;margin-inline:auto;text-align:center}
+.multiplayerLoadingActions button{width:100%;box-sizing:border-box}
+#settingsPlayersPage .multiplayerRosterHeader{width:100%;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center}
+#settingsPlayersPage .multiplayerRosterHeader span:last-child{font-variant-numeric:tabular-nums}

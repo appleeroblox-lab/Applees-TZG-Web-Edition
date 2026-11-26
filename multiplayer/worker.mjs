@@ -1,4 +1,4 @@
-export const BACKEND_VERSION = 'multiplayer-v4';
+export const BACKEND_VERSION = 'multiplayer-v5';
 const HOUR=3600000, LEASE=100000, GRACE=45000, MAX_MESSAGE=20000;
 const limits=(value,maximum,fallback)=>Math.max(1,Math.min(maximum,Number.parseInt(value)||fallback));
 const short=(value,max)=>typeof value==='string'&&value.length>0&&value.length<=max;
@@ -36,7 +36,7 @@ export class Lobby {
   if(create){
    if(this.rooms.length>=this.maximum)throw Error('All experimental server slots are occupied.');
    const roomId=crypto.randomUUID();
-   room={id:roomId,name:'Server '+roomId.slice(0,6).toUpperCase(),created:now,expires:now+HOUR,host:user.id,epoch:1,players:[]};
+   room={id:roomId,name:'Global Server '+roomId.slice(0,6).toUpperCase(),scope:'global',created:now,expires:now+HOUR,host:user.id,epoch:1,players:[]};
    this.rooms.push(room);
   }
   if(!room)throw Error('This server has expired or closed.');
@@ -67,7 +67,7 @@ export class Lobby {
  summary(room){
   const counts=Object.create(null);
   for(const p of room.players)if(p.connected&&p.location)counts[p.location]=(counts[p.location]||0)+1;
-  return {id:room.id,name:room.name,host:room.players.find(p=>p.id===room.host)?.name||'Electing host',count:room.players.filter(p=>p.connected).length,full:room.players.length>=this.capacity,capacity:this.capacity,expires:room.expires,locations:counts};
+  return {id:room.id,name:room.name,scope:room.scope||'global',host:room.players.find(p=>p.id===room.host)?.name||'Electing host',count:room.players.filter(p=>p.connected).length,full:room.players.length>=this.capacity,capacity:this.capacity,expires:room.expires,locations:counts};
  }
 }
 

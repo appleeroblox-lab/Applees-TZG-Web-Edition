@@ -1,4 +1,3 @@
-v0.0.298
-- Matched the Multiplayer lobby to the Friends and Parties menu and fixed overlapping buttons.
-- New rooms are listed as Global Servers and still have a player host.
-- Moved the server timer and player count into the Players page header.
+v0.0.299
+- Spread terrain and scenery updates across frames on mobile to reduce stutter when crossing chunks.
+- Improved on-foot animation when blocked by terrain and other obstacles.

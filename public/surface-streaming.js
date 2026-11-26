@@ -74,7 +74,9 @@ export class SurfaceStream{
   }
   if(!body?.solid)return;
   if(this.view.baseGround)this.view.baseGround.visible=false;
+  const oldHorizon=this.distant.mesh?.geometry;
   this.distant.update(body,pos);
+  const horizonRebuilt=oldHorizon&&oldHorizon!==this.distant.mesh?.geometry;
   const groundHeight=surfaceHeight(pos.x,pos.z),height=Math.max(0,pos.y-groundHeight);
   const graphics=graphicsPolicy(quality), budget=sceneryBudget(quality,mobile,compatibility);
   const radius=airlessTerrainRadius(body,this.radius??graphics.terrainRadius,height,this.radius===null&&(mobile||compatibility)?3:4);
@@ -108,11 +110,15 @@ export class SurfaceStream{
    else pending.push({id,x,z,distance:distanceToChunk(pos,x,z,height),visible:this.inView(x,z,0)});
   }
   pending.sort((a,b)=>Number(b.visible)-Number(a.visible)||a.distance-b.distance);
-  for(const {id,x,z} of pending.slice(0,deferOuter?0:mobile||compatibility?2:4)){
+  const constrained=mobile||compatibility;
+  const detailBudget=deferOuter||constrained&&horizonRebuilt?0:constrained?1:4;
+  let builds=0;
+  for(const {id,x,z} of pending.slice(0,detailBudget)){
+   builds++;
    const chunk=this.make(body,x,z);
    this.chunks.set(id,chunk);this.group.add(chunk);active.set(id,chunk);
   }
-  let sceneryUploads=mobile||compatibility?1:3;
+  let sceneryUploads=constrained?(builds||horizonRebuilt?0:1):3;
   for(const [id,chunk] of active){
    const data=chunk.userData;
    const visible=this.inView(data.cx,data.cz,0);
@@ -318,7 +324,11 @@ export class SurfaceStream{
  updateTreeSnow(){const state=this.view.session.earthEnvironment;if(!state||state.elapsed<(this.snowAt||0))return;this.snowAt=state.elapsed+1;for(const g of this.chunks.values()){const mesh=g.userData.scenery,caps=mesh?.userData.snowCaps;if(!g.visible||!mesh?.visible||!caps?.length)continue;const a=mesh.geometry.attributes.color,dt=Math.max(0,state.elapsed-(mesh.userData.snowAt??state.elapsed));mesh.userData.snowAt=state.elapsed;a.clearUpdateRanges();let dirty=false;for(const cap of caps){const local=biomeWeather(state,cap.x,cap.z),amount=cap.cover=Math.max(0,Math.min(1,(cap.cover??state.snowCover??0)+dt*(local.snow*.004-(local.snow>.02?0:.0015))));if(cap.uploaded!==undefined&&Math.abs(amount-cap.uploaded)<.01)continue;cap.uploaded=amount;const color=new T.Color('#315f42').lerp(new T.Color('#f2f7fb'),amount);for(let i=cap.start;i<cap.end;i++)a.setXYZ(i,color.r,color.g,color.b);a.addUpdateRange(cap.start*3,(cap.end-cap.start)*3);dirty=true}if(dirty)a.needsUpdate=true}}
 
  decorate(body,cx,cz,count,{kind='all'}={}){const positions=[],normals=[],colors=[],boxes=[],seed=Math.sin(cx*127.1+cz*311.7+body.id.length*43)*43758.5453,random=i=>{const n=Math.sin(seed+i*78.233)*43758.5453;return n-Math.floor(n)},v=new T.Vector3(),n=new T.Vector3(),q=new T.Quaternion();let trees=0,alienTrees=0;
- const part=(name,x,y,z,color,scale=new T.Vector3(1,1,1),angle=0)=>{const geo=templates[name],a=geo.attributes.position,b=geo.attributes.normal,c=new T.Color(color),translation=new T.Vector3(x,y,z),min=new T.Vector3(Infinity,Infinity,Infinity),max=new T.Vector3(-Infinity,-Infinity,-Infinity);q.setFromAxisAngle(new T.Vector3(0,0,1),angle);for(let i=0;i<a.count;i++){v.fromBufferAttribute(a,i).multiply(scale).applyQuaternion(q).add(translation);if(kind!=='collision'){n.fromBufferAttribute(b,i).divide(scale).applyQuaternion(q).normalize();positions.push(v.x,v.y,v.z);normals.push(n.x,n.y,n.z);colors.push(c.r,c.g,c.b)}min.min(v);max.max(v)}boxes.push(new T.Box3(min,max))};
+ const part=(name,x,y,z,color,scale=new T.Vector3(1,1,1),angle=0)=>{const geo=templates[name],a=geo.attributes.position,b=geo.attributes.normal,c=new T.Color(color),translation=new T.Vector3(x,y,z),min=new T.Vector3(Infinity,Infinity,Infinity),max=new T.Vector3(-Infinity,-Infinity,-Infinity);if(kind==='collision'&&!angle){
+  if(!geo.boundingBox)geo.computeBoundingBox();
+  boxes.push(new T.Box3(min.copy(geo.boundingBox.min).multiply(scale).add(translation),max.copy(geo.boundingBox.max).multiply(scale).add(translation)));
+  return;
+ }q.setFromAxisAngle(new T.Vector3(0,0,1),angle);for(let i=0;i<a.count;i++){v.fromBufferAttribute(a,i).multiply(scale).applyQuaternion(q).add(translation);if(kind!=='collision'){n.fromBufferAttribute(b,i).divide(scale).applyQuaternion(q).normalize();positions.push(v.x,v.y,v.z);normals.push(n.x,n.y,n.z);colors.push(c.r,c.g,c.b)}min.min(v);max.max(v)}boxes.push(new T.Box3(min,max))};
  const treeNodes=[],snowCaps=[],segments=[];for(const p of sceneryPoints(body,cx,cz,count)){const {x,y,z,size,i}=p;const start=positions.length/3;const isTree=p.alien||p.tree;if(kind==='trees'&&!isTree||kind==='props'&&isTree)continue;if(p.alien){treeNodes.push(p);if(this.view.session.prospecting?.economy.depleted.has(p.id))continue;trees++;const tint=i%2?'#9f74b5':'#61a6a2';part('trunk',x,y+2.2,z,'#615475',new T.Vector3(.65,1.1,.65));part('broad',x,y+4.3,z,tint,new T.Vector3(1.15,.28,1.15));part('broad',x+.8,y+3.3,z,'#86c3ac',new T.Vector3(.5,.22,.5));alienTrees++}else if(p.tree){treeNodes.push(p);if(this.view.session.prospecting?.economy.depleted.has(p.id))continue;const leaf=['oak','birch'].includes(p.vegetation)?'broad':'leaves';part('trunk',x,y+2,z,p.vegetation==='birch'?'#c8c7b0':'#765039');part(leaf,x,y+(p.vegetation==='spruce'?4.5:5),z,p.vegetation==='oak'?'#537c38':i%2?'#3e7549':'#315f42',p.vegetation==='spruce'?new T.Vector3(.8,.8,.8):new T.Vector3(1,1,1));if(biomeWeather({snow:1},x,z).snow>0){const start=positions.length/3,scale=p.vegetation==='spruce'?.8:1;part(leaf,x,y+(p.vegetation==='spruce'?4.5:5)+.04,z,'#315f42',new T.Vector3(scale*1.015,scale*1.006,scale*1.015));snowCaps.push({start,end:positions.length/3,x,z})}trees++}else if(p.vegetation==='cactus'&&i%3!==0){part('trunk',x,y+1.7,z,'#4d8452',new T.Vector3(1.8,.85,1.8));part('trunk',x+.65,y+2,z,'#578c52',new T.Vector3(1.1,.32,1.1));part('trunk',x+.35,y+1.55,z,'#578c52',new T.Vector3(1,.2,1),-Math.PI/2)}else part('rock',x,y+size*.35,z,terrainColor(body,x,z),new T.Vector3(size,size*.65,size));if(kind!=='trees'&&i===count-1&&['Moon','Mars'].includes(body.name)){part('pole',x,y+1.5,z,'#b4c5d2');part('panel',x,y+2,z,'#244d85',new T.Vector3(1,1,1),.3)}if(kind==='trees'||kind==='props')segments.push({tree:p,start,end:positions.length/3})}
  // Grass shares the single scenery draw call and has no collisions or per-frame animation.
  let grassBlades=0;if((kind==='all'||kind==='props')&&this.decorations&&body.name==='Earth')for(let i=0;i<this.grassCount;i++){const side=Math.ceil(Math.sqrt(this.grassCount)),x=cx*96+((i%side+random(i*5+500))/side-.5)*94,z=cz*96+((Math.floor(i/side)+random(i*5+501))/side-.5)*94;if(earthBiome(x,z).sound!=='grass'||Math.hypot(x,z)<PAD_RADIUS+8||onSurfaceRoad(body,x,z,3)||settlementContains(body,x,z,3)||Math.abs(x)<40&&z<0&&z>-60)continue;const y=surfaceHeight(x,z),start=positions.length/3;for(let blade=0;blade<3;blade++){const angle=random(i*5+502)*6.28+blade*2.09,dx=Math.cos(angle)*.24,dz=Math.sin(angle)*.24,height=.28+random(i*5+503)*.32,c=new T.Color(blade%2?'#7e9a50':'#567638');positions.push(x-dx,y,z-dz,x+dx,y,z+dz,x+dx*.4,y+height,z+dz*.4);for(let v=0;v<3;v++){normals.push(0,1,0);colors.push(c.r,c.g,c.b)}grassBlades++;}if(kind==='props')segments.push({tree:{x,y,z,size:.6,grass:true},start,end:positions.length/3});}

@@ -1,5 +1,5 @@
 import {hasAtmosphere} from './atmospheric-flight.js?v=168';
-import {DistantTerrain} from './distant-terrain.js?v=170';
+import {DistantTerrain} from './distant-terrain.js?v=301';
 import {addTerrainDetail,terrainMaterial,setTerrainDetailEnabled} from './terrain-detail.js?v=122';
 import {earthBiome} from './earth-biomes.js?v=122';
 import {onSurfaceRoad} from './surface-roads.js?v=170';
@@ -75,7 +75,7 @@ export class SurfaceStream{
   if(!body?.solid)return;
   if(this.view.baseGround)this.view.baseGround.visible=false;
   const oldHorizon=this.distant.mesh?.geometry;
-  this.distant.update(body,pos);
+  this.distant.update(body,pos,{incremental:mobile||compatibility});
   const horizonRebuilt=oldHorizon&&oldHorizon!==this.distant.mesh?.geometry;
   const groundHeight=surfaceHeight(pos.x,pos.z),height=Math.max(0,pos.y-groundHeight);
   const graphics=graphicsPolicy(quality), budget=sceneryBudget(quality,mobile,compatibility);
@@ -221,13 +221,19 @@ export class SurfaceStream{
   if(!mesh)return;
   const {geometry}=mesh,{segments}=mesh.userData,index=geometry.index,blend=geometry.attributes.lodBlend;
   let write=0,indexChanged=false,blendChanged=false;
+  const drawFrame=mesh.userData.drawFrame=(mesh.userData.drawFrame||0)+1;
   for(const segment of segments){
    const opacity=opacityFor(segment);
    if(opacity<=0)continue;
-   for(let vertex=segment.start;vertex<segment.end;vertex++){
-    if(index.array[write]!==vertex){index.array[write]=vertex;indexChanged=true}
-    write++;
-   }
+   const length=segment.end-segment.start;
+   if(segment.indexOffset!==write||segment.drawFrame!==drawFrame-1){
+    for(let vertex=segment.start;vertex<segment.end;vertex++){
+     if(index.array[write]!==vertex){index.array[write]=vertex;indexChanged=true}
+     write++;
+    }
+    segment.indexOffset=write-length;
+   }else write+=length;
+   segment.drawFrame=drawFrame;
    if(segment.opacity!==opacity){
     blend.array.fill(opacity,segment.start,segment.end);
     segment.opacity=opacity;blendChanged=true;

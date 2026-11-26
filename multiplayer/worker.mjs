@@ -1,4 +1,4 @@
-export const BACKEND_VERSION = 'multiplayer-v1';
+export const BACKEND_VERSION = 'multiplayer-v2';
 const HOUR=3600000, LEASE=100000, GRACE=45000, MAX_MESSAGE=20000;
 const limits=(value,maximum,fallback)=>Math.max(1,Math.min(maximum,Number.parseInt(value)||fallback));
 const short=(value,max)=>typeof value==='string'&&value.length>0&&value.length<=max;
@@ -70,9 +70,7 @@ async function authenticate(token,env){
  const response=await fetch(new URL('/auth/v1/user',env.SUPABASE_URL),{headers:{Authorization:'Bearer '+token,apikey:env.SUPABASE_PUBLIC_KEY},signal:AbortSignal.timeout(6000)});
  if(!response.ok)return null;
  const u=await response.json();
- const trusted=u.app_metadata||{};
- const owners=(env.BETA_EMAILS||'').toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
- if(!short(u.id,80)||!(trusted.tzg_multiplayer===true||u.email_confirmed_at&&owners.includes(u.email?.toLowerCase())))return null;
+ if(!short(u.id,80)||u.is_anonymous===true)return null;
  let profile;
  try{
   const result=await fetch(new URL('/rest/v1/rpc/tzg_player_profile',env.SUPABASE_URL),{

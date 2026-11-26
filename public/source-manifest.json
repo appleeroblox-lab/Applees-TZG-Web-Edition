@@ -1,5 +1,5 @@
 {
-  "version": 295,
+  "version": 296,
   "files": [
     "multiplayer.css",
     "multiplayer-network.js",
@@ -1185,6 +1185,6 @@
     "textures/ixion.webp": 286,
     "textures/varuna.webp": 286
   },
-  "publicReleaseVersion": 295,
-  "clientVersion": "v0.0.295"
+  "publicReleaseVersion": 296,
+  "clientVersion": "v0.0.296"
 }

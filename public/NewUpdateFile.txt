@@ -1,3 +1,2 @@
-v0.0.295
-- Players warned while offline now see the warning before gameplay when they sign in or return with a remembered session.
-- The rules switch and its label stay hidden while a moderation notice is open.
+v0.0.296
+- Signed-in players can create or join free experimental multiplayer servers from Home.

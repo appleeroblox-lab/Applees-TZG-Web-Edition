@@ -1,7 +1,7 @@
 .multiplayerLoading {position:fixed;inset:0;z-index:2147483646;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:12px;padding:24px;text-align:center;background:#000;color:#fff;transition:opacity .35s}
 .multiplayerLoading button{color:#f5fbff;background:#175787;border:1px solid #478dbb;border-radius:9px;padding:7px 12px}
 .multiplayerLoading h2 {flex:0 0 100%}.multiplayerLoading.revealed {opacity:0;pointer-events:none}
-.multiplayerNameplate{position:fixed;z-index:8;transform:translate(-50%,-100%);display:grid;text-align:center;gap:2px;white-space:nowrap;pointer-events:none;color:#fff;font:12px 'Fredoka One',sans-serif;text-shadow:0 1px 3px #000,0 0 3px #000}
+.multiplayerNameplate{position:fixed;z-index:0;transform:translate(-50%,-100%);display:grid;text-align:center;gap:2px;white-space:nowrap;pointer-events:none;color:#fff;font:12px 'Fredoka One',sans-serif;text-shadow:0 1px 3px #000,0 0 3px #000}
 .multiplayerNameplate span{font-size:10px}
 .multiplayerNameplate .verifiedBadge img{width:12px;height:12px;vertical-align:middle}
 .multiplayerRosterList{display:grid;gap:5px}

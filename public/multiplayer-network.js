@@ -30,11 +30,21 @@ export function readPose(value){
  if(!Number.isSafeInteger(sequence)||sequence<0||typeof group!=='string'||group.length>100||
  !finite(pos,3,1e13)||!finite(q,4,1.01)||Math.abs(Math.hypot(...q)-1)>.04||
  !['ship','foot'].includes(mode)||!states.includes(state)||!paint||typeof paint!=='object'||Array.isArray(paint))return null;
+ const fx=paint.warpFx;
+ let warpFx=null;
+ if(mode==='ship'&&state==='warp'&&group.startsWith('space:')&&fx&&
+  Number.isFinite(fx.elapsed)&&fx.elapsed>=0&&fx.elapsed<=60){
+  if(fx.kind==='portal'&&fx.elapsed<3)warpFx={kind:'portal',elapsed:fx.elapsed};
+  if(fx.kind==='local'&&finite(fx.start,3,1e13)&&finite(fx.end,3,1e13)&&
+   Number.isFinite(fx.duration)&&fx.duration>1&&fx.duration<=60){
+   warpFx={kind:'local',elapsed:fx.elapsed,start:fx.start,end:fx.end,duration:fx.duration};
+  }
+ }
  let parkedShip;
  if(mode==='foot'&&parked&&finite(parked[0],3,1e13)&&finite(parked[1],4,1.01)&&Math.abs(Math.hypot(...parked[1])-1)<=.04&&distance(parked[0],pos)<1000){
   parkedShip={mode:'ship',pos:parked[0],q:parked[1],paint:multiplayerPaint('ship',parked[2]),group,state:'idle'};
  }
- return {sequence,group,pos,q,mode,state,engine:typeof paint.engine==='boolean'?paint.engine:undefined,paint:multiplayerPaint(mode,paint),parkedShip};
+ return {sequence,group,pos,q,mode,state,engine:typeof paint.engine==='boolean'?paint.engine:undefined,paint:multiplayerPaint(mode,paint),parkedShip,warpFx};
 }
 
 // Keep a small receive-time buffer to bridge irregular packet arrivals.
@@ -255,12 +265,12 @@ export class MultiplayerNetwork {
    return true;
  }
  poseValues(pose){
-  const values=[pose.group,pose.pos.map(n=>Math.round(n*100)/100),pose.q.map(n=>Math.round(n*10000)/10000),pose.mode,pose.state,pose.mode==='ship'&&typeof pose.engine==='boolean'?{...pose.paint,engine:pose.engine}:pose.paint];
+  const values=[pose.group,pose.pos.map(n=>Math.round(n*100)/100),pose.q.map(n=>Math.round(n*10000)/10000),pose.mode,pose.state,pose.mode==='ship'?{...pose.paint,engine:pose.engine,warpFx:pose.warpFx}:pose.paint];
   if(pose.parked)values.push(pose.parked);
   return values;
  }
- transmitRelay(pose,now){
-  if(!this.snapshot?.poseRelay||now-(this.relayAt??-Infinity)<1000)return;
+ transmitRelay(pose,now,warpChanged){
+  if(!this.snapshot?.poseRelay||!warpChanged&&now-(this.relayAt??-Infinity)<1000)return;
   this.relayAt=now;
   const to=this.related().filter(p=>this.peers.get(p.id)?.channel?.readyState!=='open').map(p=>p.id);
   if(!to.length||this.socket?.bufferedAmount>8192)return;
@@ -307,11 +317,12 @@ export class MultiplayerNetwork {
  update(pose,force=false){
   if(!pose||!this.room||this.roomRecovery)return;
   if(Date.now()+(this.serverOffset||0)>=this.room.expires){this.onExit('This multiplayer server expired.');return}
+  const warpChanged=this.local?.warpFx?.kind!==pose.warpFx?.kind;
   this.local=pose;
   const now=clock(),cell=locationRange(pose.group)/5,anchor=pose.pos.map(n=>Math.round(n/cell)*cell);
   const signature=JSON.stringify([pose.group,anchor,!document.hidden]);
   const nearbyGroup=this.room.players.some(p=>p.id!==this.self&&p.location===pose.group);
-  if(force||pose.group!==this.presenceGroup||nearbyGroup&&signature!==this.presenceSignature&&now-(this.presenceAt||0)>8000||now-(this.presenceAt||0)>45000){
+  if(force||warpChanged||pose.group!==this.presenceGroup||nearbyGroup&&signature!==this.presenceSignature&&now-(this.presenceAt||0)>8000||now-(this.presenceAt||0)>45000){
    const ping=this.serverPing??this.directoryPing;
    if(this.send({type:'presence',location:pose.group,anchor,foreground:!document.hidden,capability:navigator.hardwareConcurrency||1,device:pose.device,level:pose.level,ping})){
     this.presenceAt=now;this.presenceSignature=signature;this.presenceGroup=pose.group;
@@ -324,8 +335,8 @@ export class MultiplayerNetwork {
    for(const [id,peer] of this.peers)if(peer.channel?.readyState!=='open'&&now-peer.created>8000)this.drop(id);
    this.reconcilePeers();
   }
-  for(const peer of this.peers.values())this.transmit(peer,pose,force);
-  this.transmitRelay(pose,now);
+  for(const peer of this.peers.values())this.transmit(peer,pose,force||warpChanged);
+  this.transmitRelay(pose,now,warpChanged);
  }
  drop(id){const peer=this.peers.get(id);if(peer)this.peers.delete(id);peer?.pc.close()}
  clearPeers(){this.relayPeers.clear();this.relaySignature='';for(const id of this.peers.keys())this.drop(id)}

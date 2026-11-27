@@ -360,21 +360,52 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
    }
   }
  }
- function removeGhost(ghost){ghost.removeFromParent();ghost.userData.dispose?.()}
+ function removeGhost(ghost){
+  const portal=ghost.userData.portal;
+  if(portal){portal.removeFromParent();for(const mesh of portal.children){mesh.geometry.dispose();mesh.material.dispose()}}
+  ghost.removeFromParent();ghost.userData.dispose?.()}
  function clearGhosts(){for(const ghost of ghosts.values())removeGhost(ghost);ghosts.clear();for(const plate of nameplates.values())plate.remove();nameplates.clear()}
  const projected=new T.Vector3(),marker=new T.Vector3(),cameraPoint=new T.Vector3(),targetRotation=new T.Quaternion();
- let hudRects=[],hudCheckedAt=-Infinity;
- const hudSelector='#gameTop button,#gameTop #brand,#flightPad,#flightRight,#vitals,#flightGauge,#shipPanel,#surfacePanel,#touchControls button,#chatPanel,#wallet,#bodyReadout,#minimap,#minimapOpen,#utilityMenu,#hudDock,#targetPanel,#missionPanel';
- function overlapsHud(plate,x,y,now){
-  if(now-hudCheckedAt>150){
-   hudCheckedAt=now;
-   hudRects=[...document.querySelectorAll(hudSelector)].filter(element=>{
-    const style=getComputedStyle(element);
-    return style.visibility==='visible'&&style.display!=='none'&&style.opacity!=='0';
-   }).map(element=>element.getBoundingClientRect()).filter(rect=>rect.width&&rect.height);
+ const warpEnd=new T.Vector3(),portalCenter=new T.Vector3(),portalForward=new T.Vector3();
+ function makePortal(){
+  const portal=new T.Group();
+  const core=new T.Mesh(new T.SphereGeometry(1,24,16),new T.MeshBasicMaterial({color:0x010005,fog:false}));
+  const rim=new T.Mesh(new T.RingGeometry(.95,1.12,48),new T.MeshBasicMaterial({color:0xa47cff,side:T.DoubleSide,fog:false,toneMapped:false}));
+  portal.add(core,rim);
+  return portal;
+ }
+ function animateWarp(ghost,packet,age,camera){
+  const fx=packet.warpFx;
+  const portal=ghost.userData.portal;
+  if(portal)portal.visible=false;
+  ghost.visible=true;
+  if(!fx)return;
+  const elapsed=fx.elapsed+age;
+  if(fx.kind==='local'){
+   const fraction=T.MathUtils.clamp((elapsed-1)/(fx.duration-1),0,1);
+   warpEnd.fromArray(fx.end);
+   ghost.position.addScaledVector(warpEnd.sub(marker.fromArray(fx.start)),fraction*fraction*(3-2*fraction));
+   const facing=T.MathUtils.smoothstep(elapsed,0,1);
+   if(warpEnd.lengthSq()>.001){
+    portalForward.set(0,0,-1);
+    targetRotation.setFromUnitVectors(portalForward,warpEnd.normalize());
+    ghost.quaternion.slerp(targetRotation,facing);
+   }
+   return;
   }
-  const half=plate.offsetWidth/2,height=plate.offsetHeight;
-  return hudRects.some(rect=>x+half>rect.left&&x-half<rect.right&&y>rect.top&&y-height<rect.bottom);
+  const effect=portal??makePortal();
+  if(!portal){ghost.userData.portal=effect;ghost.parent.add(effect)}
+  if(effect.parent!==ghost.parent)ghost.parent.add(effect);
+  const radius=12,progress=T.MathUtils.smoothstep(elapsed,.45,1.85);
+  portalForward.set(0,0,-1).applyQuaternion(ghost.quaternion);
+  portalCenter.copy(ghost.position).addScaledVector(portalForward,85);
+  effect.position.copy(portalCenter);
+  if(camera)effect.quaternion.copy(camera.quaternion);
+  const size=T.MathUtils.smoothstep(elapsed,0,.6)*(1-T.MathUtils.smoothstep(elapsed,1.85,2.75));
+  effect.scale.setScalar(radius*size);
+  effect.visible=size>0;
+  ghost.position.lerp(portalCenter,progress);
+  ghost.visible=elapsed<1.85;
  }
  function drawNameplate(player,position,separation,camera,now,approximate,inSpace){
   let plate=nameplates.get(player.id);
@@ -402,14 +433,6 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
   const half=plate.offsetWidth/2,height=plate.offsetHeight;
   x=T.MathUtils.clamp((x*.5+.5)*innerWidth,half+10,innerWidth-half-10);
   y=T.MathUtils.clamp((.5-y*.5)*innerHeight,height+10,innerHeight-10);
-  if(offscreen&&overlapsHud(plate,x,y,now)){
-   const margin=height+10;
-   for(const offset of [-margin,margin,-2*margin,2*margin]){
-    const candidate=T.MathUtils.clamp(y+offset,height+10,innerHeight-10);
-    if(!overlapsHud(plate,x,candidate,now)){y=candidate;break}
-   }
-  }
-  plate.style.visibility=overlapsHud(plate,x,y,now)?'hidden':'visible';
   plate.style.left=x+'px';plate.style.top=y+'px';
  }
  function update(dt,scene,origin,camera){
@@ -417,7 +440,7 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
   const local=pose();network.update(local);
   if(!scene||!active()){clearGhosts();return}
   const now=performance.now(),keep=new Set(),visiblePlayers=new Set(),peers=network.remotePeers();
-  const draw=(key,packet,from=packet,alpha=1)=>{
+  const draw=(key,packet,from=packet,alpha=1,age=0)=>{
    keep.add(key);
    let ghost=ghosts.get(key);
    if(!ghost||ghost.userData.mode!==packet.mode){
@@ -429,6 +452,11 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
    if(alpha!==0)ghost.position.lerp(projected.fromArray(packet.pos),alpha);
    if(origin)ghost.position.sub(origin);
    ghost.quaternion.fromArray(from.q).slerp(targetRotation.fromArray(packet.q),alpha);
+   if(packet.warpFx?.kind==='local'){
+    ghost.position.fromArray(packet.warpFx.start);
+    if(origin)ghost.position.sub(origin);
+   }
+   animateWarp(ghost,packet,age,camera);
    ghost.userData.animate?.(packet,now);
    return ghost;
   };
@@ -439,11 +467,18 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
    let separation;
    if(nearby){
     const {from,to,alpha}=remotePoseFrame(peer,now);
-    const ghost=draw(player.id,to,from,alpha);
+    const ghost=packet.warpFx||from.warpFx||to.warpFx
+     ?draw(player.id,packet,packet,1,Math.max(0,(now-peer.seen)/1000))
+     :draw(player.id,to,from,alpha);
+    // Predicted warp motion can take the ship out of model range between packets.
+    marker.copy(ghost.position);
+    if(origin)marker.add(origin);
+    separation=distance(marker.toArray(),local.pos);
+    if(separation>locationRange(local.group))ghost.visible=false;
     if(to.parkedShip&&distance(to.parkedShip.pos,local.pos)<=locationRange(local.group))draw(player.id+':ship',to.parkedShip,from.parkedShip??to.parkedShip,alpha);
     marker.copy(ghost.position);
     if(camera)marker.addScaledVector(camera.up,to.mode==='foot'?2.1:7);
-    separation=distance(to.pos,local.pos);
+
    }else if(player.anchor){
     marker.fromArray(player.anchor);
     if(origin)marker.sub(origin);

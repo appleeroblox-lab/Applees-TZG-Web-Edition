@@ -1,5 +1,5 @@
 import {multiplayerPaint} from './multiplayer-network.js';
-import {installMultiplayer} from './multiplayer.js?v=307';
+import {installMultiplayer} from './multiplayer.js?v=308';
 import {gameLifecycle} from './game-lifecycle.js?v=290';
 import {storedGuestName} from './guest-profile.js';
 import {installRuntimeVersions,installUpdateCheck} from './runtime-versions.js?v=285';
@@ -771,23 +771,32 @@ homeExperiment=new HomeExperiment({onPlay:enterGameplayFromHome,character:capsul
 if(cloudAccounts){
  const rotation=new T.Quaternion(),axis=new T.Vector3(0,1,0);
  const localPose=()=>{
-  const warping=proto?.transit||flight.nav?.kind==='warp';
-  const group=warping?'warp:'+flight.system:surface.active?'body:'+surface.body.id:'space:'+flight.system;
+  const temporal=proto?.transit;
+  const nav=flight.nav?.kind==='warp'?flight.nav:null;
+  const warping=temporal||nav;
+  const interstellar=nav&&nav.sourceSystem!==nav.b.system;
+  const departure=temporal?.elapsed??(interstellar?nav.elapsed:Infinity);
+  const portal=departure<3;
+  const inTunnel=warping&&!portal&&(temporal||interstellar);
+  const group=inTunnel?'warp:'+flight.system:surface.active?'body:'+surface.body.id:'space:'+flight.system;
+  const warpFx=portal?{kind:'portal',elapsed:departure}:nav&&!interstellar?{
+   kind:'local',elapsed:nav.elapsed,start:nav.start.toArray(),end:nav.end.toArray(),duration:nav.duration
+  }:undefined;
   const onFoot=surface.active&&crew.onFoot;
   const airborne=onFoot&&crew.pos.y>crew.ground()+.06;
   const state=warping?'warp':onFoot?airborne?(crew.velocityY>0?'jump':'fall'):crew.moving?(crew.running||flight.input.boost?'run':'walk'):'idle':
    surface.active&&surface.phase==='descending'?'land':surface.active&&surface.launchElapsed!==null&&surface.phase==='flying'?'takeoff':
    shipBoost.active?'boost':surface.active&&surface.onGround?'idle':'fly';
   const engine=!onFoot&&(!!warping||(surface.active?surface.launched&&surface.vel.lengthSq()>.0001:flight.vel.lengthSq()>.000001));
-  const position=onFoot?crew.pos:surface.active?surface.pos:flight.pos;
-  const q=onFoot?rotation.setFromAxisAngle(axis,crew.facingYaw??crew.yaw??0):flight.q;
+  const position=onFoot?crew.pos:surface.active?surface.pos:portal&&interstellar?nav.start:flight.pos;
+  const q=onFoot?rotation.setFromAxisAngle(axis,crew.facingYaw??crew.yaw??0):portal&&interstellar?nav.transitQ:flight.q;
   const mode=onFoot?'foot':'ship';
   const paint=multiplayerPaint(mode,{base:homeExperiment.color,face:homeExperiment.face,parts:onFoot?homeExperiment.characterPaint:homeExperiment.shipPaint});
   const parked=onFoot?[surface.pos.toArray(),flight.q.toArray(),multiplayerPaint('ship',{parts:homeExperiment.shipPaint})]:null;
   const mobileAgent=/Android|iPhone|iPad/i.test(navigator.userAgent);
   const tablet=/iPad/i.test(navigator.userAgent)||((mobileAgent||touch)&&Math.min(screen.width,screen.height)>=600);
   const device=tablet?'Tablet':mobileAgent||touch?'Mobile':'PC';
-  return {group,pos:position.toArray(),q:q.toArray(),mode,state,engine,paint,parked,device,level:globalThis.tzgPlayerProgress?.level||1};
+  return {group,pos:position.toArray(),q:q.toArray(),mode,state,engine,paint,parked,warpFx,device,level:globalThis.tzgPlayerProgress?.level||1};
  };
  multiplayer=installMultiplayer({home:homeExperiment,account:()=>playerAccount,bodies,pose:localPose,notify:toast,lifecycle,closeSettings:()=>closeDialog($('settingsDialog'),true),
   active:()=>!experimental?.isolated&&!proto?.transit,
@@ -811,7 +820,7 @@ if(cloudAccounts){
     const key=JSON.stringify(packet.paint.parts);if(key!==paintSignature){paintSignature=key;lastPaint=packet.paint.parts;applyShipPaint(rig,lastPaint)}
     rig.model.rotation.x=packet.group.startsWith('body:')&&packet.state==='idle'?Math.PI/2:0;
     const thrust=packet.engine??['fly','boost','takeoff','warp'].includes(packet.state);
-    for(const flame of rig.flames){flame.visible=thrust;flame.scale.z=(packet.state==='boost'?1.9:1)+Math.sin(now*.018)*.14}
+    for(const flame of rig.flames){flame.visible=thrust;flame.scale.z=(packet.state==='warp'?3.8:packet.state==='boost'?1.9:1)+Math.sin(now*.018)*.14}
    };
    return rig.ship;
   }

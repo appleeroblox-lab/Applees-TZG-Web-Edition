@@ -34,13 +34,28 @@ export function readPose(value){
  if(mode==='foot'&&parked&&finite(parked[0],3,1e13)&&finite(parked[1],4,1.01)&&Math.abs(Math.hypot(...parked[1])-1)<=.04&&distance(parked[0],pos)<1000){
   parkedShip={mode:'ship',pos:parked[0],q:parked[1],paint:multiplayerPaint('ship',parked[2]),group,state:'idle'};
  }
- return {sequence,group,pos,q,mode,state,paint:multiplayerPaint(mode,paint),parkedShip};
+ return {sequence,group,pos,q,mode,state,engine:typeof paint.engine==='boolean'?paint.engine:undefined,paint:multiplayerPaint(mode,paint),parkedShip};
+}
+
+// Keep a small receive-time buffer to bridge irregular packet arrivals.
+export function remotePoseFrame(peer,now){
+ const latest=peer.pose,frames=peer.frames;
+ if(!latest||!frames||frames.length<2)return {from:latest,to:latest,alpha:1};
+ const delay=Math.max(peer.interval>700?1100:0,Math.min(420,165+Math.max(0,((peer.ping??0)-100)*.25)+(peer.jitter||0)*2));
+ const playback=peer.playback=Math.max(peer.playback??-Infinity,now-delay);
+ const index=frames.findIndex(frame=>frame.at>=playback);
+ if(index<=0){
+  const pose=index===0?frames[0].pose:latest;
+  return {from:pose,to:pose,alpha:1};
+ }
+ const from=frames[index-1],to=frames[index];
+ return {from:from.pose,to:to.pose,alpha:(playback-from.at)/Math.max(1,to.at-from.at)};
 }
 
 export class MultiplayerNetwork {
  constructor({endpoint,token,onChange=()=>{},onError=()=>{},onNotice=()=>{},onExit=()=>{}}){
   Object.assign(this,{endpoint,token,onChange,onError,onNotice,onExit});
-  this.peers=new Map();this.stats={sent:0,received:0,sentBytes:0,receivedBytes:0};
+  this.peers=new Map();this.relayPeers=new Map();this.stats={sent:0,received:0,sentBytes:0,receivedBytes:0};
   this.sequence=0;this.status='Offline';this.retryDelay=700;
  }
  async authorize(){
@@ -76,13 +91,18 @@ export class MultiplayerNetwork {
      if(m.type==='state'){if(!this.snapshot)this.directoryPing=Math.round(clock()-sentAt);clearTimeout(timer);this.receiveState(m);resolve()}
      if(m.type==='error'){this.lastError=m.message;this.onError(m.message)}
      if(m.type==='notice')this.onNotice(m.message);
-     if(m.type==='removed'){this.room=null;this.onExit(m.message)}
+     if(m.type==='removed'){this.room=null;this.onExit(m.message,'kicked')}
+     if(m.type==='relay-pose'&&m.epoch===this.room?.epoch&&this.related().some(p=>p.id===m.from)){
+      const now=clock(),previous=this.relayPeers.get(m.from);
+      const peer=previous&&now-previous.seen<8500?previous:{};
+      if(this.receivePose(peer,m.packet,now))this.relayPeers.set(m.from,peer);
+     }
      if(m.type==='signal')this.signal(m).catch(()=>{this.lastError='Peer negotiation failed.'});
     };
     socket.onerror=fail;
     socket.onclose=()=>{
      fail();if(this.socket!==socket)return;
-     this.socket=null;this.snapshot=null;this.status=this.room?'Reconnecting…':'Offline';
+     this.socket=null;this.roomRecovery=null;this.snapshot=null;this.status=this.room?'Reconnecting…':'Offline';
      this.onChange();if(this.room)this.reconnect();
     };
    });
@@ -92,9 +112,17 @@ export class MultiplayerNetwork {
  }
  receiveState(m){
   const previous=this.room;
-  this.snapshot=m;this.self=m.self;this.serverOffset=m.now-Date.now();this.room=m.room;
+  this.snapshot=m;this.self=m.self;this.serverOffset=m.now-Date.now();
+  if(previous&&!m.room&&m.rooms?.some(room=>room.id===previous.id&&room.expires>m.now)){
+   if(!this.roomRecovery)this.rejoin(previous.id);
+   return;
+  }
+  this.room=m.room;
   this.status=this.room?'Connected':'Online';this.retryDelay=700;
-  if(previous&&!this.room){this.clearPeers();this.onExit('This multiplayer server closed or expired.')}
+  if(previous&&!this.room){this.clearPeers();this.onExit('This multiplayer server closed or expired.');return}
+  if(this.roomRecovery&&this.room?.id===this.roomRecovery){
+   this.roomRecovery=null;this.presenceSignature='';this.presenceAt=-Infinity;
+  }
   if(previous?.epoch!==this.room?.epoch){
    this.clearPeers();this.presenceSignature='';
    if(previous&&this.room){
@@ -102,6 +130,22 @@ export class MultiplayerNetwork {
    }
   }
   this.reconcilePeers();this.onChange();
+ }
+ async rejoin(id){
+  const socket=this.socket;
+  this.roomRecovery=id;
+  this.status='Reconnecting…';this.onChange();
+  this.lastError=null;
+  try{
+   if(!this.send({type:'join',id}))return;
+   await this.wait(()=>this.roomRecovery!==id||this.socket!==socket,8000);
+  }catch(error){
+   if(this.roomRecovery!==id||this.socket!==socket||!this.room)return;
+   this.roomRecovery=null;this.room=null;this.clearPeers();
+   this.onExit(error.message);
+  }finally{
+   if(this.socket===socket&&this.roomRecovery===id)this.roomRecovery=null;
+  }
  }
  async enter(operation,id,pose,progress){
   this.lastError=null;this.pendingRoom=true;
@@ -188,21 +232,56 @@ export class MultiplayerNetwork {
    let packet;try{packet=JSON.parse(e.data)}catch{return}
    if(packet?.p==='q'&&Number.isFinite(packet.t)){channel.send(JSON.stringify({p:'a',t:packet.t}));return}
    if(packet?.p==='a'&&packet.t===peer.pingAt){peer.ping=Math.round(Math.max(0,now-packet.t));return}
+   if(this.receivePose(peer,packet,now))this.stats.receivedBytes+=e.data.length;
+  };
+ }
+ receivePose(peer,packet,now){
    const pose=readPose(packet),local=this.local;
-   if(!pose||pose.group!==local.group||distance(pose.pos,local.pos)>locationRange(local.group))return;
+   if(!pose||!local||pose.group!==local.group||distance(pose.pos,local.pos)>locationRange(local.group))return;
    if(peer.pose&&pose.sequence<=peer.pose.sequence)return;
    const threshold=pose.group.startsWith('space:')?50000:500;
    if(peer.pose&&now-peer.seen<450&&distance(peer.pose.pos,pose.pos)>threshold&&pose.state!=='warp')return;
-   peer.pose=pose;peer.seen=now;this.stats.received++;this.stats.receivedBytes+=e.data.length;
-  };
+   const gap=now-peer.seen;
+   if(!peer.pose||gap>1600||pose.mode!==peer.pose.mode||distance(peer.pose.pos,pose.pos)>(pose.group.startsWith('space:')?4000:70)){
+    peer.frames=[];peer.jitter=0;peer.interval=peer.playback=undefined;
+   }else{
+    peer.interval??=gap;
+    peer.jitter=(peer.jitter||0)*.8+Math.abs(gap-peer.interval)*.2;
+    peer.interval=peer.interval*.8+gap*.2;
+   }
+   (peer.frames??=[]).push({at:now,pose});
+   if(peer.frames.length>12)peer.frames.shift();
+   peer.pose=pose;peer.seen=now;this.stats.received++;
+   return true;
  }
+ poseValues(pose){
+  const values=[pose.group,pose.pos.map(n=>Math.round(n*100)/100),pose.q.map(n=>Math.round(n*10000)/10000),pose.mode,pose.state,pose.mode==='ship'&&typeof pose.engine==='boolean'?{...pose.paint,engine:pose.engine}:pose.paint];
+  if(pose.parked)values.push(pose.parked);
+  return values;
+ }
+ transmitRelay(pose,now){
+  if(!this.snapshot?.poseRelay||now-(this.relayAt??-Infinity)<1000)return;
+  this.relayAt=now;
+  const to=this.related().filter(p=>this.peers.get(p.id)?.channel?.readyState!=='open').map(p=>p.id);
+  if(!to.length||this.socket?.bufferedAmount>8192)return;
+  const values=this.poseValues(pose),signature=JSON.stringify([to,values]);
+  if(signature===this.relaySignature&&now-this.relaySentAt<4500)return;
+  if(this.send({type:'relay-pose',epoch:this.room.epoch,to,packet:[++this.sequence,...values]})){
+   this.relaySignature=signature;this.relaySentAt=now;
+  }
+ }
+ remotePeers(){
+  const peers=new Map(this.relayPeers);
+  for(const [id,peer] of this.peers)if(peer.seen>=(peers.get(id)?.seen??-Infinity))peers.set(id,peer);
+  return peers;
+ }
+
  transmit(peer,pose,force=false){
   const channel=peer.channel,now=clock();
   if(channel?.readyState!=='open'||channel.bufferedAmount>8192)return;
   const interval=['boost','takeoff','warp'].includes(pose.state)?100:150;
   if(!force&&now-(peer.sentAt||0)<interval)return;
-  const values=[pose.group,pose.pos.map(n=>Math.round(n*100)/100),pose.q.map(n=>Math.round(n*10000)/10000),pose.mode,pose.state,pose.paint];
-  if(pose.parked)values.push(pose.parked);
+  const values=this.poseValues(pose);
   const signature=JSON.stringify(values);
   if(!force&&signature===peer.signature&&now-peer.sentAt<4500)return;
   const packet=JSON.stringify([++this.sequence,...values]);
@@ -226,7 +305,7 @@ export class MultiplayerNetwork {
    .finally(()=>{this.pingProbe=null});
  }
  update(pose,force=false){
-  if(!pose||!this.room)return;
+  if(!pose||!this.room||this.roomRecovery)return;
   if(Date.now()+(this.serverOffset||0)>=this.room.expires){this.onExit('This multiplayer server expired.');return}
   this.local=pose;
   const now=clock(),cell=locationRange(pose.group)/5,anchor=pose.pos.map(n=>Math.round(n/cell)*cell);
@@ -246,14 +325,15 @@ export class MultiplayerNetwork {
    this.reconcilePeers();
   }
   for(const peer of this.peers.values())this.transmit(peer,pose,force);
+  this.transmitRelay(pose,now);
  }
  drop(id){const peer=this.peers.get(id);if(peer)this.peers.delete(id);peer?.pc.close()}
- clearPeers(){for(const id of this.peers.keys())this.drop(id)}
+ clearPeers(){this.relayPeers.clear();this.relaySignature='';for(const id of this.peers.keys())this.drop(id)}
  close(){
   this.generation=(this.generation||0)+1;
   clearTimeout(this.reconnectTimer);this.reconnectTimer=null;
   this.clearPeers();const socket=this.socket;this.socket=null;socket?.close();
-  this.room=null;this.local=null;this.snapshot=null;this.status='Offline';
+  this.room=null;this.roomRecovery=null;this.local=null;this.snapshot=null;this.status='Offline';
   this.serverPing=this.directoryPing=this.pingAt=undefined;
   this.presenceSignature='';this.onChange();
  }

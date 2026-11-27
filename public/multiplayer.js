@@ -1,6 +1,6 @@
 import {setVerifiedName} from './identity-ui.js?v=91';
 import * as T from './vendor/three.module.js';
-import {MultiplayerNetwork,locationRange,roomTime} from './multiplayer-network.js';
+import {MultiplayerNetwork,locationRange,remotePoseFrame,roomTime} from './multiplayer-network.js';
 import {menuMotion} from './menu-motion.js?v=187';
 
 const endpoint='https://tzg-multiplayer-beta.appleeroblox.workers.dev';
@@ -26,7 +26,7 @@ function closePanel(element){
 }
 
 export function installMultiplayer({home,account,bodies,pose,enter,leave,model,notify,ready=()=>{},active=()=>true,lifecycle}){
- const style=node('link');style.rel='stylesheet';style.href='./multiplayer.css?v=303';document.head.append(style);
+ const style=node('link');style.rel='stylesheet';style.href='./multiplayer.css?v=304';document.head.append(style);
  const launch=home.multiplayerButton;
  const menu=node('section',null,'multiplayerPanel');menu.id='multiplayerLobby';menu.hidden=true;menu.setAttribute('role','dialog');menu.setAttribute('aria-label','Multiplayer');
  const header=node('header',null,'dialogHead'),close=node('button','×');close.setAttribute('aria-label','Close multiplayer');
@@ -38,14 +38,19 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
  const list=node('div',null,'multiplayerServers'),quick=node('button','Quick Join'),foot=node('footer'),message=node('p');
  message.setAttribute('role','status');foot.append(quick);
  const lobbyBody=node('div',null,'multiplayerLobbyBody');
- lobbyBody.append(node('p','Experimental Beta · Direct connections only.'),overview,toolbar,message,list,foot);
- menu.append(header,lobbyBody);
+ lobbyBody.append(node('p','Experimental Beta'),overview,toolbar,message,list);
+ menu.append(header,lobbyBody,foot);
  home.root.append(menu);
  const loading=node('div',null,'multiplayerLoading');loading.hidden=true;
  const loadingTitle=node('h2'),retry=node('button','Retry'),back=node('button','Back to Home');
  const create=node('button','Create new server');create.hidden=true;
  const loadingActions=node('div',null,'multiplayerLoadingActions');loadingActions.append(create,retry,back);
  loadingTitle.setAttribute('role','status');loading.append(loadingTitle,loadingActions);document.body.append(loading);
+ const exitNotice=node('div',null,'multiplayerExitNotice');
+ exitNotice.hidden=true;exitNotice.setAttribute('role','alertdialog');exitNotice.setAttribute('aria-labelledby','multiplayerExitTitle');
+ const exitTitle=node('h2'),exitMessage=node('p'),dismiss=node('button','OK');
+ exitTitle.id='multiplayerExitTitle';dismiss.onclick=()=>closePanel(exitNotice);
+ exitNotice.append(exitTitle,exitMessage,dismiss);document.body.append(exitNotice);
  const roster=document.getElementById('settingsPlayersPage'),playersTab=document.getElementById('settingsTab-players');
  const banner=node('div',null,'multiplayerRosterStatus');
  const title=node('h3','Players (Multiplayer)');
@@ -56,6 +61,43 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
  for(const title of ['#','Player','Location','Ping','Actions'])heading.append(node('span',title));
  const rows=node('div',null,'multiplayerRosterList');
  roster?.append(banner,heading,rows);
+ const confirmation=node('dialog',null,'multiplayerConfirmation');
+ confirmation.setAttribute('aria-labelledby','multiplayerConfirmTitle');
+ const confirmationTitle=node('h2'),confirmationText=node('p'),reasonLabel=node('label','Reason');
+ confirmationTitle.id='multiplayerConfirmTitle';
+ const reasonField=node('textarea');reasonField.maxLength=300;reasonField.rows=3;
+ reasonLabel.append(reasonField);
+ const confirmationActions=node('div'),cancelAction=node('button','Cancel'),confirmAction=node('button');
+ const confirmationError=node('p');confirmationError.setAttribute('role','status');
+ confirmationActions.append(cancelAction,confirmAction);
+ confirmation.append(confirmationTitle,confirmationText,reasonLabel,confirmationError,confirmationActions);
+ document.body.append(confirmation);
+ let actionTarget=null;
+ function confirmPlayerAction(type,player){
+  closeOptions();
+  actionTarget={type,playerId:player.id,roomId:network.room?.id};
+  const reporting=type==='report';
+  confirmationTitle.textContent=(reporting?'Report ':'Kick ')+player.name+'?';
+  confirmationText.textContent=reporting?'Tell us why you’re reporting this player.':'This player will be removed from the server.';
+  reasonLabel.hidden=!reporting;reasonField.value='';confirmationError.textContent='';
+  confirmAction.textContent=reporting?'Submit report':'Kick player';confirmAction.disabled=reporting;
+  if(!confirmation.open)confirmation.showModal();
+  (reporting?reasonField:cancelAction).focus();
+ }
+ cancelAction.onclick=()=>confirmation.close();
+ reasonField.oninput=()=>{confirmAction.disabled=!reasonField.value.trim()};
+ confirmAction.onclick=()=>{
+  const {type,playerId,roomId}=actionTarget;
+  const room=network.room;
+  const reason=reasonField.value.trim();
+  try{
+   if(room?.id!==roomId||!room?.players.some(p=>p.id===playerId))throw Error('That player is no longer in this server.');
+   if(type==='kick'&&room.hostId!==network.self)throw Error('Only the host can kick players.');
+   if(type==='report'&&!reason)return;
+   sendAction({type,to:playerId,...type==='report'&&{reason}});
+   confirmation.close();
+  }catch(error){confirmationError.textContent=error.message}
+ };
  let rosterSignature='',more=null;
  const playerCells=new Map();
  function closeOptions(){
@@ -74,7 +116,7 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
   const {data}=await player.client.auth.getSession();
   return data?.session?.access_token||null;
  };
- const network=new MultiplayerNetwork({endpoint,token:tokens,onChange:renderMenu,onError:error=>{message.textContent=error;if(entered)notify(error)},onNotice:notify,onExit:reason=>returnHome(reason)});
+ const network=new MultiplayerNetwork({endpoint,token:tokens,onChange:renderMenu,onError:error=>{message.textContent=error;if(entered)notify(error)},onNotice:notify,onExit:(reason,kind)=>returnHome(reason,kind)});
  const sendAction=payload=>{if(!network.send(payload))throw Error('Multiplayer is reconnecting. Try again shortly.')};
  const ghosts=new Map();
  let busy=false,operation=null,roomId=null,approved=null,checking=null,lastPaint=0,statsTime=0,sample=null,entered=false;
@@ -155,24 +197,21 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
    setVerifiedName(name,player.name,player.verified);
    if(player.id===network.self)name.append(node('span',' (You)','multiplayerYou'));
    details.append(name);if(player.id===room.hostId)details.append(node('small','Host'));
-   const hostMark=node('span',player.id===room.hostId?'♛':'','multiplayerHostMark');hostMark.setAttribute('aria-hidden','true');
+   const hostMark=node('span',player.id===room.hostId?'👑':'','multiplayerHostMark');hostMark.setAttribute('aria-hidden','true');
    identity.append(hostMark,avatar,details);
    const actions=node('div',null,'multiplayerRosterActions');
    if(player.id!==network.self){
     const add=action('Add friend','+',async()=>{await account().rpc('tzg_social_action',{p_action:'request',p_username:player.username});notify('Friend request sent.')});
     add.disabled=!player.username;
-    actions.append(add,action('Report player','⚠',()=>{
-     const reason=globalThis.prompt('Why are you reporting '+player.name+'?');
-     if(reason?.trim())sendAction({type:'report',to:player.id,reason:reason.trim().slice(0,300)});
-    }));
+    actions.append(add,action('Report player','⚠',()=>confirmPlayerAction('report',player)));
     const options=action('More player actions','⋯',()=>{
      const wasOpen=more?.dataset.player===player.id;closeOptions();
      if(wasOpen||network.room?.hostId!==network.self||!settings)return;
      const popup=node('div',null,'multiplayerPlayerOptions');popup.dataset.player=player.id;more=popup;
      const anchor=options.getBoundingClientRect(),panel=settings;
      panel.append(popup);
-     const send=type=>{closeOptions();if(network.room?.hostId===network.self&&globalThis.confirm((type==='kick'?'Kick ':'Transfer host to ')+player.name+'?'))sendAction({type,to:player.id})};
-     popup.append(action('Transfer Host','Transfer Host',()=>send('transfer')),action('Kick','Kick',()=>send('kick')));
+     const transfer=()=>{closeOptions();if(network.room?.hostId===network.self&&globalThis.confirm('Transfer host to '+player.name+'?'))sendAction({type:'transfer',to:player.id})};
+     popup.append(action('Transfer Host','Transfer Host',transfer),action('Kick','Kick',()=>confirmPlayerAction('kick',player)));
      const box=popup.getBoundingClientRect(),bounds=panel.getBoundingClientRect();
      popup.style.left=Math.max(4,Math.min(bounds.width-box.width-4,anchor.right-bounds.left-box.width))+'px';
      popup.style.top=Math.max(4,Math.min(bounds.height-box.height-4,anchor.bottom-bounds.top))+'px';
@@ -229,37 +268,58 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
   }finally{busy=false;renderMenu()}
  }
 
- function disconnect(){entered=false;network.leave();clearGhosts();closeOptions();loading.hidden=true}
- async function returnHome(reason){
+ function disconnect(){if(confirmation.open)confirmation.close();entered=false;network.leave();clearGhosts();closeOptions();loading.hidden=true}
+ async function returnHome(reason,kind){
   disconnect();
-  await leave();if(reason)notify(reason);
+  try{await leave()}finally{
+   if(reason){
+    exitTitle.textContent=kind==='kicked'?'Removed from server':'Multiplayer disconnected';
+    exitMessage.textContent=reason;
+    openPanel(exitNotice);dismiss.focus();
+   }
+  }
  }
  function removeGhost(ghost){ghost.userData.nameplate?.remove();ghost.removeFromParent();ghost.userData.dispose?.()}
  function clearGhosts(){for(const ghost of ghosts.values())removeGhost(ghost);ghosts.clear()}
+ const projected=new T.Vector3(),targetRotation=new T.Quaternion();
+ let hudRects=[],hudCheckedAt=-Infinity;
+ const hudSelector='#gameTop button,#gameTop #brand,#flightPad,#flightRight,#vitals,#flightGauge,#shipPanel,#surfacePanel,#touchControls button,#globalChat,#minimap,#minimapOpen,#utilityMenu,#hudDock,#targetPanel,#missionPanel';
+ function overlapsHud(plate,x,y,now){
+  if(now-hudCheckedAt>150){
+   hudCheckedAt=now;
+   hudRects=[...document.querySelectorAll(hudSelector)].filter(element=>{
+    const style=getComputedStyle(element);
+    return style.visibility==='visible'&&style.display!=='none'&&style.opacity!=='0';
+   }).map(element=>element.getBoundingClientRect()).filter(rect=>rect.width&&rect.height);
+  }
+  const half=plate.offsetWidth/2,height=plate.offsetHeight;
+  return hudRects.some(rect=>x+half>rect.left&&x-half<rect.right&&y>rect.top&&y-height<rect.bottom);
+ }
  function update(dt,scene,origin,camera){
   if(!network.room||!entered){clearGhosts();return}
   const local=pose();network.update(local);
   if(!scene||!active()){clearGhosts();return}
-  const now=performance.now(),keep=new Set(),projected=new T.Vector3();
-  const draw=(key,packet,player)=>{
+  const now=performance.now(),keep=new Set();
+  const draw=(key,packet,player,from=packet,alpha=1)=>{
    if(distance(packet.pos,local.pos)>locationRange(local.group))return;
    keep.add(key);
    let ghost=ghosts.get(key);
    if(!ghost||ghost.userData.mode!==packet.mode){
     if(ghost)removeGhost(ghost);
     ghost=model(packet.mode);ghost.userData.mode=packet.mode;ghosts.set(key,ghost);
-    ghost.userData.worldPosition=new T.Vector3(...packet.pos);
-    ghost.quaternion.fromArray(packet.q);
+
    }
    if(ghost.parent!==scene)scene.add(ghost);
-   const alpha=1-Math.exp(-dt*13),target=new T.Vector3(...packet.pos);
-   const world=ghost.userData.worldPosition;
-   if(world.distanceTo(target)>(packet.group.startsWith('space:')?4000:70))world.copy(target);
-   else world.lerp(target,alpha);
-   ghost.position.copy(world);if(origin)ghost.position.sub(origin);
-   ghost.quaternion.slerp(new T.Quaternion(...packet.q),alpha);
+   ghost.position.fromArray(from.pos);
+   if(alpha!==0)ghost.position.lerp(projected.fromArray(packet.pos),alpha);
+   if(origin)ghost.position.sub(origin);
+   ghost.quaternion.fromArray(from.q).slerp(targetRotation.fromArray(packet.q),alpha);
    ghost.userData.animate?.(packet,now);
-   if(!camera||!player)return;
+   const separation=distance(packet.pos,local.pos);
+   if(!camera||!player||separation>(local.group.startsWith('space:')?1200:250)){
+    if(ghost.userData.nameplate)ghost.userData.nameplate.hidden=true;
+    return;
+   }
    let plate=ghost.userData.nameplate;
    if(!plate){
     plate=node('div',null,'multiplayerNameplate');plate.append(node('strong'),node('span'),node('span'));
@@ -270,18 +330,24 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
     plate.dataset.identity=identity;setVerifiedName(plate.children[0],player.name,player.verified);
     plate.children[1].textContent=(player.device||'Unknown')+' (Lv-'+(player.level||1)+')';
    }
-   plate.children[2].textContent=multiplayerDistance(distance(packet.pos,local.pos),!!origin);
+   plate.children[2].textContent=multiplayerDistance(separation,!!origin);
    projected.copy(ghost.position).addScaledVector(camera.up,packet.mode==='foot'?2.1:7).project(camera);
    plate.hidden=projected.z< -1||projected.z>1||Math.abs(projected.x)>1||Math.abs(projected.y)>1;
-   if(!plate.hidden){plate.style.left=(projected.x*.5+.5)*100+'%';plate.style.top=(.5-projected.y*.5)*100+'%'}
+   if(!plate.hidden){
+    const x=(projected.x*.5+.5)*innerWidth,y=(.5-projected.y*.5)*innerHeight;
+    plate.style.visibility=overlapsHud(plate,x,y,now)?'hidden':'visible';
+    plate.style.left=x+'px';plate.style.top=y+'px';
+   }
 
   };
-  for(const [id,peer] of network.peers){
+  for(const [id,peer] of network.remotePeers()){
    const packet=peer.pose;
    if(!packet||now-peer.seen>8500||packet.group!==local.group)continue;
    const player=network.room.players.find(p=>p.id===id&&p.location===local.group);
    if(!player)continue;
-   draw(id,packet,player);if(packet.parkedShip)draw(id+':ship',packet.parkedShip,player);
+   const {from,to,alpha}=remotePoseFrame(peer,now);
+   draw(id,to,player,from,alpha);
+   if(to.parkedShip)draw(id+':ship',to.parkedShip,player,from.parkedShip??to.parkedShip,alpha);
   }
   for(const [id,ghost] of ghosts)if(!keep.has(id)){removeGhost(ghost);ghosts.delete(id)}
   if(now-lastPaint>750){lastPaint=now;renderMenu()}
@@ -291,7 +357,10 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
  close.onclick=()=>{closePanel(menu);if(!network.room)network.close()};
  quick.onclick=()=>start('quick');create.onclick=()=>start('create');
  retry.onclick=()=>start(operation,roomId);back.onclick=()=>{loading.hidden=true};
- const timer=setInterval(()=>{if(!menu.hidden||entered)renderMenu()},1000);timer.unref?.();
+ const timer=setInterval(()=>{
+  if(entered&&network.room&&network.local)network.update(document.hidden?network.local:pose());
+  if(!menu.hidden||entered)renderMenu();
+ },1000);timer.unref?.();
  window.addEventListener('tzg-home-ready',()=>checkAccess());
  window.addEventListener('tzg-signed-in',()=>checkAccess());
  window.addEventListener('tzg-signed-out',()=>{approved=null;launch.disabled=true;entered=false;network.leave();clearGhosts();closeOptions();menu.hidden=loading.hidden=true});

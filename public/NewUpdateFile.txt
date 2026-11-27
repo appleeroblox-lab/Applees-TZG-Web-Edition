@@ -1,2 +1,4 @@
-v0.0.303
-- Added breathing room around the status bar in the Players tab.
+v0.0.304
+- Added a movement relay for nearby players when direct connections fail and improved room reconnection.
+- Smoothed remote movement and corrected stopped-ship exhaust and player label visibility.
+- Added in-game Kick and Report confirmations, updated the host crown, and moved Quick Join below the server list.

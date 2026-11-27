@@ -1,5 +1,5 @@
 import {multiplayerPaint} from './multiplayer-network.js';
-import {installMultiplayer} from './multiplayer.js?v=303';
+import {installMultiplayer} from './multiplayer.js?v=304';
 import {gameLifecycle} from './game-lifecycle.js?v=290';
 import {storedGuestName} from './guest-profile.js';
 import {installRuntimeVersions,installUpdateCheck} from './runtime-versions.js?v=285';
@@ -778,6 +778,7 @@ if(cloudAccounts){
   const state=warping?'warp':onFoot?airborne?(crew.velocityY>0?'jump':'fall'):crew.moving?(crew.running||flight.input.boost?'run':'walk'):'idle':
    surface.active&&surface.phase==='descending'?'land':surface.active&&surface.launchElapsed!==null&&surface.phase==='flying'?'takeoff':
    shipBoost.active?'boost':surface.active&&surface.onGround?'idle':'fly';
+  const engine=!onFoot&&(!!warping||(surface.active?surface.launched&&surface.vel.lengthSq()>.0001:flight.vel.lengthSq()>.000001));
   const position=onFoot?crew.pos:surface.active?surface.pos:flight.pos;
   const q=onFoot?rotation.setFromAxisAngle(axis,crew.facingYaw??crew.yaw??0):flight.q;
   const mode=onFoot?'foot':'ship';
@@ -786,7 +787,7 @@ if(cloudAccounts){
   const mobileAgent=/Android|iPhone|iPad/i.test(navigator.userAgent);
   const tablet=/iPad/i.test(navigator.userAgent)||((mobileAgent||touch)&&Math.min(screen.width,screen.height)>=600);
   const device=tablet?'Tablet':mobileAgent||touch?'Mobile':'PC';
-  return {group,pos:position.toArray(),q:q.toArray(),mode,state,paint,parked,device,level:globalThis.tzgPlayerProgress?.level||1};
+  return {group,pos:position.toArray(),q:q.toArray(),mode,state,engine,paint,parked,device,level:globalThis.tzgPlayerProgress?.level||1};
  };
  multiplayer=installMultiplayer({home:homeExperiment,account:()=>playerAccount,bodies,pose:localPose,notify:toast,lifecycle,
   active:()=>!experimental?.isolated&&!proto?.transit,
@@ -809,7 +810,7 @@ if(cloudAccounts){
    rig.ship.userData.animate=(packet,now)=>{
     const key=JSON.stringify(packet.paint.parts);if(key!==paintSignature){paintSignature=key;lastPaint=packet.paint.parts;applyShipPaint(rig,lastPaint)}
     rig.model.rotation.x=packet.group.startsWith('body:')&&packet.state==='idle'?Math.PI/2:0;
-    const thrust=['fly','boost','takeoff','warp'].includes(packet.state);
+    const thrust=packet.engine??['fly','boost','takeoff','warp'].includes(packet.state);
     for(const flame of rig.flames){flame.visible=thrust;flame.scale.z=(packet.state==='boost'?1.9:1)+Math.sin(now*.018)*.14}
    };
    return rig.ship;

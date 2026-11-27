@@ -31,7 +31,7 @@ body.referenceHUD .multiplayerPanel{width:min(290px,calc(100vw - 32px));max-heig
 .multiplayerServers article{grid-template-columns:minmax(0,1fr) auto}
 .multiplayerLocationBlock{grid-row:2;grid-column:1/-1;border:0;padding:3px}
 .multiplayerLocationBlock:empty{display:none}
-.multiplayerNameplate{position:fixed;z-index:75;transform:translate(-50%,-100%);display:grid;text-align:center;gap:2px;white-space:nowrap;pointer-events:none;color:#fff;font:12px 'Fredoka One',sans-serif;text-shadow:0 1px 3px #000,0 0 3px #000}
+.multiplayerNameplate{position:fixed;z-index:8;transform:translate(-50%,-100%);display:grid;text-align:center;gap:2px;white-space:nowrap;pointer-events:none;color:#fff;font:12px 'Fredoka One',sans-serif;text-shadow:0 1px 3px #000,0 0 3px #000}
 .multiplayerNameplate span{font-size:10px}
 .multiplayerNameplate .verifiedBadge img{width:12px;height:12px;vertical-align:middle}
 .multiplayerRosterList{display:grid;gap:5px}
@@ -100,3 +100,29 @@ body.referenceHUD #multiplayerLobby>.dialogHead h2{font-size:18px}
  .multiplayerRosterIdentity>img{width:20px;height:20px}
  .multiplayerHostMark:empty{display:none}
 }
+
+.multiplayerExitNotice{
+ position:fixed;z-index:2147483646;top:50%;left:50%;transform:translate(-50%,-50%);
+ box-sizing:border-box;width:min(340px,calc(100vw - 32px));padding:16px;text-align:center;
+ border:2px solid var(--account-border,#a6e5ff);border-radius:14px;
+ background:var(--account-surface,#07547c);color:white;font:14px 'Fredoka One',sans-serif
+}
+.multiplayerExitNotice[hidden]{display:none}
+.multiplayerExitNotice h2{margin:0;font-size:18px}
+.multiplayerExitNotice button{min-width:90px;padding:8px 14px;color:white;background:#175787;border:1px solid #a6e5ff;border-radius:8px;font:inherit}
+
+#multiplayerLobby .multiplayerLobbyBody{display:flex;flex-direction:column;gap:5px;overflow:hidden;padding-bottom:0}
+#multiplayerLobby .multiplayerLobbyBody>:not(.multiplayerServers){flex:none}
+#multiplayerLobby .multiplayerServers{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+#multiplayerLobby>footer{flex:none;margin:0;padding:10px 12px 12px}
+.multiplayerConfirmation{
+ box-sizing:border-box;width:min(360px,calc(100vw - 32px));padding:16px;
+ background:var(--account-surface,#07547c);color:white;border:2px solid var(--account-border,#a6e5ff);
+ border-radius:12px;font:14px 'Fredoka One',sans-serif
+}
+.multiplayerConfirmation::backdrop{background:transparent}
+.multiplayerConfirmation h2{margin:0;font-size:18px}
+.multiplayerConfirmation textarea{display:block;box-sizing:border-box;width:100%;padding:8px;margin-top:5px;resize:vertical;font:inherit}
+.multiplayerConfirmation>div{display:flex;justify-content:flex-end;gap:8px}
+.multiplayerConfirmation button{padding:8px 12px;color:white;background:#175787;border:1px solid #a6e5ff;border-radius:8px;font:inherit}
+.multiplayerConfirmation button:disabled{opacity:.5}

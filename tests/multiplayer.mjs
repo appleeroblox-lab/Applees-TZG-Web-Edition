@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import worker,{Lobby,MultiplayerLobby,BACKEND_VERSION} from '../multiplayer/worker.mjs';
-import {MultiplayerNetwork,readPose,multiplayerPaint} from '../public/multiplayer-network.js';
+import {MultiplayerNetwork,readPose,multiplayerPaint,remotePoseFrame} from '../public/multiplayer-network.js';
 
 const now=Date.now();
 const users=Array.from({length:11},(_,i)=>({id:'u'+i,name:'Pilot '+i,authUntil:now+3600000}));
@@ -57,7 +57,16 @@ assert.equal(lobby.stateFor('u0').room.players[1].ping,84);
 assert.equal(lobby.stateFor('u0').room.players[1].location,'body:Mars');
 await message(sockets[0],{type:'signal',to:'u1',epoch:1,signal:{type:'offer',sdp:'test SDP'}});
 assert(!sockets[1].messages.some(m=>m.type==='signal'),'different bodies do not exchange ICE/signaling');
+const fallback={type:'relay-pose',to:['u1'],epoch:1,packet:[1,'body:Earth',[0,0,0],[0,0,0,1],'foot','walk',{}]};
+lobby.relayPose('u0',fallback,Date.now());
+assert(!sockets[1].messages.some(m=>m.type==='relay-pose'),'different locations never receive fallback movement');
 await message(sockets[1],{type:'presence',location:'body:Earth',anchor:[15,0,0]});
+lobby.relayPose('u0',{...fallback,epoch:99},Date.now());
+assert(!sockets[1].messages.some(m=>m.type==='relay-pose'),'stale room epochs are rejected');
+await message(sockets[0],fallback);
+assert.deepEqual(sockets[1].messages.at(-1),{type:'relay-pose',from:'u0',epoch:1,packet:fallback.packet});
+assert.equal(lobby.stateFor('u0').poseRelay,true);
+
 await message(sockets[0],{type:'signal',to:'u1',epoch:1,signal:{type:'offer',sdp:'test SDP'}});
 assert(sockets[1].messages.some(m=>m.type==='signal'));
 sockets[0].readyState=3;await lobby.webSocketClose(sockets[0]);assert.equal(lobby.stateFor('u1').room.hostId,'u1');
@@ -127,3 +136,37 @@ try{
  assert.equal(joining.peers.size,0);
  assert.equal(requests.find(p=>p.type==='presence').ping,79,'send measured server latency even with no peer data channels');
 }finally{delete globalThis.document}
+
+const recoveryRequests=[];
+const exits=[];
+const recovery=new MultiplayerNetwork({endpoint:'https://worker.example',token:async()=>'',onExit:reason=>exits.push(reason)});
+const resumedRoom={id:'resumable',epoch:1,expires:now+60000,players:[]};
+recovery.room=resumedRoom;
+recovery.socket={readyState:1,send:raw=>recoveryRequests.push(JSON.parse(raw))};
+const resumedState={self:'returning-player',now,rooms:[resumedRoom],room:null};
+recovery.receiveState(resumedState);
+recovery.receiveState(resumedState);
+assert.deepEqual(recoveryRequests,[{type:'join',id:'resumable'}],'resume only once when the server still exists');
+assert.equal(recovery.status,'Reconnecting…');
+recovery.receiveState({...resumedState,room:resumedRoom});
+assert.equal(recovery.roomRecovery,null);
+assert.equal(recovery.room,resumedRoom);
+assert.equal(recovery.status,'Connected');
+assert.deepEqual(exits,[]);
+recovery.receiveState({...resumedState,rooms:[]});
+assert.equal(recoveryRequests.length,1,'expired rooms are never recreated');
+assert.equal(exits.length,1);
+
+
+const stationaryShip=readPose([9,'space:Sol',[0,0,0],[0,0,0,1],'ship','fly',{engine:false}]);
+assert.equal(stationaryShip.engine,false,'a stopped ship can remain in flight mode with its engine fire hidden');
+assert.equal(readPose([10,'space:Sol',[0,0,0],[0,0,0,1],'ship','fly',{}]).engine,undefined,'older clients retain their pose format');
+const movingShip={...stationaryShip,sequence:10,pos:[100,0,0],engine:true};
+const delayedPeer={pose:movingShip,ping:240,frames:[{at:1000,pose:stationaryShip},{at:1200,pose:movingShip}]};
+const rendered=remotePoseFrame(delayedPeer,1300);
+assert.equal(rendered.from,stationaryShip);
+assert.equal(rendered.to,movingShip);
+assert.equal(rendered.alpha,.5,'high-latency remote motion interpolates received samples');
+delayedPeer.jitter=70;
+assert.equal(remotePoseFrame(delayedPeer,1320).alpha,.5,'a sudden rise in delay does not rewind the ship');
+assert.equal(remotePoseFrame(delayedPeer,3000).alpha,1,'packet loss never extrapolates beyond the latest ship position');

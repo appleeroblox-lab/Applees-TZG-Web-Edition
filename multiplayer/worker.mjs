@@ -1,4 +1,4 @@
-export const BACKEND_VERSION = 'multiplayer-v5';
+export const BACKEND_VERSION = 'multiplayer-v6';
 const HOUR=3600000, LEASE=100000, GRACE=45000, MAX_MESSAGE=20000;
 const limits=(value,maximum,fallback)=>Math.max(1,Math.min(maximum,Number.parseInt(value)||fallback));
 const short=(value,max)=>typeof value==='string'&&value.length>0&&value.length<=max;
@@ -122,11 +122,11 @@ export class MultiplayerLobby {
    ctx.storage.sql.exec('CREATE TABLE IF NOT EXISTS usage (day INTEGER PRIMARY KEY, count INTEGER NOT NULL)');
   });
  }
- quota(){
+ quota(limit=35000){
   const day=Math.floor(Date.now()/86400000);
   const row=[...this.ctx.storage.sql.exec('SELECT count FROM usage WHERE day=?',day)][0];
   this.signalingEventsToday=row?.count||0;
-  if(this.signalingEventsToday>=35000)return false;
+  if(this.signalingEventsToday>=limit)return false;
   this.signalingEventsToday++;
   this.ctx.storage.sql.exec('INSERT INTO usage VALUES (?,1) ON CONFLICT(day) DO UPDATE SET count=count+1',day);
   if(!row)this.ctx.storage.sql.exec('DELETE FROM usage WHERE day<?',day-1);
@@ -136,7 +136,7 @@ export class MultiplayerLobby {
  peers(id){return this.ctx.getWebSockets(id)}
  stateFor(user){
   const l=this.lobby,room=l.rooms.find(r=>r.players.some(p=>p.id===user));
-  return {type:'state',self:user,now:Date.now(),rooms:l.rooms.map(r=>l.summary(r)),maxRooms:l.maximum,signalingEventsToday:this.signalingEventsToday,room:room?{...l.summary(room),hostId:room.host,epoch:room.epoch,created:room.created,players:room.players.filter(p=>p.connected).sort((a,b)=>a.joined-b.joined).map(({id,name,username,avatar,verified,device,level,location,anchor,foreground,joined,ping})=>({id,name,username,avatar,verified,device,level,location,anchor,foreground,joined,ping:ping===999?null:ping}))}:null};
+  return {type:'state',poseRelay:true,self:user,now:Date.now(),rooms:l.rooms.map(r=>l.summary(r)),maxRooms:l.maximum,signalingEventsToday:this.signalingEventsToday,room:room?{...l.summary(room),hostId:room.host,epoch:room.epoch,created:room.created,players:room.players.filter(p=>p.connected).sort((a,b)=>a.joined-b.joined).map(({id,name,username,avatar,verified,device,level,location,anchor,foreground,joined,ping})=>({id,name,username,avatar,verified,device,level,location,anchor,foreground,joined,ping:ping===999?null:ping}))}:null};
  }
  broadcast(){
   for(const ws of this.ctx.getWebSockets()){
@@ -167,10 +167,17 @@ export class MultiplayerLobby {
   if(a&&a.authUntil<=now){ws.close(1008,'Sign-in needs renewal');return}
   if(!a||typeof message!=='string'||message.length>MAX_MESSAGE){ws.close(1008,'Invalid message');return}
   if(now-a.window>=10000){a.window=now;a.messages=0}
-  if(++a.messages>70||!this.quota()){ws.close(1008,'Experimental request limit');return}
+  if(++a.messages>70){ws.close(1008,'Experimental request limit');return}
   ws.serializeAttachment(a);
   let m;try{m=JSON.parse(message)}catch{return}
   if(!m||typeof m!=='object')return;
+  if(m.type==='relay-pose'){
+   if(now-(a.relayAt??0)<900||message.length>7000)return;
+   a.relayAt=now;ws.serializeAttachment(a);
+   this.relayPose(a.id,m,now);
+   return;
+  }
+  if(!this.quota()){ws.close(1008,'Experimental request limit');return}
   this.lobby.prune(now);
   const room=this.lobby.rooms.find(r=>r.players.some(p=>p.id===a.id));
   const p=room?.players.find(p=>p.id===a.id);
@@ -209,6 +216,19 @@ export class MultiplayerLobby {
    }else return;
    await this.persist();this.broadcast();
   }catch(error){this.send(ws,{type:'error',message:error.message||'Multiplayer request failed.'})}
+ }
+ relayPose(id,message,now){
+  const {packet,to,epoch}=message;
+  if(!Array.isArray(packet)||![7,8].includes(packet.length)||!Array.isArray(to)||to.length>9||!finiteAnchor(packet[2]))return;
+  const room=this.lobby.rooms.find(room=>room.expires>now&&room.players.some(p=>p.id===id));
+  const sender=room?.players.find(p=>p.id===id);
+  if(!sender?.connected||sender.last+LEASE<=now||epoch!==room.epoch||!sender.location||sender.location!==packet[1])return;
+  const range=sender.location.startsWith('space:')?30000:1200;
+  const distanceTo=anchor=>Math.hypot(...anchor.map((n,i)=>n-packet[2][i]));
+  if(!finiteAnchor(sender.anchor)||distanceTo(sender.anchor)>range*1.25)return;
+  const recipients=room.players.filter(p=>p.id!==id&&to.includes(p.id)&&p.connected&&p.last+LEASE>now&&p.location===sender.location&&finiteAnchor(p.anchor)&&distanceTo(p.anchor)<=range*1.25);
+  if(!recipients.length||!this.quota(25000))return;
+  for(const player of recipients)for(const socket of this.peers(player.id))this.send(socket,{type:'relay-pose',from:id,epoch,packet});
  }
  async webSocketClose(ws){
   const a=ws.deserializeAttachment();if(!a)return;

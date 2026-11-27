@@ -26,19 +26,34 @@ function closePanel(element){
 }
 
 export function installMultiplayer({home,account,bodies,pose,enter,leave,model,notify,ready=()=>{},active=()=>true,lifecycle}){
- const style=node('link');style.rel='stylesheet';style.href='./multiplayer.css?v=304';document.head.append(style);
+ const style=node('link');style.rel='stylesheet';style.href='./multiplayer.css?v=305';document.head.append(style);
  const launch=home.multiplayerButton;
  const menu=node('section',null,'multiplayerPanel');menu.id='multiplayerLobby';menu.hidden=true;menu.setAttribute('role','dialog');menu.setAttribute('aria-label','Multiplayer');
- const header=node('header',null,'dialogHead'),close=node('button','×');close.setAttribute('aria-label','Close multiplayer');
- header.append(node('h2','Multiplayer'),close);
- const overview=node('div',null,'multiplayerStats'),online=node('span'),servers=node('span'),status=node('span');
- overview.append(online,servers,status);
+ const icon=(file,cls='')=>{const img=node('img',null,cls);img.src='./icons/'+file;img.alt='';return img};
+ const header=node('header',null,'dialogHead'),close=node('button','×','multiplayerClose');
+ close.setAttribute('aria-label','Close multiplayer');
+ const lobbyTitle=node('h2','Multiplayer'),badge=node('span','Experimental Beta','multiplayerBeta');
+ header.append(icon('group.svg','multiplayerHeaderIcon'),lobbyTitle,badge,close);
+ const stat=picture=>{
+  const tile=node('div',null,'multiplayerStat'),label=node('span');
+  tile.append(picture,label);return {tile,label};
+ };
+ const overview=node('div',null,'multiplayerStats');
+ const population=stat(icon('group.svg')),capacity=stat(icon('ui/database.svg'));
+ const wifi=node('span',null,'multiplayerWifi');wifi.setAttribute('aria-hidden','true');
+ const connection=stat(wifi);
+ const online=population.label,servers=capacity.label,status=connection.label;
+ overview.append(population.tile,capacity.tile,connection.tile);
  const toolbar=node('div',null,'multiplayerToolbar'),refresh=node('button','Refresh');
- toolbar.append(node('h3','Public Servers'),refresh);
- const list=node('div',null,'multiplayerServers'),quick=node('button','Quick Join'),foot=node('footer'),message=node('p');
+ refresh.prepend(icon('rotate_right.svg'));
+ toolbar.append(icon('public.svg'),node('h3','Public Servers'),refresh);
+ const list=node('div',null,'multiplayerServers'),quick=node('button','Quick Join'),foot=node('footer'),message=node('p',null,'multiplayerLobbyMessage');
+ quick.prepend(icon('flight.svg'));
  message.setAttribute('role','status');foot.append(quick);
+ const directory=node('section',null,'multiplayerDirectory');
+ directory.append(toolbar,message,list);
  const lobbyBody=node('div',null,'multiplayerLobbyBody');
- lobbyBody.append(node('p','Experimental Beta'),overview,toolbar,message,list);
+ lobbyBody.append(overview,directory);
  menu.append(header,lobbyBody,foot);
  home.root.append(menu);
  const loading=node('div',null,'multiplayerLoading');loading.hidden=true;
@@ -132,22 +147,36 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
  }
  function renderMenu(){
   const snapshot=network.snapshot,rooms=snapshot?.rooms||[],time=Date.now()+(network.serverOffset||0);
-  online.textContent=rooms.reduce((n,r)=>n+r.count,0)+' players online';
+  const playerCount=rooms.reduce((n,r)=>n+r.count,0);
+  online.textContent=playerCount+(playerCount===1?' player online':' players online');
   servers.textContent=rooms.length+' / '+(snapshot?.maxRooms||2)+' active servers';
   const latency=network.serverPing??network.directoryPing;
   status.textContent=network.status+(latency===undefined?'':' · '+latency+' ms signaling');
   quick.disabled=busy||!snapshot;
   if(!menu.hidden){
+   const scrollTop=list.scrollTop;
+   const focusedRoom=list.contains(document.activeElement)?document.activeElement.dataset.roomId:null;
    list.replaceChildren();
    if(!rooms.length)list.append(node('p',snapshot?'No active servers.':'Connecting to server directory…'));
    for(const room of rooms){
-    const card=node('article'),detail=node('div'),join=node('button','Join');
-    detail.append(node('h3',room.name),node('p','Host · '+room.host),node('p',room.count+' / '+room.capacity+' players · '+roomTime(room.expires-time)+' remaining'));
-    const labels=node('div',null,'multiplayerLocations');
-    for(const [group,count] of Object.entries(room.locations))labels.append(node('span',locationName(group,bodies)+' · '+count));
-    const locations=node('div',null,'multiplayerLocationBlock');if(labels.childNodes.length)locations.append(node('strong','Locations (Players)'),labels);join.disabled=busy||room.full||!room.count||room.expires<=time;
-    join.onclick=()=>start('join',room.id);card.append(detail,locations,join);list.append(card);
+    const card=node('article'),detail=node('div',null,'multiplayerServerDetails'),join=node('button','Join','multiplayerJoin');
+    const thumbnail=node('div',null,'multiplayerServerArt');thumbnail.setAttribute('aria-hidden','true');
+    const host=node('p','Host · '+room.host,'multiplayerHostLine');
+    const crown=node('span','👑');crown.setAttribute('aria-hidden','true');host.prepend(crown);
+    const occupancy=node('p',room.count+' / '+room.capacity+' players · '+roomTime(room.expires-time)+' remaining');
+    occupancy.prepend(icon('group.svg'));
+    detail.append(node('h3',room.name),host,occupancy);
+    const locations=node('p',null,'multiplayerLocationBlock');
+    const places=Object.entries(room.locations).map(([group,count])=>locationName(group,bodies)+' · '+count);
+    if(places.length){locations.append(icon('ui/pin.svg'),node('strong','Locations (Players):'),node('span',places.join(' · ')));detail.append(locations)}
+    join.prepend(icon('play_arrow.svg'));
+    join.disabled=busy||room.full||!room.count||room.expires<=time;
+    join.dataset.roomId=room.id;
+    join.onclick=()=>start('join',room.id);card.append(thumbnail,detail,join);list.append(card);
+    if(focusedRoom===room.id&&!join.disabled)join.focus({preventScroll:true});
+
    }
+   list.scrollTop=scrollTop;
   }
   renderRoster(time);
  }

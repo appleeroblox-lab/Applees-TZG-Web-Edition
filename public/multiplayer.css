@@ -1,36 +1,6 @@
-.multiplayerPanel {
- position:fixed;inset:50% auto auto 50%;transform:translate(-50%,-50%);
- z-index:4500;width:min(700px,92vw);max-height:87dvh;overflow:auto;
- box-sizing:border-box;padding:clamp(10px,2vw,24px);border:1px solid #3c8abb;
- border-radius:16px;background:#0b2340f8;color:#edf8ff;font:14px 'Fredoka One',sans-serif;
-}
-.multiplayerPanel *,.multiplayerLoading * {font-family:'Fredoka One',sans-serif}
-.multiplayerPanel :is(h2,h3,p){margin:0}
-.multiplayerPanel>p {margin:8px 0;color:#bbdbef}
-.multiplayerPanel :is(header,footer,.multiplayerToolbar) {display:flex;align-items:center;justify-content:space-between;gap:8px}
-.multiplayerPanel footer {justify-content:center;margin-top:12px}
-.multiplayerStats {display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}
-.multiplayerStats span,.multiplayerServers article {background:#103456;padding:9px;border-radius:10px;border:1px solid #285c81}
-.multiplayerServers {display:grid;gap:8px;margin-top:8px}
-.multiplayerServers article {display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}
-.multiplayerServers article p {color:#d4eaff;margin-top:3px}
-.multiplayerLocations {display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
-.multiplayerLocations span {background:#17466b;border-radius:999px;padding:3px 7px}
-.multiplayerPanel button,.multiplayerLoading button {color:#f5fbff;background:#175787;border:1px solid #478dbb;border-radius:9px;padding:7px 12px}
-.multiplayerPanel button:disabled {opacity:.45;cursor:default}
 .multiplayerLoading {position:fixed;inset:0;z-index:2147483646;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:12px;padding:24px;text-align:center;background:#000;color:#fff;transition:opacity .35s}
+.multiplayerLoading button{color:#f5fbff;background:#175787;border:1px solid #478dbb;border-radius:9px;padding:7px 12px}
 .multiplayerLoading h2 {flex:0 0 100%}.multiplayerLoading.revealed {opacity:0;pointer-events:none}
-@media(max-height:490px){.multiplayerPanel {font-size:12px}.multiplayerPanel h2{font-size:20px}.multiplayerPanel h3{font-size:14px}}
-.multiplayerServers article {grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) auto}
-.multiplayerLocationBlock {padding-inline:10px;border-inline-start:1px solid #285c81}
-.multiplayerPanel footer button {width:min(100%,440px)}
-.multiplayerPanel footer small {display:block;color:#a1e4d7}
-@media(max-width:540px){.multiplayerServers article {grid-template-columns:minmax(0,1fr) auto}.multiplayerLocationBlock {grid-row:2;grid-column:1/-1;border:0;padding-inline:0}}
-body.referenceHUD .multiplayerPanel{width:min(290px,calc(100vw - 32px));max-height:min(420px,calc(100dvh - 32px));padding:14px;background:var(--account-surface);border:2px solid var(--account-border);border-radius:12px;color:#fff}
-.multiplayerPanel :is(.multiplayerStats span,.multiplayerServers article,.multiplayerLocations span,.multiplayerLocationBlock){background:var(--account-field);border-color:var(--account-border)}
-.multiplayerServers article{grid-template-columns:minmax(0,1fr) auto}
-.multiplayerLocationBlock{grid-row:2;grid-column:1/-1;border:0;padding:3px}
-.multiplayerLocationBlock:empty{display:none}
 .multiplayerNameplate{position:fixed;z-index:8;transform:translate(-50%,-100%);display:grid;text-align:center;gap:2px;white-space:nowrap;pointer-events:none;color:#fff;font:12px 'Fredoka One',sans-serif;text-shadow:0 1px 3px #000,0 0 3px #000}
 .multiplayerNameplate span{font-size:10px}
 .multiplayerNameplate .verifiedBadge img{width:12px;height:12px;vertical-align:middle}
@@ -43,26 +13,6 @@ body.referenceHUD .multiplayerPanel{width:min(290px,calc(100vw - 32px));max-heig
 .multiplayerRosterIdentity>img{width:28px;height:28px;object-fit:cover;border-radius:50%}
 #settingsPlayersPage .multiplayerRosterActions button{min-width:26px;min-height:26px;padding:1px 4px}
 .multiplayerPlayerOptions{position:absolute;z-index:20;display:grid;gap:4px;padding:5px;background:var(--account-surface);border:1px solid var(--account-border);border-radius:8px}
-body.referenceHUD #multiplayerLobby {
- inset:50% auto auto 50%;transform:translate(-50%,-50%);margin:0;padding:0;
- width:min(calc(500px * var(--party-menu-scale,.85)),calc(100vw - 24px))!important;
- height:min(calc(410px * var(--party-menu-scale,.85)),calc(100dvh - 70px))!important;
- max-height:calc(100dvh - 70px)!important;
- display:flex;flex-direction:column;overflow:hidden;border:2px solid #d5f3ff;
- border-radius:14px;background:linear-gradient(140deg,#3297ce,#176e9f);
-}
-body.referenceHUD #multiplayerLobby>.dialogHead {
- padding:10px 12px;margin:0;flex:none;border-radius:0;
- background:#216e9c;border-bottom:1px solid #d5f3ff77;
-}
-body.referenceHUD #multiplayerLobby>.dialogHead h2{font-size:18px}
-@media(max-height:550px){body.referenceHUD #multiplayerLobby>.dialogHead{padding:7px 10px}}
-#multiplayerLobby[hidden]{display:none!important}
-#multiplayerLobby .multiplayerLobbyBody{min-height:0;overflow:auto;flex:1;padding:8px 12px 12px;touch-action:pan-y;overscroll-behavior:contain}
-#multiplayerLobby .multiplayerToolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
-#multiplayerLobby .multiplayerToolbar button,#multiplayerLobby footer button{flex:none;min-width:max-content;white-space:nowrap}
-#multiplayerLobby footer{display:grid;justify-content:stretch;margin-top:20px}
-#multiplayerLobby footer button{width:100%}
 .multiplayerLoadingActions{display:grid;width:min(320px,calc(100vw - 48px));gap:8px;margin-inline:auto;text-align:center}
 .multiplayerLoadingActions button{width:100%;box-sizing:border-box}
 #settingsPlayersPage .multiplayerRosterStatus{margin:8px 3px;padding:7px 8px;font-variant-numeric:tabular-nums}
@@ -111,10 +61,6 @@ body.referenceHUD #multiplayerLobby>.dialogHead h2{font-size:18px}
 .multiplayerExitNotice h2{margin:0;font-size:18px}
 .multiplayerExitNotice button{min-width:90px;padding:8px 14px;color:white;background:#175787;border:1px solid #a6e5ff;border-radius:8px;font:inherit}
 
-#multiplayerLobby .multiplayerLobbyBody{display:flex;flex-direction:column;gap:5px;overflow:hidden;padding-bottom:0}
-#multiplayerLobby .multiplayerLobbyBody>:not(.multiplayerServers){flex:none}
-#multiplayerLobby .multiplayerServers{min-height:0;overflow-y:auto;overscroll-behavior:contain}
-#multiplayerLobby>footer{flex:none;margin:0;padding:10px 12px 12px}
 .multiplayerConfirmation{
  box-sizing:border-box;width:min(360px,calc(100vw - 32px));padding:16px;
  background:var(--account-surface,#07547c);color:white;border:2px solid var(--account-border,#a6e5ff);
@@ -126,3 +72,107 @@ body.referenceHUD #multiplayerLobby>.dialogHead h2{font-size:18px}
 .multiplayerConfirmation>div{display:flex;justify-content:flex-end;gap:8px}
 .multiplayerConfirmation button{padding:8px 12px;color:white;background:#175787;border:1px solid #a6e5ff;border-radius:8px;font:inherit}
 .multiplayerConfirmation button:disabled{opacity:.5}
+
+
+#homeExperiment #multiplayerLobby {
+ --lobby-line:#a3ecff;--lobby-gap:clamp(9px,1.45vw,24px);
+ position:fixed;z-index:4500;inset:49% auto auto 25.5%;transform:translateY(-50%);
+ box-sizing:border-box;display:flex;flex-direction:column;overflow:hidden;
+ width:65%;max-width:1050px;height:min(78dvh,690px);max-height:calc(100dvh - 44px);
+ margin:0;padding:0;border:4px solid #b1f0ff;border-radius:clamp(16px,2.2vw,34px);
+ color:#f6fcff;font:clamp(12px,1.55vw,24px)/1.2 'Fredoka One',sans-serif;
+ background:radial-gradient(ellipse at 12% 0%,#28aae0a8,transparent 64%),linear-gradient(155deg,#166e9cf0,#086499ee 65%,#1386b7e8);
+ box-shadow:0 9px 25px #003c64a0,inset 0 0 18px #80e8ff55;
+ text-shadow:0 2px 3px #003752c0;
+}
+#homeExperiment #multiplayerLobby[hidden]{display:none}
+#homeExperiment:has(#multiplayerLobby:not([hidden])) .homePlayChoices{visibility:hidden;pointer-events:none}
+#multiplayerLobby :is(h2,h3,p){margin:0}
+#multiplayerLobby img{width:1.25em;height:1.25em;object-fit:contain;flex:none}
+#multiplayerLobby>.dialogHead{
+ display:flex;align-items:center;gap:.7em;flex:none;padding:.65em var(--lobby-gap);
+ margin:0;border-bottom:2px solid #8ce2ff99;background:linear-gradient(170deg,#028dcb90,#004f80b0);
+}
+#multiplayerLobby .multiplayerHeaderIcon{width:2.4em;height:2.4em}
+#multiplayerLobby .dialogHead h2{font:inherit;font-size:2.02em;white-space:nowrap}
+#multiplayerLobby .multiplayerBeta{
+ padding:.4em .85em;border:2px solid #8fdaf1;border-radius:2em;
+ font-size:.83em;white-space:nowrap;background:#0b6d9cac;
+}
+#homeExperiment #multiplayerLobby button:not(#brand):not(#chatToggle){
+ display:inline-flex;align-items:center;justify-content:center;gap:.42em;min-height:0;
+ color:inherit;background:linear-gradient(160deg,#42bbee,#066aa9 74%);
+ border:2px solid #abedff;border-radius:.9em;padding:.55em .85em;
+ box-shadow:0 3px 5px #00395799,inset 0 1px 6px #b8eeff50;
+ font:inherit;text-shadow:inherit;white-space:nowrap;
+}
+#homeExperiment #multiplayerLobby button:disabled{opacity:.5}
+#homeExperiment #multiplayerLobby button.multiplayerClose:not(#brand):not(#chatToggle){margin-left:auto;padding:0;width:1.95em;height:1.5em;font-size:1.6em}
+#multiplayerLobby .multiplayerLobbyBody{display:flex;flex:1;min-height:0;flex-direction:column;overflow:hidden}
+#multiplayerLobby .multiplayerStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7em;padding:1em var(--lobby-gap);flex:none}
+#multiplayerLobby .multiplayerStat{
+ display:flex;align-items:center;gap:.55em;min-width:0;min-height:3.8em;padding:.55em .85em;
+ border:2px solid var(--lobby-line);border-radius:1em;background:#09609499;box-shadow:0 3px 4px #004a6b60;
+}
+#multiplayerLobby .multiplayerStat img{width:2em;height:2em}
+#multiplayerLobby .multiplayerStat>span:last-child{overflow-wrap:anywhere}
+#multiplayerLobby .multiplayerWifi{position:relative;width:1.55em;height:1.25em;flex:none;display:grid;place-items:center;color:white}
+#multiplayerLobby .multiplayerWifi::before,#multiplayerLobby .multiplayerWifi::after{content:'';position:absolute;border:.16em solid transparent;border-top-color:currentColor;border-radius:50%}
+#multiplayerLobby .multiplayerWifi::before{width:1.4em;height:1.1em;top:.08em}
+#multiplayerLobby .multiplayerWifi::after{width:.82em;height:.7em;top:.44em;background:radial-gradient(circle at 50% 58%,white .11em,transparent .13em)}
+#multiplayerLobby .multiplayerDirectory{
+ display:flex;flex-direction:column;flex:1;min-height:0;gap:.65em;padding:.7em var(--lobby-gap) 0;
+ border-top:2px solid #84dfff;border-radius:1.45em 1.45em 0 0;background:#02558065;
+}
+#multiplayerLobby .multiplayerToolbar{display:flex;align-items:center;gap:.6em;flex:none}
+#multiplayerLobby .multiplayerToolbar>img{width:2.2em;height:2.2em}
+#multiplayerLobby .multiplayerToolbar h3{font-size:1.42em;margin-right:auto}
+#multiplayerLobby .multiplayerLobbyMessage{font-size:.82em}
+#multiplayerLobby .multiplayerLobbyMessage:empty{display:none}
+#multiplayerLobby .multiplayerServers{display:grid;align-content:start;gap:.55em;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+#multiplayerLobby .multiplayerServers article{
+ display:grid;grid-template-columns:5em minmax(0,1fr) auto;align-items:center;gap:.75em;
+ padding:.7em .85em;border:2px solid var(--lobby-line);border-radius:1.25em;background:linear-gradient(150deg,#1485bac7,#04608cc9);
+}
+#multiplayerLobby .multiplayerServerArt{
+ width:5em;height:5em;border:2px solid #a5ecff;border-radius:.9em;background:#002a44;
+ box-shadow:0 3px 5px #002d4d88;display:grid;place-items:center;
+ background:radial-gradient(ellipse at 36% 32%,#1a4166,#001422 75%);
+}
+#multiplayerLobby .multiplayerServerArt::before{
+ content:'';width:84%;aspect-ratio:1;border-radius:50%;
+ background:radial-gradient(circle at 30% 24%,#fff6,transparent 43%,#02182a90 69%,#010712 100%),url('./textures/earth.jpg') 35% center / 200% 100%;
+ box-shadow:-2px -1px 4px #a9ddff99,inset 1px 1px 3px #ccefff;
+}
+#multiplayerLobby .multiplayerServerDetails{display:grid;gap:.38em;min-width:0;border-left:2px solid #8ee7fa88;padding-left:.65em}
+#multiplayerLobby .multiplayerServerDetails h3{font-size:1.45em;overflow-wrap:anywhere}
+#multiplayerLobby .multiplayerServerDetails p{display:flex;align-items:center;gap:.4em;flex-wrap:wrap}
+#multiplayerLobby .multiplayerHostLine{color:#dbf1ff;font-size:.86em}
+#multiplayerLobby .multiplayerHostLine span{font-size:1.1em}
+#multiplayerLobby .multiplayerLocationBlock{font-size:.88em}
+#homeExperiment #multiplayerLobby .multiplayerJoin{min-width:7em}
+#multiplayerLobby>footer{
+ display:grid;place-items:center;flex:none;padding:.58em var(--lobby-gap);
+ background:radial-gradient(ellipse at 17% 140%,#37b6cb62 0 45%,transparent 46%),radial-gradient(ellipse at 80% 155%,#24a8d158 0 48%,transparent 49%);
+}
+#homeExperiment #multiplayerLobby>footer button{width:min(42%,340px);min-width:8em;font-size:1.13em}
+@media(max-width:1000px){
+ #homeExperiment #multiplayerLobby{left:calc(225px + 3vw);width:calc(97vw - 225px);border-width:3px}
+}
+@media(max-height:550px){
+ #homeExperiment #multiplayerLobby{top:54%;height:min(82dvh,460px);left:calc(195px + 3vw);width:calc(97vw - 195px)}
+ #multiplayerLobby .multiplayerStats{padding-block:.65em}
+ #multiplayerLobby .multiplayerStat{min-height:3.3em}
+}
+@media(max-width:650px){
+ #homeExperiment #multiplayerLobby{left:3vw;width:94vw}
+}
+@media(max-width:430px){
+ #multiplayerLobby .dialogHead h2{font-size:1.55em}
+ #multiplayerLobby .multiplayerBeta{padding:.32em .6em;font-size:.72em}
+ #multiplayerLobby .multiplayerStat{flex-direction:column;justify-content:center;text-align:center;padding:.48em}
+ #multiplayerLobby .multiplayerServers article{grid-template-columns:3.65em minmax(0,1fr) auto;gap:.45em;padding:.55em}
+ #multiplayerLobby .multiplayerServerArt{width:3.65em;height:3.65em}
+ #homeExperiment #multiplayerLobby button.multiplayerJoin:not(#brand):not(#chatToggle){min-width:0;padding:.5em}
+ #multiplayerLobby .multiplayerJoin img{display:none}
+}

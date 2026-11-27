@@ -1,4 +1,2 @@
-v0.0.304
-- Added a movement relay for nearby players when direct connections fail and improved room reconnection.
-- Smoothed remote movement and corrected stopped-ship exhaust and player label visibility.
-- Added in-game Kick and Report confirmations, updated the host crown, and moved Quick Join below the server list.
+v0.0.305
+- Redesigned the Multiplayer lobby with server cards and a separate Quick Join button below the scrolling list.

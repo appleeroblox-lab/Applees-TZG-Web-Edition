@@ -1,6 +1,6 @@
 import {menuMotion} from './menu-motion.js?v=187';
 import {supabaseConfig} from './supabase-config.js';
-export const CLIENT_VERSION='v0.0.306';
+export const CLIENT_VERSION='v0.0.307';
 export function semanticVersion(value){const s=String(value??'');if(/^v?\d+\.\d+\.\d+$/.test(s))return 'v'+s.replace(/^v/,'');if(/^\d+$/.test(s))return 'v0.0.'+s;return null}
 const installed=new WeakMap();
 export function installRuntimeVersions(doc=document,fetcher=globalThis.fetch){

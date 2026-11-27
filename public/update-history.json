@@ -1,8 +1,9 @@
 {
-  "currentVersion": "v0.0.306",
+  "currentVersion": "v0.0.307",
   "legacyMapping": "Legacy source N is displayed as v0.0.N.",
   "historyNote": "The earliest separately documented release is v0.0.3. Original creation notes and separate entries for v0.0.1–v0.0.2, v0.0.9–v0.0.13 and v0.0.18–v0.0.22 are not recoverable from this repository. The first Git import on 25 October 2026 already contained earlier development. Historical features may be replaced by later updates.",
   "entries": [
+    {"legacyVersion": 307, "version": "v0.0.307", "date": "2026-11-27", "title": "Long-distance player labels", "changes": ["Player name labels are visible at any distance in the same location, with approximate distances when players are outside nearby multiplayer range."], "source": {"kind": "current release"}},
     {"legacyVersion": 306, "version": "v0.0.306", "date": "2026-11-27", "title": "Multiplayer lobby positioning", "changes": ["Centered and narrowed the Multiplayer lobby on mobile.", "Restored player avatars, made roster names and pictures open player profiles, and showed friend-request feedback in Settings."], "source": {"kind": "current release"}},
     {"legacyVersion": 305, "version": "v0.0.305", "date": "2026-11-27", "title": "Multiplayer lobby redesign", "changes": ["Redesigned the Multiplayer lobby with server cards and a separate Quick Join button below the scrolling list."], "source": {"kind": "current release"}},
     {"legacyVersion": 304, "version": "v0.0.304", "date": "2026-11-27", "title": "Multiplayer connection and roster fixes", "changes": ["Added a movement relay for nearby players when direct connections fail and improved room reconnection.", "Smoothed remote movement and corrected stopped-ship exhaust and player label visibility.", "Added in-game Kick and Report confirmations, updated the host crown, and moved Quick Join below the server list."], "source": {"kind": "current release"}},

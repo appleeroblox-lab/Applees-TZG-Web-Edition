@@ -172,7 +172,7 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
  };
  const network=new MultiplayerNetwork({endpoint,token:tokens,onChange:renderMenu,onError:error=>{message.textContent=error;if(entered)notify(error)},onNotice:notify,onExit:(reason,kind)=>returnHome(reason,kind)});
  const sendAction=payload=>{if(!network.send(payload))throw Error('Multiplayer is reconnecting. Try again shortly.')};
- const ghosts=new Map();
+ const ghosts=new Map(),nameplates=new Map();
  let busy=false,operation=null,roomId=null,approved=null,checking=null,lastPaint=0,statsTime=0,sample=null,entered=false;
  async function checkAccess(force=false){
   const user=account()?.user?.id;
@@ -360,11 +360,11 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
    }
   }
  }
- function removeGhost(ghost){ghost.userData.nameplate?.remove();ghost.removeFromParent();ghost.userData.dispose?.()}
- function clearGhosts(){for(const ghost of ghosts.values())removeGhost(ghost);ghosts.clear()}
- const projected=new T.Vector3(),targetRotation=new T.Quaternion();
+ function removeGhost(ghost){ghost.removeFromParent();ghost.userData.dispose?.()}
+ function clearGhosts(){for(const ghost of ghosts.values())removeGhost(ghost);ghosts.clear();for(const plate of nameplates.values())plate.remove();nameplates.clear()}
+ const projected=new T.Vector3(),marker=new T.Vector3(),cameraPoint=new T.Vector3(),targetRotation=new T.Quaternion();
  let hudRects=[],hudCheckedAt=-Infinity;
- const hudSelector='#gameTop button,#gameTop #brand,#flightPad,#flightRight,#vitals,#flightGauge,#shipPanel,#surfacePanel,#touchControls button,#globalChat,#minimap,#minimapOpen,#utilityMenu,#hudDock,#targetPanel,#missionPanel';
+ const hudSelector='#gameTop button,#gameTop #brand,#flightPad,#flightRight,#vitals,#flightGauge,#shipPanel,#surfacePanel,#touchControls button,#chatPanel,#wallet,#bodyReadout,#minimap,#minimapOpen,#utilityMenu,#hudDock,#targetPanel,#missionPanel';
  function overlapsHud(plate,x,y,now){
   if(now-hudCheckedAt>150){
    hudCheckedAt=now;
@@ -376,19 +376,53 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
   const half=plate.offsetWidth/2,height=plate.offsetHeight;
   return hudRects.some(rect=>x+half>rect.left&&x-half<rect.right&&y>rect.top&&y-height<rect.bottom);
  }
+ function drawNameplate(player,position,separation,camera,now,approximate,inSpace){
+  let plate=nameplates.get(player.id);
+  if(!plate){
+   plate=node('div',null,'multiplayerNameplate');plate.append(node('strong'),node('span'),node('span'));
+   nameplates.set(player.id,plate);document.body.append(plate);
+  }
+  const identity=player.name+'|'+player.verified+'|'+player.device+'|'+player.level;
+  if(plate.dataset.identity!==identity){
+   plate.dataset.identity=identity;setVerifiedName(plate.children[0],player.name,player.verified);
+   plate.children[1].textContent=(player.device||'Unknown')+' (Lv-'+(player.level||1)+')';
+  }
+  const range=(approximate?'≈ ':'')+multiplayerDistance(separation,inSpace);
+  if(plate.children[2].textContent!==range)plate.children[2].textContent=range;
+  cameraPoint.copy(position).applyMatrix4(camera.matrixWorldInverse);
+  projected.copy(position).project(camera);
+  const offscreen=cameraPoint.z>=0||Math.abs(projected.x)>1||Math.abs(projected.y)>1;
+  let x=projected.x,y=projected.y;
+  if(offscreen){
+   x=cameraPoint.x;y=cameraPoint.y;
+   if(Math.abs(x)+Math.abs(y)<.001)y=-1;
+   const scale=Math.max(Math.abs(x),Math.abs(y));
+   x/=scale;y/=scale;
+  }
+  const half=plate.offsetWidth/2,height=plate.offsetHeight;
+  x=T.MathUtils.clamp((x*.5+.5)*innerWidth,half+10,innerWidth-half-10);
+  y=T.MathUtils.clamp((.5-y*.5)*innerHeight,height+10,innerHeight-10);
+  if(offscreen&&overlapsHud(plate,x,y,now)){
+   const margin=height+10;
+   for(const offset of [-margin,margin,-2*margin,2*margin]){
+    const candidate=T.MathUtils.clamp(y+offset,height+10,innerHeight-10);
+    if(!overlapsHud(plate,x,candidate,now)){y=candidate;break}
+   }
+  }
+  plate.style.visibility=overlapsHud(plate,x,y,now)?'hidden':'visible';
+  plate.style.left=x+'px';plate.style.top=y+'px';
+ }
  function update(dt,scene,origin,camera){
   if(!network.room||!entered){clearGhosts();return}
   const local=pose();network.update(local);
   if(!scene||!active()){clearGhosts();return}
-  const now=performance.now(),keep=new Set();
-  const draw=(key,packet,player,from=packet,alpha=1)=>{
-   if(distance(packet.pos,local.pos)>locationRange(local.group))return;
+  const now=performance.now(),keep=new Set(),visiblePlayers=new Set(),peers=network.remotePeers();
+  const draw=(key,packet,from=packet,alpha=1)=>{
    keep.add(key);
    let ghost=ghosts.get(key);
    if(!ghost||ghost.userData.mode!==packet.mode){
     if(ghost)removeGhost(ghost);
     ghost=model(packet.mode);ghost.userData.mode=packet.mode;ghosts.set(key,ghost);
-
    }
    if(ghost.parent!==scene)scene.add(ghost);
    ghost.position.fromArray(from.pos);
@@ -396,41 +430,32 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
    if(origin)ghost.position.sub(origin);
    ghost.quaternion.fromArray(from.q).slerp(targetRotation.fromArray(packet.q),alpha);
    ghost.userData.animate?.(packet,now);
-   const separation=distance(packet.pos,local.pos);
-   if(!camera||!player||separation>(local.group.startsWith('space:')?1200:250)){
-    if(ghost.userData.nameplate)ghost.userData.nameplate.hidden=true;
-    return;
-   }
-   let plate=ghost.userData.nameplate;
-   if(!plate){
-    plate=node('div',null,'multiplayerNameplate');plate.append(node('strong'),node('span'),node('span'));
-    ghost.userData.nameplate=plate;document.body.append(plate);
-   }
-   const identity=player.name+'|'+player.verified+'|'+player.device+'|'+player.level;
-   if(plate.dataset.identity!==identity){
-    plate.dataset.identity=identity;setVerifiedName(plate.children[0],player.name,player.verified);
-    plate.children[1].textContent=(player.device||'Unknown')+' (Lv-'+(player.level||1)+')';
-   }
-   plate.children[2].textContent=multiplayerDistance(separation,!!origin);
-   projected.copy(ghost.position).addScaledVector(camera.up,packet.mode==='foot'?2.1:7).project(camera);
-   plate.hidden=projected.z< -1||projected.z>1||Math.abs(projected.x)>1||Math.abs(projected.y)>1;
-   if(!plate.hidden){
-    const x=(projected.x*.5+.5)*innerWidth,y=(.5-projected.y*.5)*innerHeight;
-    plate.style.visibility=overlapsHud(plate,x,y,now)?'hidden':'visible';
-    plate.style.left=x+'px';plate.style.top=y+'px';
-   }
-
+   return ghost;
   };
-  for(const [id,peer] of network.remotePeers()){
-   const packet=peer.pose;
-   if(!packet||now-peer.seen>8500||packet.group!==local.group)continue;
-   const player=network.room.players.find(p=>p.id===id&&p.location===local.group);
-   if(!player)continue;
-   const {from,to,alpha}=remotePoseFrame(peer,now);
-   draw(id,to,player,from,alpha);
-   if(to.parkedShip)draw(id+':ship',to.parkedShip,player,from.parkedShip??to.parkedShip,alpha);
+  for(const player of network.room.players){
+   if(player.id===network.self||player.location!==local.group)continue;
+   const peer=peers.get(player.id),packet=peer?.pose;
+   const nearby=packet&&now-peer.seen<=8500&&packet.group===local.group&&distance(packet.pos,local.pos)<=locationRange(local.group);
+   let separation;
+   if(nearby){
+    const {from,to,alpha}=remotePoseFrame(peer,now);
+    const ghost=draw(player.id,to,from,alpha);
+    if(to.parkedShip&&distance(to.parkedShip.pos,local.pos)<=locationRange(local.group))draw(player.id+':ship',to.parkedShip,from.parkedShip??to.parkedShip,alpha);
+    marker.copy(ghost.position);
+    if(camera)marker.addScaledVector(camera.up,to.mode==='foot'?2.1:7);
+    separation=distance(to.pos,local.pos);
+   }else if(player.anchor){
+    marker.fromArray(player.anchor);
+    if(origin)marker.sub(origin);
+    separation=distance(player.anchor,local.pos);
+   }else continue;
+   if(camera){
+    visiblePlayers.add(player.id);
+    drawNameplate(player,marker,separation,camera,now,!nearby,!!origin);
+   }
   }
   for(const [id,ghost] of ghosts)if(!keep.has(id)){removeGhost(ghost);ghosts.delete(id)}
+  for(const [id,plate] of nameplates)if(!visiblePlayers.has(id)){plate.remove();nameplates.delete(id)}
   if(now-lastPaint>750){lastPaint=now;renderMenu()}
  }
  launch.onclick=()=>{openPanel(menu);refreshList()};

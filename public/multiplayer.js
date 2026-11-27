@@ -1,3 +1,4 @@
+import {WormholeVisual} from './proto-visuals.js?v=195';
 import {setAvatar} from './social-ui.js?v=187';
 import {setVerifiedName} from './identity-ui.js?v=91';
 import * as T from './vendor/three.module.js';
@@ -26,7 +27,7 @@ function closePanel(element){
  return closing;
 }
 
-export function installMultiplayer({home,account,bodies,pose,enter,leave,model,notify,closeSettings=()=>document.getElementById('settingsDialog')?.close(),ready=()=>{},active=()=>true,lifecycle}){
+export function installMultiplayer({home,account,bodies,pose,enter,leave,model,sky=()=>null,notify,closeSettings=()=>document.getElementById('settingsDialog')?.close(),ready=()=>{},active=()=>true,lifecycle}){
  const style=node('link');style.rel='stylesheet';style.href='./multiplayer.css?v=306';document.head.append(style);
  const launch=home.multiplayerButton;
  const menu=node('section',null,'multiplayerPanel');menu.id='multiplayerLobby';menu.hidden=true;menu.setAttribute('role','dialog');menu.setAttribute('aria-label','Multiplayer');
@@ -362,22 +363,15 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
  }
  function removeGhost(ghost){
   const portal=ghost.userData.portal;
-  if(portal){portal.removeFromParent();for(const mesh of portal.children){mesh.geometry.dispose();mesh.material.dispose()}}
+  portal?.dispose();
   ghost.removeFromParent();ghost.userData.dispose?.()}
  function clearGhosts(){for(const ghost of ghosts.values())removeGhost(ghost);ghosts.clear();for(const plate of nameplates.values())plate.remove();nameplates.clear()}
  const projected=new T.Vector3(),marker=new T.Vector3(),cameraPoint=new T.Vector3(),targetRotation=new T.Quaternion();
  const warpEnd=new T.Vector3(),portalCenter=new T.Vector3(),portalForward=new T.Vector3();
- function makePortal(){
-  const portal=new T.Group();
-  const core=new T.Mesh(new T.SphereGeometry(1,24,16),new T.MeshBasicMaterial({color:0x010005,fog:false}));
-  const rim=new T.Mesh(new T.RingGeometry(.95,1.12,48),new T.MeshBasicMaterial({color:0xa47cff,side:T.DoubleSide,fog:false,toneMapped:false}));
-  portal.add(core,rim);
-  return portal;
- }
- function animateWarp(ghost,packet,age,camera){
+ function animateWarp(ghost,packet,age,camera,nowSeconds){
   const fx=packet.warpFx;
   const portal=ghost.userData.portal;
-  if(portal)portal.visible=false;
+  if(portal)portal.group.visible=false;
   ghost.visible=true;
   if(!fx)return;
   const elapsed=fx.elapsed+age;
@@ -393,19 +387,24 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
    }
    return;
   }
-  const effect=portal??makePortal();
-  if(!portal){ghost.userData.portal=effect;ghost.parent.add(effect)}
-  if(effect.parent!==ghost.parent)ghost.parent.add(effect);
-  const radius=12,progress=T.MathUtils.smoothstep(elapsed,.45,1.85);
+  const effect=portal??(ghost.userData.portal=new WormholeVisual(12));
+  if(effect.group.parent!==ghost.parent)ghost.parent.add(effect.group);
+  const exiting=fx.kind==='exit';
   portalForward.set(0,0,-1).applyQuaternion(ghost.quaternion);
-  portalCenter.copy(ghost.position).addScaledVector(portalForward,85);
-  effect.position.copy(portalCenter);
-  if(camera)effect.quaternion.copy(camera.quaternion);
+  portalCenter.copy(ghost.position).addScaledVector(portalForward,exiting?-85:85);
+  effect.group.position.copy(portalCenter);
   const size=T.MathUtils.smoothstep(elapsed,0,.6)*(1-T.MathUtils.smoothstep(elapsed,1.85,2.75));
-  effect.scale.setScalar(radius*size);
-  effect.visible=size>0;
-  ghost.position.lerp(portalCenter,progress);
-  ghost.visible=elapsed<1.85;
+  effect.group.scale.setScalar(size);
+  effect.group.visible=size>0;
+  if(camera&&size>0)effect.update(camera,sky(),nowSeconds);
+  if(exiting){
+   const progress=T.MathUtils.smoothstep(elapsed,.6,2.15);
+   ghost.position.lerp(portalCenter,1-progress);
+   ghost.visible=elapsed>=.6;
+  }else{
+   ghost.position.lerp(portalCenter,T.MathUtils.smoothstep(elapsed,.45,1.85));
+   ghost.visible=elapsed<1.85;
+  }
  }
  function drawNameplate(player,position,separation,camera,now,approximate,inSpace){
   let plate=nameplates.get(player.id);
@@ -456,8 +455,11 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
     ghost.position.fromArray(packet.warpFx.start);
     if(origin)ghost.position.sub(origin);
    }
-   animateWarp(ghost,packet,age,camera);
-   ghost.userData.animate?.(packet,now);
+   animateWarp(ghost,packet,age,camera,now/1000);
+   marker.copy(ghost.position);
+   if(origin)marker.add(origin);
+   if(marker.distanceToSquared(projected.fromArray(local.pos))>locationRange(local.group)**2)ghost.visible=false;
+   ghost.userData.animate?.(packet,now,{dt,origin,camera});
    return ghost;
   };
   for(const player of network.room.players){
@@ -474,7 +476,6 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
     marker.copy(ghost.position);
     if(origin)marker.add(origin);
     separation=distance(marker.toArray(),local.pos);
-    if(separation>locationRange(local.group))ghost.visible=false;
     if(to.parkedShip&&distance(to.parkedShip.pos,local.pos)<=locationRange(local.group))draw(player.id+':ship',to.parkedShip,from.parkedShip??to.parkedShip,alpha);
     marker.copy(ghost.position);
     if(camera)marker.addScaledVector(camera.up,to.mode==='foot'?2.1:7);

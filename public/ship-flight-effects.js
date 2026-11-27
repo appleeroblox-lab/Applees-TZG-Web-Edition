@@ -7,7 +7,7 @@ const vertex=`varying vec3 vEntryNormal;varying vec3 vEntryPoint;`;
 // Surface normals facing the velocity vector meet incoming air first. No hull edits.
 export function plasmaShader(shader,uniforms){Object.assign(shader.uniforms,uniforms);shader.vertexShader=vertex+'\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvEntryNormal=normalize(mat3(modelMatrix)*normal);vEntryPoint=position;');shader.fragmentShader='uniform vec3 entryFlow;uniform float entryHeat;uniform float entryTime;varying vec3 vEntryNormal;varying vec3 vEntryPoint;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>',`float facing=pow(max(0.,dot(normalize(vEntryNormal),normalize(entryFlow))),1.8);float ripple=.8+.2*sin(dot(vEntryPoint,vec3(8.,17.,11.))-entryTime*25.);vec3 plasma=mix(vec3(1.,.08,.005),vec3(1.,.65,.14),pow(facing,5.));outgoingLight+=plasma*facing*ripple*entryHeat*4.5;\n#include <opaque_fragment>`)}
 export class ShipFlightEffects{
- constructor(rig,scene){this.rig=rig;this.scene=scene;this.uniforms={entryFlow:{value:new T.Vector3(0,0,-1)},entryHeat:{value:0},entryTime:{value:0},plasmaDetail:{value:1}};this.point=new T.Vector3();this.tip=new T.Vector3();this.delta=new T.Vector3();this.heat=0;this.shake=0;this.plume=new ReentryPlume(rig);this.groundDown=new T.Vector3(0,-1,0);this.shakeOffset=new T.Vector3();this.outerShells=[];this.localFlow=new T.Vector3();this.shells=[];this.opacity=0;this.samples=[];this.tips=rig.shipTrailTips||[new T.Vector3(-3.7,-.76,.9),new T.Vector3(3.7,-.76,.9)];this.positions=new Float32Array(64*12);this.alphas=new Float32Array(64*4);this.geometry=new T.BufferGeometry();this.geometry.setAttribute('position',new T.BufferAttribute(this.positions,3).setUsage(T.DynamicDrawUsage));this.geometry.setAttribute('alpha',new T.BufferAttribute(this.alphas,1).setUsage(T.DynamicDrawUsage));this.material=new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false,uniforms:{strength:{value:0},trailTime:{value:0},trailColor:{value:new T.Color().setRGB(.92,.97,1)}},vertexShader:'#include <common>\n#include <logdepthbuf_pars_vertex>\nattribute float alpha;attribute vec3 stopTint;varying float trailAlpha;varying vec3 trailTint;void main(){trailAlpha=alpha;trailTint=stopTint;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);\n#include <logdepthbuf_vertex>\n}',fragmentShader:'#include <logdepthbuf_pars_fragment>\nuniform float strength;uniform float trailTime;uniform vec3 trailColor;varying float trailAlpha;varying vec3 trailTint;void main(){\n#include <logdepthbuf_fragment>\nfloat age=1.-clamp(trailAlpha,0.,1.);float flow=1.+.22*age*sin(trailTime*14.-age*26.);gl_FragColor=vec4(trailColor*trailTint,trailAlpha*strength*flow);}'});this.trails=new T.LineSegments(this.geometry,this.material);this.trails.name='White wingtip trails';this.trails.frustumCulled=false;this.trails.visible=false;scene.add(this.trails);scene.userData.shipTrails=this.trails;
+ constructor(rig,scene,{trailOnly=false}={}){this.rig=rig;this.scene=scene;this.uniforms={entryFlow:{value:new T.Vector3(0,0,-1)},entryHeat:{value:0},entryTime:{value:0},plasmaDetail:{value:1}};this.point=new T.Vector3();this.tip=new T.Vector3();this.delta=new T.Vector3();this.heat=0;this.shake=0;this.plume=trailOnly?null:new ReentryPlume(rig);this.groundDown=new T.Vector3(0,-1,0);this.shakeOffset=new T.Vector3();this.outerShells=[];this.localFlow=new T.Vector3();this.shells=[];this.opacity=0;this.samples=[];this.tips=rig.shipTrailTips||[new T.Vector3(-3.7,-.76,.9),new T.Vector3(3.7,-.76,.9)];this.positions=new Float32Array(64*12);this.alphas=new Float32Array(64*4);this.geometry=new T.BufferGeometry();this.geometry.setAttribute('position',new T.BufferAttribute(this.positions,3).setUsage(T.DynamicDrawUsage));this.geometry.setAttribute('alpha',new T.BufferAttribute(this.alphas,1).setUsage(T.DynamicDrawUsage));this.material=new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false,uniforms:{strength:{value:0},trailTime:{value:0},trailColor:{value:new T.Color().setRGB(.92,.97,1)}},vertexShader:'#include <common>\n#include <logdepthbuf_pars_vertex>\nattribute float alpha;attribute vec3 stopTint;varying float trailAlpha;varying vec3 trailTint;void main(){trailAlpha=alpha;trailTint=stopTint;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);\n#include <logdepthbuf_vertex>\n}',fragmentShader:'#include <logdepthbuf_pars_fragment>\nuniform float strength;uniform float trailTime;uniform vec3 trailColor;varying float trailAlpha;varying vec3 trailTint;void main(){\n#include <logdepthbuf_fragment>\nfloat age=1.-clamp(trailAlpha,0.,1.);float flow=1.+.22*age*sin(trailTime*14.-age*26.);gl_FragColor=vec4(trailColor*trailTint,trailAlpha*strength*flow);}'});this.trails=new T.LineSegments(this.geometry,this.material);this.trails.name='White wingtip trails';this.trails.frustumCulled=false;this.trails.visible=false;if(!trailOnly){scene.add(this.trails);scene.userData.shipTrails=this.trails;}
   this.trailRight=new T.Vector3();this.trailOrigin=new T.Vector3();this.trailTangent=new T.Vector3();this.trailEye=new T.Vector3();this.trailTint=new T.Color();
   this.trailTints=new T.Float32BufferAttribute(new Float32Array(this.alphas.length*3).fill(1),3).setUsage(T.DynamicDrawUsage);
   this.geometry.setAttribute('stopTint',this.trailTints);
@@ -82,25 +82,32 @@ gl_FragColor=vec4(mix(vec3(1.,.7,.2),vec3(1.,.065,.004),tail),strength*.9);}`});
  for(const shell of this.shells)shell.visible=this.heat>.002&&['High','Ultra','Ultra+'].includes(quality);for(const shell of this.outerShells)shell.visible=this.heat>.002&&!camera.userData.cockpit&&!mobile&&['Ultra','Ultra+'].includes(quality);
 
  const inBody=surface.active,velocity=inBody?surface.vel:flight.vel,speed=velocity.length();
- const trailScene=inBody?this.rig.ship.parent:this.scene;
- if(trailScene&&this.trails.parent!==trailScene){trailScene.add(this.trails);this.samples.length=0;}
  const near=!inBody&&flight.nearest?.(),gap=near&&hasAtmosphere(near)?flight.pos.distanceTo(near.pos)-near.r:Infinity;
  const approach=Number.isFinite(gap)?T.MathUtils.smoothstep(gap,0,35):1;
  const eligible=enabled&&!warping&&!crew.onFoot&&(!inBody||surface.launched);
- const target=eligible&&!paused?T.MathUtils.smoothstep(speed,inBody?5:.05,inBody?25:1)*approach:0;
- this.opacity+=(target-this.opacity)*(1-Math.exp(-dt*6));this.material.uniforms.strength.value=this.opacity*(flight.boostWindow?1:.48);if(!paused)this.material.uniforms.trailTime.value=time;
- this.trails.visible=eligible&&this.opacity>.005;
- if(!eligible||!this.trails.visible){
-  this.samples.length=0;this.geometry.setDrawRange(0,0);this.ribbon.geometry.setDrawRange(0,0);return air;
+ const target=T.MathUtils.smoothstep(speed,inBody?5:.05,inBody?25:1)*approach;
+ this.updateTrails(dt,time,{origin:inBody?null:flight.pos,camera,quality,mobile,eligible,target,paused,boost:flight.boostWindow});
+ return air;
  }
- const origin=inBody?this.trailOrigin.set(0,0,0):flight.pos;
- const anchors=this.tips.map(tip=>this.rig.shipTrailTips?this.rig.model.localToWorld(tip.clone()):tip.clone().applyQuaternion(flight.q));
+ updateTrails(dt,time,{origin,camera,quality,mobile,eligible,target=1,paused=false,boost=false}){
+ const trailScene=this.rig.ship.parent;
+ if(trailScene&&this.trails.parent!==trailScene){trailScene.add(this.trails);this.samples.length=0;}
+ this.opacity+=((eligible&&!paused?target:0)-this.opacity)*(1-Math.exp(-dt*6));
+ this.material.uniforms.strength.value=this.opacity*(boost?1:.48);
+ if(!paused)this.material.uniforms.trailTime.value=time;
+ this.trails.visible=eligible&&this.opacity>.005;
+ if(!this.trails.visible){
+  this.samples.length=0;this.geometry.setDrawRange(0,0);this.ribbon.geometry.setDrawRange(0,0);return;
+ }
+ const inBody=!origin;
+ origin??=this.trailOrigin.set(0,0,0);
+ const anchors=this.tips.map(tip=>this.rig.shipTrailTips?this.rig.model.localToWorld(tip.clone()):this.rig.ship.localToWorld(tip.clone()));
  const policy=graphicsPolicy(quality),count=mobile?Math.min(20,policy.trailSamples):policy.trailSamples;
  this.sampleTime=(this.sampleTime||0)+dt;
  if(!paused&&(this.sampleTime>=1/60||!this.samples.length)){
   this.sampleTime=0;this.samples.unshift(anchors.map(tip=>tip.clone().add(origin)));if(this.samples.length>count)this.samples.length=count;
  }
- const length=inBody?24:flight.boostWindow?150:65;let n=0;
+ const length=inBody?24:boost?150:65;let n=0;
  // Clip each continuous polyline once at its distance budget; never fold old samples onto a sphere.
  for(let side=0;side<2;side++){const previous=anchors[side].clone();let travelled=0;
  for(let i=0;i<this.samples.length;i++){const point=this.point.copy(this.samples[i][side]).sub(origin),segment=point.distanceTo(previous);if(segment<.0001)continue;const remaining=length-travelled,clipped=segment>remaining;if(clipped)point.lerpVectors(previous,point,remaining/segment);const endDistance=travelled+Math.min(segment,remaining);previous.toArray(this.positions,n*3);this.alphas[n++]=Math.pow(Math.max(0,1-travelled/length),1.6);point.toArray(this.positions,n*3);this.alphas[n++]=Math.pow(Math.max(0,1-endDistance/length),1.6);previous.copy(point);travelled=endDistance;if(clipped||travelled>=length||n>=this.alphas.length-2)break;}}
@@ -120,7 +127,7 @@ gl_FragColor=vec4(mix(vec3(1.,.7,.2),vec3(1.,.065,.004),tail),strength*.9);}`});
    this.trailEye.copy(camera.position).sub(this.point);
    this.trailRight.crossVectors(this.trailTangent,this.trailEye).normalize();
   }
-  if(!camera||this.trailRight.lengthSq()<.001)this.trailRight.set(1,0,0).applyQuaternion(flight.q);
+  if(!camera||this.trailRight.lengthSq()<.001)this.trailRight.set(1,0,0).applyQuaternion(this.rig.ship.quaternion);
   this.point.addScaledVector(this.trailRight,-width);
   this.ribbonPositions.setXYZ(i*2,this.point.x,this.point.y,this.point.z);
   this.point.addScaledVector(this.trailRight,width*2);
@@ -130,6 +137,9 @@ gl_FragColor=vec4(mix(vec3(1.,.7,.2),vec3(1.,.065,.004),tail),strength*.9);}`});
  }
  this.ribbon.geometry.setDrawRange(0,n*3);
  this.ribbonPositions.needsUpdate=true;this.ribbonAlphas.needsUpdate=true;this.trailTints.needsUpdate=true;this.ribbonTints.needsUpdate=true;
- this.geometry.setDrawRange(0,n);this.geometry.attributes.position.needsUpdate=true;this.geometry.attributes.alpha.needsUpdate=true;return air}
+ this.geometry.setDrawRange(0,n);this.geometry.attributes.position.needsUpdate=true;this.geometry.attributes.alpha.needsUpdate=true;
+ }
+ disposeTrails(){this.trails.removeFromParent();this.geometry.dispose();this.material.dispose();this.ribbon.geometry.dispose();this.ribbon.material.dispose();}
+
 }
 export function ensureTrailsControl(doc){let input=doc.getElementById('shipTrails');if(input)return input;const label=doc.createElement('label');label.append(doc.createTextNode('Ship Trails in Space'));input=doc.createElement('input');input.id='shipTrails';input.type='checkbox';input.checked=true;label.append(input);(doc.getElementById('installGame')?.closest('.settingsSection')||doc.querySelector('#settingsContent .settingsSection')||doc.getElementById('settingsContent')).append(label);return input}

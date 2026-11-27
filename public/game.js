@@ -1,5 +1,5 @@
 import {multiplayerPaint} from './multiplayer-network.js';
-import {installMultiplayer} from './multiplayer.js?v=308';
+import {installMultiplayer} from './multiplayer.js?v=309';
 import {gameLifecycle} from './game-lifecycle.js?v=290';
 import {storedGuestName} from './guest-profile.js';
 import {installRuntimeVersions,installUpdateCheck} from './runtime-versions.js?v=285';
@@ -8,7 +8,7 @@ import {installFlightAutosave} from './flight-autosave.js?v=220';
 import {readFlightSave,writeFlightSave} from './flight-save.js?v=213';
 import {installGyroControls} from './device-gyro.js?v=207';
 import {ProtoSystem} from './proto-system.js?v=195';
-import {PROTO_SYSTEM,temporalNavigationAllowed,createProtoBodies} from './proto-data.js?v=195';
+import {PROTO_SYSTEM,TIME_TUNNEL_SECONDS,temporalNavigationAllowed,createProtoBodies} from './proto-data.js?v=195';
 import {configureSkyTexture} from './sky-texture.js?v=194';
 import {installLeaveGame} from './leave-game.js?v=182';
 import {WorldLabelDepth} from './world-label-depth.js?v=182';
@@ -89,7 +89,9 @@ import {Flight,V,attitude,clearance,safeArrival} from './flight.js?v=170';
 import {TerrainManager,surfacePadding,terrainHeight} from './terrain.js';
 import {CompatibilityRenderer} from './compatibility.js?v=194';
 import {Economy,TRADER} from './economy.js?v=170';
-import {Prospecting} from './prospecting.js?v=190';
+import {createHeldMesh} from './held-items.js';
+import {createShovel} from './tool-models.js';
+import {Prospecting,makePickaxe} from './prospecting.js?v=190';
 import {InventoryUI} from './inventory-ui.js?v=91';
 import {GameSound,ambienceFor,installAudioSettings} from './sound.js?v=272';
 import {Crew} from './crew.js?v=180';
@@ -777,50 +779,102 @@ if(cloudAccounts){
   const interstellar=nav&&nav.sourceSystem!==nav.b.system;
   const departure=temporal?.elapsed??(interstellar?nav.elapsed:Infinity);
   const portal=departure<3;
-  const inTunnel=warping&&!portal&&(temporal||interstellar);
-  const group=inTunnel?'warp:'+flight.system:surface.active?'body:'+surface.body.id:'space:'+flight.system;
-  const warpFx=portal?{kind:'portal',elapsed:departure}:nav&&!interstellar?{
-   kind:'local',elapsed:nav.elapsed,start:nav.start.toArray(),end:nav.end.toArray(),duration:nav.duration
-  }:undefined;
-  const onFoot=surface.active&&crew.onFoot;
+  const temporalExit=temporal&&temporal.elapsed>=3+TIME_TUNNEL_SECONDS;
+  const stellarExit=interstellar&&nav.elapsed>=nav.duration-3;
+  const arrival=temporalExit?(temporal.multiplayerArrival??=proto.arrivalPose):null;
+  const exiting=temporalExit||stellarExit;
+  const inTunnel=warping&&!portal&&!exiting&&(temporal||interstellar);
+  const group=arrival?'space:'+arrival.system:inTunnel?'warp:'+flight.system:surface.active&&!warping?'body:'+surface.body.id:'space:'+flight.system;
+  const warpFx=exiting?{kind:'exit',elapsed:temporalExit?(temporal.elapsed-3-TIME_TUNNEL_SECONDS)*.6:nav.elapsed-(nav.duration-3)}:
+   portal?{kind:'portal',elapsed:departure}:nav&&!interstellar?{
+    kind:'local',elapsed:nav.elapsed,start:nav.start.toArray(),end:nav.end.toArray(),duration:nav.duration
+   }:undefined;
+  const onFoot=!warping&&surface.active&&crew.onFoot;
   const airborne=onFoot&&crew.pos.y>crew.ground()+.06;
   const state=warping?'warp':onFoot?airborne?(crew.velocityY>0?'jump':'fall'):crew.moving?(crew.running||flight.input.boost?'run':'walk'):'idle':
    surface.active&&surface.phase==='descending'?'land':surface.active&&surface.launchElapsed!==null&&surface.phase==='flying'?'takeoff':
    shipBoost.active?'boost':surface.active&&surface.onGround?'idle':'fly';
   const engine=!onFoot&&(!!warping||(surface.active?surface.launched&&surface.vel.lengthSq()>.0001:flight.vel.lengthSq()>.000001));
-  const position=onFoot?crew.pos:surface.active?surface.pos:portal&&interstellar?nav.start:flight.pos;
-  const q=onFoot?rotation.setFromAxisAngle(axis,crew.facingYaw??crew.yaw??0):portal&&interstellar?nav.transitQ:flight.q;
+  const position=arrival?.pos??(stellarExit?nav.end:portal&&interstellar?nav.start:onFoot?crew.pos:surface.active&&!warping?surface.pos:flight.pos);
+  const q=arrival?.q??(stellarExit?(nav.multiplayerExitQ??=attitude(nav.end,nav.b.pos)):onFoot?rotation.setFromAxisAngle(axis,crew.facingYaw??crew.yaw??0):portal&&interstellar?nav.transitQ:flight.q);
   const mode=onFoot?'foot':'ship';
+  const held=onFoot?(economy.held?.type??(economy.toolKind==='pickaxe'?'pickaxe':null)):null;
   const paint=multiplayerPaint(mode,{base:homeExperiment.color,face:homeExperiment.face,parts:onFoot?homeExperiment.characterPaint:homeExperiment.shipPaint});
   const parked=onFoot?[surface.pos.toArray(),flight.q.toArray(),multiplayerPaint('ship',{parts:homeExperiment.shipPaint})]:null;
   const mobileAgent=/Android|iPhone|iPad/i.test(navigator.userAgent);
   const tablet=/iPad/i.test(navigator.userAgent)||((mobileAgent||touch)&&Math.min(screen.width,screen.height)>=600);
   const device=tablet?'Tablet':mobileAgent||touch?'Mobile':'PC';
-  return {group,pos:position.toArray(),q:q.toArray(),mode,state,engine,paint,parked,warpFx,device,level:globalThis.tzgPlayerProgress?.level||1};
+  return {group,pos:position.toArray(),q:q.toArray(),mode,state,engine,paint,parked,warpFx,held,trails:shipTrails,device,level:globalThis.tzgPlayerProgress?.level||1};
  };
- multiplayer=installMultiplayer({home:homeExperiment,account:()=>playerAccount,bodies,pose:localPose,notify:toast,lifecycle,closeSettings:()=>closeDialog($('settingsDialog'),true),
+ multiplayer=installMultiplayer({home:homeExperiment,account:()=>playerAccount,bodies,pose:localPose,sky:()=>milkyMap,notify:toast,lifecycle,closeSettings:()=>closeDialog($('settingsDialog'),true),
   active:()=>!experimental?.isolated&&!proto?.transit,
   ready:async()=>{await shipRig.ready},
   enter:enterGameplayFromHome,
   leave:async()=>{save();started=false;closeGameMenus();paused=true;try{await homeExperiment.open()}finally{paused=false}},
   model:mode=>{
+   const disposeModel=root=>root.traverse(o=>{o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m?.dispose()});
    if(mode==='foot'){
-    const avatar=new CapsuleCharacter(),group=avatar.group;let paint;
+    const avatar=new CapsuleCharacter(),group=avatar.group;
+    let paint,held,heldKind,heldObject,heldMesh;
+    function clearHeld(){
+     if(!heldObject)return;
+     heldObject.removeFromParent();
+     disposeModel(heldObject);
+     heldObject=heldMesh=null;
+    }
+    function equipRemote(id){
+     clearHeld();
+     held=id;
+     const def=economy.definition(id);
+     heldKind=id==='pickaxe'?'pickaxe':def?.kind;
+     if(heldKind==='pickaxe'){
+      heldObject=makePickaxe(item=>{
+       if(item!==heldObject){disposeModel(item);return}
+       item.traverse(o=>{if(o.isMesh&&/head|socket/i.test(o.name))o.material.color.set(def?.color??'#97a6b1')});
+      });
+      heldObject.scale.setScalar(.72);
+     }else if(heldKind==='shovel')heldObject=createShovel();
+     else if(def){
+      heldObject=new T.Group();
+      if(!heldKind&&!['tree-log','snow-ball'].includes(id)){
+       heldKind='resource';
+       heldMesh=new T.Mesh(new T.DodecahedronGeometry(.13,0),new T.MeshStandardMaterial({color:def.color,roughness:.7}));
+      }else{
+       heldMesh=createHeldMesh(def);
+       if(heldKind!=='saw')heldKind=id;
+      }
+      heldObject.add(heldMesh);
+     }
+     if(heldObject)group.add(heldObject);
+    }
     group.userData.animate=(packet,now)=>{
      const key=JSON.stringify(packet.paint);if(paint!==key){paint=key;applyCharacterColor(avatar,packet.paint.base,packet.paint.parts);applyCharacterFace(avatar,packet.paint.face)}
-     avatar.update({feet:group.position,rotation:group.quaternion,time:now/1000,moving:['walk','run'].includes(packet.state),running:packet.state==='run',grounded:!['jump','fall'].includes(packet.state),vertical:packet.state==='jump'?1:-1});
+     if(packet.held!==held)equipRemote(packet.held);
+     avatar.update({feet:group.position,rotation:group.quaternion,time:now/1000,moving:['walk','run'].includes(packet.state),running:packet.state==='run',grounded:!['jump','fall'].includes(packet.state),vertical:packet.state==='jump'?1:-1,holding:!!heldObject,tool:heldKind});
+     mountAtGrip(heldObject,avatar.rightGrip,heldKind,{mesh:heldMesh});
     };
-    group.userData.dispose=()=>avatar.dispose();return group;
+    group.userData.dispose=()=>{clearHeld();avatar.dispose()};return group;
    }
    const rig=makeShip();let lastPaint=null,paintSignature='',disposed=false;
-   const clean=()=>rig.ship.traverse(o=>{o.geometry?.dispose();if(o.material&&!Array.isArray(o.material))o.material.dispose()});
-   rig.ship.userData.dispose=()=>{disposed=true;clean()};
+   let trailFX,trailPaint,trailWarp;
+   const clean=()=>disposeModel(rig.ship);
+   rig.ship.userData.dispose=()=>{disposed=true;trailFX?.disposeTrails();clean()};
    rig.ready.then(()=>{if(disposed){clean();return}if(lastPaint)applyShipPaint(rig,lastPaint)});
-   rig.ship.userData.animate=(packet,now)=>{
+   rig.ship.userData.animate=(packet,now,{dt,origin,camera})=>{
     const key=JSON.stringify(packet.paint.parts);if(key!==paintSignature){paintSignature=key;lastPaint=packet.paint.parts;applyShipPaint(rig,lastPaint)}
     rig.model.rotation.x=packet.group.startsWith('body:')&&packet.state==='idle'?Math.PI/2:0;
     const thrust=packet.engine??['fly','boost','takeoff','warp'].includes(packet.state);
     for(const flame of rig.flames){flame.visible=thrust;flame.scale.z=(packet.state==='warp'?3.8:packet.state==='boost'?1.9:1)+Math.sin(now*.018)*.14}
+    const enabled=shipTrails&&packet.trails&&rig.ship.visible;
+    if(enabled&&!trailFX)trailFX=new ShipFlightEffects(rig,null,{trailOnly:true});
+    if(trailFX){
+     const color=packet.paint.parts.trails;
+     const signature=JSON.stringify(color);
+     if(signature!==trailPaint){trailPaint=signature;trailFX.setTrailColor(color)}
+     const warp=packet.warpFx?.kind;
+     if(warp!==trailWarp){trailWarp=warp;trailFX.samples.length=0}
+     trailFX.updateTrails(dt,now/1000,{origin,camera,quality:graphics,mobile:touch,eligible:enabled,target:thrust?1:0,boost:packet.state==='boost'||packet.state==='warp'});
+    }
    };
    return rig.ship;
   }

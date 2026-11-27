@@ -34,17 +34,19 @@ export function readPose(value){
  let warpFx=null;
  if(mode==='ship'&&state==='warp'&&group.startsWith('space:')&&fx&&
   Number.isFinite(fx.elapsed)&&fx.elapsed>=0&&fx.elapsed<=60){
-  if(fx.kind==='portal'&&fx.elapsed<3)warpFx={kind:'portal',elapsed:fx.elapsed};
+  if(['portal','exit'].includes(fx.kind)&&fx.elapsed<3)warpFx={kind:fx.kind,elapsed:fx.elapsed};
   if(fx.kind==='local'&&finite(fx.start,3,1e13)&&finite(fx.end,3,1e13)&&
    Number.isFinite(fx.duration)&&fx.duration>1&&fx.duration<=60){
    warpFx={kind:'local',elapsed:fx.elapsed,start:fx.start,end:fx.end,duration:fx.duration};
   }
  }
+ const held=mode==='foot'&&typeof paint.held==='string'&&/^[a-z0-9-]{1,40}$/.test(paint.held)?paint.held:null;
+ const trails=mode==='ship'&&paint.trails===true;
  let parkedShip;
  if(mode==='foot'&&parked&&finite(parked[0],3,1e13)&&finite(parked[1],4,1.01)&&Math.abs(Math.hypot(...parked[1])-1)<=.04&&distance(parked[0],pos)<1000){
   parkedShip={mode:'ship',pos:parked[0],q:parked[1],paint:multiplayerPaint('ship',parked[2]),group,state:'idle'};
  }
- return {sequence,group,pos,q,mode,state,engine:typeof paint.engine==='boolean'?paint.engine:undefined,paint:multiplayerPaint(mode,paint),parkedShip,warpFx};
+ return {sequence,group,pos,q,mode,state,engine:typeof paint.engine==='boolean'?paint.engine:undefined,paint:multiplayerPaint(mode,paint),parkedShip,warpFx,held,trails};
 }
 
 // Keep a small receive-time buffer to bridge irregular packet arrivals.
@@ -265,7 +267,7 @@ export class MultiplayerNetwork {
    return true;
  }
  poseValues(pose){
-  const values=[pose.group,pose.pos.map(n=>Math.round(n*100)/100),pose.q.map(n=>Math.round(n*10000)/10000),pose.mode,pose.state,pose.mode==='ship'?{...pose.paint,engine:pose.engine,warpFx:pose.warpFx}:pose.paint];
+  const values=[pose.group,pose.pos.map(n=>Math.round(n*100)/100),pose.q.map(n=>Math.round(n*10000)/10000),pose.mode,pose.state,pose.mode==='ship'?{...pose.paint,engine:pose.engine,warpFx:pose.warpFx,trails:pose.trails}:{...pose.paint,held:pose.held}];
   if(pose.parked)values.push(pose.parked);
   return values;
  }

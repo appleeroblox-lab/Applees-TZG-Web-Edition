@@ -86,11 +86,10 @@ gl_FragColor=vec4(mix(vec3(1.,.7,.2),vec3(1.,.065,.004),tail),strength*.9);}`});
  const approach=Number.isFinite(gap)?T.MathUtils.smoothstep(gap,0,35):1;
  const eligible=enabled&&!warping&&!crew.onFoot&&(!inBody||surface.launched);
  const target=T.MathUtils.smoothstep(speed,inBody?5:.05,inBody?25:1)*approach;
- this.updateTrails(dt,time,{origin:inBody?null:flight.pos,camera,quality,mobile,eligible,target,paused,boost:flight.boostWindow});
+ this.updateTrails(dt,time,{trailScene:inBody?this.rig.ship.parent:this.scene,origin:inBody?null:flight.pos,camera,quality,mobile,eligible,target,paused,boost:flight.boostWindow});
  return air;
  }
- updateTrails(dt,time,{origin,camera,quality,mobile,eligible,target=1,paused=false,boost=false}){
- const trailScene=this.rig.ship.parent;
+ updateTrails(dt,time,{trailScene=this.rig.ship.parent,origin,camera,quality,mobile,eligible,target=1,paused=false,boost=false}){
  if(trailScene&&this.trails.parent!==trailScene){trailScene.add(this.trails);this.samples.length=0;}
  this.opacity+=((eligible&&!paused?target:0)-this.opacity)*(1-Math.exp(-dt*6));
  this.material.uniforms.strength.value=this.opacity*(boost?1:.48);

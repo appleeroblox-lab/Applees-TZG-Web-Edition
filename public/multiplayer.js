@@ -1,3 +1,4 @@
+import {setAvatar} from './social-ui.js?v=187';
 import {setVerifiedName} from './identity-ui.js?v=91';
 import * as T from './vendor/three.module.js';
 import {MultiplayerNetwork,locationRange,remotePoseFrame,roomTime} from './multiplayer-network.js';
@@ -25,8 +26,8 @@ function closePanel(element){
  return closing;
 }
 
-export function installMultiplayer({home,account,bodies,pose,enter,leave,model,notify,ready=()=>{},active=()=>true,lifecycle}){
- const style=node('link');style.rel='stylesheet';style.href='./multiplayer.css?v=305';document.head.append(style);
+export function installMultiplayer({home,account,bodies,pose,enter,leave,model,notify,closeSettings=()=>document.getElementById('settingsDialog')?.close(),ready=()=>{},active=()=>true,lifecycle}){
+ const style=node('link');style.rel='stylesheet';style.href='./multiplayer.css?v=306';document.head.append(style);
  const launch=home.multiplayerButton;
  const menu=node('section',null,'multiplayerPanel');menu.id='multiplayerLobby';menu.hidden=true;menu.setAttribute('role','dialog');menu.setAttribute('aria-label','Multiplayer');
  const icon=(file,cls='')=>{const img=node('img',null,cls);img.src='./icons/'+file;img.alt='';return img};
@@ -75,7 +76,42 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
  const heading=node('div',null,'multiplayerRosterRow multiplayerRosterHeading');
  for(const title of ['#','Player','Location','Ping','Actions'])heading.append(node('span',title));
  const rows=node('div',null,'multiplayerRosterList');
- roster?.append(banner,heading,rows);
+ const rosterStatus=node('p',null,'multiplayerRosterFeedback');rosterStatus.setAttribute('role','status');
+ roster?.append(banner,heading,rows,rosterStatus);
+ const profiles=new Map(),sentRequests=new Set();
+ const profileInfo=node('dialog',null,'multiplayerConfirmation');
+ profileInfo.setAttribute('aria-label','Player information');
+ const profileHeading=node('h2'),profileImage=node('img',null,'multiplayerInfoAvatar'),profileLocation=node('p'),profileClose=node('button','Close');
+ profileClose.onclick=()=>profileInfo.close();
+ profileInfo.append(profileImage,profileHeading,profileLocation,profileClose);
+ document.body.append(profileInfo);
+ function loadRosterProfile(player){
+  const member=account(),username=player.username||(player.id===network.self?member?.profile?.username:null);
+  if(!username)return Promise.resolve(null);
+  if(player.id===network.self&&member?.profile)return Promise.resolve(member.profile);
+  const cached=profiles.get(username);
+  if(cached&&Date.now()-cached.started<60000)return cached.result;
+  const result=member.rpc('tzg_social_profile',{p_username:username});
+  const entry={started:Date.now(),result};profiles.set(username,entry);
+  result.catch(()=>{if(profiles.get(username)===entry)profiles.delete(username)});
+  return result;
+ }
+ async function openRosterProfile(player){
+  closeOptions();
+  const profile=await loadRosterProfile(player).catch(()=>null);
+  if(!network.room?.players.some(p=>p.id===player.id))return;
+  const view=account()?.profileView;
+  if(profile&&view){
+   closeSettings();
+   await view.open(profile);
+   return;
+  }
+  setVerifiedName(profileHeading,player.name,player.verified);
+  setAvatar(profileImage,player.avatar);
+  profileLocation.textContent=player.location?locationName(player.location,bodies):'Connecting';
+  if(!profileInfo.open)profileInfo.showModal();
+ }
+
  const confirmation=node('dialog',null,'multiplayerConfirmation');
  confirmation.setAttribute('aria-labelledby','multiplayerConfirmTitle');
  const confirmationTitle=node('h2'),confirmationText=node('p'),reasonLabel=node('label','Reason');
@@ -125,6 +161,9 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
  const settings=roster?.closest('dialog');
  settings?.addEventListener('close',closeOptions);
  settings?.querySelector('.settingsTabs')?.addEventListener('click',closeOptions);
+ playersTab?.addEventListener('click',()=>{
+  rosterSignature='';renderRoster(Date.now()+(network.serverOffset||0));
+ });
  const tokens=async()=>{
   const player=account();
   if(!player?.ready||player.guest||!player.client)return null;
@@ -196,7 +235,7 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
   const room=entered?network.room:null;
   playersTab.hidden=!room;
   if(!room){
-   rosterSignature='';rows.replaceChildren();playerCells.clear();closeOptions();
+   rosterSignature='';rows.replaceChildren();playerCells.clear();profiles.clear();sentRequests.clear();rosterStatus.textContent='';closeOptions();
    if(playersTab.getAttribute('aria-selected')==='true')document.getElementById('settingsTab-game')?.click();
    return;
   }
@@ -213,25 +252,38 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
   rosterSignature=signature;closeOptions();rows.replaceChildren();playerCells.clear();
   const action=(label,text,run)=>{
    const button=node('button',text);button.title=label;button.setAttribute('aria-label',label);
-   button.onclick=async()=>{try{await run()}catch(error){notify(error.message)}};
+   button.onclick=async()=>{try{await run()}catch(error){rosterStatus.textContent=error.message||'Player action failed.'}};
    return button;
   };
   ordered.forEach((player,index)=>{
    const row=node('div',null,'multiplayerRosterRow'),identity=node('div',null,'multiplayerRosterIdentity');
    const name=node('strong'),details=node('div'),avatar=node('img');
-   avatar.alt='';avatar.referrerPolicy='no-referrer';
-   const defaultAvatar='./icons/person.svg';
-   avatar.src=player.avatar?.startsWith('https://')?player.avatar:defaultAvatar;
-   avatar.onerror=()=>{avatar.onerror=null;avatar.src=defaultAvatar};
+   avatar.referrerPolicy='no-referrer';
+   setAvatar(avatar,player.id===network.self?(account()?.profile?.avatar||player.avatar):player.avatar);
+   if(player.username&&player.id!==network.self&&playersTab.getAttribute('aria-selected')==='true'){
+    loadRosterProfile(player).then(profile=>{if(profile?.avatar)setAvatar(avatar,profile.avatar)}).catch(()=>{});
+   }
    setVerifiedName(name,player.name,player.verified);
    if(player.id===network.self)name.append(node('span',' (You)','multiplayerYou'));
    details.append(name);if(player.id===room.hostId)details.append(node('small','Host'));
    const hostMark=node('span',player.id===room.hostId?'👑':'','multiplayerHostMark');hostMark.setAttribute('aria-hidden','true');
-   identity.append(hostMark,avatar,details);
+   const profileButton=action('View profile of '+player.name,'',()=>openRosterProfile(player));
+   profileButton.className='multiplayerProfileLink';profileButton.append(avatar,details);
+   identity.append(hostMark,profileButton);
    const actions=node('div',null,'multiplayerRosterActions');
    if(player.id!==network.self){
-    const add=action('Add friend','+',async()=>{await account().rpc('tzg_social_action',{p_action:'request',p_username:player.username});notify('Friend request sent.')});
-    add.disabled=!player.username;
+    const add=action('Add friend','+',async()=>{
+     if(!player.username){rosterStatus.textContent='Friend requests are unavailable for '+player.name+' until their account name loads.';return}
+     add.disabled=true;
+     try{
+      await account().rpc('tzg_social_action',{p_action:'request',p_username:player.username});
+      sentRequests.add(player.id);
+      add.textContent='✓';add.title='Friend request sent';
+      add.setAttribute('aria-label','Friend request sent');
+      rosterStatus.textContent='Friend request sent to '+player.name+'.';
+     }finally{add.disabled=sentRequests.has(player.id)}
+    });
+    if(sentRequests.has(player.id)){add.disabled=true;add.textContent='✓';add.title='Friend request sent';add.setAttribute('aria-label',add.title)}
     actions.append(add,action('Report player','⚠',()=>confirmPlayerAction('report',player)));
     const options=action('More player actions','⋯',()=>{
      const wasOpen=more?.dataset.player===player.id;closeOptions();
@@ -297,7 +349,7 @@ export function installMultiplayer({home,account,bodies,pose,enter,leave,model,n
   }finally{busy=false;renderMenu()}
  }
 
- function disconnect(){if(confirmation.open)confirmation.close();entered=false;network.leave();clearGhosts();closeOptions();loading.hidden=true}
+ function disconnect(){if(confirmation.open)confirmation.close();if(profileInfo.open)profileInfo.close();entered=false;network.leave();clearGhosts();closeOptions();loading.hidden=true}
  async function returnHome(reason,kind){
   disconnect();
   try{await leave()}finally{

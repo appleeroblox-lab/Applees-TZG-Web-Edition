@@ -10,7 +10,7 @@
 .multiplayerRosterIdentity,.multiplayerRosterActions{display:flex;align-items:center;gap:5px;min-width:0}
 .multiplayerRosterIdentity strong{overflow-wrap:anywhere}
 .multiplayerRosterIdentity small{display:block}
-.multiplayerRosterIdentity>img{width:28px;height:28px;object-fit:cover;border-radius:50%}
+.multiplayerProfileLink>img{width:28px;height:28px;object-fit:cover;border-radius:50%}
 #settingsPlayersPage .multiplayerRosterActions button{min-width:26px;min-height:26px;padding:1px 4px}
 .multiplayerPlayerOptions{position:absolute;z-index:20;display:grid;gap:4px;padding:5px;background:var(--account-surface);border:1px solid var(--account-border);border-radius:8px}
 .multiplayerLoadingActions{display:grid;width:min(320px,calc(100vw - 48px));gap:8px;margin-inline:auto;text-align:center}
@@ -36,7 +36,7 @@
 .multiplayerRosterRow>span:nth-child(3){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .multiplayerHostMark{min-width:.85em;color:#ffda64;text-align:center}
 .multiplayerYou{color:#80ecff}
-.multiplayerRosterIdentity>img{flex:none;border:1px solid var(--account-border);box-sizing:border-box}
+.multiplayerProfileLink>img{flex:none;border:1px solid var(--account-border);box-sizing:border-box}
 .multiplayerRosterPing{display:flex;align-items:center;gap:4px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .multiplayerSignal{display:inline-flex;align-items:flex-end;gap:1px;color:#57e88c}
 .multiplayerSignal i{width:2px;height:4px;border-radius:2px;background:currentColor}
@@ -47,7 +47,7 @@
 .multiplayerSignal[data-strength=fair] i:last-child,.multiplayerSignal[data-strength=poor] i:not(:first-child){opacity:.3}
 .multiplayerSignal[data-strength=unknown]{display:none}
 @media(max-width:600px){
- .multiplayerRosterIdentity>img{width:20px;height:20px}
+ .multiplayerProfileLink>img{width:20px;height:20px}
  .multiplayerHostMark:empty{display:none}
 }
 
@@ -76,7 +76,7 @@
 
 #homeExperiment #multiplayerLobby {
  --lobby-line:#a3ecff;--lobby-gap:clamp(9px,1.45vw,24px);
- position:fixed;z-index:4500;inset:49% auto auto 25.5%;transform:translateY(-50%);
+ position:fixed;z-index:4500;inset:50% auto auto 50%;transform:translate(-50%,-50%);
  box-sizing:border-box;display:flex;flex-direction:column;overflow:hidden;
  width:65%;max-width:1050px;height:min(78dvh,690px);max-height:calc(100dvh - 44px);
  margin:0;padding:0;border:4px solid #b1f0ff;border-radius:clamp(16px,2.2vw,34px);
@@ -157,15 +157,15 @@
 }
 #homeExperiment #multiplayerLobby>footer button{width:min(42%,340px);min-width:8em;font-size:1.13em}
 @media(max-width:1000px){
- #homeExperiment #multiplayerLobby{left:calc(225px + 3vw);width:calc(97vw - 225px);border-width:3px}
+ #homeExperiment #multiplayerLobby{width:calc(97vw - 225px);border-width:3px}
 }
 @media(max-height:550px){
- #homeExperiment #multiplayerLobby{top:54%;height:min(82dvh,460px);left:calc(195px + 3vw);width:calc(97vw - 195px)}
+ #homeExperiment #multiplayerLobby{height:min(82dvh,460px);width:min(calc(94vw - 205px),76vw)}
  #multiplayerLobby .multiplayerStats{padding-block:.65em}
  #multiplayerLobby .multiplayerStat{min-height:3.3em}
 }
 @media(max-width:650px){
- #homeExperiment #multiplayerLobby{left:3vw;width:94vw}
+ #homeExperiment #multiplayerLobby{width:88vw}
 }
 @media(max-width:430px){
  #multiplayerLobby .dialogHead h2{font-size:1.55em}
@@ -176,3 +176,11 @@
  #homeExperiment #multiplayerLobby button.multiplayerJoin:not(#brand):not(#chatToggle){min-width:0;padding:.5em}
  #multiplayerLobby .multiplayerJoin img{display:none}
 }
+
+#settingsDialog #settingsPlayersPage .multiplayerProfileLink{
+ display:flex;align-items:center;gap:5px;min-width:0;padding:0;border:0;
+ background:transparent;color:inherit;box-shadow:none;text-align:left;font:inherit;cursor:pointer;
+}
+.multiplayerInfoAvatar{width:56px;height:56px;object-fit:cover;border-radius:50%;margin-bottom:8px}
+.multiplayerRosterFeedback{margin:6px 3px;font-size:.9em}
+.multiplayerRosterFeedback:empty{display:none}

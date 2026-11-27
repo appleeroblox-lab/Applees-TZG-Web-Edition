@@ -1,5 +1,5 @@
 import {multiplayerPaint} from './multiplayer-network.js';
-import {installMultiplayer} from './multiplayer.js?v=305';
+import {installMultiplayer} from './multiplayer.js?v=306';
 import {gameLifecycle} from './game-lifecycle.js?v=290';
 import {storedGuestName} from './guest-profile.js';
 import {installRuntimeVersions,installUpdateCheck} from './runtime-versions.js?v=285';
@@ -789,7 +789,7 @@ if(cloudAccounts){
   const device=tablet?'Tablet':mobileAgent||touch?'Mobile':'PC';
   return {group,pos:position.toArray(),q:q.toArray(),mode,state,engine,paint,parked,device,level:globalThis.tzgPlayerProgress?.level||1};
  };
- multiplayer=installMultiplayer({home:homeExperiment,account:()=>playerAccount,bodies,pose:localPose,notify:toast,lifecycle,
+ multiplayer=installMultiplayer({home:homeExperiment,account:()=>playerAccount,bodies,pose:localPose,notify:toast,lifecycle,closeSettings:()=>closeDialog($('settingsDialog'),true),
   active:()=>!experimental?.isolated&&!proto?.transit,
   ready:async()=>{await shipRig.ready},
   enter:enterGameplayFromHome,

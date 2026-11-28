@@ -4,7 +4,7 @@
 
 The Studio access migration creates an empty developer allowlist and private unlock storage. It binds a hashed unlock token to the authenticated game session, expires it after ten minutes of inactivity, and throttles failed password attempts per developer. Deleting the game session revokes its unlocks. The access test runs with `node tests/studio-access.mjs` after installing dependencies in `tests/`.
 
-This migration is a local foundation. Studio routes, editors, drafts, and publication are still pending.
+The private draft migration adds password-verified writes, revision conflicts, draft history, and restoration. It does not promote drafts to the game. The Model Studio material adapter accepts existing model JSON and preserves geometry, part names, and colliders. Studio routes, visual editors, and production publication are still pending.
 
 ## Public site and Studio routing
 

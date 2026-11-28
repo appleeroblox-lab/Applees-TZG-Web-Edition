@@ -27,6 +27,8 @@ await db.exec(`
 `);
 await db.exec(await readFile(new URL('../supabase/migrations/20261128130000_studio_access.sql', import.meta.url), 'utf8'));
 
+await db.exec(await readFile(new URL('../supabase/migrations/20261128131000_studio_drafts.sql', import.meta.url), 'utf8'));
+
 async function claim(user, sessionId, anonymous = false) {
   await db.query("select set_config('request.jwt.claims', $1, false)", [
     JSON.stringify({ sub: user, session_id: sessionId, is_anonymous: anonymous }),
@@ -76,6 +78,22 @@ try {
   await claim(other, otherSession);
   assert.equal(await scalar('select tzg_studio_check($1)', token), false);
   await claim(developer, session);
+  const write = (secret, expected, edits, restore = null) =>
+    scalar('select tzg_studio_write_draft($1, $2, $3, $4, $5)', token, secret, expected, edits, restore);
+  const firstDraft = { model: { color: '#0055ff' } };
+  assert.equal((await write('wrong password', 0, firstDraft)).status, 'verification_failed');
+  assert.equal((await scalar('select tzg_studio_read_draft($1)', token)).revision, 0);
+  assert.deepEqual(await write(password, 0, firstDraft), { status: 'ok', revision: 1 });
+  assert.deepEqual(await write(password, 0, {}), { status: 'conflict', revision: 1 });
+  assert.deepEqual(await write(password, 1, {}), { status: 'ok', revision: 2 });
+  assert.deepEqual(await write(password, 2, null, 1), { status: 'ok', revision: 3 });
+  assert.deepEqual((await scalar('select tzg_studio_read_draft($1)', token)).document, firstDraft);
+  const versions = await scalar('select tzg_studio_history($1)', token);
+  assert.deepEqual(versions.versions.map(version => version.action), ['restore', 'save', 'save']);
+  await claim(other, otherSession);
+  assert.equal((await scalar('select tzg_studio_read_draft($1)', token)).status, 'locked');
+  assert.equal((await write(password, 3, {})).status, 'locked');
+  await claim(developer, session);
   await scalar('select tzg_studio_lock($1)', token);
   assert.equal(await scalar('select tzg_studio_check($1)', token), false);
   const idleToken = await scalar('select tzg_studio_open($1)', password);
@@ -87,7 +105,7 @@ try {
   await db.query('delete from auth.sessions where id = $1', [session]);
   await claim(developer, session);
   assert.equal(await scalar('select tzg_studio_check($1)', liveToken), false);
-  console.log('Studio access authorization, rate limit, lock, expiry and sign-out passed.');
+  console.log('Studio access authorization, rate limit, lock, expiry, sign-out, draft saves and version restores passed.');
 } finally {
   await db.close();
 }

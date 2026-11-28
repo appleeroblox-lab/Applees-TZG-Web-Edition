@@ -17,6 +17,10 @@ const post = (headers = {}) => ({
   method: 'POST', headers: { Origin: origin, Authorization: 'Bearer game-session', ...headers },
   body: JSON.stringify({ token: 'studio-session' }),
 });
+const redirect = await request('/studio');
+assert.equal(redirect.status, 308);
+assert.equal(redirect.headers.get('Location'), '/studio/');
+assert.equal((await request('/studio/', { method: 'HEAD' })).status, 200);
 const entry = await request('/studio/');
 assert.equal(entry.status, 200);
 assert.match(entry.headers.get('Content-Security-Policy'), /frame-ancestors 'none'/);

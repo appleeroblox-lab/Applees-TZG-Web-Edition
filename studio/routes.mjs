@@ -21,9 +21,12 @@ function response(body, status = 200, contentType = 'application/json', extra = 
 
 export async function studioRequest(request, env, assets, fetcher = fetch) {
   const url = new URL(request.url);
-  if (url.pathname === '/studio/' && request.method === 'GET') {
+  if (url.pathname === '/studio' && ['GET', 'HEAD'].includes(request.method)) {
+    return response(null, 308, 'text/plain', { Location: '/studio/' });
+  }
+  if (url.pathname === '/studio/' && ['GET', 'HEAD'].includes(request.method)) {
     const nonce = crypto.randomUUID();
-    return response(assets.entry.replaceAll('__STUDIO_NONCE__', nonce), 200, 'text/html; charset=utf-8', {
+    return response(request.method === 'HEAD' ? null : assets.entry.replaceAll('__STUDIO_NONCE__', nonce), 200, 'text/html; charset=utf-8', {
       'Content-Security-Policy': [
         "default-src 'none'", "frame-ancestors 'none'", "base-uri 'none'",
         "form-action 'none'", "font-src 'self'", "img-src 'self' blob: data:",

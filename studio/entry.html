@@ -108,6 +108,25 @@
   #workspace #part-visible{width:auto}
 
   #workspace #view-panels button[aria-pressed=true]::before{content:'✓ ';color:#c3eaff}
+  #workspace{grid-template-columns:minmax(0,1fr)}
+  #workspace .studioRibbon{min-width:0}
+  #workspace .studioRibbon>.tools{display:flex;align-items:center;flex-wrap:nowrap;gap:4px;padding:3px 6px;overflow-x:auto;overflow-y:hidden;white-space:nowrap;scrollbar-width:thin}
+  #workspace .studioRibbon>.tools>*{flex:none}
+  #workspace .studioRibbon .studioFile>div{position:fixed;z-index:15}
+  #workspace .studioRibbon .studioFile summary,#workspace .studioRibbon .tools button{font-size:11px;line-height:16px;padding:3px 7px}
+  #workspace .studioRibbon #model-tools{display:flex;flex-wrap:nowrap;margin:0}
+  #active-studio{font-size:11px;color:#c9e7ff;margin:0 3px}
+  #model-colour{text-align:left;padding:4px;font-size:11px;display:flex;align-items:center;gap:6px}
+  #model-colour::before{content:'';height:15px;width:20px;border-radius:3px;border:1px solid #c5e7ff;background:var(--swatch)}
+  .viewport:has(.studioUiFrame),.viewport:has(.studioScriptViewer){display:grid;grid-template-rows:auto minmax(0,1fr)}
+  .studioUiFrame iframe{max-width:none}
+  .studioScriptViewer{min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr);background:#10243d}
+  .studioScriptViewer .scriptFile{padding:5px 8px;font-size:12px;background:#183756;color:#c7e0fa}
+  .studioScriptViewer pre{margin:0;overflow:auto;white-space:pre;padding:10px;color:#e4effa;font:13px/1.45 ui-monospace,monospace;user-select:text}
+  #save-menu,#update-info{color:#fff;background:#174b76;border:2px solid #a0d5ff;border-radius:12px;width:min(460px,92vw);max-height:90dvh}
+  #save-menu::backdrop{background:#071e38aa}
+  #save-menu form,#update-info form{margin:8px 0}#save-menu form label{display:grid;gap:4px}
+  #save-status:empty,#publish-status:empty{display:none}
 </style>
 <main>
 

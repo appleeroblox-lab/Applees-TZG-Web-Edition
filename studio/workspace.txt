@@ -5,6 +5,8 @@ const defaultPlacements = {
   explorer: { side: 'right', group: 'explorer' },
   properties: { side: 'right', group: 'properties' },
   output: { side: 'bottom', group: 'output' },
+  'ui-properties': { side: 'right', group: 'ui-properties' },
+  'script-explorer': { side: 'left', group: 'script-explorer' },
 };
 const defaultSizes = { left: 210, right: 250, top: 140, bottom: 104 };
 
@@ -32,6 +34,7 @@ function workspaceLayout(root, viewport, viewMenu) {
   let sizes = { ...defaultSizes };
   let sequence = 0;
   let gesture;
+  let suspended = new Set();
   try {
     const saved = JSON.parse(localStorage.getItem(workspaceLayoutKey));
     placements = saved?.placements ?? {};
@@ -297,7 +300,7 @@ function workspaceLayout(root, viewport, viewMenu) {
     const buckets = new Map();
     for (const [id] of panels) {
       const { side, group } = position(id);
-      if (side === 'closed') continue;
+      if (side === 'closed' || suspended.has(id)) continue;
       const key = side + ':' + group;
       if (!buckets.has(key)) buckets.set(key, { side, group, ids: [] });
       buckets.get(key).ids.push(id);
@@ -316,8 +319,8 @@ function workspaceLayout(root, viewport, viewMenu) {
       container.hidden = false;
     }
     for (const side of dockSides) if (!regions[side].hidden) regions[side].append(splitter(side));
-    for (const [id, panel] of panels) if (position(id).side === 'closed') parked.append(panel.element);
-    viewMenu.replaceChildren(...[...panels].filter(([, panel]) => !panel.transient).map(([id, panel]) => {
+    for (const [id, panel] of panels) if (position(id).side === 'closed' || suspended.has(id)) parked.append(panel.element);
+    viewMenu.replaceChildren(...[...panels].filter(([id, panel]) => !panel.transient && !suspended.has(id)).map(([id, panel]) => {
       const toggle = button(panel.title, () => {
         const place = position(id);
         if (place.side === 'closed') setPanel(id, { ...place, side: place.previous ?? defaults(id).side });
@@ -355,6 +358,12 @@ function workspaceLayout(root, viewport, viewMenu) {
       render();
     },
     close,
+    suspend(ids) { suspended = new Set(ids); render(); },
+    unregister(id) {
+      panels.get(id)?.element.remove();
+      panels.delete(id);
+      render();
+    },
     dispose() { observer.disconnect(); gesture?.abort(); },
   };
 }

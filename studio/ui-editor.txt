@@ -121,13 +121,17 @@ async function mountInterfaceEditor(root, viewport, source, onEdit, layout) {
   const frameArea = document.createElement('div');
   frameArea.className = 'studioUiFrame';
   frameArea.append(iframe);
-  viewport.append(frameArea, wrapper);
-  resolution.onchange = () => {
-    const sizes = { desktop: [1280, 720], tablet: [1024, 768], mobile: [844, 390] };
-    const size = sizes[resolution.value];
-    iframe.style.width = size ? size[0] + 'px' : '';
-    iframe.style.height = size ? size[1] + 'px' : '';
-  };
+  viewport.append(frameArea);
+  layout.register('ui-properties', 'UI Properties', wrapper);
+  let zoom = 1;
+  function sizeFrame() {
+    const size = { desktop: [1280, 720], tablet: [1024, 768], mobile: [844, 390] }[resolution.value];
+    iframe.style.width = size ? size[0] + 'px' : (100 / zoom) + '%';
+    iframe.style.height = size ? size[1] + 'px' : (100 / zoom) + '%';
+    iframe.style.zoom = String(zoom);
+  }
+  resolution.onchange = sizeFrame;
+  sizeFrame();
   let edits = source && typeof source === 'object' ? structuredClone(source) : {};
   let menu;
   let selected;
@@ -295,7 +299,7 @@ async function mountInterfaceEditor(root, viewport, source, onEdit, layout) {
     openPaintPanel(root, { layout, gradient: true, stops: edits[menu]?.[selected]?.gradient,
       color: edits[menu]?.[selected]?.color, onDone: gradient => change({ gradient }) });
   show(menus.value);
-  const close = () => { frameArea.remove(); wrapper.remove(); layout.close('colour'); layout.close('gradient'); };
+  const close = () => { frameArea.remove(); layout.unregister('ui-properties'); layout.close('colour'); layout.close('gradient'); };
   function step(from, to) {
     if (!from.length) return;
     to.push(edits);
@@ -303,6 +307,11 @@ async function mountInterfaceEditor(root, viewport, source, onEdit, layout) {
     onEdit(edits);
     show(menu, selected);
   }
+  close.zoom = factor => {
+    zoom = Math.max(.35, Math.min(3, zoom / factor));
+    sizeFrame();
+    updateHandles();
+  };
   close.undo = () => step(history, future);
   close.redo = () => step(future, history);
   return close;

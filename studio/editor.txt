@@ -32,14 +32,19 @@ export async function mount(root, api) {
 
   root.innerHTML = `
     <header class="studioRibbon">
-      <div class="studioTitle">The Zero Gravity <span>Model Studio</span></div>
+      
       <div class="tools" aria-label="Editing toolbar">
         <details class="studioFile"><summary>File</summary><div>
           <button type="button" id="file-save">Save Draft</button>
           <button type="button" id="file-update">Publish…</button>
         </div></details>
         <details class="studioFile"><summary>View</summary><div id="view-panels"></div></details>
-        <button id="ui-editor">Open UI Editor</button>
+        <details class="studioFile" id="switch-studio"><summary>Switch Studio</summary><div>
+          <button type="button" data-studio="model">Model Studio</button>
+          <button type="button" data-studio="ui">UI Studio</button>
+          <button type="button" data-studio="script">Script Studio</button>
+        </div></details>
+        <strong id="active-studio">Model Studio</strong>
         <div class="tools" id="model-tools" aria-label="Transform tools">
           <button data-tool="select" aria-pressed="true">Select</button>
           <button data-tool="position" aria-pressed="false">Move</button>
@@ -66,24 +71,32 @@ export async function mount(root, api) {
         <section data-panel="properties">
           <label class="studioVisibility"><span>Visible</span><input id="part-visible" type="checkbox" checked></label>
           <div id="transform-fields"></div>
-          <label>Colour<input id="color" type="color"></label><button type="button" id="custom-model-colour">Custom Colour</button>
+          <label>Colour<button type="button" id="model-colour" aria-label="Colour"></button></label>
           <label>Metalness<input id="metalness" type="range" min="0" max="1" step=".01"></label>
           <label>Roughness<input id="roughness" type="range" min="0" max="1" step=".01"></label>
           <label>Opacity<input id="opacity" type="range" min="0" max="1" step=".01"></label>
-          <form id="draft">
-            <label>Studio password<input type="password" autocomplete="off" minlength="12" maxlength="72" required></label>
-            <button>Save Draft</button>
-          </form>
         </section>
       </aside>
     </div>
+    <dialog id="save-menu" aria-labelledby="save-title">
+      <h2 id="save-title">Save Draft</h2>
+      <form id="draft">
+        <label>Studio password<input type="password" autocomplete="off" minlength="12" maxlength="72" required></label>
+        <div class="tools"><button id="save-confirm">Save Draft</button><button type="button" id="save-cancel">Cancel</button></div>
+        <p id="save-status" role="status"></p>
+      </form>
+    </dialog>
     <dialog id="update-info" aria-labelledby="update-title">
       <h2 id="update-title">Update Info</h2>
+      <form id="update-form">
       <label>Update title<input id="update-name" maxlength="80"></label>
       <label>Update notes<textarea id="update-notes" maxlength="1200"></textarea></label>
       <p id="update-summary"></p>
       <p>Publishing to the live game is unavailable in this preview.</p>
-      <div class="tools"><button type="button" id="keep-info">Keep in Draft</button><button type="button" id="close-info">Close</button></div>
+      <label>Studio password<input id="update-secret" type="password" minlength="12" maxlength="72" autocomplete="off" required></label>
+      <div class="tools"><button id="keep-info">Save Update Info</button><button type="button" id="close-info">Close</button></div>
+      <p id="publish-status" role="status"></p>
+      </form>
     </dialog>
     <section class="outputPane" data-panel="output">
       <p id="studio-output" role="status">Model loaded.</p>
@@ -157,7 +170,7 @@ export async function mount(root, api) {
     if (gizmo) for (const point of gizmo.children) {
       const axis = point.userData.axis;
       if (!Number.isInteger(axis)) continue;
-      const projected = point.getWorldPosition(new T.Vector3()).project(camera);
+      const projected = (point.userData.label ? gizmo.localToWorld(point.userData.label.clone()) : point.getWorldPosition(new T.Vector3())).project(camera);
       const marker = axisMarkers[axis];
       marker.style.left = ((projected.x + 1) * w / 2) + 'px';
       marker.style.top = ((1 - projected.y) * h / 2 + find('#scene-title').offsetHeight) + 'px';
@@ -195,14 +208,23 @@ export async function mount(root, api) {
     new T.Box3().setFromObject(part).getCenter(gizmo.position);
     const length = Math.max(radius * .48, .003);
     for (const [index, axis] of axisDirections.entries()) {
-      const line = new T.Line(new T.BufferGeometry().setFromPoints([
-        new T.Vector3(), axis.clone().multiplyScalar(length),
-      ]), new T.LineBasicMaterial({ color: axisColors[index], depthTest: false, depthWrite: false }));
-      line.renderOrder = 5;
-      gizmo.add(line);
-      const endpoint = new T.Mesh(new T.SphereGeometry(length * .10, 12, 8),
-        new T.MeshBasicMaterial({ color: axisColors[index], depthTest: false, depthWrite: false }));
-      endpoint.position.copy(axis).multiplyScalar(length);
+      const material = new T.MeshBasicMaterial({ color: axisColors[index], depthTest: false, depthWrite: false });
+      let endpoint;
+      if (tool === 'rotation') {
+        endpoint = new T.Mesh(new T.TorusGeometry(length, length * .035, 8, 48), material);
+        endpoint.quaternion.setFromUnitVectors(axisDirections[2], axis);
+        endpoint.userData.label = axisDirections[(index + 1) % 3].clone().multiplyScalar(length);
+      } else {
+        const line = new T.Line(new T.BufferGeometry().setFromPoints([
+          new T.Vector3(), axis.clone().multiplyScalar(length),
+        ]), new T.LineBasicMaterial({ color: axisColors[index], depthTest: false, depthWrite: false }));
+        line.renderOrder = 5;
+        gizmo.add(line);
+        endpoint = new T.Mesh(tool === 'scale' ? new T.BoxGeometry(length * .2, length * .2, length * .2) :
+          new T.ConeGeometry(length * .11, length * .23, 12), material);
+        if (tool === 'position') endpoint.quaternion.setFromUnitVectors(axisDirections[1], axis);
+        endpoint.position.copy(axis).multiplyScalar(length);
+      }
       endpoint.userData.axis = index;
       endpoint.renderOrder = 6;
       gizmo.add(endpoint);
@@ -291,8 +313,15 @@ export async function mount(root, api) {
     }
     for (const field of fields) {
       const value = item[field];
-      find('#' + field).value = field === 'color' ? '#' + new T.Color(value).getHexString()
-        : value ?? (field === 'metalness' ? 0 : 1);
+      if (field === 'color') {
+        const color = '#' + new T.Color(value).getHexString();
+        const swatch = find('#model-colour');
+        swatch.style.setProperty('--swatch', color);
+        swatch.dataset.color = color;
+        swatch.textContent = color.toUpperCase();
+        continue;
+      }
+      find('#' + field).value = value ?? (field === 'metalness' ? 0 : 1);
     }
     draw();
   }
@@ -339,18 +368,15 @@ export async function mount(root, api) {
     selected = Number(partList.value);
     update();
   });
-  for (const field of fields) {
+  for (const field of fields.filter(name => name !== 'color')) {
     find('#' + field).addEventListener('change', event => {
       const value = field === 'color' ? event.target.value : Number(event.target.value);
       commitProperty(field, value);
     });
   }
-  find('#custom-model-colour').onclick = () => openPaintPanel(root, {
-    layout, color: find('#color').value,
-    onDone: color => {
-      find('#color').value = color;
-      find('#color').dispatchEvent(new Event('change'));
-    },
+  find('#model-colour').onclick = () => openPaintPanel(root, {
+    layout, color: find('#model-colour').dataset.color,
+    onDone: color => commitProperty('color', color),
   });
   find('#undo').onclick = () => {
     if (closeUi) return closeUi.undo();
@@ -369,6 +395,27 @@ export async function mount(root, api) {
   find('#lock').onclick = api.lock;
   let pointer;
   let axisDrag;
+  const touches = new Map();
+  let pinch;
+  function touchPair() {
+    if (touches.size < 2) return;
+    const [a, b] = touches.values();
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, gap: Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)) };
+  }
+  function panCamera(dx, dy) {
+    const speed = distance * radius / Math.max(100, renderer.domElement.clientHeight);
+    center.addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld, 0), -dx * speed);
+    center.addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld, 1), dy * speed);
+  }
+  function endTouch(event) {
+    touches.delete(event.pointerId);
+    if (pinch) {
+      if (!touches.size) pinch = undefined;
+      else pinch = touchPair() ?? pinch;
+      return true;
+    }
+    return false;
+  }
   function pointRay(event) {
     const rect = renderer.domElement.getBoundingClientRect();
     rayPoint.set((event.clientX - rect.left) / rect.width * 2 - 1,
@@ -382,7 +429,10 @@ export async function mount(root, api) {
     if (!hit) return;
     const axis = hit.object.userData.axis;
     const start = gizmo.position.clone().project(camera);
-    const end = gizmo.position.clone().add(axisDirections[axis].clone().multiplyScalar(radius)).project(camera);
+    const directionWorld = tool === 'rotation'
+      ? axisDirections[axis].clone().cross(hit.point.clone().sub(gizmo.position)).normalize()
+      : axisDirections[axis];
+    const end = gizmo.position.clone().add(directionWorld.clone().multiplyScalar(radius)).project(camera);
     const rect = renderer.domElement.getBoundingClientRect();
     const direction = new T.Vector2((end.x - start.x) * rect.width / 2, -(end.y - start.y) * rect.height / 2);
     const pixels = Math.max(20, direction.length());
@@ -394,6 +444,17 @@ export async function mount(root, api) {
   }
   renderer.domElement.oncontextmenu = event => event.preventDefault();
   renderer.domElement.onpointerdown = event => {
+    if (event.pointerType === 'touch') {
+      touches.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (touches.size > 1) {
+        event.preventDefault();
+        renderer.domElement.setPointerCapture(event.pointerId);
+        pointer = undefined;
+        if (axisDrag) { axisDrag = undefined; update(); }
+        pinch = touchPair();
+        return;
+      }
+    }
     if (pointer || axisDrag || ![0, 1, 2].includes(event.button)) return;
     event.preventDefault();
     renderer.domElement.focus({ preventScroll: true });
@@ -404,6 +465,18 @@ export async function mount(root, api) {
     renderer.domElement.setPointerCapture(event.pointerId);
   };
   renderer.domElement.onpointermove = event => {
+    if (touches.has(event.pointerId)) {
+      touches.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (pinch) {
+        const next = touchPair();
+        if (next) {
+          panCamera(next.x - pinch.x, next.y - pinch.y);
+          zoom(pinch.gap / next.gap);
+          pinch = next;
+        }
+        return;
+      }
+    }
     if (axisDrag?.id === event.pointerId) {
       const { x, y, axis, direction, pixels, field, initial } = axisDrag;
       const delta = ((event.clientX - x) * direction.x + (event.clientY - y) * direction.y) / pixels;
@@ -426,9 +499,7 @@ export async function mount(root, api) {
     if (!pointer.moved && Math.hypot(dx, dy) < 4) return;
     pointer.moved = true;
     if (pointer.pan) {
-      const speed = distance * radius / Math.max(100, renderer.domElement.clientHeight);
-      center.addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld, 0), -dx * speed);
-      center.addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld, 1), dy * speed);
+      panCamera(dx, dy);
     } else {
       azimuth -= dx * .012;
       elevation = Math.max(-1.45, Math.min(1.45, elevation + dy * .012));
@@ -438,6 +509,7 @@ export async function mount(root, api) {
     draw();
   };
   renderer.domElement.onpointerup = event => {
+    if (endTouch(event)) return;
     if (axisDrag?.id === event.pointerId) {
       const { field, value } = axisDrag;
       axisDrag = undefined;
@@ -456,6 +528,7 @@ export async function mount(root, api) {
     update();
   };
   renderer.domElement.onpointercancel = renderer.domElement.onlostpointercapture = event => {
+    endTouch(event);
     if (pointer?.id === event.pointerId) pointer = undefined;
     if (axisDrag?.id === event.pointerId) { axisDrag = undefined; update(); }
   };
@@ -481,80 +554,158 @@ export async function mount(root, api) {
     distance = Math.max(1.1, Math.min(12, distance * factor));
     draw();
   }
-  find('#zoom-in').onclick = () => zoom(.8);
-  find('#zoom-out').onclick = () => zoom(1.25);
+  function zoomCurrent(factor) {
+    if (closeUi) closeUi.zoom(factor);
+    else if (scriptStudio) scriptStudio.zoom(factor);
+    else zoom(factor);
+  }
+  find('#zoom-in').onclick = () => zoomCurrent(.8);
+  find('#zoom-out').onclick = () => zoomCurrent(1.25);
   renderer.domElement.addEventListener('wheel', event => {
     event.preventDefault();
     zoom(Math.exp(event.deltaY * .001));
   }, { passive: false });
   const draftForm = find('#draft');
   const secret = draftForm.querySelector('[type=password]');
+  const saveMenu = find('#save-menu');
   let saving = false;
+  let restoreRevision = null;
   let closeUi;
+  let scriptStudio;
+  let activeStudio = 'model';
+  let switching = false;
   let uiEdits = draft.document.ui ?? {};
   let updateInfo = draft.document.updateInfo ?? {};
-  const uiButton = find('#ui-editor');
-  uiButton.onclick = async () => {
-    if (closeUi) {
-      closeUi();
-      closeUi = undefined;
-      uiButton.textContent = 'Open UI Editor';
-      renderer.domElement.hidden = false;
-      find('#scene-title').textContent = assetLabel(modelId);
-      draw();
-      return;
-    }
-    uiButton.disabled = true;
+  const studios = { model: 'Model Studio', ui: 'UI Studio', script: 'Script Studio' };
+  const modelPanels = ['assets', 'explorer', 'properties'];
+  const studioSwitch = find('#switch-studio');
+  async function switchStudio(next, reload = false) {
+    if (switching || (next === activeStudio && !reload)) return;
+    switching = true;
+    layout.close('colour');
+    layout.close('gradient');
+    closeUi?.();
+    closeUi = undefined;
+    scriptStudio?.close();
+    scriptStudio = undefined;
+    renderer.domElement.hidden = next !== 'model';
+    axisOverlay.hidden = true;
+    layout.suspend(next === 'model' ? [] : modelPanels);
     try {
-      closeUi = await mountInterfaceEditor(root, viewport, uiEdits, edits => { uiEdits = edits; }, layout);
-      renderer.domElement.hidden = true;
-      axisOverlay.hidden = true;
-      find('#scene-title').textContent = 'UI Preview';
-      uiButton.textContent = 'Return to Model Studio';
-    } catch (error) { message(error.message); }
-    finally { uiButton.disabled = false; }
-  };
+      if (next === 'ui') closeUi = await mountInterfaceEditor(root, viewport, uiEdits, edits => { uiEdits = edits; }, layout);
+      if (next === 'script') scriptStudio = await mountScriptStudio(viewport, layout);
+      activeStudio = next;
+    } catch (error) {
+      activeStudio = 'model';
+      renderer.domElement.hidden = false;
+      layout.suspend([]);
+      message(error.message);
+    } finally {
+      switching = false;
+      const modelMode = activeStudio === 'model';
+      find('#active-studio').textContent = studios[activeStudio];
+      find('#scene-title').textContent = modelMode ? assetLabel(modelId) : activeStudio === 'ui' ? 'UI Preview' : 'Read-only game scripts';
+      viewport.setAttribute('aria-label', modelMode ? 'Live model preview' : studios[activeStudio]);
+      for (const id of ['#model-tools', '#focus', '#grid']) find(id).hidden = !modelMode;
+      for (const id of ['#undo', '#redo']) find(id).hidden = activeStudio === 'script';
+      for (const button of studioSwitch.querySelectorAll('[data-studio]')) {
+        button.setAttribute('aria-pressed', String(button.dataset.studio === activeStudio));
+      }
+      if (modelMode) draw();
+    }
+  }
+  for (const button of studioSwitch.querySelectorAll('[data-studio]')) {
+    button.setAttribute('aria-pressed', String(button.dataset.studio === activeStudio));
+    button.onclick = () => { studioSwitch.open = false; void switchStudio(button.dataset.studio); };
+  }
+  for (const details of root.querySelectorAll('.studioFile')) {
+    details.addEventListener('toggle', () => {
+      if (!details.open) return;
+      for (const other of root.querySelectorAll('.studioFile[open]')) if (other !== details) other.open = false;
+      const rect = details.querySelector('summary').getBoundingClientRect();
+      const popup = details.querySelector('div');
+      popup.style.left = Math.max(4, Math.min(rect.left, innerWidth - popup.offsetWidth - 4)) + 'px';
+      popup.style.top = rect.bottom + 'px';
+    });
+  }
+  find('.studioRibbon > .tools').addEventListener('scroll', () => {
+    for (const menu of root.querySelectorAll('.studioFile[open]')) menu.open = false;
+  });
   const fileMenu = find('.studioFile');
-  find('#file-save').onclick = () => {
-    fileMenu.open = false;
-    layout.activate('properties');
+  function openSave(version = null) {
+    restoreRevision = version;
+    const title = version === null ? 'Save Draft' : 'Restore Draft';
+    find('#save-title').textContent = title;
+    find('#save-confirm').textContent = title;
+    find('#save-status').textContent = '';
+    secret.value = '';
+    saveMenu.showModal();
     secret.focus();
-    message('Enter your Studio password in Properties to save.');
-  };
+  }
+  find('#file-save').onclick = () => { fileMenu.open = false; openSave(); };
+  find('#save-cancel').onclick = () => saveMenu.close();
+  saveMenu.addEventListener('close', () => { secret.value = ''; });
   const info = find('#update-info');
+  const publishSecret = find('#update-secret');
   find('#file-update').onclick = () => {
     fileMenu.open = false;
     find('#update-name').value = updateInfo.title ?? '';
     find('#update-notes').value = updateInfo.notes ?? '';
+    publishSecret.value = '';
+    find('#publish-status').textContent = '';
     find('#update-summary').textContent = 'UI menus changed: ' + Object.keys(uiEdits).length +
-      ' · Models with material changes: ' + Object.values({ ...materials, [modelId]: edits }).filter(items => items.length).length;
+      ' · Models with changes: ' + Object.values({ ...materials, [modelId]: edits }).filter(items => items.length).length;
     info.showModal();
   };
   find('#close-info').onclick = () => info.close();
-  find('#keep-info').onclick = () => {
-    updateInfo = { title: find('#update-name').value.trim(), notes: find('#update-notes').value.trim() };
-    info.close();
-    message('Update info added to the draft. Save Draft to keep it.');
-  };
-  async function write(payload) {
+  info.addEventListener('close', () => { publishSecret.value = ''; });
+  function draftPayload(metadata = updateInfo) {
+    materials[modelId] = edits;
+    const { shipMaterials, ...otherDraftFields } = draft.document;
+    return { edits: { ...otherDraftFields, modelMaterials: materials, ui: uiEdits, updateInfo: metadata } };
+  }
+  async function write(payload, password, status) {
     if (saving) return;
     saving = true;
-    const password = secret.value;
-    secret.value = '';
     try {
       const result = await api.call('write', { ...payload, expected_revision: revision, password });
       if (result.status !== 'ok') throw new Error('Draft write failed (' + result.status + ').');
       revision = result.revision;
       message('Draft version ' + revision + ' saved.');
       return true;
-    } catch (error) { message(error.message); }
+    } catch (error) { status.textContent = error.message; }
     finally { saving = false; }
   }
-  draftForm.onsubmit = event => {
+  find('#update-form').onsubmit = async event => {
     event.preventDefault();
-    materials[modelId] = edits;
-    const { shipMaterials, ...otherDraftFields } = draft.document;
-    void write({ edits: { ...otherDraftFields, modelMaterials: materials, ui: uiEdits, updateInfo } });
+    const metadata = { title: find('#update-name').value.trim(), notes: find('#update-notes').value.trim() };
+    const password = publishSecret.value;
+    publishSecret.value = '';
+    if (await write(draftPayload(metadata), password, find('#publish-status'))) {
+      updateInfo = metadata;
+      info.close();
+    }
+  };
+  draftForm.onsubmit = async event => {
+    event.preventDefault();
+    const version = restoreRevision;
+    const password = secret.value;
+    secret.value = '';
+    if (!await write(version === null ? draftPayload() : { restore_revision: version }, password, find('#save-status'))) return;
+    saveMenu.close();
+    if (version === null) return;
+    try {
+      const restored = await api.call('read');
+      if (restored.status !== 'ok') throw new Error('Could not reload the restored draft.');
+      draft.document = restored.document;
+      materials = getMaterials(restored.document);
+      uiEdits = restored.document.ui ?? {};
+      updateInfo = restored.document.updateInfo ?? {};
+      edits = materials[modelId] ?? [];
+      undo.length = redo.length = 0;
+      update();
+      if (activeStudio === 'ui') await switchStudio('ui', true);
+    } catch (error) { message(error.message); }
   };
   find('#history').onclick = async () => {
     try {
@@ -568,20 +719,7 @@ export async function mount(root, api) {
         row.textContent = 'Version ' + version.revision + ' · ' + version.action + ' ';
         const button = document.createElement('button');
         button.textContent = 'Restore Draft';
-        button.onclick = async () => {
-          if (!secret.reportValidity()) return;
-          if (await write({ restore_revision: version.revision })) {
-            const restored = await api.call('read');
-            draft.document = restored.document;
-            materials = getMaterials(restored.document);
-            uiEdits = restored.document.ui ?? {};
-            updateInfo = restored.document.updateInfo ?? {};
-            if (closeUi) uiButton.click();
-            edits = materials[modelId] ?? [];
-            undo.length = redo.length = 0;
-            update();
-          }
-        };
+        button.onclick = () => openSave(version.revision);
         row.append(button);
         panel.append(row);
       }
@@ -607,6 +745,7 @@ export async function mount(root, api) {
     layout.dispose();
     if (loadingManager.onLoad === onLoad) loadingManager.onLoad = originalOnLoad;
     closeUi?.();
+    scriptStudio?.close();
     release(ship);
     release(selectionOutline);
     release(grid);

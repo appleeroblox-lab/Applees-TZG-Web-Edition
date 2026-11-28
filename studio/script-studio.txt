@@ -1,0 +1,62 @@
+async function mountScriptStudio(viewport, layout) {
+  const response = await fetch('/source-manifest.json', { cache: 'no-cache' });
+  if (!response.ok) throw new Error('Could not load the published script list.');
+  const { files, fileVersions } = await response.json();
+  const scripts = [...new Set(files)].filter(path =>
+    typeof path === 'string' && /^(?:[\w-]+\/)*[\w.-]+\.m?js$/.test(path)
+  ).sort((a, b) => a.localeCompare(b));
+  const explorer = document.createElement('section');
+  explorer.innerHTML = `<label>Search scripts<input type="search" aria-label="Search scripts"></label>
+    <label>Game script<select size="12" aria-label="Game scripts"></select></label>`;
+  const search = explorer.querySelector('input');
+  const list = explorer.querySelector('select');
+  const viewer = document.createElement('div');
+  viewer.className = 'studioScriptViewer';
+  viewer.innerHTML = '<div class="scriptFile" role="status">Select a game script</div><pre tabindex="0" aria-label="Read-only game source"><code></code></pre>';
+  viewport.append(viewer);
+  layout.register('script-explorer', 'Scripts', explorer);
+  const title = viewer.querySelector('.scriptFile');
+  const source = viewer.querySelector('code');
+  let controller;
+  let selected = '';
+  let font = 13;
+  function renderList() {
+    const filter = search.value.trim().toLowerCase();
+    list.replaceChildren(...scripts.filter(path => path.toLowerCase().includes(filter)).map(path =>
+      new Option(path, path, false, path === selected)));
+    list.value = selected;
+  }
+  search.oninput = renderList;
+  list.onchange = async () => {
+    const path = list.value;
+    if (!scripts.includes(path)) return;
+    selected = path;
+    controller?.abort();
+    const request = new AbortController();
+    controller = request;
+    title.textContent = path;
+    source.textContent = 'Loading…';
+    const url = new URL('/' + path, location.origin);
+    if (fileVersions?.[path] != null) url.searchParams.set('v', fileVersions[path]);
+    try {
+      const file = await fetch(url, { signal: request.signal });
+      if (!file.ok) throw new Error('Could not open this script.');
+      const code = await file.text();
+      if (!request.signal.aborted) source.textContent = code;
+    } catch (error) {
+      if (!request.signal.aborted) source.textContent = error.message;
+    }
+  };
+  renderList();
+  return {
+    zoom(factor) {
+      font = Math.min(26, Math.max(9, font / factor));
+      viewer.querySelector('pre').style.fontSize = font + 'px';
+    },
+    close() {
+      controller?.abort();
+      viewer.remove();
+      layout.unregister('script-explorer');
+    },
+  };
+}

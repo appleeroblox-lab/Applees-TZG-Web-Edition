@@ -7,7 +7,7 @@ import { studioRequest } from '../studio/routes.mjs';
 const load = path => readFile(new URL('../' + path, import.meta.url), 'utf8');
 const assets = {
   entry: await load('studio/entry.html'),
-  editor: (await load('studio/model-edits.mjs')) + '\n' + (await load('studio/model-catalog.txt')) + '\n' + (await load('studio/workspace.txt')) + '\n' + (await load('studio/ui-editor.txt')) + '\n' + (await load('studio/editor.txt')),
+  editor: (await load('studio/model-edits.mjs')) + '\n' + (await load('studio/model-catalog.txt')) + '\n' + (await load('studio/script-studio.txt')) + '\n' + (await load('studio/workspace.txt')) + '\n' + (await load('studio/ui-editor.txt')) + '\n' + (await load('studio/editor.txt')),
 };
 const env = { SUPABASE_URL: 'https://db.invalid', SUPABASE_PUBLISHABLE_KEY: 'fixture' };
 let unlocked = false;
@@ -81,7 +81,7 @@ const server = createServer(async (req, res) => {
       res.end(await load('public/index.html'));
       return;
     }
-    assert.match(url.pathname, /^\/(vendor|models|fonts|images)\/|^\/(models\.js|startup-landscape\.js|entry-menu\.css|ui-theme\.css|home-experiment\.css|style\.css|reference-ui\.css|settings-appearance\.css|panel-drag\.js|paint-gradient\.js)$/);
+    assert.match(url.pathname, /^\/(vendor|models|fonts|images)\/|^\/(models\.js|startup-landscape\.js|game-lifecycle\.js|source-manifest\.json|entry-menu\.css|ui-theme\.css|home-experiment\.css|style\.css|reference-ui\.css|settings-appearance\.css|panel-drag\.js|paint-gradient\.js)$/);
     const types = { js: 'text/javascript', json: 'application/json', png: 'image/png', ttf: 'font/ttf', css: 'text/css' };
     const data = await readFile(new URL('../public' + url.pathname, import.meta.url));
     res.writeHead(200, { 'Content-Type': types[url.pathname.split('.').at(-1)] });
@@ -168,10 +168,36 @@ try {
   assert.equal(await page.getByLabel('Position X', { exact: true }).inputValue(), '0');
   await page.getByRole('button', { name: 'Redo', exact: true }).click();
   assert.notEqual(await page.getByLabel('Position X', { exact: true }).inputValue(), '0');
+  const cameraTouch = await page.context().newCDPSession(page);
+  const modelView = await page.locator('canvas').boundingBox();
+  const cx = Math.round(modelView.x + modelView.width / 2);
+  const cy = Math.round(modelView.y + modelView.height / 2);
+  const pointerMarker = page.locator('.studioAxisOverlay [data-axis=X]');
+  const beforePinch = await pointerMarker.boundingBox();
+  await cameraTouch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ id: 1, x: cx - 48, y: cy }, { id: 2, x: cx + 48, y: cy }] });
+  await cameraTouch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ id: 1, x: cx - 64, y: cy + 16 }, { id: 2, x: cx + 77, y: cy + 16 }] });
+  await cameraTouch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  const afterPinch = await pointerMarker.boundingBox();
+  assert.ok(Math.hypot(afterPinch.x - beforePinch.x, afterPinch.y - beforePinch.y) > 1);
+  const mouseX = modelView.x + modelView.width / 2;
+  const mouseY = modelView.y + modelView.height / 2;
+  await page.mouse.move(mouseX, mouseY);
+  await page.mouse.down({ button: 'middle' });
+  await page.mouse.move(mouseX + 23, mouseY + 9, { steps: 4 });
+  await page.mouse.up({ button: 'middle' });
+  assert.ok(Math.abs((await pointerMarker.boundingBox()).x - afterPinch.x) > 1);
   await page.getByRole('button', { name: 'Select', exact: true }).click();
-  await page.locator('#color').fill('#123456');
-  if (await page.locator('#color').inputValue() !== '#123456') throw new Error('Colour was not updated.');
-  await page.getByRole('button', { name: 'Open UI Editor' }).click();
+  await page.getByRole('button', { name: 'Colour', exact: true }).click();
+  await page.getByLabel('Custom colour', { exact: true }).fill('#123456');
+  await page.getByRole('button', { name: 'Done', exact: true }).click();
+  assert.match(await page.locator('#model-colour').innerText(), /#123456/i);
+  const switchTo = async name => {
+    await page.getByText('Switch Studio', { exact: true }).click();
+    await page.getByRole('button', { name, exact: true }).click();
+    await page.locator('#active-studio').getByText(name, { exact: true }).waitFor();
+  };
+  await switchTo('UI Studio');
+  assert.equal(await page.locator('canvas').isVisible(), false);
   const preview = page.frameLocator('iframe[title="Game UI preview"]');
   await preview.locator('#settingsDialog').waitFor();
   await page.getByLabel('Preview resolution').selectOption('mobile');
@@ -190,22 +216,31 @@ try {
   await page.getByRole('button', { name: 'Add stop' }).click();
   await page.getByRole('button', { name: 'Done', exact: true }).click();
   assert.match(await preview.locator('#settingsDialog').evaluate(node => node.style.backgroundImage), /linear-gradient/);
-  await page.getByRole('button', { name: 'Return to Model Studio' }).click();
+  await page.getByRole('button', { name: 'Zoom In' }).click();
+  assert.equal(await page.locator('iframe[title="Game UI preview"]').evaluate(frame => frame.style.zoom), '1.25');
+  await page.getByRole('button', { name: 'Zoom Out' }).click();
+  assert.equal(await page.locator('iframe[title="Game UI preview"]').evaluate(frame => frame.style.zoom), '1');
+  await switchTo('Script Studio');
+  await page.getByLabel('Search scripts').fill('game-lifecycle');
+  await page.getByLabel('Game scripts').selectOption('game-lifecycle.js');
+  await page.locator('.studioScriptViewer code').getByText(/export/).waitFor();
+  assert.equal(await page.locator('.studioScriptViewer code').evaluate(code => code.isContentEditable), false);
+  await switchTo('Model Studio');
   await page.getByText('File', { exact: true }).click();
   await page.getByRole('button', { name: 'Publish…' }).click();
   await page.getByLabel('Update title').fill('Interface refresh');
-  await page.getByRole('button', { name: 'Keep in Draft' }).click();
+  await page.locator('#update-secret').fill('test password');
+  await page.getByRole('button', { name: 'Save Update Info' }).click();
   const draftPassword = page.locator('#draft input[type=password]');
-  await draftPassword.fill('test password');
-  await page.getByRole('button', { name: 'Save Draft' }).click();
   await page.locator('#studio-output').getByText('Draft version 1 saved.', { exact: true }).waitFor();
   assert.equal(drafts[1].updateInfo.title, 'Interface refresh');
   assert.equal(drafts[1].ui.settingsDialog.settingsDialog.gradient.length, 3);
   assert.equal(drafts[1].modelMaterials['player-ship'].find(edit => edit.field === 'color').value, '#123456');
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
   await page.getByRole('button', { name: 'Version History' }).click();
+  await page.locator('#versions').getByRole('button', { name: 'Restore Draft' }).click();
   await draftPassword.fill('test password');
-  await page.getByRole('button', { name: 'Restore Draft' }).click();
+  await page.locator('#save-confirm').click();
   await page.locator('#studio-output').getByText('Draft version 2 saved.', { exact: true }).waitFor();
   assert.deepEqual(drafts[2], drafts[1]);
   await page.locator('#asset').selectOption('pickaxe');

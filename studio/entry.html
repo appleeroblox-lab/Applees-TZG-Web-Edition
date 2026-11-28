@@ -4,6 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Zero Gravity Web Studio</title>
 <link rel="stylesheet" href="/entry-menu.css">
+<link rel="stylesheet" href="/ui-theme.css">
 <style>
   @font-face{font-family:Fredoka;src:url('/fonts/FredokaOne-Regular.ttf')}
   [hidden]{display:none!important}*{box-sizing:border-box}body{margin:0;background:#0e2443;color:#fff;font:16px Fredoka,system-ui,sans-serif}
@@ -13,12 +14,21 @@
   a{color:#a3ceff}.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.panels{display:grid;grid-template-columns:minmax(150px,1fr) minmax(0,3fr) minmax(150px,1fr);gap:10px}
   .panels label{display:grid;gap:5px;margin:10px 0}.panels input,.panels select{width:100%}canvas{display:block;max-width:100%;touch-action:none}.viewport{min-height:360px}
   main{max-width:none;padding:0}#workspace{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto}
-  #workspace header{background:#102c4c;border-radius:0;padding:7px 12px;margin:0}
-  #workspace .panels{padding:7px;min-height:0;grid-template-columns:minmax(125px,18%) minmax(0,1fr) minmax(145px,21%)}
-  #workspace .panels section{border-radius:7px;overflow:auto;padding:10px}
-  #workspace .panels h2{margin:0 0 8px;font-size:16px}.viewport{min-height:0}
-  #workspace .tools{gap:6px}.tools button,.tools select{padding:5px 8px;font-size:13px}
-  #accountGate,#boot,#unlockScreen,#rotatePrompt{position:fixed;inset:0;z-index:10}
+  #workspace .studioRibbon{background:#12243b;border:0;border-bottom:1px solid #456383;border-radius:0;padding:0;margin:0}
+  .studioTitle{background:#203751;padding:6px 12px;font-size:14px}.studioTitle span{margin-left:8px;color:#a3c9ed;font-size:12px}
+  #workspace .studioRibbon .tools{padding:5px 10px;margin:0;gap:5px}
+  #workspace .panels{min-height:0;grid-template-columns:clamp(113px,18vw,235px) minmax(0,1fr) clamp(145px,23vw,275px);gap:4px;padding:4px}
+  #workspace .panels section,.outputPane{min-width:0;border:1px solid #4a698a;border-radius:4px;background:#172d46;overflow:auto;padding:0}
+  #workspace h2{margin:0;padding:5px 8px;border-bottom:1px solid #4a698a;background:#223b57;font-size:13px}
+  #workspace .panels label{margin:6px 8px;font-size:11px;gap:2px}
+  #workspace .panels input,#workspace .panels select{font-size:12px;padding:3px 4px;border-radius:4px}
+  .inspector{min-height:0;display:grid;grid-template-rows:minmax(78px,1fr) minmax(92px,1fr);gap:4px}
+  #workspace .viewport{min-height:0;overflow:hidden;background:#102544}.viewport canvas{width:100%}
+  #draft{margin:0;padding:0 0 6px}#draft button{margin:0 8px;font-size:11px;padding:4px}
+  #workspace .tools button{padding:4px 8px;border-radius:4px;font-size:12px}
+  .outputPane{margin:0 4px 4px;max-height:24dvh}.outputPane p{margin:4px 8px;font:12px system-ui,sans-serif}
+  .outputPane #versions{padding:3px 8px}.outputPane #versions button{font-size:11px;padding:3px 6px}
+  #accountGate,#boot,#unlockScreen{position:fixed;inset:0;z-index:10}
   #accountGate,#unlockScreen{display:grid;place-items:center;overflow:auto}
   #unlockScreen{background:#06152c url('/images/entry/background.png') center/cover}
   #accountGate form,#unlockScreen form,#accountGate .studioWelcome{position:relative;z-index:2;margin:auto;padding:16px;width:min(460px,94vw);text-align:center}
@@ -30,12 +40,11 @@
   #notice:empty{display:none}#boot[hidden]{display:none!important}#boot{z-index:20}
   #boot .bootProgressTrack{position:relative;background:#0b2645;border:2px solid #90c7fa;overflow:hidden}
   #sourceProgress{height:100%;background:#3b8ddd}#sourceDetail{position:absolute;top:calc(50% + 70px);left:5%;width:90%;text-align:center}
-  #rotatePrompt{display:none;z-index:100;background:#06152c;place-content:center;text-align:center;padding:20px}
-  @media(orientation:portrait){#rotatePrompt{display:grid}main>*:not(#rotatePrompt){visibility:hidden!important;pointer-events:none!important}}
-  @media(max-height:440px){#workspace .panels label{margin:4px 0}#workspace .panels section{padding:7px}#accountGate .studioWelcome{gap:6px}}
+  @media(orientation:portrait){main{visibility:hidden!important;pointer-events:none!important}}
+  @media(max-height:440px){#workspace .panels label{margin:3px 6px}#accountGate .studioWelcome{gap:6px}}
 </style>
 <main>
-<div id="rotatePrompt" role="status"><h2>Rotate to landscape</h2><p>Turn your device sideways to use Studio.</p></div>
+
 <p id="notice" role="status"></p>
 <div id="accountGate" hidden>
   <div class="studioWelcome" id="signinChoices">
@@ -78,6 +87,33 @@ const gameLogin = document.querySelector('#gameLogin');
 const choices = document.querySelector('#signinChoices');
 const boot = document.querySelector('#boot');
 const landscape = matchMedia('(orientation: landscape)');
+const { installStartupLandscape } = await import('/startup-landscape.js');
+const rotation = installStartupLandscape();
+if (!document.querySelector('#startupLandscape')) {
+  const dialog = document.createElement('dialog');
+  dialog.id = 'startupLandscape';
+  dialog.setAttribute('aria-label', 'Landscape orientation');
+  dialog.style.cssText = 'position:fixed!important;inset:0!important;margin:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;z-index:2147483647!important;padding:24px!important;box-sizing:border-box!important;border:0!important;border-radius:0!important;background:#090b10!important;color:#fff!important';
+  dialog.innerHTML = '<div class="landscapeCard"><svg class="landscapeArtwork" viewBox="0 0 120 100" aria-hidden="true"><rect x="28" y="29" width="68" height="42" rx="7" fill="none" stroke="currentColor" stroke-width="4"/><path d="M16 46a39 39 0 0 1 62-30M78 6v12H66M104 54a39 39 0 0 1-62 30M42 94V82h12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><h1>Rotate to landscape</h1><p>Turn your phone sideways for the best flight experience.</p><button type="button" class="primary">Enter landscape</button><small>Keep your device sideways to continue.</small></div>';
+  document.body.append(dialog);
+  const refresh = () => {
+    if (landscape.matches) { dialog.close(); dialog.hidden = true; }
+    else { dialog.hidden = false; if (!dialog.open) dialog.showModal(); }
+  };
+  dialog.querySelector('button').onclick = async () => {
+    try {
+      if (!document.fullscreenElement) await document.documentElement.requestFullscreen?.();
+      await screen.orientation?.lock?.('landscape');
+    } catch {}
+    refresh();
+  };
+  dialog.addEventListener('cancel', event => event.preventDefault());
+  landscape.addEventListener('change', refresh);
+  refresh();
+} else {
+  rotation.refresh();
+}
+
 const gameSessionKey = 'tzg-player-session-v1';
 let clientPromise;
 function client() {

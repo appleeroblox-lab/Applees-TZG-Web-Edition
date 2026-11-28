@@ -31,29 +31,42 @@ export async function mount(root, api) {
   const redo = [];
 
   root.innerHTML = `
-    <header class="tools">
-      <strong>Model Studio</strong><label>Model <select id="asset"></select></label>
-      <button id="undo">Undo</button><button id="redo">Redo</button>
-      <button id="history">Version History</button><button id="lock">Lock Studio</button>
+    <header class="studioRibbon">
+      <div class="studioTitle">The Zero Gravity <span>Model Studio</span></div>
+      <div class="tools" aria-label="Editing toolbar">
+        <button id="undo">Undo</button><button id="redo">Redo</button>
+        <button id="zoom-in">Zoom In</button><button id="zoom-out">Zoom Out</button>
+        <button id="history">Version History</button><button id="lock">Lock Studio</button>
+      </div>
     </header>
     <div class="panels">
-      <section><h2>Explorer</h2><label>Search parts<input id="search"></label>
-        <label>Part<select id="part" size="8"></select></label></section>
+      <section class="assetsPane"><h2>Assets</h2>
+        <label>Search models<input id="asset-search" type="search"></label>
+        <label>Model<select id="asset" size="12"></select></label>
+      </section>
       <section class="viewport" aria-label="Live model preview">
-        <div class="tools"><button id="zoom-in">Zoom In</button><button id="zoom-out">Zoom Out</button></div>
+        <h2 id="scene-title">SolarFlare</h2>
       </section>
-      <section><h2>Properties</h2>
-        <label>Colour<input id="color" type="color"></label>
-        <label>Metalness<input id="metalness" type="range" min="0" max="1" step=".01"></label>
-        <label>Roughness<input id="roughness" type="range" min="0" max="1" step=".01"></label>
-        <label>Opacity<input id="opacity" type="range" min="0" max="1" step=".01"></label>
-        <form id="draft" style="margin:0">
-          <label>Studio password<input type="password" autocomplete="off" minlength="12" maxlength="72" required></label>
-          <button>Save Draft</button>
-        </form>
-      </section>
+      <aside class="inspector">
+        <section><h2>Explorer</h2><label>Search parts<input id="search" type="search"></label>
+          <label>Part<select id="part" size="5"></select></label></section>
+        <section><h2>Properties</h2>
+          <label>Colour<input id="color" type="color"></label>
+          <label>Metalness<input id="metalness" type="range" min="0" max="1" step=".01"></label>
+          <label>Roughness<input id="roughness" type="range" min="0" max="1" step=".01"></label>
+          <label>Opacity<input id="opacity" type="range" min="0" max="1" step=".01"></label>
+          <form id="draft">
+            <label>Studio password<input type="password" autocomplete="off" minlength="12" maxlength="72" required></label>
+            <button>Save Draft</button>
+          </form>
+        </section>
+      </aside>
     </div>
-    <section id="versions" hidden></section>`;
+    <section class="outputPane"><h2>Output</h2>
+      <p id="studio-output" role="status">Model loaded.</p>
+      <div id="versions" hidden></div>
+    </section>`;
+  const message = text => { root.querySelector('#studio-output').textContent = text; };
   const find = selector => root.querySelector(selector);
   const viewport = find('.viewport');
   const renderer = new T.WebGLRenderer({ antialias: true });
@@ -77,8 +90,8 @@ export async function mount(root, api) {
   const fields = ['color', 'metalness', 'roughness', 'opacity'];
 
   function draw() {
-    const w = Math.max(viewport.clientWidth - 20, 1);
-    const h = Math.max(viewport.clientHeight - 60, 1);
+    const w = Math.max(viewport.clientWidth, 1);
+    const h = Math.max(viewport.clientHeight - find('#scene-title').offsetHeight, 1);
     renderer.setSize(w, h);
     camera.aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
     camera.updateProjectionMatrix();
@@ -121,8 +134,16 @@ export async function mount(root, api) {
     partList.replaceChildren(...matches);
   }
   const assetPicker = find('#asset');
-  assetPicker.replaceChildren(...modelCatalog.map(id =>
-    new Option(id === shipId ? 'SolarFlare' : id, id, false, id === modelId)));
+  const assetLabel = id => id === shipId ? 'SolarFlare' : id;
+  function filterAssets() {
+    const search = find('#asset-search').value.trim().toLowerCase();
+    assetPicker.replaceChildren(...modelCatalog
+      .filter(id => assetLabel(id).toLowerCase().includes(search))
+      .map(id => new Option(assetLabel(id), id, false, id === modelId)));
+    assetPicker.value = modelId;
+  }
+  filterAssets();
+  find('#asset-search').oninput = filterAssets;
   assetPicker.onchange = async () => {
     const nextId = assetPicker.value;
     assetPicker.disabled = true;
@@ -132,6 +153,8 @@ export async function mount(root, api) {
       materials[modelId] = edits;
       modelId = nextId;
       model = next;
+      find('#scene-title').textContent = assetLabel(nextId);
+      message('Loaded ' + assetLabel(nextId) + '.');
       selected = 0;
       edits = materials[modelId] ?? [];
       undo.length = redo.length = 0;
@@ -139,7 +162,7 @@ export async function mount(root, api) {
       update(true);
     } catch (error) {
       assetPicker.value = modelId;
-      api.message(error.message);
+      message(error.message);
     } finally { assetPicker.disabled = false; }
   };
   find('#search').addEventListener('input', parts);
@@ -205,9 +228,9 @@ export async function mount(root, api) {
       const result = await api.call('write', { ...payload, expected_revision: revision, password });
       if (result.status !== 'ok') throw new Error('Draft write failed (' + result.status + ').');
       revision = result.revision;
-      api.message('Draft version ' + revision + ' saved.');
+      message('Draft version ' + revision + ' saved.');
       return true;
-    } catch (error) { api.message(error.message); }
+    } catch (error) { message(error.message); }
     finally { saving = false; }
   }
   draftForm.onsubmit = event => {
@@ -242,7 +265,7 @@ export async function mount(root, api) {
         panel.append(row);
       }
       if (!versions.length) panel.textContent = 'No draft versions yet.';
-    } catch (error) { api.message(error.message); }
+    } catch (error) { message(error.message); }
   };
 
   const loadingManager = T.DefaultLoadingManager;

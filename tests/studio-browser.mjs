@@ -76,7 +76,7 @@ const server = createServer(async (req, res) => {
       res.end(fixture[url.pathname]);
       return;
     }
-    assert.match(url.pathname, /^\/(vendor|models|fonts|images)\/|^\/(models\.js|entry-menu\.css)$/);
+    assert.match(url.pathname, /^\/(vendor|models|fonts|images)\/|^\/(models\.js|startup-landscape\.js|entry-menu\.css|ui-theme\.css)$/);
     const types = { js: 'text/javascript', json: 'application/json', png: 'image/png', ttf: 'font/ttf', css: 'text/css' };
     const data = await readFile(new URL('../public' + url.pathname, import.meta.url));
     res.writeHead(200, { 'Content-Type': types[url.pathname.split('.').at(-1)] });
@@ -110,13 +110,13 @@ try {
   const draftPassword = page.locator('#draft input[type=password]');
   await draftPassword.fill('test password');
   await page.getByRole('button', { name: 'Save Draft' }).click();
-  await page.getByText('Draft version 1 saved.', { exact: true }).waitFor();
+  await page.locator('#studio-output').getByText('Draft version 1 saved.', { exact: true }).waitFor();
   assert.equal(drafts[1].modelMaterials['player-ship'][0].value, '#123456');
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
   await page.getByRole('button', { name: 'Version History' }).click();
   await draftPassword.fill('test password');
   await page.getByRole('button', { name: 'Restore Draft' }).click();
-  await page.getByText('Draft version 2 saved.', { exact: true }).waitFor();
+  await page.locator('#studio-output').getByText('Draft version 2 saved.', { exact: true }).waitFor();
   assert.deepEqual(drafts[2], drafts[1]);
   await page.locator('#asset').selectOption('pickaxe');
   await page.waitForFunction(() => !document.querySelector('#asset').disabled);

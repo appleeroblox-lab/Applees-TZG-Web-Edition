@@ -28,7 +28,7 @@ export async function studioRequest(request, env, assets, fetcher = fetch) {
     const nonce = crypto.randomUUID();
     return response(request.method === 'HEAD' ? null : assets.entry.replaceAll('__STUDIO_NONCE__', nonce), 200, 'text/html; charset=utf-8', {
       'Content-Security-Policy': [
-        "default-src 'none'", "frame-ancestors 'none'", "base-uri 'none'",
+        "default-src 'none'", "frame-ancestors 'none'", "frame-src 'self' about:", "base-uri 'none'",
         "form-action 'none'", "font-src 'self'", "img-src 'self' blob: data:",
         `connect-src 'self' ${new URL(env.SUPABASE_URL || request.url).origin}`, "style-src 'self' 'unsafe-inline'",
         `script-src 'nonce-${nonce}' 'self' blob:`,

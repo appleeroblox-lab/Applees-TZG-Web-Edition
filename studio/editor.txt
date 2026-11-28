@@ -34,6 +34,11 @@ export async function mount(root, api) {
     <header class="studioRibbon">
       <div class="studioTitle">The Zero Gravity <span>Model Studio</span></div>
       <div class="tools" aria-label="Editing toolbar">
+        <details class="studioFile"><summary>File</summary><div>
+          <button type="button" id="file-save">Save Draft</button>
+          <button type="button" id="file-update">Publish…</button>
+        </div></details>
+        <button id="ui-editor">Open UI Editor</button>
         <button id="undo">Undo</button><button id="redo">Redo</button>
         <button id="zoom-in">Zoom In</button><button id="zoom-out">Zoom Out</button>
         <button id="history">Version History</button><button id="lock">Lock Studio</button>
@@ -51,7 +56,7 @@ export async function mount(root, api) {
         <section><h2>Explorer</h2><label>Search parts<input id="search" type="search"></label>
           <label>Part<select id="part" size="5"></select></label></section>
         <section><h2>Properties</h2>
-          <label>Colour<input id="color" type="color"></label>
+          <label>Colour<input id="color" type="color"></label><button type="button" id="custom-model-colour">Custom Colour</button>
           <label>Metalness<input id="metalness" type="range" min="0" max="1" step=".01"></label>
           <label>Roughness<input id="roughness" type="range" min="0" max="1" step=".01"></label>
           <label>Opacity<input id="opacity" type="range" min="0" max="1" step=".01"></label>
@@ -62,6 +67,14 @@ export async function mount(root, api) {
         </section>
       </aside>
     </div>
+    <dialog id="update-info" aria-labelledby="update-title">
+      <h2 id="update-title">Update Info</h2>
+      <label>Update title<input id="update-name" maxlength="80"></label>
+      <label>Update notes<textarea id="update-notes" maxlength="1200"></textarea></label>
+      <p id="update-summary"></p>
+      <p>Publishing to the live game is unavailable in this preview.</p>
+      <div class="tools"><button type="button" id="keep-info">Keep in Draft</button><button type="button" id="close-info">Close</button></div>
+    </dialog>
     <section class="outputPane"><h2>Output</h2>
       <p id="studio-output" role="status">Model loaded.</p>
       <div id="versions" hidden></div>
@@ -180,6 +193,13 @@ export async function mount(root, api) {
       update();
     });
   }
+  find('#custom-model-colour').onclick = () => openPaintPanel(root, {
+    color: find('#color').value,
+    onDone: color => {
+      find('#color').value = color;
+      find('#color').dispatchEvent(new Event('change'));
+    },
+  });
   find('#undo').onclick = () => {
     if (!undo.length) return;
     redo.push(edits);
@@ -219,6 +239,50 @@ export async function mount(root, api) {
   const draftForm = find('#draft');
   const secret = draftForm.querySelector('[type=password]');
   let saving = false;
+  let closeUi;
+  let uiEdits = draft.document.ui ?? {};
+  let updateInfo = draft.document.updateInfo ?? {};
+  const uiButton = find('#ui-editor');
+  uiButton.onclick = async () => {
+    if (closeUi) {
+      closeUi();
+      closeUi = undefined;
+      uiButton.textContent = 'Open UI Editor';
+      renderer.domElement.hidden = false;
+      find('#scene-title').textContent = assetLabel(modelId);
+      draw();
+      return;
+    }
+    uiButton.disabled = true;
+    try {
+      closeUi = await mountInterfaceEditor(root, viewport, uiEdits, edits => { uiEdits = edits; });
+      renderer.domElement.hidden = true;
+      find('#scene-title').textContent = 'UI Preview';
+      uiButton.textContent = 'Return to Model Studio';
+    } catch (error) { message(error.message); }
+    finally { uiButton.disabled = false; }
+  };
+  const fileMenu = find('.studioFile');
+  find('#file-save').onclick = () => {
+    fileMenu.open = false;
+    secret.focus();
+    message('Enter your Studio password in Properties to save.');
+  };
+  const info = find('#update-info');
+  find('#file-update').onclick = () => {
+    fileMenu.open = false;
+    find('#update-name').value = updateInfo.title ?? '';
+    find('#update-notes').value = updateInfo.notes ?? '';
+    find('#update-summary').textContent = 'UI menus changed: ' + Object.keys(uiEdits).length +
+      ' · Models with material changes: ' + Object.values({ ...materials, [modelId]: edits }).filter(items => items.length).length;
+    info.showModal();
+  };
+  find('#close-info').onclick = () => info.close();
+  find('#keep-info').onclick = () => {
+    updateInfo = { title: find('#update-name').value.trim(), notes: find('#update-notes').value.trim() };
+    info.close();
+    message('Update info added to the draft. Save Draft to keep it.');
+  };
   async function write(payload) {
     if (saving) return;
     saving = true;
@@ -237,7 +301,7 @@ export async function mount(root, api) {
     event.preventDefault();
     materials[modelId] = edits;
     const { shipMaterials, ...otherDraftFields } = draft.document;
-    void write({ edits: { ...otherDraftFields, modelMaterials: materials } });
+    void write({ edits: { ...otherDraftFields, modelMaterials: materials, ui: uiEdits, updateInfo } });
   };
   find('#history').onclick = async () => {
     try {
@@ -256,6 +320,9 @@ export async function mount(root, api) {
             const restored = await api.call('read');
             draft.document = restored.document;
             materials = getMaterials(restored.document);
+            uiEdits = restored.document.ui ?? {};
+            updateInfo = restored.document.updateInfo ?? {};
+            if (closeUi) uiButton.click();
             edits = materials[modelId] ?? [];
             undo.length = redo.length = 0;
             update();
@@ -281,7 +348,9 @@ export async function mount(root, api) {
   return () => {
     window.removeEventListener('resize', draw);
     if (loadingManager.onLoad === onLoad) loadingManager.onLoad = originalOnLoad;
+    closeUi?.();
     release(ship);
     renderer.dispose();
+    renderer.forceContextLoss();
   };
 }

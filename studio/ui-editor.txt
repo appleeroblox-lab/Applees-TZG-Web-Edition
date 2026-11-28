@@ -1,0 +1,210 @@
+const editableMenus = ['settingsDialog', 'inventoryDialog', 'helpDialog', 'hudDialog', 'warpConfirmDialog'];
+const studioColors = ['#ffffff', '#a8d4ff', '#48a4df', '#2279bb', '#123c69', '#101a2b',
+  '#45b988', '#efc95b', '#ed804c', '#da5369', '#a584e3', '#717a89'];
+
+async function openPaintPanel(root, { color, stops, gradient = false, onDone }) {
+  const [{ dragPanel }, { paintGradient }] = await Promise.all([
+    import(new URL('/panel-drag.js', location.origin)),
+    import(new URL('/paint-gradient.js', location.origin)),
+  ]);
+  root.querySelector('.studioPaint')?.remove();
+  const panel = document.createElement('section');
+  panel.className = 'studioPaint homeColorPicker';
+  panel.setAttribute('role', 'dialog');
+  panel.setAttribute('aria-label', gradient ? 'Gradient Editor' : 'Custom Colour');
+  panel.innerHTML = `
+    <div class="homePickerTop"><strong>${gradient ? 'Gradient Editor' : 'Custom Colour'}</strong>
+      <button type="button" data-close>×</button></div>
+    <div class="homeGradientTrack" ${gradient ? '' : 'hidden'}></div>
+    <div class="studioSwatches" aria-label="Colour list"></div>
+    <label>Custom colour <input type="color"></label>
+    <div class="tools">
+      <button type="button" data-add ${gradient ? '' : 'hidden'}>Add stop</button>
+      <button type="button" data-remove ${gradient ? '' : 'hidden'}>Remove stop</button>
+      <button type="button" data-done>Done</button>
+    </div>`;
+  root.append(panel);
+  dragPanel(panel.querySelector('.homePickerTop'), panel, { margin: 8 });
+  const input = panel.querySelector('input[type=color]');
+  const track = panel.querySelector('.homeGradientTrack');
+  const custom = /^#[\da-f]{6}$/i.test(color) ? color : '#ffffff';
+  const keys = structuredClone(paintGradient(stops) ?? [{ position: 0, color: custom }, { position: 1, color: '#2279bb' }]);
+  let selected = 0;
+  input.value = custom;
+  function render() {
+    if (!gradient) return;
+    input.value = keys[selected].color;
+    track.style.background = gradientStyle(keys);
+    track.replaceChildren();
+    for (const [i, key] of keys.entries()) {
+      const point = document.createElement('button');
+      point.type = 'button';
+      point.setAttribute('aria-label', 'Gradient stop ' + (i + 1));
+      point.setAttribute('aria-pressed', String(i === selected));
+      point.style.left = key.position * 100 + '%';
+      point.style.background = key.color;
+      point.onpointerdown = event => {
+        selected = i;
+        input.value = key.color;
+        if (i === 0 || i === keys.length - 1) return;
+        point.setPointerCapture(event.pointerId);
+        point.onpointermove = move => {
+          const rect = track.getBoundingClientRect();
+          key.position = Math.max(keys[i - 1].position + .01,
+            Math.min(keys[i + 1].position - .01, (move.clientX - rect.left) / rect.width));
+          point.style.left = key.position * 100 + '%';
+          track.style.background = gradientStyle(keys);
+        };
+        point.onlostpointercapture = () => { point.onpointermove = null; render(); };
+      };
+      point.onclick = () => { selected = i; render(); };
+      track.append(point);
+    }
+  }
+  function choose(value) {
+    input.value = value;
+    if (gradient) { keys[selected].color = value; render(); }
+  }
+  for (const swatch of studioColors) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.style.background = swatch;
+    button.setAttribute('aria-label', swatch);
+    button.onclick = () => choose(swatch);
+    panel.querySelector('.studioSwatches').append(button);
+  }
+  input.oninput = () => choose(input.value);
+  panel.querySelector('[data-add]').onclick = () => {
+    if (keys.length >= 4) return;
+    let gap = 1;
+    for (let i = 2; i < keys.length; i++) {
+      if (keys[i].position - keys[i - 1].position > keys[gap].position - keys[gap - 1].position) gap = i;
+    }
+    keys.splice(gap, 0, { position: (keys[gap - 1].position + keys[gap].position) / 2, color: input.value });
+    selected = gap;
+    render();
+  };
+  panel.querySelector('[data-remove]').onclick = () => {
+    if (selected === 0 || selected === keys.length - 1) return;
+    keys.splice(selected, 1);
+    selected--;
+    render();
+  };
+  panel.querySelector('[data-close]').onclick = () => panel.remove();
+  panel.querySelector('[data-done]').onclick = () => { onDone(gradient ? keys : input.value); panel.remove(); };
+  render();
+}
+
+function gradientStyle(stops) {
+  return 'linear-gradient(90deg, ' + stops.map(stop => stop.color + ' ' + stop.position * 100 + '%').join(', ') + ')';
+}
+
+async function mountInterfaceEditor(root, viewport, source, onEdit) {
+  const response = await fetch('/');
+  if (!response.ok) throw new Error('Could not load the game UI.');
+  const game = new DOMParser().parseFromString(await response.text(), 'text/html');
+  const wrapper = document.createElement('section');
+  wrapper.className = 'studioUiTools';
+  wrapper.innerHTML = `
+    <label>Menu <select aria-label="Game menu"></select></label>
+    <label>Element <select aria-label="UI element"></select></label>
+    <label>Text <input aria-label="Element text"></label>
+    <label>Width <input aria-label="Element width" type="number" min="1" max="2000"></label>
+    <label>X <input aria-label="Element X" type="number" min="-500" max="500"></label>
+    <label>Y <input aria-label="Element Y" type="number" min="-500" max="500"></label>
+    <div class="tools"><button type="button" data-color>Colour</button><button type="button" data-gradient>Gradient Editor</button></div>`;
+  const fields = wrapper.querySelectorAll('input');
+  const [menus, elements] = wrapper.querySelectorAll('select');
+  const iframe = document.createElement('iframe');
+  iframe.title = 'Game UI preview';
+  iframe.setAttribute('sandbox', 'allow-same-origin');
+  viewport.append(iframe, wrapper);
+  let edits = source && typeof source === 'object' ? structuredClone(source) : {};
+  let menu;
+  let selected;
+  const validColor = value => typeof value === 'string' && /^#[\da-f]{6}$/i.test(value);
+  function apply() {
+    const doc = iframe.contentDocument;
+    if (!doc?.body) return;
+    for (const node of doc.body.querySelectorAll('[id]')) {
+      const edit = edits[menu]?.[node.id];
+      if (!edit) continue;
+      if (typeof edit.text === 'string' && !node.childElementCount) node.textContent = edit.text;
+      if (validColor(edit.color)) node.style.color = edit.color;
+      if (Number.isFinite(edit.width)) node.style.width = Math.max(1, Math.min(edit.width, 2000)) + 'px';
+      if (Number.isFinite(edit.x) || Number.isFinite(edit.y)) node.style.translate = (Number(edit.x) || 0) + 'px ' + (Number(edit.y) || 0) + 'px';
+      if (Array.isArray(edit.gradient) && edit.gradient.length >= 2 && edit.gradient.length <= 4 &&
+        edit.gradient.every(stop => validColor(stop?.color) && Number.isFinite(stop.position) && stop.position >= 0 && stop.position <= 1)) {
+        node.style.backgroundImage = gradientStyle(edit.gradient);
+      }
+    }
+  }
+  function select(id) {
+    const node = iframe.contentDocument?.getElementById(id);
+    if (!node) return;
+    iframe.contentDocument.querySelector('[data-studio-selected]')?.removeAttribute('data-studio-selected');
+    node.setAttribute('data-studio-selected', '');
+    selected = id;
+    elements.value = id;
+    const edit = edits[menu]?.[id] ?? {};
+    fields[0].disabled = Boolean(node.childElementCount) || !['BUTTON', 'SPAN', 'P', 'H2', 'H3', 'LABEL', 'SMALL', 'STRONG'].includes(node.tagName);
+    fields[0].value = fields[0].disabled ? '' : node.textContent.trim();
+    fields[1].value = edit.width ?? '';
+    fields[2].value = edit.x ?? '';
+    fields[3].value = edit.y ?? '';
+  }
+  function show(id) {
+    menu = id;
+    const node = game.getElementById(id)?.cloneNode(true);
+    if (!node) return;
+    node.querySelectorAll('script,iframe,object,embed,link,style').forEach(element => element.remove());
+    for (const element of [node, ...node.querySelectorAll('*')]) {
+      for (const attribute of [...element.attributes]) {
+        if (attribute.name.startsWith('on') || ['href', 'action', 'formaction', 'srcdoc'].includes(attribute.name)) element.removeAttribute(attribute.name);
+      }
+    }
+    node.setAttribute('open', '');
+    node.removeAttribute('hidden');
+    iframe.srcdoc = '<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="/style.css">' +
+      '<link rel="stylesheet" href="/reference-ui.css"><link rel="stylesheet" href="/ui-theme.css">' +
+      '<link rel="stylesheet" href="/settings-appearance.css">' +
+      '<style>body{background:#102544;margin:0}body>dialog[open]{position:relative!important;inset:auto!important;transform:none!important;margin:12px auto!important;max-width:94vw!important;max-height:none!important;overflow:visible!important}[data-studio-selected]{outline:2px solid #8fd5ff!important;outline-offset:2px}</style>' +
+      '<body class="referenceHUD">' + node.outerHTML;
+    iframe.onload = () => {
+      const doc = iframe.contentDocument;
+      const ids = [...doc.body.querySelectorAll('[id]:not([type=hidden])')];
+      elements.replaceChildren(...ids.map(el => new Option(el.tagName.toLowerCase() + ' · ' + el.id, el.id)));
+      apply();
+      select(id);
+      doc.addEventListener('click', event => {
+        event.preventDefault();
+        const target = event.target.closest('[id]');
+        if (target) select(target.id);
+      }, true);
+      doc.addEventListener('submit', event => event.preventDefault(), true);
+    };
+  }
+  function change(patch) {
+    if (!selected || !iframe.contentDocument?.getElementById(selected)) return;
+    edits = { ...edits, [menu]: { ...edits[menu], [selected]: { ...edits[menu]?.[selected], ...patch } } };
+    apply();
+    onEdit(edits);
+  }
+  menus.replaceChildren(...editableMenus.filter(id => game.getElementById(id)).map(id =>
+    new Option(id.replace(/Dialog$/, '').replace(/([A-Z])/g, ' $1'), id)));
+  menus.onchange = () => show(menus.value);
+  elements.onchange = () => select(elements.value);
+  for (const [i, name] of ['text', 'width', 'x', 'y'].entries()) {
+    fields[i].onchange = () => {
+      if (i && (!fields[i].value || !fields[i].checkValidity())) return;
+      change({ [name]: i ? Number(fields[i].value) : fields[i].value.slice(0, 160) });
+    };
+  }
+  wrapper.querySelector('[data-color]').onclick = () =>
+    openPaintPanel(root, { color: edits[menu]?.[selected]?.color, onDone: color => change({ color }) });
+  wrapper.querySelector('[data-gradient]').onclick = () =>
+    openPaintPanel(root, { gradient: true, stops: edits[menu]?.[selected]?.gradient,
+      color: edits[menu]?.[selected]?.color, onDone: gradient => change({ gradient }) });
+  show(menus.value);
+  return () => { iframe.remove(); wrapper.remove(); root.querySelector('.studioPaint')?.remove(); };
+}

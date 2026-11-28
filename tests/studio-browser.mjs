@@ -7,7 +7,7 @@ import { studioRequest } from '../studio/routes.mjs';
 const load = path => readFile(new URL('../' + path, import.meta.url), 'utf8');
 const assets = {
   entry: await load('studio/entry.html'),
-  editor: (await load('studio/model-edits.mjs')) + '\n' + (await load('studio/model-catalog.txt')) + '\n' + (await load('studio/editor.txt')),
+  editor: (await load('studio/model-edits.mjs')) + '\n' + (await load('studio/model-catalog.txt')) + '\n' + (await load('studio/ui-editor.txt')) + '\n' + (await load('studio/editor.txt')),
 };
 const env = { SUPABASE_URL: 'https://db.invalid', SUPABASE_PUBLISHABLE_KEY: 'fixture' };
 let unlocked = false;
@@ -76,7 +76,12 @@ const server = createServer(async (req, res) => {
       res.end(fixture[url.pathname]);
       return;
     }
-    assert.match(url.pathname, /^\/(vendor|models|fonts|images)\/|^\/(models\.js|startup-landscape\.js|entry-menu\.css|ui-theme\.css)$/);
+    if (url.pathname === '/') {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(await load('public/index.html'));
+      return;
+    }
+    assert.match(url.pathname, /^\/(vendor|models|fonts|images)\/|^\/(models\.js|startup-landscape\.js|entry-menu\.css|ui-theme\.css|home-experiment\.css|style\.css|reference-ui\.css|settings-appearance\.css|panel-drag\.js|paint-gradient\.js)$/);
     const types = { js: 'text/javascript', json: 'application/json', png: 'image/png', ttf: 'font/ttf', css: 'text/css' };
     const data = await readFile(new URL('../public' + url.pathname, import.meta.url));
     res.writeHead(200, { 'Content-Type': types[url.pathname.split('.').at(-1)] });
@@ -107,10 +112,27 @@ try {
   await page.locator('canvas:visible').waitFor({ timeout: 10000 });
   await page.locator('#color').fill('#123456');
   if (await page.locator('#color').inputValue() !== '#123456') throw new Error('Colour was not updated.');
+  await page.getByRole('button', { name: 'Open UI Editor' }).click();
+  const preview = page.frameLocator('iframe[title="Game UI preview"]');
+  await preview.locator('#settingsDialog').waitFor();
+  await page.getByLabel('Element width', { exact: true }).fill('420');
+  await page.getByLabel('Element width', { exact: true }).press('Tab');
+  assert.equal(await preview.locator('#settingsDialog').evaluate(node => node.style.width), '420px');
+  await page.getByRole('button', { name: 'Gradient Editor', exact: true }).click();
+  await page.getByRole('button', { name: 'Add stop' }).click();
+  await page.getByRole('button', { name: 'Done', exact: true }).click();
+  assert.match(await preview.locator('#settingsDialog').evaluate(node => node.style.backgroundImage), /linear-gradient/);
+  await page.getByRole('button', { name: 'Return to Model Studio' }).click();
+  await page.locator('.studioFile summary').click();
+  await page.getByRole('button', { name: 'Publish…' }).click();
+  await page.getByLabel('Update title').fill('Interface refresh');
+  await page.getByRole('button', { name: 'Keep in Draft' }).click();
   const draftPassword = page.locator('#draft input[type=password]');
   await draftPassword.fill('test password');
   await page.getByRole('button', { name: 'Save Draft' }).click();
   await page.locator('#studio-output').getByText('Draft version 1 saved.', { exact: true }).waitFor();
+  assert.equal(drafts[1].updateInfo.title, 'Interface refresh');
+  assert.equal(drafts[1].ui.settingsDialog.settingsDialog.gradient.length, 3);
   assert.equal(drafts[1].modelMaterials['player-ship'][0].value, '#123456');
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
   await page.getByRole('button', { name: 'Version History' }).click();
@@ -121,7 +143,8 @@ try {
   await page.locator('#asset').selectOption('pickaxe');
   await page.waitForFunction(() => !document.querySelector('#asset').disabled);
   assert.equal(await page.locator('#asset').inputValue(), 'pickaxe');
-  await page.getByRole('button', { name: 'Lock Studio' }).click();
+  await Promise.all([page.waitForResponse(response => response.url().endsWith('/api/lock')),
+    page.getByRole('button', { name: 'Lock Studio' }).click()]);
   await page.getByText('Studio is locked.', { exact: true }).waitFor();
   assert.equal(await page.locator('canvas').count(), 0);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -130,7 +153,9 @@ try {
   await page.setViewportSize({ width: 844, height: 390 });
   await page.locator('#password').fill('test password');
   await page.getByRole('button', { name: 'Unlock Studio' }).click();
-  await page.locator('canvas:visible').waitFor();
+  await page.locator('canvas:visible').waitFor({ timeout: 10000 }).catch(async error => {
+    throw new Error(await page.locator('#notice').innerText() || error.message);
+  });
   const dimensions = await page.evaluate(() => ({
     width: innerWidth, contentWidth: document.documentElement.scrollWidth,
   }));

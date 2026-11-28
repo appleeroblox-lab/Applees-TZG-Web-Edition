@@ -3,27 +3,45 @@ const threePath = new URL('/vendor/three.module.js', origin);
 const loaderPath = new URL('/models.js', origin);
 
 export async function mount(root, api) {
-  const [T, { modelFromData }, draft, modelResponse] = await Promise.all([
+  const [T, { modelFromData }, draft] = await Promise.all([
     import(threePath), import(loaderPath), api.call('read'),
-    fetch('/models/player-ship.json'),
   ]);
-  if (draft.status !== 'ok' || !modelResponse.ok) throw new Error('Could not load the draft and ship model.');
-  const model = await modelResponse.json();
+  if (draft.status !== 'ok') throw new Error('Could not load the draft.');
+  async function loadModel(id) {
+    const response = await fetch('/models/' + encodeURIComponent(id) + '.json');
+    if (!response.ok) throw new Error('Could not load the selected model.');
+    const data = await response.json();
+    for (const mesh of data.meshes) {
+      for (const field of ['map', 'emissiveMap']) {
+        if (mesh[field]) mesh[field] = new URL(mesh[field], origin).href;
+      }
+    }
+    return data;
+  }
+  const shipId = 'player-ship';
+  let modelId = shipId;
+  let model = await loadModel(modelId);
   let revision = draft.revision;
-  let edits = draft.document.shipMaterials ?? [];
+  function getMaterials(document) {
+    return { [shipId]: document.shipMaterials ?? [], ...document.modelMaterials };
+  }
+  let materials = getMaterials(draft.document);
+  let edits = materials[modelId] ?? [];
   const undo = [];
   const redo = [];
 
   root.innerHTML = `
     <header class="tools">
-      <strong>Model Studio · SolarFlare</strong>
+      <strong>Model Studio</strong><label>Model <select id="asset"></select></label>
       <button id="undo">Undo</button><button id="redo">Redo</button>
       <button id="history">Version History</button><button id="lock">Lock Studio</button>
     </header>
     <div class="panels">
       <section><h2>Explorer</h2><label>Search parts<input id="search"></label>
         <label>Part<select id="part" size="8"></select></label></section>
-      <section class="viewport" aria-label="Live model preview"></section>
+      <section class="viewport" aria-label="Live model preview">
+        <div class="tools"><button id="zoom-in">Zoom In</button><button id="zoom-out">Zoom Out</button></div>
+      </section>
       <section><h2>Properties</h2>
         <label>Colour<input id="color" type="color"></label>
         <label>Metalness<input id="metalness" type="range" min="0" max="1" step=".01"></label>
@@ -101,6 +119,28 @@ export async function mount(root, api) {
       ? [new Option(item.name, String(index), false, index === selected)] : []);
     partList.replaceChildren(...matches);
   }
+  const assetPicker = find('#asset');
+  assetPicker.replaceChildren(...modelCatalog.map(id =>
+    new Option(id === shipId ? 'SolarFlare' : id, id, false, id === modelId)));
+  assetPicker.onchange = async () => {
+    const nextId = assetPicker.value;
+    assetPicker.disabled = true;
+    try {
+      const next = await loadModel(nextId);
+      applyModelMaterialEdits(next, materials[nextId] ?? []);
+      materials[modelId] = edits;
+      modelId = nextId;
+      model = next;
+      selected = 0;
+      edits = materials[modelId] ?? [];
+      undo.length = redo.length = 0;
+      parts();
+      update(true);
+    } catch (error) {
+      assetPicker.value = modelId;
+      api.message(error.message);
+    } finally { assetPicker.disabled = false; }
+  };
   find('#search').addEventListener('input', parts);
   partList.addEventListener('change', () => {
     selected = Number(partList.value);
@@ -142,10 +182,15 @@ export async function mount(root, api) {
     draw();
   };
   renderer.domElement.onpointerup = renderer.domElement.onpointercancel = () => { lastPointer = undefined; };
+  function zoom(factor) {
+    distance = Math.max(1.1, Math.min(12, distance * factor));
+    draw();
+  }
+  find('#zoom-in').onclick = () => zoom(.8);
+  find('#zoom-out').onclick = () => zoom(1.25);
   renderer.domElement.addEventListener('wheel', event => {
     event.preventDefault();
-    distance = Math.max(1.1, Math.min(12, distance * Math.exp(event.deltaY * .001)));
-    draw();
+    zoom(Math.exp(event.deltaY * .001));
   }, { passive: false });
   const draftForm = find('#draft');
   const secret = draftForm.querySelector('[type=password]');
@@ -166,7 +211,9 @@ export async function mount(root, api) {
   }
   draftForm.onsubmit = event => {
     event.preventDefault();
-    void write({ edits: { ...draft.document, shipMaterials: edits } });
+    materials[modelId] = edits;
+    const { shipMaterials, ...otherDraftFields } = draft.document;
+    void write({ edits: { ...otherDraftFields, modelMaterials: materials } });
   };
   find('#history').onclick = async () => {
     try {
@@ -184,7 +231,8 @@ export async function mount(root, api) {
           if (await write({ restore_revision: version.revision })) {
             const restored = await api.call('read');
             draft.document = restored.document;
-            edits = restored.document.shipMaterials ?? [];
+            materials = getMaterials(restored.document);
+            edits = materials[modelId] ?? [];
             undo.length = redo.length = 0;
             update();
           }
@@ -196,11 +244,19 @@ export async function mount(root, api) {
     } catch (error) { api.message(error.message); }
   };
 
+  const loadingManager = T.DefaultLoadingManager;
+  const originalOnLoad = loadingManager.onLoad;
+  function onLoad() {
+    originalOnLoad?.();
+    draw();
+  }
+  loadingManager.onLoad = onLoad;
   parts();
   update(true);
   window.addEventListener('resize', draw);
   return () => {
     window.removeEventListener('resize', draw);
+    if (loadingManager.onLoad === onLoad) loadingManager.onLoad = originalOnLoad;
     release(ship);
     renderer.dispose();
   };

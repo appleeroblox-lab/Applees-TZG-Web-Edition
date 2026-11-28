@@ -4,7 +4,9 @@
 
 The Studio access migration creates an empty developer allowlist and private unlock storage. It binds a hashed unlock token to the authenticated game session, expires it after ten minutes of inactivity, and throttles failed password attempts per developer. Deleting the game session revokes its unlocks. The access test runs with `node tests/studio-access.mjs` after installing dependencies in `tests/`.
 
-The private draft migration adds password-verified writes, revision conflicts, draft history, and restoration. It does not promote drafts to the game. The Model Studio material adapter accepts existing model JSON and preserves geometry, part names, and colliders. The isolated Worker entry and protected Model Studio preview currently support editing SolarFlare materials, undo/redo, private draft saves, and restoring a draft revision. UI Studio, Planet Studio, the remaining Model Studio tools, and production publication are still pending. The Worker has not been deployed.
+The private draft migration adds password-verified writes, revision conflicts, draft history, and restoration. It does not promote drafts to the game. The Model Studio material adapter accepts existing model JSON and preserves geometry, part names, and colliders. The isolated Worker entry and protected Model Studio preview currently support editing materials on the game’s exported JSON models, undo/redo, private draft saves, and restoring a draft revision. UI Studio, Planet Studio, the remaining Model Studio tools, and production publication are still pending. The Worker has not been deployed.
+
+Local browser verification uses `node tests/studio-browser.mjs` with Playwright Chromium installed. It exercises password setup, locking, model selection, desktop and narrow layouts, saving, and restoring drafts against a fixture backend. The database test covers the underlying RPCs separately.
 
 ## Public site and Studio routing
 

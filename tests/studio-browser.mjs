@@ -7,7 +7,7 @@ import { studioRequest } from '../studio/routes.mjs';
 const load = path => readFile(new URL('../' + path, import.meta.url), 'utf8');
 const assets = {
   entry: await load('studio/entry.html'),
-  editor: (await load('studio/model-edits.mjs')) + '\n' + (await load('studio/model-catalog.txt')) + '\n' + (await load('studio/ui-editor.txt')) + '\n' + (await load('studio/editor.txt')),
+  editor: (await load('studio/model-edits.mjs')) + '\n' + (await load('studio/model-catalog.txt')) + '\n' + (await load('studio/workspace.txt')) + '\n' + (await load('studio/ui-editor.txt')) + '\n' + (await load('studio/editor.txt')),
 };
 const env = { SUPABASE_URL: 'https://db.invalid', SUPABASE_PUBLISHABLE_KEY: 'fixture' };
 let unlocked = false;
@@ -98,6 +98,7 @@ try {
     args: ['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
   });
   const page = await browser.newPage();
+  page.setDefaultTimeout(8000);
   await page.goto('http://127.0.0.1:' + server.address().port + '/studio/');
   await page.getByRole('button', { name: 'Sign in with Google' }).waitFor();
   await page.getByRole('button', { name: 'Sign in with game account' }).click();
@@ -110,11 +111,78 @@ try {
   await page.locator('#password').fill('test password');
   await page.getByRole('button', { name: 'Unlock Studio' }).click();
   await page.locator('canvas:visible').waitFor({ timeout: 10000 });
+  const canvas = page.locator('canvas');
+  const widthBefore = await canvas.evaluate(node => node.clientWidth);
+  const splitter = await page.locator('.studioSplitter[data-side=left]').boundingBox();
+  await page.mouse.move(splitter.x + 3, splitter.y + 55);
+  await page.mouse.down();
+  await page.mouse.move(splitter.x + 59, splitter.y + 55, { steps: 5 });
+  await page.mouse.up();
+  await canvas.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  assert.ok(await canvas.evaluate(node => node.clientWidth) < widthBefore);
+
+  const assetsTab = page.locator('.studioWindowBar').getByRole('button', { name: 'Assets', exact: true });
+  const assetsTitle = await assetsTab.boundingBox();
+  const scene = await page.locator('.viewport').boundingBox();
+  await page.mouse.move(assetsTitle.x + 25, assetsTitle.y + 10);
+  await page.mouse.down();
+  await page.mouse.move(scene.x + scene.width / 2, scene.y + scene.height / 2, { steps: 8 });
+  await page.mouse.up();
+  const floating = page.locator('.studioWindow[data-side=float]').filter({ has: page.getByRole('button', { name: 'Assets', exact: true }) });
+  await floating.waitFor();
+  const floatBefore = await floating.boundingBox();
+  await page.mouse.move(floatBefore.x + floatBefore.width - 4, floatBefore.y + floatBefore.height - 4);
+  await page.mouse.down();
+  await page.mouse.move(floatBefore.x + floatBefore.width + 32, floatBefore.y + floatBefore.height + 18, { steps: 5 });
+  await page.mouse.up();
+  assert.ok((await floating.boundingBox()).width > floatBefore.width);
+
+  const floatingTitle = await assetsTab.boundingBox();
+  const explorerTitle = await page.locator('.studioWindowBar').getByRole('button', { name: 'Explorer', exact: true }).boundingBox();
+  await page.mouse.move(floatingTitle.x + 23, floatingTitle.y + 10);
+  await page.mouse.down();
+  await page.mouse.move(explorerTitle.x + 20, explorerTitle.y + 10, { steps: 8 });
+  await page.locator('.studioDockPreview').waitFor();
+  await page.mouse.up();
+  const rightTabs = page.locator('.studioWindow[data-side=right][data-group=explorer] .studioWindowBar');
+  assert.equal(await rightTabs.getByRole('button', { name: 'Assets', exact: true }).count(), 1);
+  await rightTabs.getByRole('button', { name: 'Explorer', exact: true }).click();
+  await page.getByLabel('Search parts').waitFor();
+  await rightTabs.getByRole('button', { name: 'Close Explorer' }).click();
+  await page.getByText('View', { exact: true }).click();
+  await page.locator('#view-panels').getByRole('button', { name: 'Explorer', exact: true }).click();
+  await page.getByLabel('Search parts').waitFor();
+  await page.locator('#view-panels').getByRole('button', { name: 'Reset Layout' }).click();
+  await page.getByText('View', { exact: true }).click();
+  assert.equal(await page.locator('.studioWindow[data-side=left][data-group=assets]').count(), 1);
+  await page.getByRole('button', { name: 'Grid', exact: true }).click();
+  await page.getByRole('button', { name: 'Focus Selection' }).click();
+  await page.getByRole('button', { name: 'Move', exact: true }).click();
+  const axis = await page.locator('.studioAxisOverlay [data-axis=X]').boundingBox();
+  await page.mouse.move(axis.x + axis.width / 2, axis.y + axis.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(axis.x + axis.width / 2 + 28, axis.y + axis.height / 2, { steps: 5 });
+  await page.mouse.up();
+  assert.notEqual(await page.getByLabel('Position X', { exact: true }).inputValue(), '0');
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  assert.equal(await page.getByLabel('Position X', { exact: true }).inputValue(), '0');
+  await page.getByRole('button', { name: 'Redo', exact: true }).click();
+  assert.notEqual(await page.getByLabel('Position X', { exact: true }).inputValue(), '0');
+  await page.getByRole('button', { name: 'Select', exact: true }).click();
   await page.locator('#color').fill('#123456');
   if (await page.locator('#color').inputValue() !== '#123456') throw new Error('Colour was not updated.');
   await page.getByRole('button', { name: 'Open UI Editor' }).click();
   const preview = page.frameLocator('iframe[title="Game UI preview"]');
   await preview.locator('#settingsDialog').waitFor();
+  await page.getByLabel('Preview resolution').selectOption('mobile');
+  assert.equal(await page.locator('iframe[title="Game UI preview"]').evaluate(frame => frame.style.width), '844px');
+  await page.getByLabel('Preview resolution').selectOption('fit');
+  const moveUi = await preview.getByRole('button', { name: 'Move element' }).boundingBox();
+  await page.mouse.move(moveUi.x + 6, moveUi.y + 6);
+  await page.mouse.down();
+  await page.mouse.move(moveUi.x + 26, moveUi.y + 16, { steps: 5 });
+  await page.mouse.up();
+  assert.equal(await page.getByLabel('Element X').inputValue(), '20');
   await page.getByLabel('Element width', { exact: true }).fill('420');
   await page.getByLabel('Element width', { exact: true }).press('Tab');
   assert.equal(await preview.locator('#settingsDialog').evaluate(node => node.style.width), '420px');
@@ -123,7 +191,7 @@ try {
   await page.getByRole('button', { name: 'Done', exact: true }).click();
   assert.match(await preview.locator('#settingsDialog').evaluate(node => node.style.backgroundImage), /linear-gradient/);
   await page.getByRole('button', { name: 'Return to Model Studio' }).click();
-  await page.locator('.studioFile summary').click();
+  await page.getByText('File', { exact: true }).click();
   await page.getByRole('button', { name: 'Publish…' }).click();
   await page.getByLabel('Update title').fill('Interface refresh');
   await page.getByRole('button', { name: 'Keep in Draft' }).click();
@@ -133,7 +201,7 @@ try {
   await page.locator('#studio-output').getByText('Draft version 1 saved.', { exact: true }).waitFor();
   assert.equal(drafts[1].updateInfo.title, 'Interface refresh');
   assert.equal(drafts[1].ui.settingsDialog.settingsDialog.gradient.length, 3);
-  assert.equal(drafts[1].modelMaterials['player-ship'][0].value, '#123456');
+  assert.equal(drafts[1].modelMaterials['player-ship'].find(edit => edit.field === 'color').value, '#123456');
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
   await page.getByRole('button', { name: 'Version History' }).click();
   await draftPassword.fill('test password');
@@ -141,7 +209,7 @@ try {
   await page.locator('#studio-output').getByText('Draft version 2 saved.', { exact: true }).waitFor();
   assert.deepEqual(drafts[2], drafts[1]);
   await page.locator('#asset').selectOption('pickaxe');
-  await page.waitForFunction(() => !document.querySelector('#asset').disabled);
+  await page.locator('#asset:enabled').waitFor();
   assert.equal(await page.locator('#asset').inputValue(), 'pickaxe');
   await Promise.all([page.waitForResponse(response => response.url().endsWith('/api/lock')),
     page.getByRole('button', { name: 'Lock Studio' }).click()]);
@@ -151,8 +219,13 @@ try {
   await page.getByText('Rotate to landscape', { exact: true }).waitFor();
   assert.equal(await page.getByRole('button', { name: 'Unlock Studio' }).isVisible(), false);
   await page.setViewportSize({ width: 844, height: 390 });
+  await page.locator('#startupLandscape').waitFor({ state: 'hidden' });
   await page.locator('#password').fill('test password');
-  await page.getByRole('button', { name: 'Unlock Studio' }).click();
+  const [reopened] = await Promise.all([
+    page.waitForResponse(response => response.url().endsWith('/api/open'), { timeout: 8000 }),
+    page.getByRole('button', { name: 'Unlock Studio' }).click(),
+  ]);
+  assert.equal(await reopened.json(), 'unlock');
   await page.locator('canvas:visible').waitFor({ timeout: 10000 }).catch(async error => {
     throw new Error(await page.locator('#notice').innerText() || error.message);
   });
@@ -161,10 +234,22 @@ try {
   }));
   assert.equal(dimensions.width, dimensions.contentWidth);
   await page.getByRole('button', { name: 'Zoom In' }).click();
+  const touch = await page.context().newCDPSession(page);
+  const mobileTab = await page.locator('.studioWindowBar').getByRole('button', { name: 'Assets', exact: true }).boundingBox();
+  const mobileScene = await page.locator('.viewport').boundingBox();
+  const startTouch = { x: Math.round(mobileTab.x + 20), y: Math.round(mobileTab.y + 10) };
+  const endTouch = { x: Math.round(mobileScene.x + mobileScene.width / 2), y: Math.round(mobileScene.y + mobileScene.height / 2) };
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [startTouch] });
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [endTouch] });
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await page.locator('.studioWindow[data-side=float][data-group=assets]').waitFor();
   await page.reload();
   await page.getByRole('button', { name: 'Unlock Studio' }).waitFor();
   assert.equal(await page.locator('canvas').count(), 0);
-  console.log('Studio browser setup, unlock, WebGL preview, edit, save, restore and lock passed.');
+  await page.locator('#password').fill('test password');
+  await page.getByRole('button', { name: 'Unlock Studio' }).click();
+  await page.locator('.studioWindow[data-side=float][data-group=assets]').waitFor();
+  console.log('Studio dock, resize, tabs, touch, persistence, setup, unlock, WebGL preview, edit, save, restore and lock passed.');
 } finally {
   await browser?.close();
   server.close();

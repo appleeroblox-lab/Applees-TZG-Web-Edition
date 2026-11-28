@@ -1,0 +1,360 @@
+const workspaceLayoutKey = 'tzg-studio-workspace-v1';
+const dockSides = ['left', 'right', 'top', 'bottom'];
+const defaultPlacements = {
+  assets: { side: 'left', group: 'assets' },
+  explorer: { side: 'right', group: 'explorer' },
+  properties: { side: 'right', group: 'properties' },
+  output: { side: 'bottom', group: 'output' },
+};
+const defaultSizes = { left: 210, right: 250, top: 140, bottom: 104 };
+
+function workspaceLayout(root, viewport, viewMenu) {
+  const surface = root.querySelector('.panels');
+  const regions = Object.fromEntries(dockSides.map(side => {
+    const element = document.createElement('div');
+    element.className = 'studioDock';
+    element.dataset.side = side;
+    surface.append(element);
+    return [side, element];
+  }));
+  const floatLayer = document.createElement('div');
+  floatLayer.className = 'studioFloatLayer';
+  const preview = document.createElement('div');
+  preview.className = 'studioDockPreview';
+  preview.hidden = true;
+  const parked = document.createElement('div');
+  parked.hidden = true;
+  surface.append(floatLayer, preview, parked);
+  const panels = new Map();
+  const currentTabs = new Map();
+  let placements = {};
+  let groupWeights = {};
+  let sizes = { ...defaultSizes };
+  let sequence = 0;
+  let gesture;
+  try {
+    const saved = JSON.parse(localStorage.getItem(workspaceLayoutKey));
+    placements = saved?.placements ?? {};
+    groupWeights = saved?.groupWeights ?? {};
+    for (const side of dockSides) if (Number.isFinite(saved?.sizes?.[side])) sizes[side] = saved.sizes[side];
+  } catch {}
+  function save() {
+    try { localStorage.setItem(workspaceLayoutKey, JSON.stringify({ placements, sizes, groupWeights })); } catch {}
+  }
+  function defaults(id) {
+    return defaultPlacements[id] ?? { side: 'float', group: id, x: 24, y: 20, w: 255, h: 250 };
+  }
+  function position(id) {
+    const place = placements[id];
+    if (!place || ![...dockSides, 'float', 'closed'].includes(place.side) || typeof place.group !== 'string') return defaults(id);
+    return place;
+  }
+  function limit(n, lower, upper) { return Math.max(lower, Math.min(n, Math.max(lower, upper))); }
+  function floatRect(place) {
+    const w = limit(Number(place.w) || 255, 130, surface.clientWidth);
+    const h = limit(Number(place.h) || 230, 74, surface.clientHeight);
+    return {
+      x: limit(Number(place.x) || 0, 0, surface.clientWidth - w),
+      y: limit(Number(place.y) || 0, 0, surface.clientHeight - h), w, h,
+    };
+  }
+  function moveBox(box, rect) {
+    Object.assign(box.style, { left: rect.x + 'px', top: rect.y + 'px', width: rect.w + 'px', height: rect.h + 'px' });
+  }
+  function setTracks() {
+    const availableX = Math.max(90, surface.clientWidth - 170);
+    const availableY = Math.max(55, surface.clientHeight - 110);
+    for (const side of dockSides) {
+      const horizontal = side === 'left' || side === 'right';
+      const opposite = { left: 'right', right: 'left', top: 'bottom', bottom: 'top' }[side];
+      const max = (horizontal ? availableX : availableY) / (regions[opposite].hidden ? 1 : 2);
+      const size = regions[side].hidden ? 0 : limit(sizes[side], horizontal ? 80 : 44, max);
+      surface.style.setProperty('--dock-' + side, size + 'px');
+    }
+  }
+  function setPanel(id, place) {
+    placements[id] = place;
+    save();
+    render();
+  }
+  function close(id) {
+    const item = panels.get(id);
+    if (!item) return;
+    if (item.transient) {
+      item.element.remove();
+      panels.delete(id);
+      save();
+      render();
+      return;
+    }
+    const previous = position(id);
+    setPanel(id, { ...previous, side: 'closed', previous: previous.side });
+  }
+  function handlePointer(target, event, callbacks) {
+    if (gesture || event.button !== 0) return;
+    event.preventDefault();
+    target.setPointerCapture?.(event.pointerId);
+    const controller = new AbortController();
+    gesture = controller;
+    const oldCursor = surface.style.cursor;
+    function finish(end, cancelled) {
+      if (end.pointerId !== event.pointerId) return;
+      controller.abort();
+      gesture = undefined;
+      surface.style.cursor = oldCursor;
+      surface.classList.remove('studioGesture');
+      preview.hidden = true;
+      callbacks.finish?.(end, cancelled);
+    }
+    const options = { signal: controller.signal };
+    target.addEventListener('pointermove', move => {
+      if (move.pointerId === event.pointerId) callbacks.move(move);
+    }, options);
+    target.addEventListener('pointerup', end => finish(end, false), options);
+    target.addEventListener('pointercancel', end => finish(end, true), options);
+    target.addEventListener('lostpointercapture', end => finish(end, true), options);
+    surface.classList.add('studioGesture');
+  }
+  function dockingTarget(x, y, ignored) {
+    const rect = surface.getBoundingClientRect();
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) return;
+    const center = viewport.getBoundingClientRect();
+    const edge = Math.min(38, center.width / 5, center.height / 4);
+    const side = x < center.left + edge ? 'left' : x > center.right - edge ? 'right' :
+      y < center.top + edge ? 'top' : y > center.bottom - edge ? 'bottom' : null;
+    const hit = document.elementsFromPoint(x, y).map(el => el.closest('.studioWindow[data-side]'))
+      .find(group => group && group.dataset.side !== 'float' && group.dataset.group !== ignored &&
+        group.querySelector('.studioWindowBar').getBoundingClientRect().bottom + 15 >= y);
+    if (hit) return { side: hit.dataset.side, group: hit.dataset.group, rect: hit.getBoundingClientRect() };
+    if (!side) return;
+    const dock = regions[side];
+    if (!dock.hidden) return { side, rect: dock.getBoundingClientRect() };
+    const span = Math.min(95, (side === 'left' || side === 'right' ? center.width : center.height) / 3);
+    const proposed = {
+      left: side === 'right' ? center.right - span : center.left,
+      top: side === 'bottom' ? center.bottom - span : center.top,
+      width: side === 'left' || side === 'right' ? span : center.width,
+      height: side === 'top' || side === 'bottom' ? span : center.height,
+    };
+    return { side, rect: proposed };
+  }
+  function dragTab(id, windowNode, tab, event) {
+    const start = windowNode.getBoundingClientRect();
+    const frame = surface.getBoundingClientRect();
+    const place = position(id);
+    let moved = false;
+    let last;
+    let dock;
+    const ghost = document.createElement('div');
+    ghost.className = 'studioDragGhost';
+    ghost.textContent = panels.get(id).title;
+    const move = point => {
+      if (!moved && Math.hypot(point.clientX - event.clientX, point.clientY - event.clientY) < 5) return;
+      moved = true;
+      if (!ghost.isConnected) surface.append(ghost);
+      last = floatRect({
+        x: start.left - frame.left + point.clientX - event.clientX,
+        y: start.top - frame.top + point.clientY - event.clientY,
+        w: place.w ?? Math.max(220, start.width), h: place.h ?? Math.max(160, Math.min(300, start.height)),
+      });
+      moveBox(ghost, last);
+      dock = dockingTarget(point.clientX, point.clientY, place.group);
+      preview.hidden = !dock;
+      if (dock) moveBox(preview, {
+        x: dock.rect.left - frame.left, y: dock.rect.top - frame.top, w: dock.rect.width, h: dock.rect.height,
+      });
+    };
+    handlePointer(tab, event, { move, finish(point, cancelled) {
+      ghost.remove();
+      if (cancelled || !moved) return;
+      const group = dock?.group ?? id;
+      currentTabs.set(group, id);
+      setPanel(id, dock ? { side: dock.side, group } : { side: 'float', group: id, ...last });
+    } });
+  }
+  function button(label, action) {
+    const element = document.createElement('button');
+    element.type = 'button';
+    element.textContent = label;
+    element.onclick = action;
+    return element;
+  }
+  function makeWindow(side, group, ids) {
+    const box = document.createElement('div');
+    box.className = 'studioWindow';
+    box.dataset.side = side;
+    box.dataset.group = group;
+    const bar = document.createElement('div');
+    bar.className = 'studioWindowBar';
+    const page = document.createElement('div');
+    page.className = 'studioWindowBody';
+    const active = ids.includes(currentTabs.get(group)) ? currentTabs.get(group) : ids[0];
+    for (const id of ids) {
+      const item = panels.get(id);
+      const tab = button(item.title, () => { currentTabs.set(group, id); render(); });
+      tab.setAttribute('aria-pressed', String(id === active));
+      tab.onpointerdown = event => dragTab(id, box, tab, event);
+      bar.append(tab);
+      item.element.hidden = id !== active;
+      page.append(item.element);
+    }
+    const closer = button('×', () => close(active));
+    closer.setAttribute('aria-label', 'Close ' + panels.get(active).title);
+    bar.append(closer);
+    box.append(bar, page);
+    if (side === 'float') {
+      const place = position(active);
+      moveBox(box, floatRect(place));
+      box.style.zIndex = String(++sequence);
+      box.onpointerdown = () => { box.style.zIndex = String(++sequence); };
+      for (const direction of ['n', 's', 'w', 'e', 'nw', 'ne', 'sw', 'se']) {
+        const handle = document.createElement('div');
+        handle.className = 'studioResize';
+        handle.dataset.edge = direction;
+        handle.onpointerdown = event => {
+          const from = floatRect(position(active));
+          let next = from;
+          handlePointer(handle, event, {
+            move(point) {
+              const dx = point.clientX - event.clientX;
+              const dy = point.clientY - event.clientY;
+              const left = direction.includes('w') ? limit(from.x + dx, 0, from.x + from.w - 130) : from.x;
+              const top = direction.includes('n') ? limit(from.y + dy, 0, from.y + from.h - 74) : from.y;
+              const right = direction.includes('e') ? from.x + from.w + dx : from.x + from.w;
+              const bottom = direction.includes('s') ? from.y + from.h + dy : from.y + from.h;
+              next = floatRect({ x: left, y: top, w: Math.min(right - left, surface.clientWidth - left),
+                h: Math.min(bottom - top, surface.clientHeight - top) });
+              moveBox(box, next);
+            },
+            finish(point, cancelled) {
+              if (cancelled) moveBox(box, from);
+              else { placements[active] = { ...position(active), ...next }; save(); }
+            },
+          });
+        };
+        box.append(handle);
+      }
+    }
+    return box;
+  }
+  function splitter(side) {
+    const handle = document.createElement('div');
+    handle.className = 'studioSplitter';
+    handle.dataset.side = side;
+    handle.onpointerdown = event => {
+      const original = sizes[side];
+      const horizontal = side === 'left' || side === 'right';
+      const direction = side === 'right' || side === 'bottom' ? -1 : 1;
+      handlePointer(handle, event, {
+        move(point) {
+          const delta = horizontal ? point.clientX - event.clientX : point.clientY - event.clientY;
+          sizes[side] = original + direction * delta;
+          setTracks();
+        },
+        finish(point, cancelled) { if (cancelled) sizes[side] = original; setTracks(); save(); },
+      });
+    };
+    return handle;
+  }
+  function splitGroup(first, second, horizontal) {
+    const handle = document.createElement('div');
+    handle.className = 'studioGroupSplitter';
+    handle.dataset.orientation = horizontal ? 'horizontal' : 'vertical';
+    handle.onpointerdown = event => {
+      const key = box => box.dataset.side + ':' + box.dataset.group;
+      const firstKey = key(first);
+      const secondKey = key(second);
+      const initial = first.getBoundingClientRect()[horizontal ? 'width' : 'height'];
+      const total = initial + second.getBoundingClientRect()[horizontal ? 'width' : 'height'];
+      const firstWeight = groupWeights[firstKey] || 1;
+      const secondWeight = groupWeights[secondKey] || 1;
+      const totalWeight = firstWeight + secondWeight;
+      let ratio = initial / total;
+      const original = ratio;
+      function apply(value) {
+        first.style.flexGrow = totalWeight * value;
+        second.style.flexGrow = totalWeight * (1 - value);
+      }
+      handlePointer(handle, event, {
+        move(point) {
+          const delta = horizontal ? point.clientX - event.clientX : point.clientY - event.clientY;
+          ratio = limit((initial + delta) / total, .15, .85);
+          apply(ratio);
+        },
+        finish(point, cancelled) {
+          if (cancelled) apply(original);
+          else {
+            groupWeights[firstKey] = totalWeight * ratio;
+            groupWeights[secondKey] = totalWeight * (1 - ratio);
+            save();
+          }
+        },
+      });
+    };
+    return handle;
+  }
+  function render() {
+    const buckets = new Map();
+    for (const [id] of panels) {
+      const { side, group } = position(id);
+      if (side === 'closed') continue;
+      const key = side + ':' + group;
+      if (!buckets.has(key)) buckets.set(key, { side, group, ids: [] });
+      buckets.get(key).ids.push(id);
+    }
+    for (const region of Object.values(regions)) { region.replaceChildren(); region.hidden = true; }
+    floatLayer.replaceChildren();
+    for (const { side, group, ids } of buckets.values()) {
+      const container = side === 'float' ? floatLayer : regions[side];
+      const windowNode = makeWindow(side, group, ids);
+      if (side !== 'float') {
+        windowNode.style.flexGrow = groupWeights[side + ':' + group] || 1;
+        if (container.lastElementChild) container.append(splitGroup(container.lastElementChild, windowNode,
+          side === 'top' || side === 'bottom'));
+      }
+      container.append(windowNode);
+      container.hidden = false;
+    }
+    for (const side of dockSides) if (!regions[side].hidden) regions[side].append(splitter(side));
+    for (const [id, panel] of panels) if (position(id).side === 'closed') parked.append(panel.element);
+    viewMenu.replaceChildren(...[...panels].filter(([, panel]) => !panel.transient).map(([id, panel]) => {
+      const toggle = button(panel.title, () => {
+        const place = position(id);
+        if (place.side === 'closed') setPanel(id, { ...place, side: place.previous ?? defaults(id).side });
+        else close(id);
+      });
+      toggle.setAttribute('aria-pressed', String(position(id).side !== 'closed'));
+      return toggle;
+    }), button('Reset Layout', () => {
+      placements = {};
+      groupWeights = {};
+      sizes = { ...defaultSizes };
+      currentTabs.clear();
+      save();
+      render();
+    }));
+    setTracks();
+  }
+  const observer = new ResizeObserver(() => {
+    setTracks();
+    for (const box of floatLayer.children) moveBox(box, floatRect(position(box.dataset.group)));
+  });
+  observer.observe(surface);
+  return {
+    register(id, title, element, transient = false) {
+      panels.set(id, { title, element, transient });
+      element.classList.add('studioPanelBody');
+      if (position(id).side === 'closed' && transient) placements[id] = defaults(id);
+      currentTabs.set(position(id).group, id);
+      render();
+    },
+    activate(id) {
+      const place = position(id);
+      if (place.side === 'closed') placements[id] = { ...place, side: place.previous ?? defaults(id).side };
+      currentTabs.set(place.group, id);
+      render();
+    },
+    close,
+    dispose() { observer.disconnect(); gesture?.abort(); },
+  };
+}

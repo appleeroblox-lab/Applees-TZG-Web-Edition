@@ -38,14 +38,22 @@ export async function mount(root, api) {
           <button type="button" id="file-save">Save Draft</button>
           <button type="button" id="file-update">Publish…</button>
         </div></details>
+        <details class="studioFile"><summary>View</summary><div id="view-panels"></div></details>
         <button id="ui-editor">Open UI Editor</button>
+        <div class="tools" id="model-tools" aria-label="Transform tools">
+          <button data-tool="select" aria-pressed="true">Select</button>
+          <button data-tool="position" aria-pressed="false">Move</button>
+          <button data-tool="rotation" aria-pressed="false">Rotate</button>
+          <button data-tool="scale" aria-pressed="false">Scale</button>
+        </div>
         <button id="undo">Undo</button><button id="redo">Redo</button>
         <button id="zoom-in">Zoom In</button><button id="zoom-out">Zoom Out</button>
+        <button id="focus">Focus Selection</button><button id="grid" aria-pressed="false">Grid</button>
         <button id="history">Version History</button><button id="lock">Lock Studio</button>
       </div>
     </header>
     <div class="panels">
-      <section class="assetsPane"><h2>Assets</h2>
+      <section class="assetsPane" data-panel="assets">
         <label>Search models<input id="asset-search" type="search"></label>
         <label>Model<select id="asset" size="12"></select></label>
       </section>
@@ -53,9 +61,11 @@ export async function mount(root, api) {
         <h2 id="scene-title">SolarFlare</h2>
       </section>
       <aside class="inspector">
-        <section><h2>Explorer</h2><label>Search parts<input id="search" type="search"></label>
+        <section data-panel="explorer"><label>Search parts<input id="search" type="search"></label>
           <label>Part<select id="part" size="5"></select></label></section>
-        <section><h2>Properties</h2>
+        <section data-panel="properties">
+          <label class="studioVisibility"><span>Visible</span><input id="part-visible" type="checkbox" checked></label>
+          <div id="transform-fields"></div>
           <label>Colour<input id="color" type="color"></label><button type="button" id="custom-model-colour">Custom Colour</button>
           <label>Metalness<input id="metalness" type="range" min="0" max="1" step=".01"></label>
           <label>Roughness<input id="roughness" type="range" min="0" max="1" step=".01"></label>
@@ -75,16 +85,35 @@ export async function mount(root, api) {
       <p>Publishing to the live game is unavailable in this preview.</p>
       <div class="tools"><button type="button" id="keep-info">Keep in Draft</button><button type="button" id="close-info">Close</button></div>
     </dialog>
-    <section class="outputPane"><h2>Output</h2>
+    <section class="outputPane" data-panel="output">
       <p id="studio-output" role="status">Model loaded.</p>
       <div id="versions" hidden></div>
     </section>`;
   const message = text => { root.querySelector('#studio-output').textContent = text; };
   const find = selector => root.querySelector(selector);
   const viewport = find('.viewport');
+  const layout = workspaceLayout(root, viewport, find('#view-panels'));
+  for (const [id, title] of Object.entries({ assets: 'Assets', explorer: 'Explorer', properties: 'Properties', output: 'Output' })) {
+    layout.register(id, title, find('[data-panel="' + id + '"]'));
+  }
+  find('.inspector').remove();
   const renderer = new T.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   viewport.append(renderer.domElement);
+  const axisOverlay = document.createElement('div');
+  axisOverlay.className = 'studioAxisOverlay';
+  const axisMarkers = ['X', 'Y', 'Z'].map((axis, index) => {
+    const marker = document.createElement('span');
+    marker.textContent = axis;
+    marker.dataset.axis = axis;
+    marker.style.color = ['#ff6e79', '#71ed9e', '#73b6ff'][index];
+    axisOverlay.append(marker);
+    return marker;
+  });
+  axisOverlay.hidden = true;
+  viewport.append(axisOverlay);
+  renderer.domElement.tabIndex = 0;
+  renderer.domElement.setAttribute('aria-label', 'Model viewport');
   const scene = new T.Scene();
   scene.background = new T.Color(0x102544);
   const camera = new T.PerspectiveCamera(45, 1, 0.01, 100000);
@@ -98,6 +127,17 @@ export async function mount(root, api) {
   let elevation = .42;
   let distance = 1;
   let ship;
+  let selectionOutline;
+  let grid;
+  let gizmo;
+  let tool = 'select';
+  const axisDirections = [new T.Vector3(1, 0, 0), new T.Vector3(0, 1, 0), new T.Vector3(0, 0, 1)];
+  const axisColors = [0xff6e79, 0x71ed9e, 0x73b6ff];
+  const transformDefaults = { position: [0, 0, 0], rotation: [0, 0, 0], scale: [1, 1, 1] };
+  const axisLabels = ['X', 'Y', 'Z'];
+  let gridVisible = false;
+  const raycaster = new T.Raycaster();
+  const rayPoint = new T.Vector2();
   let selected = 0;
   const partList = find('#part');
   const fields = ['color', 'metalness', 'roughness', 'opacity'];
@@ -105,13 +145,23 @@ export async function mount(root, api) {
   function draw() {
     const w = Math.max(viewport.clientWidth, 1);
     const h = Math.max(viewport.clientHeight - find('#scene-title').offsetHeight, 1);
+    if (!viewport.clientWidth || !viewport.clientHeight || renderer.domElement.hidden) return;
     renderer.setSize(w, h);
-    camera.aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
     const offset = new T.Vector3().setFromSphericalCoords(distance * radius, Math.PI / 2 - elevation, azimuth);
     camera.position.copy(center).add(offset);
     camera.lookAt(center);
     renderer.render(scene, camera);
+    axisOverlay.hidden = !gizmo;
+    if (gizmo) for (const point of gizmo.children) {
+      const axis = point.userData.axis;
+      if (!Number.isInteger(axis)) continue;
+      const projected = point.getWorldPosition(new T.Vector3()).project(camera);
+      const marker = axisMarkers[axis];
+      marker.style.left = ((projected.x + 1) * w / 2) + 'px';
+      marker.style.top = ((1 - projected.y) * h / 2 + find('#scene-title').offsetHeight) + 'px';
+    }
   }
   function release(group) {
     if (!group) return;
@@ -121,11 +171,100 @@ export async function mount(root, api) {
       child.material?.dispose();
     });
   }
+  function partValue(field, index = selected) {
+    return edits.find(edit => edit.index === index && edit.field === field)?.value ??
+      (field === 'visible' ? true : transformDefaults[field]);
+  }
+  function applyTransform(mesh, values) {
+    mesh.geometry.computeBoundingBox();
+    const pivot = mesh.geometry.boundingBox.getCenter(new T.Vector3());
+    mesh.scale.fromArray(values.scale);
+    mesh.rotation.set(...values.rotation.map(angle => T.MathUtils.degToRad(angle)));
+    mesh.position.fromArray(values.position).add(pivot).sub(
+      pivot.clone().multiply(mesh.scale).applyQuaternion(mesh.quaternion)
+    );
+    mesh.visible = values.visible;
+    mesh.updateMatrixWorld(true);
+  }
+  function rebuildGizmo() {
+    release(gizmo);
+    gizmo = undefined;
+    if (tool === 'select' || !ship.children[selected].visible) return;
+    gizmo = new T.Group();
+    const part = ship.children[selected];
+    new T.Box3().setFromObject(part).getCenter(gizmo.position);
+    const length = Math.max(radius * .48, .003);
+    for (const [index, axis] of axisDirections.entries()) {
+      const line = new T.Line(new T.BufferGeometry().setFromPoints([
+        new T.Vector3(), axis.clone().multiplyScalar(length),
+      ]), new T.LineBasicMaterial({ color: axisColors[index], depthTest: false, depthWrite: false }));
+      line.renderOrder = 5;
+      gizmo.add(line);
+      const endpoint = new T.Mesh(new T.SphereGeometry(length * .10, 12, 8),
+        new T.MeshBasicMaterial({ color: axisColors[index], depthTest: false, depthWrite: false }));
+      endpoint.position.copy(axis).multiplyScalar(length);
+      endpoint.userData.axis = index;
+      endpoint.renderOrder = 6;
+      gizmo.add(endpoint);
+    }
+    scene.add(gizmo);
+  }
+  function commitProperty(field, value) {
+    undo.push(edits);
+    redo.length = 0;
+    const edit = { index: selected, name: model.meshes[selected].name, field, value };
+    edits = [...edits.filter(item => item.index !== selected || item.field !== field), edit];
+    update();
+  }
+  const transformInputs = new Map();
+  for (const [field, title] of Object.entries({ position: 'Position', rotation: 'Rotation', scale: 'Scale' })) {
+    const row = document.createElement('fieldset');
+    const label = document.createElement('legend');
+    label.textContent = title;
+    row.append(label);
+    const inputs = axisLabels.map((axis, index) => {
+      const fieldLabel = document.createElement('label');
+      fieldLabel.textContent = axis;
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.step = 'any';
+      input.min = field === 'scale' ? '.01' : '-10000';
+      input.max = field === 'scale' ? '100' : '10000';
+      input.setAttribute('aria-label', title + ' ' + axis);
+      input.onchange = () => {
+        if (!input.value || !input.checkValidity()) return update();
+        const value = [...partValue(field)];
+        value[index] = Number(input.value);
+        commitProperty(field, value);
+      };
+      fieldLabel.append(input);
+      row.append(fieldLabel);
+      return input;
+    });
+    transformInputs.set(field, inputs);
+    find('#transform-fields').append(row);
+  }
+  find('#part-visible').onchange = event => commitProperty('visible', event.target.checked);
+  for (const button of root.querySelectorAll('[data-tool]')) {
+    button.onclick = () => {
+      tool = button.dataset.tool;
+      for (const item of root.querySelectorAll('[data-tool]')) item.setAttribute('aria-pressed', String(item === button));
+      rebuildGizmo();
+      draw();
+    };
+  }
   function update(resetCamera = false) {
     const data = applyModelMaterialEdits(model, edits);
     release(ship);
+    if (selectionOutline) release(selectionOutline);
     ship = modelFromData(data);
     scene.add(ship);
+    for (const [index, mesh] of ship.children.entries()) {
+      applyTransform(mesh, {
+        position: partValue('position', index), rotation: partValue('rotation', index),
+        scale: partValue('scale', index), visible: partValue('visible', index),
+      });
+    }
     if (resetCamera) {
       const sphere = new T.Box3().setFromObject(ship).getBoundingSphere(new T.Sphere());
       radius = Math.max(sphere.radius, .01);
@@ -133,6 +272,23 @@ export async function mount(root, api) {
       distance = 2.8;
     }
     const item = data.meshes[selected];
+    selectionOutline = new T.BoxHelper(ship.children[selected], 0x83d8ff);
+    selectionOutline.visible = ship.children[selected].visible;
+    scene.add(selectionOutline);
+    if (resetCamera) {
+      release(grid);
+      grid = new T.GridHelper(radius * 5, 20, 0x5183a5, 0x2a4b64);
+      grid.position.copy(center);
+      grid.position.y -= radius * .55;
+      grid.visible = gridVisible;
+      scene.add(grid);
+    }
+    rebuildGizmo();
+    find('#part-visible').checked = partValue('visible');
+    for (const [field, inputs] of transformInputs) {
+      const value = partValue(field);
+      for (const [index, input] of inputs.entries()) input.value = Number(value[index].toFixed(4));
+    }
     for (const field of fields) {
       const value = item[field];
       find('#' + field).value = field === 'color' ? '#' + new T.Color(value).getHexString()
@@ -185,47 +341,142 @@ export async function mount(root, api) {
   });
   for (const field of fields) {
     find('#' + field).addEventListener('change', event => {
-      undo.push(edits);
-      redo.length = 0;
       const value = field === 'color' ? event.target.value : Number(event.target.value);
-      const edit = { index: selected, name: model.meshes[selected].name, field, value };
-      edits = [...edits.filter(item => item.index !== selected || item.field !== field), edit];
-      update();
+      commitProperty(field, value);
     });
   }
   find('#custom-model-colour').onclick = () => openPaintPanel(root, {
-    color: find('#color').value,
+    layout, color: find('#color').value,
     onDone: color => {
       find('#color').value = color;
       find('#color').dispatchEvent(new Event('change'));
     },
   });
   find('#undo').onclick = () => {
+    if (closeUi) return closeUi.undo();
     if (!undo.length) return;
     redo.push(edits);
     edits = undo.pop();
     update();
   };
   find('#redo').onclick = () => {
+    if (closeUi) return closeUi.redo();
     if (!redo.length) return;
     undo.push(edits);
     edits = redo.pop();
     update();
   };
   find('#lock').onclick = api.lock;
-  let lastPointer;
+  let pointer;
+  let axisDrag;
+  function pointRay(event) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    rayPoint.set((event.clientX - rect.left) / rect.width * 2 - 1,
+      -(event.clientY - rect.top) / rect.height * 2 + 1);
+    raycaster.setFromCamera(rayPoint, camera);
+  }
+  function beginAxis(event) {
+    if (!gizmo || event.button !== 0) return;
+    pointRay(event);
+    const hit = raycaster.intersectObjects(gizmo.children.filter(child => Number.isInteger(child.userData.axis)), false)[0];
+    if (!hit) return;
+    const axis = hit.object.userData.axis;
+    const start = gizmo.position.clone().project(camera);
+    const end = gizmo.position.clone().add(axisDirections[axis].clone().multiplyScalar(radius)).project(camera);
+    const rect = renderer.domElement.getBoundingClientRect();
+    const direction = new T.Vector2((end.x - start.x) * rect.width / 2, -(end.y - start.y) * rect.height / 2);
+    const pixels = Math.max(20, direction.length());
+    direction.normalize();
+    if (!direction.lengthSq()) direction.set(1, 0);
+    axisDrag = { id: event.pointerId, axis, direction, pixels, x: event.clientX, y: event.clientY,
+      field: tool, initial: [...partValue(tool)] };
+    renderer.domElement.setPointerCapture(event.pointerId);
+  }
+  renderer.domElement.oncontextmenu = event => event.preventDefault();
   renderer.domElement.onpointerdown = event => {
-    lastPointer = [event.clientX, event.clientY];
+    if (pointer || axisDrag || ![0, 1, 2].includes(event.button)) return;
+    event.preventDefault();
+    renderer.domElement.focus({ preventScroll: true });
+    beginAxis(event);
+    if (axisDrag) return;
+    pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false,
+      pan: event.button > 0 || event.shiftKey };
     renderer.domElement.setPointerCapture(event.pointerId);
   };
   renderer.domElement.onpointermove = event => {
-    if (!lastPointer) return;
-    azimuth -= (event.clientX - lastPointer[0]) * .012;
-    elevation = Math.max(-1.45, Math.min(1.45, elevation + (event.clientY - lastPointer[1]) * .012));
-    lastPointer = [event.clientX, event.clientY];
+    if (axisDrag?.id === event.pointerId) {
+      const { x, y, axis, direction, pixels, field, initial } = axisDrag;
+      const delta = ((event.clientX - x) * direction.x + (event.clientY - y) * direction.y) / pixels;
+      const value = [...initial];
+      const factor = field === 'rotation' ? 90 : field === 'position' ? radius : 1;
+      value[axis] = field === 'scale' ? Math.min(100, Math.max(.01, initial[axis] * (1 + delta))) :
+        Math.min(10000, Math.max(-10000, initial[axis] + delta * factor));
+      axisDrag.value = value;
+      applyTransform(ship.children[selected], {
+        position: partValue('position'), rotation: partValue('rotation'), scale: partValue('scale'), visible: true,
+        [field]: value,
+      });
+      selectionOutline.update();
+      draw();
+      return;
+    }
+    if (pointer?.id !== event.pointerId) return;
+    const dx = event.clientX - pointer.x;
+    const dy = event.clientY - pointer.y;
+    if (!pointer.moved && Math.hypot(dx, dy) < 4) return;
+    pointer.moved = true;
+    if (pointer.pan) {
+      const speed = distance * radius / Math.max(100, renderer.domElement.clientHeight);
+      center.addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld, 0), -dx * speed);
+      center.addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld, 1), dy * speed);
+    } else {
+      azimuth -= dx * .012;
+      elevation = Math.max(-1.45, Math.min(1.45, elevation + dy * .012));
+    }
+    pointer.x = event.clientX;
+    pointer.y = event.clientY;
     draw();
   };
-  renderer.domElement.onpointerup = renderer.domElement.onpointercancel = () => { lastPointer = undefined; };
+  renderer.domElement.onpointerup = event => {
+    if (axisDrag?.id === event.pointerId) {
+      const { field, value } = axisDrag;
+      axisDrag = undefined;
+      if (value) commitProperty(field, value);
+      return;
+    }
+    if (pointer?.id !== event.pointerId) return;
+    const select = !pointer.moved && !pointer.pan;
+    pointer = undefined;
+    if (!select) return;
+    pointRay(event);
+    const hit = raycaster.intersectObjects(ship.children.filter(mesh => mesh.visible), false)[0];
+    if (!hit) return;
+    selected = ship.children.indexOf(hit.object);
+    parts();
+    update();
+  };
+  renderer.domElement.onpointercancel = renderer.domElement.onlostpointercapture = event => {
+    if (pointer?.id === event.pointerId) pointer = undefined;
+    if (axisDrag?.id === event.pointerId) { axisDrag = undefined; update(); }
+  };
+  find('#focus').onclick = () => {
+    new T.Box3().setFromObject(ship.children[selected]).getCenter(center);
+    draw();
+  };
+  renderer.domElement.onkeydown = event => {
+    const keys = { q: 'select', w: 'position', e: 'rotation', r: 'scale' };
+    const key = event.key.toLowerCase();
+    if (keys[key]) find('[data-tool="' + keys[key] + '"]').click();
+    else if (key === 'f') find('#focus').click();
+    else return;
+    event.preventDefault();
+  };
+  find('#grid').onclick = () => {
+    gridVisible = !gridVisible;
+    grid.visible = gridVisible;
+    find('#grid').setAttribute('aria-pressed', String(gridVisible));
+    draw();
+  };
   function zoom(factor) {
     distance = Math.max(1.1, Math.min(12, distance * factor));
     draw();
@@ -255,8 +506,9 @@ export async function mount(root, api) {
     }
     uiButton.disabled = true;
     try {
-      closeUi = await mountInterfaceEditor(root, viewport, uiEdits, edits => { uiEdits = edits; });
+      closeUi = await mountInterfaceEditor(root, viewport, uiEdits, edits => { uiEdits = edits; }, layout);
       renderer.domElement.hidden = true;
+      axisOverlay.hidden = true;
       find('#scene-title').textContent = 'UI Preview';
       uiButton.textContent = 'Return to Model Studio';
     } catch (error) { message(error.message); }
@@ -265,6 +517,7 @@ export async function mount(root, api) {
   const fileMenu = find('.studioFile');
   find('#file-save').onclick = () => {
     fileMenu.open = false;
+    layout.activate('properties');
     secret.focus();
     message('Enter your Studio password in Properties to save.');
   };
@@ -306,6 +559,7 @@ export async function mount(root, api) {
   find('#history').onclick = async () => {
     try {
       const { versions } = await api.call('history');
+      layout.activate('output');
       const panel = find('#versions');
       panel.hidden = false;
       panel.replaceChildren();
@@ -344,12 +598,19 @@ export async function mount(root, api) {
   loadingManager.onLoad = onLoad;
   parts();
   update(true);
+  const viewportObserver = new ResizeObserver(draw);
+  viewportObserver.observe(viewport);
   window.addEventListener('resize', draw);
   return () => {
     window.removeEventListener('resize', draw);
+    viewportObserver.disconnect();
+    layout.dispose();
     if (loadingManager.onLoad === onLoad) loadingManager.onLoad = originalOnLoad;
     closeUi?.();
     release(ship);
+    release(selectionOutline);
+    release(grid);
+    release(gizmo);
     renderer.dispose();
     renderer.forceContextLoss();
   };

@@ -2,19 +2,18 @@ const editableMenus = ['settingsDialog', 'inventoryDialog', 'helpDialog', 'hudDi
 const studioColors = ['#ffffff', '#a8d4ff', '#48a4df', '#2279bb', '#123c69', '#101a2b',
   '#45b988', '#efc95b', '#ed804c', '#da5369', '#a584e3', '#717a89'];
 
-async function openPaintPanel(root, { color, stops, gradient = false, onDone }) {
-  const [{ dragPanel }, { paintGradient }] = await Promise.all([
-    import(new URL('/panel-drag.js', location.origin)),
-    import(new URL('/paint-gradient.js', location.origin)),
-  ]);
-  root.querySelector('.studioPaint')?.remove();
+async function openPaintPanel(root, { layout, color, stops, gradient = false, onDone }) {
+  const { paintGradient } = await import(new URL('/paint-gradient.js', location.origin));
+  const id = gradient ? 'gradient' : 'colour';
+  layout.close('colour');
+  layout.close('gradient');
   const panel = document.createElement('section');
   panel.className = 'studioPaint homeColorPicker';
   panel.setAttribute('role', 'dialog');
   panel.setAttribute('aria-label', gradient ? 'Gradient Editor' : 'Custom Colour');
   panel.innerHTML = `
     <div class="homePickerTop"><strong>${gradient ? 'Gradient Editor' : 'Custom Colour'}</strong>
-      <button type="button" data-close>×</button></div>
+    </div>
     <div class="homeGradientTrack" ${gradient ? '' : 'hidden'}></div>
     <div class="studioSwatches" aria-label="Colour list"></div>
     <label>Custom colour <input type="color"></label>
@@ -23,8 +22,7 @@ async function openPaintPanel(root, { color, stops, gradient = false, onDone }) 
       <button type="button" data-remove ${gradient ? '' : 'hidden'}>Remove stop</button>
       <button type="button" data-done>Done</button>
     </div>`;
-  root.append(panel);
-  dragPanel(panel.querySelector('.homePickerTop'), panel, { margin: 8 });
+  layout.register(id, gradient ? 'Gradient Editor' : 'Custom Colour', panel, true);
   const input = panel.querySelector('input[type=color]');
   const track = panel.querySelector('.homeGradientTrack');
   const custom = /^#[\da-f]{6}$/i.test(color) ? color : '#ffffff';
@@ -90,8 +88,7 @@ async function openPaintPanel(root, { color, stops, gradient = false, onDone }) 
     selected--;
     render();
   };
-  panel.querySelector('[data-close]').onclick = () => panel.remove();
-  panel.querySelector('[data-done]').onclick = () => { onDone(gradient ? keys : input.value); panel.remove(); };
+  panel.querySelector('[data-done]').onclick = () => { onDone(gradient ? keys : input.value); layout.close(id); };
   render();
 }
 
@@ -99,7 +96,7 @@ function gradientStyle(stops) {
   return 'linear-gradient(90deg, ' + stops.map(stop => stop.color + ' ' + stop.position * 100 + '%').join(', ') + ')';
 }
 
-async function mountInterfaceEditor(root, viewport, source, onEdit) {
+async function mountInterfaceEditor(root, viewport, source, onEdit, layout) {
   const response = await fetch('/');
   if (!response.ok) throw new Error('Could not load the game UI.');
   const game = new DOMParser().parseFromString(await response.text(), 'text/html');
@@ -112,16 +109,30 @@ async function mountInterfaceEditor(root, viewport, source, onEdit) {
     <label>Width <input aria-label="Element width" type="number" min="1" max="2000"></label>
     <label>X <input aria-label="Element X" type="number" min="-500" max="500"></label>
     <label>Y <input aria-label="Element Y" type="number" min="-500" max="500"></label>
+    <label>Height <input aria-label="Element height" type="number" min="1" max="2000"></label>
+    <label>Padding <input aria-label="Element padding" type="number" min="0" max="120"></label>
+    <label>Preview <select aria-label="Preview resolution"><option value="fit">Fit workspace</option><option value="desktop">Desktop</option><option value="tablet">Tablet</option><option value="mobile">Mobile</option></select></label>
     <div class="tools"><button type="button" data-color>Colour</button><button type="button" data-gradient>Gradient Editor</button></div>`;
   const fields = wrapper.querySelectorAll('input');
-  const [menus, elements] = wrapper.querySelectorAll('select');
+  const [menus, elements, resolution] = wrapper.querySelectorAll('select');
   const iframe = document.createElement('iframe');
   iframe.title = 'Game UI preview';
   iframe.setAttribute('sandbox', 'allow-same-origin');
-  viewport.append(iframe, wrapper);
+  const frameArea = document.createElement('div');
+  frameArea.className = 'studioUiFrame';
+  frameArea.append(iframe);
+  viewport.append(frameArea, wrapper);
+  resolution.onchange = () => {
+    const sizes = { desktop: [1280, 720], tablet: [1024, 768], mobile: [844, 390] };
+    const size = sizes[resolution.value];
+    iframe.style.width = size ? size[0] + 'px' : '';
+    iframe.style.height = size ? size[1] + 'px' : '';
+  };
   let edits = source && typeof source === 'object' ? structuredClone(source) : {};
   let menu;
   let selected;
+  const history = [];
+  const future = [];
   const validColor = value => typeof value === 'string' && /^#[\da-f]{6}$/i.test(value);
   function apply() {
     const doc = iframe.contentDocument;
@@ -131,7 +142,11 @@ async function mountInterfaceEditor(root, viewport, source, onEdit) {
       if (!edit) continue;
       if (typeof edit.text === 'string' && !node.childElementCount) node.textContent = edit.text;
       if (validColor(edit.color)) node.style.color = edit.color;
-      if (Number.isFinite(edit.width)) node.style.width = Math.max(1, Math.min(edit.width, 2000)) + 'px';
+      for (const dimension of ['width', 'height', 'padding']) {
+        if (Number.isFinite(edit[dimension])) {
+          node.style[dimension] = Math.max(dimension === 'padding' ? 0 : 1, Math.min(edit[dimension], 2000)) + 'px';
+        }
+      }
       if (Number.isFinite(edit.x) || Number.isFinite(edit.y)) node.style.translate = (Number(edit.x) || 0) + 'px ' + (Number(edit.y) || 0) + 'px';
       if (Array.isArray(edit.gradient) && edit.gradient.length >= 2 && edit.gradient.length <= 4 &&
         edit.gradient.every(stop => validColor(stop?.color) && Number.isFinite(stop.position) && stop.position >= 0 && stop.position <= 1)) {
@@ -152,8 +167,78 @@ async function mountInterfaceEditor(root, viewport, source, onEdit) {
     fields[1].value = edit.width ?? '';
     fields[2].value = edit.x ?? '';
     fields[3].value = edit.y ?? '';
+    fields[4].value = edit.height ?? '';
+    fields[5].value = edit.padding ?? '';
+    updateHandles();
   }
-  function show(id) {
+  function updateHandles() {
+    const doc = iframe.contentDocument;
+    const node = doc?.getElementById(selected);
+    if (!node) return;
+    const rect = node.getBoundingClientRect();
+    for (const handle of doc.querySelectorAll('[data-studio-handle]')) {
+      const resize = handle.dataset.studioHandle === 'resize';
+      handle.style.left = (resize ? rect.right - 14 : rect.left) + 'px';
+      handle.style.top = (resize ? rect.bottom - 14 : rect.top) + 'px';
+      handle.hidden = !rect.width || !rect.height;
+    }
+  }
+  function installHandles(doc) {
+    for (const mode of ['move', 'resize']) {
+      const handle = doc.createElement('button');
+      handle.type = 'button';
+      handle.dataset.studioHandle = mode;
+      handle.setAttribute('aria-label', mode === 'move' ? 'Move element' : 'Resize element');
+      handle.style.cssText = 'position:fixed;z-index:2147483647;width:14px;height:14px;padding:0;' +
+        'min-width:0;min-height:0;border:2px solid #102544;background:#91dcff;border-radius:3px;touch-action:none;';
+      handle.style.cursor = mode === 'move' ? 'move' : 'nwse-resize';
+      handle.onpointerdown = event => {
+        if (event.button !== 0) return;
+        const node = doc.getElementById(selected);
+        if (!node) return;
+        event.preventDefault();
+        handle.setPointerCapture(event.pointerId);
+        const initial = { ...edits[menu]?.[selected] };
+        const rect = node.getBoundingClientRect();
+        let pending;
+        function finish(end) {
+          if (event.pointerId !== end.pointerId) return;
+          handle.onpointermove = handle.onpointerup = handle.onpointercancel = handle.onlostpointercapture = null;
+          if (end.type !== 'pointerup') {
+            node.style.translate = originalTranslate;
+            node.style.width = originalWidth;
+            node.style.height = originalHeight;
+          } else if (pending) {
+            change(pending);
+            select(selected);
+          }
+          updateHandles();
+        }
+        const { translate: originalTranslate, width: originalWidth, height: originalHeight } = node.style;
+        handle.onpointermove = move => {
+          if (move.pointerId !== event.pointerId) return;
+          const x = Math.round(move.clientX - event.clientX);
+          const y = Math.round(move.clientY - event.clientY);
+          if (mode === 'move') {
+            pending = { x: Math.max(-500, Math.min(500, (initial.x ?? 0) + x)),
+              y: Math.max(-500, Math.min(500, (initial.y ?? 0) + y)) };
+            node.style.translate = pending.x + 'px ' + pending.y + 'px';
+          } else {
+            pending = { width: Math.max(1, Math.min(2000, Math.round(rect.width + x))),
+              height: Math.max(1, Math.min(2000, Math.round(rect.height + y))) };
+            node.style.width = pending.width + 'px';
+            node.style.height = pending.height + 'px';
+          }
+          updateHandles();
+        };
+        handle.onpointerup = handle.onpointercancel = handle.onlostpointercapture = finish;
+      };
+      doc.body.append(handle);
+    }
+    doc.addEventListener('scroll', updateHandles, true);
+    iframe.contentWindow.addEventListener('resize', updateHandles);
+  }
+  function show(id, selection = id) {
     menu = id;
     const node = game.getElementById(id)?.cloneNode(true);
     if (!node) return;
@@ -175,7 +260,8 @@ async function mountInterfaceEditor(root, viewport, source, onEdit) {
       const ids = [...doc.body.querySelectorAll('[id]:not([type=hidden])')];
       elements.replaceChildren(...ids.map(el => new Option(el.tagName.toLowerCase() + ' · ' + el.id, el.id)));
       apply();
-      select(id);
+      installHandles(doc);
+      select(selection);
       doc.addEventListener('click', event => {
         event.preventDefault();
         const target = event.target.closest('[id]');
@@ -186,25 +272,38 @@ async function mountInterfaceEditor(root, viewport, source, onEdit) {
   }
   function change(patch) {
     if (!selected || !iframe.contentDocument?.getElementById(selected)) return;
+    history.push(edits);
+    future.length = 0;
     edits = { ...edits, [menu]: { ...edits[menu], [selected]: { ...edits[menu]?.[selected], ...patch } } };
     apply();
+    updateHandles();
     onEdit(edits);
   }
   menus.replaceChildren(...editableMenus.filter(id => game.getElementById(id)).map(id =>
     new Option(id.replace(/Dialog$/, '').replace(/([A-Z])/g, ' $1'), id)));
   menus.onchange = () => show(menus.value);
   elements.onchange = () => select(elements.value);
-  for (const [i, name] of ['text', 'width', 'x', 'y'].entries()) {
+  for (const [i, name] of ['text', 'width', 'x', 'y', 'height', 'padding'].entries()) {
     fields[i].onchange = () => {
       if (i && (!fields[i].value || !fields[i].checkValidity())) return;
       change({ [name]: i ? Number(fields[i].value) : fields[i].value.slice(0, 160) });
     };
   }
   wrapper.querySelector('[data-color]').onclick = () =>
-    openPaintPanel(root, { color: edits[menu]?.[selected]?.color, onDone: color => change({ color }) });
+    openPaintPanel(root, { layout, color: edits[menu]?.[selected]?.color, onDone: color => change({ color }) });
   wrapper.querySelector('[data-gradient]').onclick = () =>
-    openPaintPanel(root, { gradient: true, stops: edits[menu]?.[selected]?.gradient,
+    openPaintPanel(root, { layout, gradient: true, stops: edits[menu]?.[selected]?.gradient,
       color: edits[menu]?.[selected]?.color, onDone: gradient => change({ gradient }) });
   show(menus.value);
-  return () => { iframe.remove(); wrapper.remove(); root.querySelector('.studioPaint')?.remove(); };
+  const close = () => { frameArea.remove(); wrapper.remove(); layout.close('colour'); layout.close('gradient'); };
+  function step(from, to) {
+    if (!from.length) return;
+    to.push(edits);
+    edits = from.pop();
+    onEdit(edits);
+    show(menu, selected);
+  }
+  close.undo = () => step(history, future);
+  close.redo = () => step(future, history);
+  return close;
 }

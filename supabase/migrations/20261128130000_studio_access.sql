@@ -7,7 +7,7 @@ revoke all on schema tzg_studio from public, anon, authenticated;
 
 create table tzg_studio.developers (
   user_id uuid primary key references auth.users on delete cascade,
-  password_hash text not null,
+  password_hash text,
   failed_attempts integer not null default 0,
   retry_after timestamptz
 );
@@ -47,7 +47,9 @@ begin
   if tzg_studio.active_session() is null then return false; end if;
   select * into developer from tzg_studio.developers
     where user_id = auth.uid() for update;
-  if not found or developer.retry_after > now() then return false; end if;
+  if not found or developer.password_hash is null or developer.retry_after > now() then
+    return false;
+  end if;
 
   if password is null or octet_length(password) not between 12 and 72
     or extensions.crypt(password, developer.password_hash) is distinct from developer.password_hash
@@ -62,6 +64,26 @@ begin
   update tzg_studio.developers set failed_attempts = 0, retry_after = null
     where user_id = developer.user_id;
   return true;
+end
+$$;
+
+-- Only an operator-provisioned account may set a password, once.
+create function public.tzg_studio_set_initial_password(password text)
+returns boolean
+language plpgsql security definer
+set search_path = ''
+as $$
+begin
+  if tzg_studio.active_session() is null
+    or password is null or octet_length(password) not between 12 and 72
+  then
+    return false;
+  end if;
+
+  update tzg_studio.developers
+    set password_hash = extensions.crypt(password, extensions.gen_salt('bf', 12))
+    where user_id = auth.uid() and password_hash is null;
+  return found;
 end
 $$;
 
@@ -118,3 +140,6 @@ revoke all on function public.tzg_studio_open(text), public.tzg_studio_check(tex
   public.tzg_studio_lock(text) from public, anon, authenticated;
 grant execute on function public.tzg_studio_open(text), public.tzg_studio_check(text),
   public.tzg_studio_lock(text) to authenticated;
+
+revoke all on function public.tzg_studio_set_initial_password(text) from public, anon, authenticated;
+grant execute on function public.tzg_studio_set_initial_password(text) to authenticated;

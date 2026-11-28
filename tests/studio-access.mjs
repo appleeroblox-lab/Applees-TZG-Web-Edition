@@ -43,8 +43,17 @@ try {
   await claim(developer, session);
   assert.equal(await scalar('select tzg_studio_open($1)', password), null);
   await db.exec('reset role');
-  await db.query('insert into tzg_studio.developers values ($1, extensions.crypt($2, extensions.gen_salt($3, 4)))',
-    [developer, password, 'bf']);
+  await db.query('insert into tzg_studio.developers (user_id) values ($1)', [developer]);
+  await claim(other, otherSession);
+  assert.equal(await scalar('select tzg_studio_set_initial_password($1)', password), false);
+  await claim(developer, session, true);
+  assert.equal(await scalar('select tzg_studio_set_initial_password($1)', password), false);
+  await claim(developer, session);
+  assert.equal(await scalar('select tzg_studio_open($1)', password), null);
+  assert.equal(await scalar('select tzg_studio_set_initial_password($1)', 'too short'), false);
+  assert.equal(await scalar('select tzg_studio_set_initial_password($1)', password), true);
+  assert.equal(await scalar('select tzg_studio_set_initial_password($1)', 'replacement password'), false);
+  await db.exec('reset role');
   await db.exec('set role anon');
   await assert.rejects(scalar('select tzg_studio_open($1)', password), { code: '42501' });
   await db.exec('reset role');

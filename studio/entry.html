@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Zero Gravity Web Studio</title>
+<style>
+  @font-face{font-family:Fredoka;src:url('/fonts/FredokaOne-Regular.ttf')}
+  [hidden]{display:none!important}*{box-sizing:border-box}body{margin:0;background:#0e2443;color:#fff;font:16px Fredoka,system-ui,sans-serif}
+  main{margin:auto;padding:24px;max-width:1400px}section,header{padding:16px;border:1px solid #a3ceff;border-radius:12px;background:#173961}
+  form{display:grid;gap:12px;max-width:420px;margin:12vh auto}button,input,select{font:inherit;color:inherit;background:#244c79;border:1px solid #b6d9ff;border-radius:8px;padding:8px}
+  button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid white}
+  a{color:#a3ceff}.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.panels{display:grid;grid-template-columns:minmax(150px,1fr) minmax(0,3fr) minmax(150px,1fr);gap:10px}
+  .panels label{display:grid;gap:5px;margin:10px 0}.panels input,.panels select{width:100%}canvas{display:block;max-width:100%;touch-action:none}.viewport{min-height:360px}
+  @media(max-width:730px){.panels{grid-template-columns:1fr 1fr}.viewport{grid-column:1/-1;grid-row:1}.panels section{min-width:0}main{padding:12px}}
+</style>
+<main>
+<h1>The Zero Gravity Web Studio</h1>
+<p id="notice" role="status"></p>
+<form id="unlock">
+  <label for="password">Studio password</label>
+  <input id="password" type="password" autocomplete="off" required minlength="12" maxlength="72">
+  <button value="open">Unlock Studio</button>
+  <button value="setup">Set initial Studio password</button>
+  <a href="/">Open the game to sign in</a>
+</form>
+<div id="workspace" hidden></div>
+</main>
+<script nonce="__STUDIO_NONCE__" type="module">
+const sessionKey = 'tzg-player-session-v1';
+const form = document.querySelector('#unlock');
+const passwordInput = document.querySelector('#password');
+const notices = document.querySelector('#notice');
+const root = document.querySelector('#workspace');
+let studioToken;
+let timeout;
+let cleanup;
+
+function session() {
+  try { return JSON.parse(localStorage.getItem(sessionKey))?.access_token; }
+  catch { return null; }
+}
+async function call(action, args, raw = false) {
+  const auth = session();
+  if (!auth) throw new Error('Sign in to your TZG game account first.');
+  const result = await fetch('/studio/api/' + action, {
+    method: 'POST', headers: { Authorization: 'Bearer ' + auth, 'Content-Type': 'application/json' },
+    body: JSON.stringify(args),
+  });
+  if (!result.ok) throw new Error('Studio request failed (' + result.status + ').');
+  return raw ? result.text() : result.json();
+}
+async function lock() {
+  const token = studioToken;
+  studioToken = undefined;
+  clearTimeout(timeout);
+  cleanup?.();
+  cleanup = undefined;
+  root.replaceChildren();
+  root.hidden = true;
+  form.hidden = false;
+  notices.textContent = 'Studio is locked.';
+  if (token) await call('lock', { token }).catch(() => {});
+}
+function idle() {
+  clearTimeout(timeout);
+  if (studioToken) timeout = setTimeout(lock, 10 * 60 * 1000);
+}
+window.addEventListener('storage', event => {
+  if (event.key === sessionKey && !session()) void lock();
+});
+root.addEventListener('pointerdown', idle);
+root.addEventListener('keydown', idle);
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+  const password = passwordInput.value;
+  passwordInput.value = '';
+  event.submitter.disabled = true;
+  try {
+    if (event.submitter.value === 'setup') {
+      const ok = await call('setup', { password });
+      notices.textContent = ok ? 'Password set. Enter it again to unlock.' : 'Initial setup is unavailable for this account.';
+      return;
+    }
+    studioToken = await call('open', { password });
+    if (!studioToken) {
+      notices.textContent = 'Studio access denied.';
+      return;
+    }
+    const token = studioToken;
+    const source = await call('editor', { token }, true);
+    const moduleUrl = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
+    try {
+      const editor = await import(moduleUrl);
+      cleanup = await editor.mount(root, {
+        call: async (action, args = {}) => {
+          if (studioToken !== token) throw new Error('Studio is locked.');
+          const data = await call(action, { ...args, token });
+          if (data?.status === 'locked') void lock();
+          return data;
+        },
+        lock, message: text => { notices.textContent = text; },
+      });
+    } finally { URL.revokeObjectURL(moduleUrl); }
+    form.hidden = true;
+    root.hidden = false;
+    window.dispatchEvent(new Event('resize'));
+    notices.textContent = '';
+    idle();
+  } catch (error) {
+    if (studioToken) await lock();
+    notices.textContent = error.message;
+  } finally { event.submitter.disabled = false; }
+});
+</script>
+</html>

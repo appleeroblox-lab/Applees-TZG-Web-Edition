@@ -1,0 +1,207 @@
+const origin = location.origin;
+const threePath = new URL('/vendor/three.module.js', origin);
+const loaderPath = new URL('/models.js', origin);
+
+export async function mount(root, api) {
+  const [T, { modelFromData }, draft, modelResponse] = await Promise.all([
+    import(threePath), import(loaderPath), api.call('read'),
+    fetch('/models/player-ship.json'),
+  ]);
+  if (draft.status !== 'ok' || !modelResponse.ok) throw new Error('Could not load the draft and ship model.');
+  const model = await modelResponse.json();
+  let revision = draft.revision;
+  let edits = draft.document.shipMaterials ?? [];
+  const undo = [];
+  const redo = [];
+
+  root.innerHTML = `
+    <header class="tools">
+      <strong>Model Studio · SolarFlare</strong>
+      <button id="undo">Undo</button><button id="redo">Redo</button>
+      <button id="history">Version History</button><button id="lock">Lock Studio</button>
+    </header>
+    <div class="panels">
+      <section><h2>Explorer</h2><label>Search parts<input id="search"></label>
+        <label>Part<select id="part" size="8"></select></label></section>
+      <section class="viewport" aria-label="Live model preview"></section>
+      <section><h2>Properties</h2>
+        <label>Colour<input id="color" type="color"></label>
+        <label>Metalness<input id="metalness" type="range" min="0" max="1" step=".01"></label>
+        <label>Roughness<input id="roughness" type="range" min="0" max="1" step=".01"></label>
+        <label>Opacity<input id="opacity" type="range" min="0" max="1" step=".01"></label>
+        <form id="draft" style="margin:0">
+          <label>Studio password<input type="password" autocomplete="off" minlength="12" maxlength="72" required></label>
+          <button>Save Draft</button>
+        </form>
+      </section>
+    </div>
+    <section id="versions" hidden></section>`;
+  const find = selector => root.querySelector(selector);
+  const viewport = find('.viewport');
+  const renderer = new T.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  viewport.append(renderer.domElement);
+  const scene = new T.Scene();
+  scene.background = new T.Color(0x102544);
+  const camera = new T.PerspectiveCamera(45, 1, 0.01, 100000);
+  scene.add(new T.HemisphereLight(0xffffff, 0x526e99, 2.3));
+  const key = new T.DirectionalLight(0xffffff, 2.1);
+  key.position.set(2, 4, 3);
+  scene.add(key);
+  const center = new T.Vector3();
+  let radius = 1;
+  let azimuth = .65;
+  let elevation = .42;
+  let distance = 1;
+  let ship;
+  let selected = 0;
+  const partList = find('#part');
+  const fields = ['color', 'metalness', 'roughness', 'opacity'];
+
+  function draw() {
+    const w = Math.max(viewport.clientWidth - 32, 1);
+    renderer.setSize(w, Math.max(320, w * .63));
+    camera.aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
+    camera.updateProjectionMatrix();
+    const offset = new T.Vector3().setFromSphericalCoords(distance * radius, Math.PI / 2 - elevation, azimuth);
+    camera.position.copy(center).add(offset);
+    camera.lookAt(center);
+    renderer.render(scene, camera);
+  }
+  function release(group) {
+    if (!group) return;
+    scene.remove(group);
+    group.traverse(child => {
+      child.geometry?.dispose();
+      child.material?.dispose();
+    });
+  }
+  function update(resetCamera = false) {
+    const data = applyModelMaterialEdits(model, edits);
+    release(ship);
+    ship = modelFromData(data);
+    scene.add(ship);
+    if (resetCamera) {
+      const sphere = new T.Box3().setFromObject(ship).getBoundingSphere(new T.Sphere());
+      radius = Math.max(sphere.radius, .01);
+      center.copy(sphere.center);
+      distance = 2.8;
+    }
+    const item = data.meshes[selected];
+    for (const field of fields) {
+      const value = item[field];
+      find('#' + field).value = field === 'color' ? '#' + new T.Color(value).getHexString()
+        : value ?? (field === 'metalness' ? 0 : 1);
+    }
+    draw();
+  }
+  function parts() {
+    const search = find('#search').value.trim().toLowerCase();
+    const matches = model.meshes.flatMap((item, index) => item.name.toLowerCase().includes(search)
+      ? [new Option(item.name, String(index), false, index === selected)] : []);
+    partList.replaceChildren(...matches);
+  }
+  find('#search').addEventListener('input', parts);
+  partList.addEventListener('change', () => {
+    selected = Number(partList.value);
+    update();
+  });
+  for (const field of fields) {
+    find('#' + field).addEventListener('change', event => {
+      undo.push(edits);
+      redo.length = 0;
+      const value = field === 'color' ? event.target.value : Number(event.target.value);
+      const edit = { index: selected, name: model.meshes[selected].name, field, value };
+      edits = [...edits.filter(item => item.index !== selected || item.field !== field), edit];
+      update();
+    });
+  }
+  find('#undo').onclick = () => {
+    if (!undo.length) return;
+    redo.push(edits);
+    edits = undo.pop();
+    update();
+  };
+  find('#redo').onclick = () => {
+    if (!redo.length) return;
+    undo.push(edits);
+    edits = redo.pop();
+    update();
+  };
+  find('#lock').onclick = api.lock;
+  let lastPointer;
+  renderer.domElement.onpointerdown = event => {
+    lastPointer = [event.clientX, event.clientY];
+    renderer.domElement.setPointerCapture(event.pointerId);
+  };
+  renderer.domElement.onpointermove = event => {
+    if (!lastPointer) return;
+    azimuth -= (event.clientX - lastPointer[0]) * .012;
+    elevation = Math.max(-1.45, Math.min(1.45, elevation + (event.clientY - lastPointer[1]) * .012));
+    lastPointer = [event.clientX, event.clientY];
+    draw();
+  };
+  renderer.domElement.onpointerup = renderer.domElement.onpointercancel = () => { lastPointer = undefined; };
+  renderer.domElement.addEventListener('wheel', event => {
+    event.preventDefault();
+    distance = Math.max(1.1, Math.min(12, distance * Math.exp(event.deltaY * .001)));
+    draw();
+  }, { passive: false });
+  const draftForm = find('#draft');
+  const secret = draftForm.querySelector('[type=password]');
+  let saving = false;
+  async function write(payload) {
+    if (saving) return;
+    saving = true;
+    const password = secret.value;
+    secret.value = '';
+    try {
+      const result = await api.call('write', { ...payload, expected_revision: revision, password });
+      if (result.status !== 'ok') throw new Error('Draft write failed (' + result.status + ').');
+      revision = result.revision;
+      api.message('Draft version ' + revision + ' saved.');
+      return true;
+    } catch (error) { api.message(error.message); }
+    finally { saving = false; }
+  }
+  draftForm.onsubmit = event => {
+    event.preventDefault();
+    void write({ edits: { ...draft.document, shipMaterials: edits } });
+  };
+  find('#history').onclick = async () => {
+    try {
+      const { versions } = await api.call('history');
+      const panel = find('#versions');
+      panel.hidden = false;
+      panel.replaceChildren();
+      for (const version of versions) {
+        const row = document.createElement('p');
+        row.textContent = 'Version ' + version.revision + ' · ' + version.action + ' ';
+        const button = document.createElement('button');
+        button.textContent = 'Restore Draft';
+        button.onclick = async () => {
+          if (!secret.reportValidity()) return;
+          if (await write({ restore_revision: version.revision })) {
+            const restored = await api.call('read');
+            draft.document = restored.document;
+            edits = restored.document.shipMaterials ?? [];
+            undo.length = redo.length = 0;
+            update();
+          }
+        };
+        row.append(button);
+        panel.append(row);
+      }
+      if (!versions.length) panel.textContent = 'No draft versions yet.';
+    } catch (error) { api.message(error.message); }
+  };
+
+  parts();
+  update(true);
+  window.addEventListener('resize', draw);
+  return () => {
+    window.removeEventListener('resize', draw);
+    release(ship);
+    renderer.dispose();
+  };
+}

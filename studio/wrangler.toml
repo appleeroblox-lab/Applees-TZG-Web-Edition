@@ -1,0 +1,10 @@
+name = "tzg-web-studio"
+main = "worker.mjs"
+compatibility_date = "2026-11-28"
+workers_dev = false
+preview_urls = false
+
+[[rules]]
+type = "Text"
+globs = ["**/*.html", "**/*.txt", "**/model-edits.mjs"]
+fallthrough = true

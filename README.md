@@ -1,8 +1,8 @@
-# The Zero Gravity – Web
+# The Zero Gravity Web Edition
 
-Explore space, fly between worlds, land, mine resources, and play with friends.
+Explore space in your browser. Multiplayer Beta supports real-time ship and on-foot movement, public servers, and shared exploration across planets and star systems. Single-player mode also supports planetary landings, mining, and crafting.
 
-[Play the game](https://appleeroblox-lab.github.io/Applees-TZG-Web-Edition/index.html)
+[Play the game](https://applees-tzg-web-edition.space/) · [Game features and multiplayer guide](https://applees-tzg-web-edition.space/about.html)
 
 ## Development
 

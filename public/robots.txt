@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://applees-tzg-web-edition.space/sitemap.xml

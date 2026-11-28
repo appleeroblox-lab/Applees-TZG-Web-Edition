@@ -2,7 +2,7 @@
 
 Explore space in your browser. Multiplayer Beta supports real-time ship and on-foot movement, public servers, and shared exploration across planets and star systems. Single-player mode also supports planetary landings, mining, and crafting.
 
-[Play the game](https://applees-tzg-web-edition.space/) · [Game features and multiplayer guide](https://applees-tzg-web-edition.space/about.html)
+[Play the game](https://applees-tzg-web-edition.space/) · [Game features and multiplayer guide](https://applees-tzg-web-edition.space/about)
 
 ## Development
 

@@ -60,8 +60,24 @@ const server = createServer(async (req, res) => {
       res.end(Buffer.from(await response.arrayBuffer()));
       return;
     }
-    assert.match(url.pathname, /^\/(vendor|models|fonts)\/|^\/models\.js$/);
-    const types = { js: 'text/javascript', json: 'application/json', png: 'image/png', ttf: 'font/ttf' };
+    if (url.pathname === '/vendor/supabase.js' || url.pathname === '/supabase-config.js' || url.pathname === '/account-auth-flow.js') {
+      const fixture = {
+        '/supabase-config.js': 'export const supabaseConfig = { url: "https://db.invalid", publishableKey: "fixture" };',
+        '/account-auth-flow.js': 'export const accountEndpoint = async () => ({ session: { access_token: "fixture" } });',
+        '/vendor/supabase.js': `export function createClient(url, key, { auth: { storageKey } }) {
+          const data = () => ({ session: JSON.parse(localStorage.getItem(storageKey) || 'null') });
+          const set = session => { localStorage.setItem(storageKey, JSON.stringify(session)); return { data: data() }; };
+          return { auth: { getSession: async () => ({ data: data() }), onAuthStateChange() {},
+            signInWithPassword: async () => set({ access_token: 'fixture' }), setSession: async session => set(session),
+          } };
+        }`,
+      };
+      res.writeHead(200, { 'Content-Type': 'text/javascript' });
+      res.end(fixture[url.pathname]);
+      return;
+    }
+    assert.match(url.pathname, /^\/(vendor|models|fonts|images)\/|^\/(models\.js|entry-menu\.css)$/);
+    const types = { js: 'text/javascript', json: 'application/json', png: 'image/png', ttf: 'font/ttf', css: 'text/css' };
     const data = await readFile(new URL('../public' + url.pathname, import.meta.url));
     res.writeHead(200, { 'Content-Type': types[url.pathname.split('.').at(-1)] });
     res.end(data);
@@ -77,8 +93,12 @@ try {
     args: ['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
   });
   const page = await browser.newPage();
-  await page.addInitScript(() => localStorage.setItem('tzg-player-session-v1', JSON.stringify({ access_token: 'fixture' })));
   await page.goto('http://127.0.0.1:' + server.address().port + '/studio/');
+  await page.getByRole('button', { name: 'Sign in with Google' }).waitFor();
+  await page.getByRole('button', { name: 'Sign in with game account' }).click();
+  await page.getByLabel('Email or username').fill('applee');
+  await page.getByLabel('Game account password').fill('fixture password');
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await page.locator('#password').fill('test password');
   await page.getByRole('button', { name: 'Set initial Studio password' }).click();
   await page.getByText('Password set. Enter it again to unlock.', { exact: true }).waitFor();
@@ -105,6 +125,9 @@ try {
   await page.getByText('Studio is locked.', { exact: true }).waitFor();
   assert.equal(await page.locator('canvas').count(), 0);
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByText('Rotate to landscape', { exact: true }).waitFor();
+  assert.equal(await page.getByRole('button', { name: 'Unlock Studio' }).isVisible(), false);
+  await page.setViewportSize({ width: 844, height: 390 });
   await page.locator('#password').fill('test password');
   await page.getByRole('button', { name: 'Unlock Studio' }).click();
   await page.locator('canvas:visible').waitFor();

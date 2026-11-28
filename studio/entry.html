@@ -3,6 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Zero Gravity Web Studio</title>
+<link rel="stylesheet" href="/entry-menu.css">
 <style>
   @font-face{font-family:Fredoka;src:url('/fonts/FredokaOne-Regular.ttf')}
   [hidden]{display:none!important}*{box-sizing:border-box}body{margin:0;background:#0e2443;color:#fff;font:16px Fredoka,system-ui,sans-serif}
@@ -11,22 +12,160 @@
   button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid white}
   a{color:#a3ceff}.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.panels{display:grid;grid-template-columns:minmax(150px,1fr) minmax(0,3fr) minmax(150px,1fr);gap:10px}
   .panels label{display:grid;gap:5px;margin:10px 0}.panels input,.panels select{width:100%}canvas{display:block;max-width:100%;touch-action:none}.viewport{min-height:360px}
-  @media(max-width:730px){.panels{grid-template-columns:1fr 1fr}.viewport{grid-column:1/-1;grid-row:1}.panels section{min-width:0}main{padding:12px}}
+  main{max-width:none;padding:0}#workspace{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+  #workspace header{background:#102c4c;border-radius:0;padding:7px 12px;margin:0}
+  #workspace .panels{padding:7px;min-height:0;grid-template-columns:minmax(125px,18%) minmax(0,1fr) minmax(145px,21%)}
+  #workspace .panels section{border-radius:7px;overflow:auto;padding:10px}
+  #workspace .panels h2{margin:0 0 8px;font-size:16px}.viewport{min-height:0}
+  #workspace .tools{gap:6px}.tools button,.tools select{padding:5px 8px;font-size:13px}
+  #accountGate,#boot,#unlockScreen,#rotatePrompt{position:fixed;inset:0;z-index:10}
+  #accountGate,#unlockScreen{display:grid;place-items:center;overflow:auto}
+  #unlockScreen{background:#06152c url('/images/entry/background.png') center/cover}
+  #accountGate form,#unlockScreen form,#accountGate .studioWelcome{position:relative;z-index:2;margin:auto;padding:16px;width:min(460px,94vw);text-align:center}
+  #accountGate .studioWelcome{display:grid;gap:12px}#accountGate .studioWelcome button{background:#fff;color:#102544;border:2px solid #91bded;border-radius:10px}
+  #accountGate .studioWelcome img{width:20px;height:20px;vertical-align:middle;margin-right:6px}
+  #accountGate h1,#unlockScreen h1{font-weight:400;margin:0 0 8px;font-size:clamp(22px,4.5vw,42px)}
+  #accountGate h1 small,#unlockScreen h1 small{display:block;font-size:.55em}
+  #notice{position:fixed;z-index:30;bottom:4px;left:50%;translate:-50% 0;margin:0;padding:6px 12px;border-radius:8px;background:#0a1e38;max-width:90vw;text-align:center}
+  #notice:empty{display:none}#boot[hidden]{display:none!important}#boot{z-index:20}
+  #boot .bootProgressTrack{position:relative;background:#0b2645;border:2px solid #90c7fa;overflow:hidden}
+  #sourceProgress{height:100%;background:#3b8ddd}#sourceDetail{position:absolute;top:calc(50% + 70px);left:5%;width:90%;text-align:center}
+  #rotatePrompt{display:none;z-index:100;background:#06152c;place-content:center;text-align:center;padding:20px}
+  @media(orientation:portrait){#rotatePrompt{display:grid}main>*:not(#rotatePrompt){visibility:hidden!important;pointer-events:none!important}}
+  @media(max-height:440px){#workspace .panels label{margin:4px 0}#workspace .panels section{padding:7px}#accountGate .studioWelcome{gap:6px}}
 </style>
 <main>
-<h1>The Zero Gravity Web Studio</h1>
+<div id="rotatePrompt" role="status"><h2>Rotate to landscape</h2><p>Turn your device sideways to use Studio.</p></div>
 <p id="notice" role="status"></p>
-<form id="unlock">
-  <label for="password">Studio password</label>
-  <input id="password" type="password" autocomplete="off" required minlength="12" maxlength="72">
-  <button value="open">Unlock Studio</button>
-  <button value="setup">Set initial Studio password</button>
-  <a href="/">Open the game to sign in</a>
-</form>
+<div id="accountGate" hidden>
+  <div class="studioWelcome" id="signinChoices">
+    <h1>The Zero Gravity<small>Web Studio</small></h1>
+    <button id="accountGoogle" type="button"><img src="/images/entry/google.png" alt="">Sign in with Google</button>
+    <button id="accountEmailLogin" type="button">Sign in with game account</button>
+  </div>
+  <form id="gameLogin" hidden>
+    <h1>Sign in<small>The Zero Gravity Web Studio</small></h1>
+    <label for="gameIdentifier">Email or username</label>
+    <input id="gameIdentifier" autocomplete="username" required>
+    <label for="gamePassword">Game account password</label>
+    <input id="gamePassword" type="password" autocomplete="current-password" maxlength="128" required>
+    <button>Sign in</button>
+    <button id="signInBack" type="button">Back</button>
+  </form>
+</div>
+<div id="unlockScreen" hidden>
+  <form id="unlock">
+    <h1>The Zero Gravity<small>Web Studio</small></h1>
+    <label for="password">Studio password</label>
+    <input id="password" type="password" autocomplete="off" required minlength="12" maxlength="72">
+    <button value="open">Unlock Studio</button>
+    <button value="setup">Set initial Studio password</button>
+    <button id="signOut" type="button">Sign out</button>
+  </form>
+</div>
+<div id="boot" hidden><div class="bootCard">
+  <h1 class="bootTitle">The Zero Gravity<span>Web Studio</span></h1>
+  <div class="bootProgressRow"><div class="bootProgressTrack"><div id="sourceProgress"></div><strong id="sourcePercent"></strong></div></div>
+  <p id="bootStatus" role="status"></p><small id="sourceDetail"></small>
+</div></div>
 <div id="workspace" hidden></div>
 </main>
 <script nonce="__STUDIO_NONCE__" type="module">
-const sessionKey = 'tzg-player-session-v1';
+const sessionKey = 'tzg-studio-game-session-v1';
+const gate = document.querySelector('#accountGate');
+const unlockScreen = document.querySelector('#unlockScreen');
+const gameLogin = document.querySelector('#gameLogin');
+const choices = document.querySelector('#signinChoices');
+const boot = document.querySelector('#boot');
+const landscape = matchMedia('(orientation: landscape)');
+const gameSessionKey = 'tzg-player-session-v1';
+let clientPromise;
+function client() {
+  clientPromise ??= Promise.all([
+    import('/vendor/supabase.js?v=62'),
+    import('/supabase-config.js'),
+  ]).then(([{ createClient }, { supabaseConfig }]) =>
+    createClient(supabaseConfig.url, supabaseConfig.publishableKey, {
+      auth: { storageKey: sessionKey, persistSession: true, flowType: 'pkce', detectSessionInUrl: true },
+    }));
+  return clientPromise;
+}
+function loading(percent, status, detail = '') {
+  boot.hidden = false;
+  document.querySelector('#sourceProgress').style.width = percent + '%';
+  document.querySelector('#sourcePercent').textContent = (percent === 100 ? 'Ready' : 'Preparing') + ' · ' + percent + '%';
+  document.querySelector('#bootStatus').textContent = status;
+  document.querySelector('#sourceDetail').textContent = detail;
+}
+function showSignedIn(signedIn) {
+  gate.hidden = signedIn;
+  unlockScreen.hidden = !signedIn;
+  boot.hidden = true;
+}
+document.querySelector('#accountEmailLogin').onclick = () => {
+  if (!landscape.matches) return;
+  choices.hidden = true;
+  gameLogin.hidden = false;
+  document.querySelector('#gameIdentifier').focus();
+};
+document.querySelector('#signInBack').onclick = () => {
+  gameLogin.hidden = true;
+  choices.hidden = false;
+  notices.textContent = '';
+};
+document.querySelector('#accountGoogle').onclick = async event => {
+  if (!landscape.matches) return;
+  event.currentTarget.disabled = true;
+  const button = event.currentTarget;
+  try {
+    loading(15, 'Opening Google sign-in…');
+    const { error } = await (await client()).auth.signInWithOAuth({
+      provider: 'google', options: { redirectTo: location.origin + '/studio/', queryParams: { prompt: 'select_account' } },
+    });
+    if (error) throw error;
+  } catch (error) {
+    boot.hidden = true;
+    notices.textContent = error.message;
+    button.disabled = false;
+  }
+};
+gameLogin.onsubmit = async event => {
+  event.preventDefault();
+  if (!landscape.matches) return;
+  const identifier = document.querySelector('#gameIdentifier').value.trim();
+  const field = document.querySelector('#gamePassword');
+  const password = field.value;
+  field.value = '';
+  const submit = event.submitter;
+  submit.disabled = true;
+  try {
+    loading(25, 'Signing in…');
+    const authClient = await client();
+    const { accountEndpoint } = await import('/account-auth-flow.js');
+    let result;
+    if (identifier.includes('@')) {
+      result = await authClient.auth.signInWithPassword({ email: identifier, password });
+    } else {
+      const data = await accountEndpoint(authClient, 'login', { identifier, password });
+      result = await authClient.auth.setSession(data.session);
+    }
+    if (result.error) throw result.error;
+    notices.textContent = '';
+    showSignedIn(Boolean(result.data.session));
+  } catch (error) {
+    boot.hidden = true;
+    notices.textContent = error.message || 'Could not sign in. Check your account details.';
+  } finally { submit.disabled = false; }
+};
+document.querySelector('#signOut').onclick = async () => {
+  const authClient = await client();
+  await lock();
+  await authClient.auth.signOut({ scope: 'local' });
+  showSignedIn(false);
+  choices.hidden = false;
+  gameLogin.hidden = true;
+  notices.textContent = '';
+};
 const form = document.querySelector('#unlock');
 const passwordInput = document.querySelector('#password');
 const notices = document.querySelector('#notice');
@@ -57,7 +196,8 @@ async function lock() {
   cleanup = undefined;
   root.replaceChildren();
   root.hidden = true;
-  form.hidden = false;
+  unlockScreen.hidden = !session();
+  gate.hidden = Boolean(session());
   notices.textContent = 'Studio is locked.';
   if (token) await call('lock', { token }).catch(() => {});
 }
@@ -66,12 +206,13 @@ function idle() {
   if (studioToken) timeout = setTimeout(lock, 10 * 60 * 1000);
 }
 window.addEventListener('storage', event => {
-  if (event.key === sessionKey && !session()) void lock();
+  if ((event.key === sessionKey && !session()) || (event.key === gameSessionKey && !event.newValue && event.oldValue)) void lock();
 });
 root.addEventListener('pointerdown', idle);
 root.addEventListener('keydown', idle);
 form.addEventListener('submit', async event => {
   event.preventDefault();
+  if (!landscape.matches) return;
   const password = passwordInput.value;
   passwordInput.value = '';
   event.submitter.disabled = true;
@@ -81,16 +222,19 @@ form.addEventListener('submit', async event => {
       notices.textContent = ok ? 'Password set. Enter it again to unlock.' : 'Initial setup is unavailable for this account.';
       return;
     }
+    loading(15, 'Verifying Studio access…');
     studioToken = await call('open', { password });
     if (!studioToken) {
       notices.textContent = 'Studio access denied.';
       return;
     }
     const token = studioToken;
+    loading(45, 'Loading Studio files…');
     const source = await call('editor', { token }, true);
     const moduleUrl = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
     try {
       const editor = await import(moduleUrl);
+      loading(80, 'Preparing the 3D viewport…');
       cleanup = await editor.mount(root, {
         call: async (action, args = {}) => {
           if (studioToken !== token) throw new Error('Studio is locked.');
@@ -101,7 +245,8 @@ form.addEventListener('submit', async event => {
         lock, message: text => { notices.textContent = text; },
       });
     } finally { URL.revokeObjectURL(moduleUrl); }
-    form.hidden = true;
+    loading(100, 'Studio ready');
+    unlockScreen.hidden = true;
     root.hidden = false;
     window.dispatchEvent(new Event('resize'));
     notices.textContent = '';
@@ -109,7 +254,23 @@ form.addEventListener('submit', async event => {
   } catch (error) {
     if (studioToken) await lock();
     notices.textContent = error.message;
-  } finally { event.submitter.disabled = false; }
+  } finally { boot.hidden = true; event.submitter.disabled = false; }
 });
+loading(1, 'Connecting to your account…');
+try {
+  const authClient = await client();
+  const { data, error } = await authClient.auth.getSession();
+  if (error) notices.textContent = error.message;
+  showSignedIn(Boolean(data?.session));
+  authClient.auth.onAuthStateChange((event, nextSession) => {
+    if (event === 'SIGNED_OUT' || !nextSession) {
+      void lock();
+      showSignedIn(false);
+    }
+  });
+} catch (error) {
+  notices.textContent = 'Could not connect to the account service. ' + error.message;
+  showSignedIn(false);
+}
 </script>
 </html>

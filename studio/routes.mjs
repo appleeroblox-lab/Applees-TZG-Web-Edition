@@ -30,7 +30,7 @@ export async function studioRequest(request, env, assets, fetcher = fetch) {
       'Content-Security-Policy': [
         "default-src 'none'", "frame-ancestors 'none'", "base-uri 'none'",
         "form-action 'none'", "font-src 'self'", "img-src 'self' blob: data:",
-        "connect-src 'self'", "style-src 'unsafe-inline'",
+        `connect-src 'self' ${new URL(env.SUPABASE_URL || request.url).origin}`, "style-src 'self' 'unsafe-inline'",
         `script-src 'nonce-${nonce}' 'self' blob:`,
       ].join('; '),
     });

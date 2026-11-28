@@ -77,8 +77,9 @@ export async function mount(root, api) {
   const fields = ['color', 'metalness', 'roughness', 'opacity'];
 
   function draw() {
-    const w = Math.max(viewport.clientWidth - 32, 1);
-    renderer.setSize(w, Math.max(320, w * .63));
+    const w = Math.max(viewport.clientWidth - 20, 1);
+    const h = Math.max(viewport.clientHeight - 60, 1);
+    renderer.setSize(w, h);
     camera.aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
     camera.updateProjectionMatrix();
     const offset = new T.Vector3().setFromSphericalCoords(distance * radius, Math.PI / 2 - elevation, azimuth);
